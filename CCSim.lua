@@ -29,7 +29,18 @@ yearstorun = 0
 
 final = {}
 
+function sleep(v)
+	-- io.stderr:write("sleep\n")
+	local b = os.clock()
+	local e = os.clock()
+	while e < b + v do
+		e = os.clock()
+	end
+end
+
 function rseed()
+	-- io.stderr:write("rseed\n")
+	sleep(0.01)
 	math.randomseed(tonumber(tostring(os.time()*os.clock()):reverse()))
 	math.random(1,1000)
 	for i=1,math.random(7,13) do
@@ -64,8 +75,8 @@ c_events = {
 	{
 		["Name"]="Revolution",
 		["Chance"]=40,
-		["Args"]={1, "C"},
-		["Perform"]=function(self, c)
+		["Args"]={2, "C", "M"},
+		["Perform"]=function(self, c, m)
 			for q=1,#c.people do
 				if c.people[q] ~= nil then
 					if c.people[q].isruler == true then
@@ -83,10 +94,16 @@ c_events = {
 					if e == g then c.system = t end
 					g = g + 1
 				end
-				garb(f)
 			end
 			
-			c:checkRuler()
+			local ind = 1
+			for q=1,#m.countries do
+				if m.countries[q].name == c.name then
+					ind = q
+					q = #m.countries + 1
+				end
+			end
+			c:checkRuler(m, ind)
 			
 			c:event("Revolution: "..oldsys.." to "..systems[c.system].name)
 		
@@ -100,7 +117,6 @@ c_events = {
 				end
 			end
 
-			garb(oldsys)
 			rseed()
 		end
 	},
@@ -127,7 +143,6 @@ c_events = {
 				local tmp = math.random(math.floor(math.floor(pp/ns) / 3), math.floor(pp/ns))
 				if tmp < 1 then tmp = 1 end
 				s:setPop(math.random(1, tmp))
-				garb(tmp)
 				s.age = 0
 				
 				map:add(s)
@@ -141,20 +156,18 @@ c_events = {
 					end
 				end
 			end
-			garb(ns)
-			garb(pp)
 		end
 	},
 	{
 		["Name"]="Civil war",
 		["Chance"]=20,
-		["Args"]={1, "C"},
+		["Args"]={2, "C", "M"},
 		["Begin"]=function(self, c)
 			table.insert(c.ongoing, self.Name)
 			
 			c:event("Beginning of civil war")
 		end,
-		["End"]=function(self, c)
+		["End"]=function(self, c, m)
 			for q=1,#c.people do
 				if c.people[q] ~= nil then
 					if c.people[q].isruler == true then
@@ -171,9 +184,15 @@ c_events = {
 				if e == g then c.system = t end
 				g = g + 1
 			end
-			garb(f)
 			
-			c:checkRuler()
+			local ind = 1
+			for q=1,#m.countries do
+				if m.countries[q].name == c.name then
+					ind = q
+					q = #m.countries + 1
+				end
+			end
+			c:checkRuler(m, ind)
 			
 			local newRuler = nil
 			for i=1,#c.people do
@@ -336,6 +355,7 @@ c_events = {
 }
 
 function getPersonString(data)
+	-- io.stderr:write("getPersonString\n")
 	return string.format(data["Title"].." "..data["Name"].." "..roman(data["Number"]).." of "..data["Country"].." ("..tostring(data["From"]).." - "..tostring(data["To"])..")")
 end
 
@@ -364,27 +384,23 @@ function name()
 		if vc < math.random(20, 60) then
 			local c = math.random(1, #consonants)
 			if i == 1 then nom = nom..consonants[c] else nom = nom..string.lower(consonants[c]) end
-			garb(c)
 		else
 			local v = math.random(1, #vowels)
 			if i == 1 then nom = nom..vowels[v] else nom = nom..string.lower(vowels[v]) end
 			nv = nv + 1
-			garb(v)
 		end
-		garb(vc)
 	end
-	garb(nl)
+	
 	if nv == 0 then
 		local v = math.random(1, #vowels)
 		nom = nom..string.lower(vowels[v])
-		garb(v)
 	end
-	garb(nv)
 	
 	return nom
 end
 
 function roman(n)
+	-- io.stderr:write("roman\n")
 	local tmp = tonumber(n)
 	if tmp == nil then return n end
 	local fin = ""
@@ -457,19 +473,18 @@ function roman(n)
 	return fin
 end
 
-function garb(x)
-	x = nil
-end
-
 function ncall()
+	-- io.stderr:write("ncall\n")
 	return person:new()
 end
 
 function nlcall()
+	-- io.stderr:write("nlcall\n")
 	return country:new()
 end
 
 function nmcall()
+	-- io.stderr:write("nmcall\n")
 	return world:new()
 end
 
@@ -504,8 +519,6 @@ function person:destroy()
 end
 
 function person:makename()
-	rseed()
-	
 	self.name = name()
 	self.surname = name()
 	
@@ -618,6 +631,7 @@ function person:update(nl)
 end
 
 function country:new()
+	-- io.stderr:write("country:new\n")
 	local nl = {}
 	setmetatable(nl, country)
 	
@@ -643,6 +657,8 @@ function country:new()
 end
 
 function country:destroy()
+	-- io.stderr:write("country:destroy\n")
+	-- os.execute("pause")
 	for i=1,#self.people do
 		self.people[i]:destroy()
 		self.people[i] = nil
@@ -672,6 +688,7 @@ function country:delete(y)
 end
 
 function country:makename()
+	-- io.stderr:write("country:makename\n")
 	if self.name == "" or self.name == nil then
 		self.name = name()
 	end
@@ -691,11 +708,10 @@ function country:makename()
 			table.insert(self.frulernames, name())
 		end
 	end
-	
-	garb(nv)
 end
 
 function country:set()
+	-- io.stderr:write("country:set\n")
 	rseed()
 
 	self:makename()
@@ -712,14 +728,15 @@ function country:set()
 		if e == g then self.system = i end
 		g = g + 1
 	end
-	garb(e)
 	
 	self.founded = years
 	self.population = #self.people
 end
 
 function country:setRuler(newRuler)
+	-- io.stderr:write("country:setRuler\n")
 	if self.hasruler == -1 then
+		-- io.stderr:write("self.hasruler == -1\n")
 		self.people[newRuler].prevName = self.people[newRuler].name
 	
 		self.people[newRuler].level = #systems[self.system].ranks
@@ -761,13 +778,16 @@ function country:setRuler(newRuler)
 	end
 end
 
-function country:checkRuler()
+function country:checkRuler(nm, ind)
+	-- io.stderr:write("country:checkRuler\n")
 	if self.hasruler == -1 then
 		if #self.rulers > 0 then
 			self.rulers[#self.rulers]["To"] = years
 		end
 		
 		if #self.people > 1 then
+			local runs = 0
+			
 			while self.hasruler == -1 do
 				local chil = false
 				local male = false
@@ -778,7 +798,7 @@ function country:checkRuler()
 						if self.people[e].level == #systems[self.system].ranks - 1 then
 							chil = true
 							if self.people[e].gender == "Male" then male = true end
-							if self.people[e].age < 80 then table.insert(chils, e) end
+							if self.people[e].age < 75 then table.insert(chils, e) end
 						end
 					end
 				end
@@ -787,7 +807,7 @@ function country:checkRuler()
 					local z = math.random(1,#self.people)
 					local g = math.random(1,math.floor(5000/(math.pow(self.people[z].level, 2))))
 					if g == 2 then
-						if self.people[z].age < 80 and self.people[z].age > 14 then self:setRuler(z) end
+						self:setRuler(z)
 					end
 				else
 					if male == false then
@@ -804,9 +824,12 @@ function country:checkRuler()
 			end
 		end
 	end
+	
+	return true
 end
 
 function country:setPop(u)
+	-- io.stderr:write("country:setPop\n")
 	while u < #self.people do
 		if #self.people > 1 then
 			local r = math.random(1, #self.people)
@@ -831,7 +854,8 @@ function country:setPop(u)
 	self.population = #self.people
 end
 
-function country:update(nm)
+function country:update(nm, ind)
+	-- io.stderr:write("country:update\n")
 	self.stability = self.stability + math.random(-5, 5)
 	if self.stability > 100 then self.stability = 100 end
 	if self.stability < 1 then self.stability = 1 end
@@ -850,8 +874,8 @@ function country:update(nm)
 		self.birthrate = 10000
 		self.deathrate = 150
 	else
-		self.birthrate = 65
-		self.deathrate = 5000
+		self.birthrate = 35
+		self.deathrate = 50000
 	end
 	
 	self.hasruler = -1
@@ -893,8 +917,6 @@ function country:update(nm)
 		end
 	end
 	
-	self:checkRuler()
-	
 	for i, l in pairs(self.relations) do
 		local found = false
 		for j, k in pairs(nm.countries) do
@@ -916,105 +938,114 @@ function country:update(nm)
 			self.relations[l.name] = self.relations[l.name] + v
 			if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
 			if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
-			garb(v)
 		end
 	end
 	
-	self:eventloop(nm)
+	self:eventloop(nm, self:checkRuler(nm, ind))
 end
 
 function country:event(e)
+	-- io.stderr:write("country:event\n")
 	table.insert(self.events, {["Event"]=e, ["Year"]=years})
 end
 
-function country:eventloop(nm)
-	local v = math.floor(10000 * self.stability)
-	if v < 1 then v = 1 end
-	
-	if self.ongoing == nil then self.ongoing = {} end
-	if self.relations == nil then self.relations = {} end
-	
-	local smarked = {}
-	local omarked = {}
-	
-	for i=1,#self.ongoing do
-		if self.ongoing[i] ~= nil then
-			local chance = math.random(1, 17)
-			
-			if chance == 5 then
-				for j=1,#c_events do
-					if c_events[j].Name == self.ongoing[i]:sub(1, #c_events[j].Name) then
-						if c_events[j]["Args"][1] == 1 then
-							c_events[j]:End(self)
-						elseif c_events[j]["Args"][1] == 2 then
-							if c_events[j]["Args"][3] == "M" then
-								c_events[j]:End(self, nm)
-							else
-								local other = nil
-								for k=1,#nm.countries do
-									if self.ongoing[i] == c_events[j].Name..nm.countries[k].name then
-										other = k
-										c_events[j]:End(self, nm.countries[other], nm)
-										for l=1,#nm.countries[other].ongoing do
-											if nm.countries[other].ongoing[l] == c_events[j].Name..self.name then
-												table.insert(omarked, l)
+function country:eventloop(nm, doevents)
+	-- io.stderr:write("country:eventloop\n")
+	if doevents == true then
+		local v = math.floor(10000 * self.stability)
+		if v < 1 then v = 1 end
+		
+		if self.ongoing == nil then self.ongoing = {} end
+		if self.relations == nil then self.relations = {} end
+		
+		local smarked = {}
+		local omarked = {}
+		
+		for i=1,#self.ongoing do
+			if self.ongoing[i] ~= nil then
+				local chance = math.random(1, 17)
+				
+				if chance == 5 then
+					for j=1,#c_events do
+						if c_events[j].Name == self.ongoing[i]:sub(1, #c_events[j].Name) then
+							if c_events[j]["Args"][1] == 1 then
+								-- io.stderr:write(c_events[j].Name..":End\n")
+								c_events[j]:End(self)
+							elseif c_events[j]["Args"][1] == 2 then
+								if c_events[j]["Args"][3] == "M" then
+									-- io.stderr:write(c_events[j].Name..":End\n")
+									c_events[j]:End(self, nm)
+								else
+									local other = nil
+									for k=1,#nm.countries do
+										if self.ongoing[i] == c_events[j].Name..nm.countries[k].name then
+											other = k
+											-- io.stderr:write(c_events[j].Name..":End\n")
+											c_events[j]:End(self, nm.countries[other], nm)
+											for l=1,#nm.countries[other].ongoing do
+												if nm.countries[other].ongoing[l] == c_events[j].Name..self.name then
+													table.insert(omarked, l)
+												end
 											end
 										end
 									end
-								end
-								if other ~= nil then
-									for k=1,#omarked do
-										table.remove(nm.countries[other].ongoing, omarked[k])
-										for l=k+1,#omarked do
-											omarked[k] = omarked[k] - 1
+									if other ~= nil then
+										for k=1,#omarked do
+											table.remove(nm.countries[other].ongoing, omarked[k])
+											for l=k+1,#omarked do
+												omarked[k] = omarked[k] - 1
+											end
 										end
 									end
+									omarked = {}
 								end
-								omarked = {}
 							end
+							j = #c_events + 1
 						end
-						j = #c_events + 1
 					end
+					
+					table.insert(smarked, i)
 				end
-				
-				table.insert(smarked, i)
 			end
 		end
-	end
-	
-	for i=1,#smarked do
-		table.remove(self.ongoing, smarked[i])
-		for j=i+1,#smarked do
-			smarked[j] = smarked[j] - 1
-		end
-	end
-	
-	local delchance = 1
-	if numCountries > maxcountries then delchance = 0 end
-	if numCountries < mincountries then delchance = 2 end
-	
-	for i=1,#c_events do
-		local chance = math.floor(math.random(1, v))
-		if c_events[i].Name == "Independence" or c_events[i].Name == "Fracture" then
-			if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
-			if delchance == 2 then chance = math.floor(math.random(1, 500)) end
-		elseif c_events[i].Name == "Conquer" then
-			if delchance == 0 then chance = math.floor(math.random(1, 500)) end
-			if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
+		
+		for i=1,#smarked do
+			table.remove(self.ongoing, smarked[i])
+			for j=i+1,#smarked do
+				smarked[j] = smarked[j] - 1
+			end
 		end
 		
-		if chance <= c_events[i]["Chance"] then
-			if c_events[i]["Args"][1] == 1 then
-				c_events[i]:Perform(self)
-			elseif c_events[i]["Args"][1] == 2 then
-				if c_events[i]["Args"][3] == "M" then
-					c_events[i]:Perform(self, nm)
-				else
-					local other = math.random(1, #nm.countries)
-					while nm.countries[other].name == self.name do
-						other = math.random(1, #nm.countries)
+		local delchance = 1
+		if numCountries > maxcountries then delchance = 0 end
+		if numCountries < mincountries then delchance = 2 end
+		
+		for i=1,#c_events do
+			local chance = math.floor(math.random(1, v))
+			if c_events[i].Name == "Independence" or c_events[i].Name == "Fracture" then
+				if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
+				if delchance == 2 then chance = math.floor(math.random(1, 500)) end
+			elseif c_events[i].Name == "Conquer" then
+				if delchance == 0 then chance = math.floor(math.random(1, 500)) end
+				if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
+			end
+			
+			if chance <= c_events[i]["Chance"] then
+				if c_events[i]["Args"][1] == 1 then
+					-- io.stderr:write(c_events[i].Name..":Perform\n")
+					c_events[i]:Perform(self)
+				elseif c_events[i]["Args"][1] == 2 then
+					if c_events[i]["Args"][3] == "M" then
+						-- io.stderr:write(c_events[i].Name..":Perform\n")
+						c_events[i]:Perform(self, nm)
+					else
+						local other = math.random(1, #nm.countries)
+						while nm.countries[other].name == self.name do
+							other = math.random(1, #nm.countries)
+						end
+						-- io.stderr:write(c_events[i].Name..":Perform\n")
+						c_events[i]:Perform(self, nm.countries[other], nm)
 					end
-					c_events[i]:Perform(self, nm.countries[other], nm)
 				end
 			end
 		end
@@ -1026,6 +1057,7 @@ function world:new()
 	setmetatable(nm, world)
 	
 	nm.countries = {}
+	nm.cmarked = {}
 	
 	numCountries = 0
 	years = 0
@@ -1057,30 +1089,36 @@ function world:delete(nz)
 end
 
 function world:update()
+	-- io.stderr:write("world:update\n")
 	rseed()
 	
 	numCountries = #self.countries
 	
-	local cmarked = {}
+	self.cmarked = {}
 	
 	for i=1,#self.countries do
 		if self.countries[i] ~= nil then
-			self.countries[i]:update(self)
+			self.countries[i]:update(self, i)
 			
 			if self.countries[i] ~= nil then
 				if self.countries[i].population < 10 then
+					-- io.stderr:write(self.countries[i].name.." POPDSP")
 					self.countries[i].rulers[#self.countries[i].rulers]["To"] = years
 					self.countries[i]:event("Disappeared")
-					table.insert(cmarked, i)
+					local found = false
+					for j=1,#self.cmarked do
+						if self.cmarked[j] == i then found = true end
+					end
+					if found == false then table.insert(self.cmarked, i) end
 				end
 			end
 		end
 	end
 	
-	for i=1,#cmarked do
-		self:delete(cmarked[i])
-		for j=i,#cmarked do
-			cmarked[i] = cmarked[i] - 1
+	for i=1,#self.cmarked do
+		self:delete(self.cmarked[i])
+		for j=i,#self.cmarked do
+			self.cmarked[i] = self.cmarked[i] - 1
 		end
 	end
 end
@@ -1094,6 +1132,7 @@ function fromFile(datin)
 		local l = f:read()
 		if l == nil then done = true
 		else
+			print(l)
 			local mat = {}
 			for q in string.gmatch(l, "%S+") do
 				table.insert(mat, tostring(q))
@@ -1193,7 +1232,7 @@ function loop(nm)
 				table.insert(final, nm.countries[i])
 			end
 			if showinfo == 1 then
-				local msg = nm.countries[i].name.." ("..systems[nm.countries[i].system].name.."): ".."Population "..nm.countries[i].population.." ("..#nm.countries[i].rulers..")"
+				local msg = nm.countries[i].name.." ("..systems[nm.countries[i].system].name.."): Population "..nm.countries[i].population.." ("..#nm.countries[i].rulers..")"
 				if nm.countries[i].rulers ~= nil then
 					if nm.countries[i].rulers[#nm.countries[i].rulers] ~= nil then
 						msg = msg.." - Current ruler: "..getPersonString(nm.countries[i].rulers[#nm.countries[i].rulers])
@@ -1314,7 +1353,7 @@ function main()
 	
 	loop(nm)
 	finish(nm)
-	garb(nm)
+	nm = nil
 	
 	print(" Done!")
 end
