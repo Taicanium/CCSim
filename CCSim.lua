@@ -41,12 +41,12 @@ end
 
 function rseed()
 	sleep(0.01)
-	local tc = math.floor(tonumber(os.clock()*os.time())/1000)
+	local tc = tonumber(os.clock()*os.time())/1000
 	local n = tonumber(tostring(tc):reverse())
 	math.randomseed(n)
 	math.random(1, 500)
 	x = math.random(7, 13)
-	for i=1,x do
+	for i=2,x do
 		math.randomseed(tonumber(tostring(math.random(1, math.floor(i*tc))):reverse()))
 		math.random(1, 500)
 	end
@@ -286,23 +286,15 @@ c_events = {
 		["Begin"]=function(self, c)
 			table.insert(c.ongoing, self.Name)
 			
-			print("\n\n\nCIVIL WAR BEGIN")
-			os.execute("pause")
-			
 			c:event("Beginning of civil war")
 		end,
 		["Step"]=function(self, c)
-			print("\n\n\nCIVIL WAR STEP")
-		
 			local chance = 40
 			
 			local doEnd = math.random(1, chance)
 			if doEnd < 5 then self:End(c) end
 		end,
-		["End"]=function(self, c)
-			print("\n\n\nCIVIL WAR END")
-			os.execute("pause")
-		
+		["End"]=function(self, c)		
 			for q=1,#c.people do
 				if c.people[q] ~= nil then
 					if c.people[q].isruler == true then
