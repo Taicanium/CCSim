@@ -1207,6 +1207,59 @@ function country:update(ind)
 		end
 	end
 	
+	local omarked = {}
+	local amarked = {}
+	
+	for i=1,#self.ongoing do
+		local found = false
+		local er = self.ongoing[i]:reverse()
+		
+		for j=1,#thisWorld.countries do
+			local nr = thisWorld.countries[j].name:reverse()
+			if string.len(er) >= string.len(nr) then
+				if er:sub(1, #nr) == nr then
+					found = true
+				end
+			end
+		end
+		
+		if found == false then
+			table.insert(omarked, i)
+		end
+	end
+	
+	for i=1,#self.alliances do
+		local found = false
+		local ar = self.alliances[i]
+		
+		for j=1,#thisWorld.countries do
+			local nr = thisWorld.countries[j].name
+			if string.len(ar) >= string.len(nr) then
+				if ar:sub(1, #nr) == nr then
+					found = true
+				end
+			end
+		end
+		
+		if found == false then
+			table.insert(amarked, i)
+		end
+	end
+	
+	for i=1,#omarked do
+		table.remove(self.ongoing, omarked[i])
+		for j=i,#omarked do
+			omarked[j] = omarked[j] - 1
+		end
+	end
+	
+	for i=1,#amarked do
+		table.remove(self.alliances, amarked[i])
+		for j=i,#amarked do
+			amarked[j] = amarked[j] - 1
+		end
+	end
+	
 	for i, l in pairs(self.relations) do
 		local found = false
 		for j, k in pairs(thisWorld.countries) do
@@ -1261,14 +1314,16 @@ function country:eventloop(doevents)
 				end
 				
 				if ename ~= nil then
-					local other = nil
-					for k=1,#thisWorld.countries do
-						if self.ongoing[i] == c_events[eind].Name..thisWorld.countries[k].name then
-							other = k
-							if c_events[eind]["Args"][1] == 1 then
-								c_events[eind]:Step(self)
-							elseif c_events[eind]["Args"][1] == 2 then
-								c_events[eind]:Step(self, thisWorld.countries[other])
+					if c_events[eind]["Args"][1] == 1 then
+						c_events[eind]:Step(self)
+					elseif c_events[eind]["Args"][1] == 2 then
+						local other = nil
+						for k=1,#thisWorld.countries do
+							if self.ongoing[i] == c_events[eind].Name..thisWorld.countries[k].name then
+								other = k
+								elseif c_events[eind]["Args"][1] == 2 then
+									c_events[eind]:Step(self, thisWorld.countries[other])
+								end
 							end
 						end
 					end
@@ -1486,6 +1541,48 @@ function loop()
 				print(msg)
 			end
 		end
+		
+		if showinfo == 1 then
+			local wars = {}
+			local alliances = {}
+		
+			local msg = "\nWars: "
+		
+			for i=1,#thisWorld.countries do
+				for j=1,#thisWorld.countries[i].ongoing do
+					if thisWorld.countries[i].ongoing[j]:sub(1, 3) == "War" then
+						local found = false
+						for k=1,#wars do
+							if wars[k] == thisWorld.countries[i].ongoing[j]:sub(4, #thisWorld.countries[i].ongoing[j]).."-"..thisWorld.countries[i].name.." " then found = true end
+						end
+						if found == false then
+							table.insert(wars, thisWorld.countries[i].name.."-"..thisWorld.countries[i].ongoing[j]:sub(4, #thisWorld.countries[i].ongoing[j]).." ")
+							msg = msg..wars[#wars]
+						end
+					end
+				end
+			end
+			
+			print(msg)
+			
+			msg = "\nAlliances: "
+		
+			for i=1,#thisWorld.countries do
+				for j=1,#thisWorld.countries[i].alliances do
+					local found = false
+					for k=1,#alliances do
+						if alliances[k] == thisWorld.countries[i].alliances[j].."-"..thisWorld.countries[i].name.." " then found = true end
+					end
+					if found == false then
+						table.insert(alliances, thisWorld.countries[i].name.."-"..thisWorld.countries[i].alliances[j].." ")
+						msg = msg..alliances[#alliances]
+					end
+				end
+			end
+			
+			print(msg)
+		end
+		
 		if years == maxyears then _running = false end
 	end
 end
