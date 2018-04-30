@@ -286,15 +286,23 @@ c_events = {
 		["Begin"]=function(self, c)
 			table.insert(c.ongoing, self.Name)
 			
+			print("\n\n\nCIVIL WAR BEGIN")
+			os.execute("pause")
+			
 			c:event("Beginning of civil war")
 		end,
 		["Step"]=function(self, c)
+			print("\n\n\nCIVIL WAR STEP")
+		
 			local chance = 40
 			
 			local doEnd = math.random(1, chance)
 			if doEnd < 5 then self:End(c) end
 		end,
 		["End"]=function(self, c)
+			print("\n\n\nCIVIL WAR END")
+			os.execute("pause")
+		
 			for q=1,#c.people do
 				if c.people[q] ~= nil then
 					if c.people[q].isruler == true then
