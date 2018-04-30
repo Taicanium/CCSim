@@ -407,7 +407,7 @@ c_events = {
 			for i=1,ac do
 				local c3 = nil
 				for j=1,#thisWorld.countries do
-					if thisWorld.countries[j].name == c1.alliances[i] then c3 = thisWorld.countries[j] end
+					if thisWorld.countries[j].name == c2.alliances[i] then c3 = thisWorld.countries[j] end
 				end
 			
 				if c3 ~= nil then
@@ -452,7 +452,7 @@ c_events = {
 			for i=1,ac do
 				local c3 = nil
 				for j=1,#thisWorld.countries do
-					if thisWorld.countries[j].name == c1.alliances[i] then c3 = thisWorld.countries[j] end
+					if thisWorld.countries[j].name == c2.alliances[i] then c3 = thisWorld.countries[j] end
 				end
 				
 				if c3 ~= nil then c2total = c2total + c3.strength end
