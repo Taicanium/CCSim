@@ -1321,9 +1321,7 @@ function country:eventloop(doevents)
 						for k=1,#thisWorld.countries do
 							if self.ongoing[i] == c_events[eind].Name..thisWorld.countries[k].name then
 								other = k
-								elseif c_events[eind]["Args"][1] == 2 then
-									c_events[eind]:Step(self, thisWorld.countries[other])
-								end
+								c_events[eind]:Step(self, thisWorld.countries[other])
 							end
 						end
 					end
