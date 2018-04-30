@@ -664,8 +664,10 @@ c_events = {
 				if c2.alliances[i] == c1.name then already = true end
 			end
 			if already == false then
-				if c1.relations[c2.name] > 60 then
-					self:Begin(c1, c2)
+				if c1.relations[c2.name] ~= nil then
+					if c1.relations[c2.name] > 60 then
+						self:Begin(c1, c2)
+					end
 				end
 			end
 		end
