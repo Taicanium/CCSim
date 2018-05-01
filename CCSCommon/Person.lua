@@ -33,13 +33,13 @@ function Person:destroy()
 end
 
 function Person:makename()
-	self.name = name()
-	self.surname = name()
+	self.name = CCSCommon:name()
+	self.surname = CCSCommon:name()
 	
 	local r = math.random(1, 100)
 	if r < 51 then self.gender = "Male" else self.gender = "Female" end
 	
-	self.birth = years
+	self.birth = CCSCommon.years
 	self.age = math.random(5,60)
 	if self.title == "" then
 		self.level = 2
@@ -50,10 +50,12 @@ end
 function Person:update(nl)
 	self.age = self.age + 1
 	
-	if self.surname == nil then self.surname = name() end
+	if self.surname == nil then self.surname = CCSCommon:name() end
 	
-	if self.gender == "Male" or systems[nl.system].dynastic == false then
-		if self.title ~= systems[nl.system].ranks[#systems[nl.system].ranks] and self.level < #systems[nl.system].ranks - 1 then
+	local sys = CCSCommon.systems[nl.system]
+	
+	if self.gender == "Male" or sys.dynastic == false then
+		if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - 1 then
 			local x = math.random(-125, 100)
 			if x < -75 then
 				self.prevTitle = self.title
@@ -64,12 +66,12 @@ function Person:update(nl)
 			end
 			
 			if self.level < 1 then self.level = 1 end
-			if self.level > #systems[nl.system].ranks - 2 then self.level = #systems[nl.system].ranks - 2 end
+			if self.level > #sys.ranks - 2 then self.level = #sys.ranks - 2 end
 		end
 		
-		self.title = systems[nl.system].ranks[self.level]
+		self.title = sys.ranks[self.level]
 	else
-		if self.title ~= systems[nl.system].franks[#systems[nl.system].franks] and self.level < #systems[nl.system].franks - 1 then
+		if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - 1 then
 			local x = math.random(-125, 100)
 			if x < -75 then
 				self.prevTitle = self.title
@@ -80,10 +82,10 @@ function Person:update(nl)
 			end
 			
 			if self.level < 1 then self.level = 1 end
-			if self.level > #systems[nl.system].franks - 2 then self.level = #systems[nl.system].franks - 2 end
+			if self.level > #sys.franks - 2 then self.level = #sys.franks - 2 end
 		end
 		
-		self.title = systems[nl.system].franks[self.level]
+		self.title = sys.franks[self.level]
 	end
 	
 	if self.spouse == nil then
@@ -121,31 +123,25 @@ function Person:update(nl)
 				
 				nn.age = 0
 				
-				if systems[nl.system].dynastic == true then
-						if self.gender == "Male" then
-							if self.title == systems[nl.system].ranks[#systems[nl.system].ranks] then
-							nn.level = #systems[nl.system].ranks - 1
-						else
-							nn.level = self.level
-						end
-					else
-						if self.title == systems[nl.system].franks[#systems[nl.system].franks] then
-							nn.level = #systems[nl.system].ranks - 1
-						else
-							nn.level = self.level
-						end
-					end
+				if self.title == sys.ranks[#sys.ranks] then
+					nn.level = #sys.ranks - 1
 				else
-					if self.title == systems[nl.system].ranks[#systems[nl.system].ranks] then
-						nn.level = #systems[nl.system].ranks - 1
-					else
-						nn.level = self.level
+					nn.level = self.level
+				end
+				
+				if sys.dynastic == true then
+					if self.gender == "Female" then
+						if self.title == sys.franks[#sys.franks] then
+							nn.level = #sys.ranks - 1
+						end
 					end
 				end
 				
-				if nn.gender == "Male" or systems[nl.system].dynastic == false then nn.title = systems[nl.system].ranks[nn.level] else nn.title = systems[nl.system].franks[nn.level] end
+				if nn.gender == "Male" or sys.dynastic == false then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
 				nl:add(nn)
 			end
 		end
 	end
 end
+
+return Person

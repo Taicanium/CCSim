@@ -9,8 +9,8 @@ function World:new()
 	nm.countries = {}
 	nm.cmarked = {}
 	
-	numCountries = 0
-	years = 0
+	CCSCommon.numCountries = 0
+	CCSCommon.years = 0
 
 	return nm
 end
@@ -39,17 +39,17 @@ function World:delete(nz)
 end
 
 function World:update()
-	numCountries = #self.countries
+	CCSCommon.numCountries = #self.countries
 	
 	self.cmarked = {}
 	
 	for i=1,#self.countries do
 		if self.countries[i] ~= nil then
-			self.countries[i]:update()
+			self.countries[i]:update(i)
 			
 			if self.countries[i] ~= nil then
 				if self.countries[i].population < 10 then
-					self.countries[i].rulers[#self.countries[i].rulers]["To"] = years
+					self.countries[i].rulers[#self.countries[i].rulers].To = CCSCommon.years
 					self.countries[i]:event("Disappeared")
 					local found = false
 					for j=1,#self.cmarked do
@@ -68,3 +68,5 @@ function World:update()
 		end
 	end
 end
+
+return World

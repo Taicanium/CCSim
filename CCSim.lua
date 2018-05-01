@@ -1,53 +1,53 @@
-require 'CCSCommon'
+CCSCommon = require 'CCSCommon'
 
 function main()
 	_running = true
 	
 	local clrarr = os.execute("clear")
-	if clrarr == nil then clrcmd = "cls" else clrcmd = "clear" end
+	if clrarr == nil then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	
-	os.execute(clrcmd)
+	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\tCCSIM : Compact Country Simulator\n\n"))
 	
 	io.write(string.format("\n How many years should the simulation run? > "))
 	local datin = io.read()
 	
-	yearstorun = tonumber(datin)
-	while yearstorun == nil do
+	CCSCommon.yearstorun = tonumber(datin)
+	while CCSCommon.yearstorun == nil do
 		io.write(string.format("\n Please enter a number. > "))
 		datin = io.read()
 		
-		yearstorun = tonumber(datin)
+		CCSCommon.yearstorun = tonumber(datin)
 	end
 	
-	maxyears = yearstorun
+	CCSCommon.maxyears = CCSCommon.yearstorun
 	
 	io.write(string.format("\n Do you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
 	datin = io.read()
 	datin = string.lower(datin)
 	
-	if string.lower(datin) == "y" then showinfo = 1 else showinfo = 0 end
+	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
 	
 	io.write(string.format("\n Data > "))
 	datin = io.read()
 	
 	if string.lower(datin) == "random" then
-		thisWorld = World:new()
+		CCSCommon.thisWorld = World:new()
 	
-		numCountries = 8
+		CCSCommon.numCountries = 8
 	
-		for j=1,numCountries do
-			local nl = country:new()
+		for j=1,CCSCommon.numCountries do
+			local nl = Country:new()
 			nl:set()
-			thisWorld:add(nl)
+			CCSCommon.thisWorld:add(nl)
 		end
 	else
-		fromFile(datin)
+		CCSCommon:fromFile(datin)
 	end
 	
-	loop()
-	finish()
-	thisWorld = nil
+	CCSCommon:loop()
+	CCSCommon:finish()
+	CCSCommon.thisWorld = nil
 	
 	print(" Done!")
 end

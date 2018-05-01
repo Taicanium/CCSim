@@ -62,28 +62,28 @@ end
 
 function Country:makename()
 	if self.name == "" or self.name == nil then
-		self.name = name()
+		self.name = CCSCommon:name()
 	end
 	
 	if #self.rulernames < 1 then
 		for k=1,math.random(5,8) do
-			table.insert(self.rulernames, name())
+			table.insert(self.rulernames, CCSCommon:name())
 		end
 		
 		for k=1,math.random(5,8) do
-			table.insert(self.frulernames, name())
+			table.insert(self.frulernames, CCSCommon:name())
 		end
 	end
 	
 	if #self.frulernames < 1 then
 		for k=1,math.random(5,8) do
-			table.insert(self.frulernames, name())
+			table.insert(self.frulernames, CCSCommon:name())
 		end
 	end
 end
 
 function Country:set()
-	rseed()
+	CCSCommon:rseed()
 
 	self:makename()
 	
@@ -93,9 +93,7 @@ function Country:set()
 		self:add(n)
 	end
 	
-	self.system = math.random(1, #systems)
-	
-	self.founded = years
+	self.founded = CCSCommon.years
 	self.population = #self.people
 end
 
@@ -104,17 +102,17 @@ function Country:setRuler(newRuler)
 		self.people[newRuler].prevName = self.people[newRuler].name
 		self.people[newRuler].prevTitle = self.people[newRuler].title
 	
-		self.people[newRuler].level = #systems[self.system].ranks
-		self.people[newRuler].title = systems[self.system].ranks[self.people[newRuler].level]
+		self.people[newRuler].level = #CCSCommon.systems[self.system].ranks
+		self.people[newRuler].title = CCSCommon.systems[self.system].ranks[self.people[newRuler].level]
 		
-		rseed()
+		CCSCommon:rseed()
 
 		if self.people[newRuler].gender == "Female" then
 			self.people[newRuler].name = self.frulernames[math.floor(math.random(1, #self.frulernames))]
 			
-			if systems[self.system].franks ~= nil then
-				self.people[newRuler].level = #systems[self.system].franks
-				self.people[newRuler].title = systems[self.system].franks[self.people[newRuler].level]
+			if CCSCommon.systems[self.system].franks ~= nil then
+				self.people[newRuler].level = #CCSCommon.systems[self.system].franks
+				self.people[newRuler].title = CCSCommon.systems[self.system].franks[self.people[newRuler].level]
 			end
 		else
 			self.people[newRuler].name = self.rulernames[math.floor(math.random(1, #self.rulernames))]
@@ -123,9 +121,9 @@ function Country:setRuler(newRuler)
 		local namenum = 1
 		
 		for i=1,#self.rulers do
-			if tonumber(self.rulers[i]["From"]) >= self.founded then
-				if self.rulers[i]["Name"] == self.people[newRuler].name then
-					if self.rulers[i]["Title"] == self.people[newRuler].title then
+			if tonumber(self.rulers[i].From) >= self.founded then
+				if self.rulers[i].Name == self.people[newRuler].name then
+					if self.rulers[i].Title == self.people[newRuler].title then
 						namenum = namenum + 1
 					end
 				end
@@ -135,10 +133,10 @@ function Country:setRuler(newRuler)
 		self.people[newRuler].isruler = true
 		self.hasruler = 0
 		
-		if systems[self.system].dynastic == true then
-			table.insert(self.rulers, {["Name"]=self.people[newRuler].name, ["Title"]=self.people[newRuler].title, ["Number"]=tostring(namenum), ["From"]=years, ["To"]="Current", ["Country"]=self.name})
+		if CCSCommon.systems[self.system].dynastic == true then
+			table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=CCSCommon.years, To="Current", Country=self.name})
 		else
-			table.insert(self.rulers, {["Name"]=self.people[newRuler].name, ["Title"]=self.people[newRuler].title, ["Number"]=self.people[newRuler].surname, ["From"]=years, ["To"]="Current", ["Country"]=self.name})
+			table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=CCSCommon.years, To="Current", Country=self.name})
 		end
 		
 		self.rulerage = self.people[newRuler].age
@@ -148,7 +146,7 @@ end
 function Country:checkRuler()
 	if self.hasruler == -1 then
 		if #self.rulers > 0 then
-			self.rulers[#self.rulers]["To"] = years
+			self.rulers[#self.rulers].To = CCSCommon.years
 		end
 		
 		if #self.people > 1 then			
@@ -157,9 +155,9 @@ function Country:checkRuler()
 				local male = false
 				local chils = {}
 				
-				if systems[self.system].dynastic == true then
+				if CCSCommon.systems[self.system].dynastic == true then
 					for e=1,#self.people do
-						if self.people[e].level == #systems[self.system].ranks - 1 then
+						if self.people[e].level == #CCSCommon.systems[self.system].ranks - 1 then
 							if self.people[e].age < self.average + 25 then
 								chil = true
 								table.insert(chils, e)
@@ -172,7 +170,7 @@ function Country:checkRuler()
 				if chil == false then
 					local z = math.random(1,#self.people)
 					local g = 0
-					if systems[self.system].dynastic == true then
+					if CCSCommon.systems[self.system].dynastic == true then
 						g = math.random(1,math.floor(5000/(math.pow(self.people[z].level, 2))))
 					else
 						g = math.random(1,2500)
@@ -223,7 +221,9 @@ function Country:setPop(u)
 	self.population = #self.people
 end
 
-function Country:update()	
+function Country:update(ind)
+	CCSCommon:rseed()
+
 	self.stability = self.stability + math.random(-5, 5)
 	if self.stability > 100 then self.stability = 100 end
 	if self.stability < 1 then self.stability = 1 end
@@ -295,20 +295,24 @@ function Country:update()
 	local amarked = {}
 	
 	for i=1,#self.ongoing do
-		local found = false
-		local er = self.ongoing[i]:reverse()
-		
-		for j=1,#thisWorld.countries do
-			local nr = thisWorld.countries[j].name:reverse()
-			if string.len(er) >= string.len(nr) then
-				if er:sub(1, #nr) == nr then
-					found = true
+		if self.ongoing[i] ~= nil then
+			if self.ongoing[i].Target ~= nil then
+				local found = false
+				local er = CCSCommon.thisWorld.countries[self.ongoing[i].Target].name:reverse()
+				
+				for j=1,#CCSCommon.thisWorld.countries do
+					local nr = CCSCommon.thisWorld.countries[j].name:reverse()
+					if string.len(er) >= string.len(nr) then
+						if er:sub(1, #nr) == nr then
+							found = true
+						end
+					end
+				end
+				
+				if found == false then
+					table.insert(omarked, i)
 				end
 			end
-		end
-		
-		if found == false then
-			table.insert(omarked, i)
 		end
 	end
 	
@@ -316,8 +320,8 @@ function Country:update()
 		local found = false
 		local ar = self.alliances[i]
 		
-		for j=1,#thisWorld.countries do
-			local nr = thisWorld.countries[j].name
+		for j=1,#CCSCommon.thisWorld.countries do
+			local nr = CCSCommon.thisWorld.countries[j].name
 			if string.len(ar) >= string.len(nr) then
 				if ar:sub(1, #nr) == nr then
 					found = true
@@ -346,7 +350,7 @@ function Country:update()
 	
 	for i, l in pairs(self.relations) do
 		local found = false
-		for j, k in pairs(thisWorld.countries) do
+		for j, k in pairs(CCSCommon.thisWorld.countries) do
 			if k.name == i then found = true end
 		end
 	
@@ -356,7 +360,7 @@ function Country:update()
 		end
 	end
 	
-	for i, l in pairs(thisWorld.countries) do
+	for i, l in pairs(CCSCommon.thisWorld.countries) do
 		if l.name ~= self.name then
 			if self.relations[l.name] == nil then
 				self.relations[l.name] = 50
@@ -370,72 +374,70 @@ function Country:update()
 	
 	self:checkRuler()
 	
-	self:eventloop()
+	self:eventloop(ind)
 end
 
 function Country:event(e)
-	table.insert(self.events, {["Event"]=e, ["Year"]=years})
+	table.insert(self.events, {Event=e, Year=CCSCommon.years})
 end
 
-function Country:eventloop()
-	local v = math.floor(10000 * self.stability)
+function Country:eventloop(ind)
+	local v = math.floor(650 * self.stability)
 	if v < 1 then v = 1 end
 	
 	if self.ongoing == nil then self.ongoing = {} end
 	if self.relations == nil then self.relations = {} end
 	
+	local omarked = {}
+	
 	for i=1,#self.ongoing do
 		if self.ongoing[i] ~= nil then
-			local ename = nil
-			local eind = nil
-			
-			for j=1,#c_events do
-				if #self.ongoing[i] >= #c_events[j].Name then
-					if c_events[j].Name == self.ongoing[i]:sub(1, #c_events[j].Name) then
-						ename = c_events[j].Name
-						eind = j
+			if self.ongoing[i].Args == 1 then
+				if self.ongoing[i].Step ~= nil then
+					local r = self.ongoing[i]:Step(ind)
+					if r == -1 then
+						table.insert(omarked, i)
 					end
+				else
+					table.insert(omarked, i)
 				end
 			end
-			
-			if ename ~= nil then
-				if c_events[eind]["Args"][1] == 1 then
-					c_events[eind]:Step(self)
-				elseif c_events[eind]["Args"][1] == 2 then
-					local other = nil
-					for k=1,#thisWorld.countries do
-						if self.ongoing[i] == c_events[eind].Name..thisWorld.countries[k].name then
-							other = k
-							c_events[eind]:Step(self, thisWorld.countries[other])
-						end
-					end
-				end
-			end
+		end
+	end
+	
+	for i=1,#omarked do
+		table.remove(self.ongoing, omarked[i])
+		for j=i,#omarked do
+			omarked[j] = omarked[j] - 1
 		end
 	end
 	
 	local delchance = 1
-	if numCountries > maxcountries then delchance = 0 end
-	if numCountries < mincountries then delchance = 2 end
+	if CCSCommon.numCountries > CCSCommon.maxcountries then delchance = 0 end
+	if CCSCommon.numCountries < CCSCommon.mincountries then delchance = 2 end
 	
-	for i=1,#c_events do
+	for i=1,#CCSCommon.c_events do
 		local chance = math.floor(math.random(1, v))
-		if c_events[i].Name == "Independence" or c_events[i].Name == "Fracture" then
+		if CCSCommon.c_events[i].Name == "Independence" or CCSCommon.c_events[i].Name == "Fracture" then
 			if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
 			if delchance == 2 then chance = math.floor(math.random(1, 500)) end
-		elseif c_events[i].Name == "Conquer" then
+		elseif CCSCommon.c_events[i].Name == "Conquer" then
 			if delchance == 0 then chance = math.floor(math.random(1, 500)) end
 			if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
 		end
 		
-		if chance <= c_events[i]["Chance"] then
-			if c_events[i]["Args"][1] == 1 then
-				c_events[i]:Perform(self)
-			elseif c_events[i]["Args"][1] == 2 then
-				local other = math.random(1,#thisWorld.countries)
-				while thisWorld.countries[other].name == self.name do other = math.random(1,#thisWorld.countries) end
-				c_events[i]:Perform(self, thisWorld.countries[other])
+		if chance <= CCSCommon.c_events[i].Chance then
+			if CCSCommon.c_events[i].Args == 1 then
+				table.insert(self.ongoing, CCSCommon:deepcopy(CCSCommon.c_events[i]))
+				if self.ongoing[#self.ongoing]:Perform(ind) == -1 then table.remove(self.ongoing, #self.ongoing) end
+			elseif CCSCommon.c_events[i].Args == 2 then
+				local other = math.random(1, #CCSCommon.thisWorld.countries)
+				while CCSCommon.thisWorld.countries[other].name == self.name do other = math.random(1, #CCSCommon.thisWorld.countries) end
+				table.insert(self.ongoing, CCSCommon:deepcopy(CCSCommon.c_events[i]))
+				if self.ongoing[#self.ongoing]:Perform(ind, other) == -1 then table.remove(self.ongoing, #self.ongoing) end
 			end
 		end
 	end
 end
+
+return Country
