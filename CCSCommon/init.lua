@@ -358,7 +358,7 @@ CCSCommon = {
 			local newc = false
 			local fr = 1
 			local pr = 1
-			io.write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." self.years\n\n"))
+			io.write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
 			
 			for k=1,#self.final[i].events do
 				if self.final[i].events[k].Event:sub(1, 14) == "Fractured from" or self.final[i].events[k].Event:sub(1, 12) == "Independence" then
