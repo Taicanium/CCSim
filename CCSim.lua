@@ -1,4 +1,4 @@
-CCSCommon = require 'CCSCommon'
+CCSCommon = require("CCSCommon")()
 
 function main()
 	_running = true
@@ -38,7 +38,7 @@ function main()
 	
 		for j=1,CCSCommon.numCountries do
 			local nl = Country:new()
-			nl:set()
+			nl:set(CCSCommon)
 			CCSCommon.thisWorld:add(nl)
 		end
 	else
