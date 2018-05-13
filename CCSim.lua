@@ -12,15 +12,13 @@ function main()
 	io.write(string.format("\n How many years should the simulation run? > "))
 	local datin = io.read()
 	
-	CCSCommon.yearstorun = tonumber(datin)
-	while CCSCommon.yearstorun == nil do
+	CCSCommon.maxyears = tonumber(datin)
+	while CCSCommon.maxyears == nil do
 		io.write(string.format("\n Please enter a number. > "))
 		datin = io.read()
 		
-		CCSCommon.yearstorun = tonumber(datin)
+		CCSCommon.maxyears = tonumber(datin)
 	end
-	
-	CCSCommon.maxyears = CCSCommon.yearstorun
 	
 	io.write(string.format("\n Do you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
 	datin = io.read()

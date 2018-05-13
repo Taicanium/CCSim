@@ -383,7 +383,7 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(650 * self.stability)
+				local v = math.floor(400 * self.stability)
 				if v < 1 then v = 1 end
 				
 				if self.ongoing == nil then self.ongoing = {} end
@@ -393,15 +393,13 @@ return
 				
 				for i=1,#self.ongoing do
 					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].Args == 1 then
-							if self.ongoing[i].Step ~= nil then
-								local r = self.ongoing[i]:Step(parent, ind)
-								if r == -1 then
-									table.insert(omarked, i)
-								end
-							else
+						if self.ongoing[i].Step ~= nil then
+							local r = self.ongoing[i]:Step(parent, ind)
+							if r == -1 then
 								table.insert(omarked, i)
 							end
+						else
+							table.insert(omarked, i)
 						end
 					end
 				end
@@ -430,12 +428,18 @@ return
 					if chance <= parent.c_events[i].Chance then
 						if parent.c_events[i].Args == 1 then
 							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing) end
+							if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+							else
+								if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+							end
 						elseif parent.c_events[i].Args == 2 then
 							local other = math.random(1, #parent.thisWorld.countries)
 							while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
 							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing) end
+							if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+							else
+								if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+							end
 						end
 					end
 				end

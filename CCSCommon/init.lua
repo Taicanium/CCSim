@@ -5,7 +5,7 @@ World = require("CCSCommon.World")()
 return
 	function()
 		local CCSCommon = {
-			mincountries = 3,
+			mincountries = 2,
 			maxcountries = 8,
 			numCountries = 0,
 			
@@ -194,7 +194,7 @@ return
 						end
 						if mat[1] == "Year" then
 							self.years = tonumber(mat[2])
-							self.maxyears = self.years + self.yearstorun
+							self.maxyears = self.maxyears + self.years
 						elseif mat[1] == "C" then
 							local nl = Country:new()
 							nl.name = mat[2]
@@ -429,6 +429,8 @@ return
 					
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - 5
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+						
+						return -1
 					end
 				},
 				{
@@ -473,6 +475,8 @@ return
 						end
 
 						CCSCommon:rseed()
+						
+						return -1
 					end
 				},
 				{
@@ -513,6 +517,8 @@ return
 								end
 							end
 						end
+						
+						return -1
 					end
 				},
 				{
@@ -524,7 +530,7 @@ return
 						parent.thisWorld.countries[c]:event(parent, "Beginning of civil war")
 					end,
 					Step=function(self, parent, c)
-						local doEnd = math.random(1, 40)
+						local doEnd = math.random(1, 50)
 						if doEnd < 5 then return self:End(parent, c) else return 0 end
 					end,
 					End=function(self, parent, c)
@@ -585,7 +591,7 @@ return
 						for i=1,#parent.thisWorld.countries[c].ongoing do
 							if parent.thisWorld.countries[c].ongoing[i].Name == self.Name then already = true end
 						end
-						if already == false then self:Begin(parent, c) else return -1 end
+						if already == true then return -1 end
 						return 0
 					end
 				},
@@ -651,7 +657,7 @@ return
 							end
 						end
 						
-						local doEnd = math.random(1, 35)
+						local doEnd = math.random(1, 50)
 						if doEnd < 5 then return self:End(parent, c1) else return 0 end
 					end,
 					End=function(self, parent, c1)
@@ -825,7 +831,6 @@ return
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 								if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 									self.Target = c2
-									self:Begin(parent, c1)
 									return 0
 								end
 							end
@@ -835,7 +840,7 @@ return
 				},
 				{
 					Name="Alliance",
-					Chance=35,
+					Chance=25,
 					Target=nil,
 					Args=2,
 					Begin=function(self, parent, c1)
@@ -843,7 +848,7 @@ return
 						parent.thisWorld.countries[self.Target]:event(parent, "Entered military alliance with "..parent.thisWorld.countries[c1].name)
 					end,
 					Step=function(self, parent, c1)
-						local doEnd = math.random(1, 65)
+						local doEnd = math.random(1, 150)
 						if doEnd < 5 then return self:End(parent, c1) else return 0 end
 					end,
 					End=function(self, parent, c1)
@@ -880,10 +885,9 @@ return
 									self.Target = c2
 									table.insert(parent.thisWorld.countries[c2].alliances, parent.thisWorld.countries[c1].name)
 									table.insert(parent.thisWorld.countries[c1].alliances, parent.thisWorld.countries[c2].name)
-									self:Begin(parent, c1)
+									return 0
 								end
 							end
-							return 0
 						end
 						return -1
 					end
@@ -910,6 +914,8 @@ return
 
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+						
+						return -1
 					end
 				},
 				{
@@ -935,6 +941,8 @@ return
 								parent.thisWorld:delete(c2)
 							end
 						end
+						
+						return -1
 					end
 				},
 				{
@@ -960,6 +968,8 @@ return
 								parent.thisWorld.countries[c2]:setPop(parent, math.floor(parent.thisWorld.countries[c2].population / 1.75))
 							end
 						end
+						
+						return -1
 					end
 				}
 			}
