@@ -1,3 +1,5 @@
+package.path = "./?.lua;../?.lua;"..package.path
+
 Person = require("CCSCommon.Person")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
