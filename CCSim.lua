@@ -1,4 +1,3 @@
-package.path = "./?.lua;"..package.path
 CCSCommon = require("CCSCommon")()
 
 function main()

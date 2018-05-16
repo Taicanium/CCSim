@@ -1,5 +1,3 @@
-package.path = "./?.lua;../?.lua;"..package.path
-
 Person = require("CCSCommon.Person")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
@@ -25,14 +23,6 @@ return
 			
 			final = {},
 			thisWorld = nil,
-			
-			sleep = function(self, v)
-				local b = os.clock()
-				local e = os.clock()
-				while e < b + v do
-					e = os.clock()
-				end
-			end,
 
 			rseed = function(self)
 				local tc = tonumber(os.clock()*os.time())/1000
