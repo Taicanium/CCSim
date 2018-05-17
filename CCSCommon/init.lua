@@ -403,7 +403,7 @@ return
 			c_events = {
 				{
 					Name="Coup d'Etat",
-					Chance=12,
+					Chance=16,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
@@ -427,7 +427,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=8,
+					Chance=12,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
@@ -473,7 +473,7 @@ return
 				},
 				{
 					Name="Fracture",
-					Chance=4,
+					Chance=8,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
@@ -515,7 +515,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=10,
+					Chance=12,
 					Target=nil,
 					Args=1,
 					Begin=function(self, parent, c)
@@ -886,7 +886,7 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=12,
+					Chance=10,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
@@ -912,7 +912,7 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=4,
+					Chance=8,
 					Target=nil,
 					Args=2,
 					Perform=function(self, parent, c1, c2)
@@ -939,7 +939,7 @@ return
 				},
 				{
 					Name="Invade",
-					Chance=8,
+					Chance=16,
 					Target=nil,
 					Args=2,
 					Perform=function(self, parent, c1, c2)

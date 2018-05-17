@@ -225,11 +225,11 @@ return
 			update = function(self, parent, ind)
 				parent:rseed()
 
-				self.stability = self.stability + math.random(-5, 5)
+				self.stability = self.stability + math.random(-3, 5)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 				
-				self.strength = self.strength + math.random(-5, 5)
+				self.strength = self.strength + math.random(-3, 5)
 				if self.strength > 100 then self.strength = 100 end
 				if self.strength < 1 then self.strength = 1 end
 				
@@ -383,7 +383,7 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(400 * self.stability)
+				local v = math.floor(600 * self.stability)
 				if v < 1 then v = 1 end
 				
 				if self.ongoing == nil then self.ongoing = {} end
