@@ -39,7 +39,7 @@ return
 				if r < 51 then self.gender = "Male" else self.gender = "Female" end
 				
 				self.birth = parent.years
-				self.age = math.random(5,60)
+				self.age = math.random(1,121)
 				if self.title == "" then
 					self.level = 2
 					self.title = "Citizen"

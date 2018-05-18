@@ -38,7 +38,7 @@ return
 			end,
 
 			add = function(self, n)
-				table.insert(self.people, math.random(1, #self.people - 1), n)
+				table.insert(self.people, n)
 			end,
 
 			delete = function(self, y)
@@ -239,7 +239,7 @@ return
 				if self.population < 150 then
 					self.birthrate = 5
 					self.deathrate = 500000
-				elseif self.population > 2500 then
+				elseif self.population > 3000 then
 					self.birthrate = 10000
 					self.deathrate = 150
 				else
@@ -383,7 +383,7 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(600 * self.stability)
+				local v = math.floor(450 * self.stability)
 				if v < 1 then v = 1 end
 				
 				if self.ongoing == nil then self.ongoing = {} end

@@ -473,7 +473,7 @@ return
 				},
 				{
 					Name="Fracture",
-					Chance=8,
+					Chance=6,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
