@@ -38,7 +38,7 @@ return
 			end,
 
 			add = function(self, n)
-				table.insert(self.people, n)
+				table.insert(self.people, math.random(1, #self.people - 1), n)
 			end,
 
 			delete = function(self, y)

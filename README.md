@@ -29,7 +29,7 @@ The titles in each system are as follows:
 
 Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marquess", "Lord/Lady", "Duke/Duchess", "Prince/Princess", "King/Queen"
 
-Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Prime Minister", "President"
+Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
 
 Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker"
 

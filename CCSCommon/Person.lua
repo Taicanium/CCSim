@@ -54,7 +54,9 @@ return
 				local sys = parent.systems[nl.system]
 				
 				if self.gender == "Male" or sys.dynastic == false then
-					if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - 1 then
+					local rankLim = 1
+					if sys.dynastic == false then rankLim = 0 end
+					if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
 						local x = math.random(-125, 100)
 						if x < -75 then
 							self.prevTitle = self.title
@@ -65,12 +67,14 @@ return
 						end
 						
 						if self.level < 1 then self.level = 1 end
-						if self.level > #sys.ranks - 2 then self.level = #sys.ranks - 2 end
+						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim - 1 end
 					end
 					
 					self.title = sys.ranks[self.level]
 				else
-					if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - 1 then
+					local rankLim = 1
+					if sys.dynastic == false then rankLim = 0 end
+					if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
 						local x = math.random(-125, 100)
 						if x < -75 then
 							self.prevTitle = self.title
@@ -81,7 +85,7 @@ return
 						end
 						
 						if self.level < 1 then self.level = 1 end
-						if self.level > #sys.franks - 2 then self.level = #sys.franks - 2 end
+						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim - 1 end
 					end
 					
 					self.title = sys.franks[self.level]
@@ -123,7 +127,7 @@ return
 							nn.age = 0
 							
 							if self.title == sys.ranks[#sys.ranks] then
-								nn.level = #sys.ranks - 1
+								nn.level = self.level - 1
 							else
 								nn.level = self.level
 							end
@@ -131,12 +135,12 @@ return
 							if sys.dynastic == true then
 								if self.gender == "Female" then
 									if self.title == sys.franks[#sys.franks] then
-										nn.level = #sys.ranks - 1
+										nn.level = self.level - 1
 									end
 								end
 							end
 							
-							if nn.gender == "Male" or sys.dynastic == false then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
+							if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
 							nl:add(nn)
 						end
 					end
