@@ -912,7 +912,7 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=8,
+					Chance=5,
 					Target=nil,
 					Args=2,
 					Perform=function(self, parent, c1, c2)
