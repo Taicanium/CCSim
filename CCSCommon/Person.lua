@@ -46,7 +46,7 @@ return
 				end
 			end,
 			
-			birth = function(self, parent, nl)
+			dobirth = function(self, parent, nl)
 				local nn = Person:new()
 				nn:makename(parent)
 				
@@ -146,9 +146,9 @@ return
 						local tmp = math.random(1, nl.birthrate)
 						if tmp < 3 then
 							if self.gender == "Male" then
-								self.spouse:birth(parent, nl)
+								self.spouse:dobirth(parent, nl)
 							else
-								self:birth(parent, nl)
+								self:dobirth(parent, nl)
 							end
 						end
 					end
