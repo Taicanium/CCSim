@@ -35,8 +35,8 @@ return
 				self.name = parent:name()
 				self.surname = parent:name()
 				
-				local r = math.random(1, 100)
-				if r < 51 then self.gender = "Male" else self.gender = "Female" end
+				local r = math.random(1, 1000)
+				if r < 501 then self.gender = "Male" else self.gender = "Female" end
 				
 				self.birth = parent.years
 				self.age = math.random(1,121)
@@ -45,6 +45,38 @@ return
 					self.title = "Citizen"
 				end
 			end,
+			
+			birth = function(self, parent, nl)
+				local nn = Person:new()
+				nn:makename(parent)
+				
+				if self.gender == "Male" then
+					nn.father = self
+					nn.surname = self.surname
+				else
+					nn.mother = self
+					nn.surname = self.spouse.surname
+				end
+				
+				nn.age = 0
+				
+				if self.title == sys.ranks[#sys.ranks] then
+					nn.level = self.level - 1
+				else
+					nn.level = self.level
+				end
+				
+				if sys.dynastic == true then
+					if self.gender == "Female" then
+						if self.title == sys.franks[#sys.franks] then
+							nn.level = self.level - 1
+						end
+					end
+				end
+				
+				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
+				nl:add(nn)
+			end
 
 			update = function(self, parent, nl)
 				self.age = self.age + 1
@@ -112,36 +144,12 @@ return
 				if self.spouse ~= nil then
 					if self.age < 65 and self.age > 14 then
 						local tmp = math.random(1, nl.birthrate)
-						if tmp < 4 then
-							local nn = Person:new()
-							nn:makename(parent)
-							
+						if tmp < 3 then
 							if self.gender == "Male" then
-								nn.father = self
-								nn.surname = self.surname
+								self.spouse:birth(parent, nl)
 							else
-								nn.mother = self
-								nn.surname = self.spouse.surname
+								self:birth(parent, nl)
 							end
-							
-							nn.age = 0
-							
-							if self.title == sys.ranks[#sys.ranks] then
-								nn.level = self.level - 1
-							else
-								nn.level = self.level
-							end
-							
-							if sys.dynastic == true then
-								if self.gender == "Female" then
-									if self.title == sys.franks[#sys.franks] then
-										nn.level = self.level - 1
-									end
-								end
-							end
-							
-							if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
-							nl:add(nn)
 						end
 					end
 				end
