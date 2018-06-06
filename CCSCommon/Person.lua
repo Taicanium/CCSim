@@ -50,6 +50,8 @@ return
 				local nn = Person:new()
 				nn:makename(parent)
 				
+				local sys = parent.systems[nl.system]
+				
 				if self.gender == "Male" then
 					nn.father = self
 					nn.surname = self.surname
