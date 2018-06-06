@@ -76,7 +76,7 @@ return
 				
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
 				nl:add(nn)
-			end
+			end,
 
 			update = function(self, parent, nl)
 				self.age = self.age + 1
