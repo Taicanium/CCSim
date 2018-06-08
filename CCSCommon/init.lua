@@ -676,7 +676,7 @@ return
 							if c3 ~= nil then c2total = c2total + c3.strength end
 						end
 					
-						if c1total > c2total + 5 then
+						if c1total > c2total + 3 then
 							parent.thisWorld.countries[c1]:event(parent, "Victory in war with "..parent.thisWorld.countries[self.Target].name)
 							parent.thisWorld.countries[self.Target]:event(parent, "Defeat in war with "..parent.thisWorld.countries[c1].name)
 							
@@ -722,7 +722,7 @@ return
 									end
 								end
 							end
-						elseif c2total > c1total + 5 then
+						elseif c2total > c1total + 3 then
 							parent.thisWorld.countries[c1]:event(parent, "Defeat in war with "..parent.thisWorld.countries[self.Target].name)
 							parent.thisWorld.countries[self.Target]:event(parent, "Victory in war with "..parent.thisWorld.countries[c1].name)
 							
