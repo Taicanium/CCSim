@@ -473,7 +473,7 @@ return
 				},
 				{
 					Name="Fracture",
-					Chance=6,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Perform=function(self, parent, c)
@@ -832,7 +832,7 @@ return
 				},
 				{
 					Name="Alliance",
-					Chance=25,
+					Chance=35,
 					Target=nil,
 					Args=2,
 					Begin=function(self, parent, c1)
@@ -840,7 +840,7 @@ return
 						parent.thisWorld.countries[self.Target]:event(parent, "Entered military alliance with "..parent.thisWorld.countries[c1].name)
 					end,
 					Step=function(self, parent, c1)
-						local doEnd = math.random(1, 150)
+						local doEnd = math.random(1, 200)
 						if doEnd < 5 then return self:End(parent, c1) else return 0 end
 					end,
 					End=function(self, parent, c1)

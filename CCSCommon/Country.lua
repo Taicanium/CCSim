@@ -239,7 +239,7 @@ return
 				if self.population < 150 then
 					self.birthrate = 5
 					self.deathrate = 500000
-				elseif self.population > 3000 then
+				elseif self.population > 1000 then
 					self.birthrate = 10000
 					self.deathrate = 150
 				else
