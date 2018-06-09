@@ -225,11 +225,11 @@ return
 			update = function(self, parent, ind)
 				parent:rseed()
 
-				self.stability = self.stability + math.random(-3, 5)
+				self.stability = self.stability + math.random(-1, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 				
-				self.strength = self.strength + math.random(-3, 5)
+				self.strength = self.strength + math.random(-1, 2)
 				if self.strength > 100 then self.strength = 100 end
 				if self.strength < 1 then self.strength = 1 end
 				
@@ -364,9 +364,9 @@ return
 				for i, l in pairs(parent.thisWorld.countries) do
 					if l.name ~= self.name then
 						if self.relations[l.name] == nil then
-							self.relations[l.name] = 50
+							self.relations[l.name] = 40
 						end
-						local v = math.random(-5, 5)
+						local v = math.random(-2, 2)
 						self.relations[l.name] = self.relations[l.name] + v
 						if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
 						if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
@@ -383,8 +383,10 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(450 * self.stability)
+				local v = math.floor(500 * self.stability)
+				local vi = math.floor(500 * (100 - self.stability))
 				if v < 1 then v = 1 end
+				if vi < 1 then vi = 1 end
 				
 				if self.ongoing == nil then self.ongoing = {} end
 				if self.relations == nil then self.relations = {} end
@@ -416,29 +418,56 @@ return
 				if parent.numCountries < parent.mincountries then delchance = 2 end
 				
 				for i=1,#parent.c_events do
-					local chance = math.floor(math.random(1, v))
-					if parent.c_events[i].Name == "Independence" or parent.c_events[i].Name == "Fracture" then
-						if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
-						if delchance == 2 then chance = math.floor(math.random(1, 500)) end
-					elseif parent.c_events[i].Name == "Conquer" then
-						if delchance == 0 then chance = math.floor(math.random(1, 500)) end
-						if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
-					end
-					
-					if chance <= parent.c_events[i].Chance then
-						if parent.c_events[i].Args == 1 then
-							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
-							else
-								if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+					if parent.c_events[i].Inverse == false then
+						local chance = math.floor(math.random(1, v))
+						if parent.c_events[i].Name == "Independence" or parent.c_events[i].Name == "Fracture" then
+							if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
+							if delchance == 2 then chance = math.floor(math.random(1, 500)) end
+						elseif parent.c_events[i].Name == "Conquer" then
+							if delchance == 0 then chance = math.floor(math.random(1, 500)) end
+							if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
+						end
+						if chance <= parent.c_events[i].Chance then
+							if parent.c_events[i].Args == 1 then
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+								end
+							elseif parent.c_events[i].Args == 2 then
+								local other = math.random(1, #parent.thisWorld.countries)
+								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+								end
 							end
-						elseif parent.c_events[i].Args == 2 then
-							local other = math.random(1, #parent.thisWorld.countries)
-							while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-							else
-								if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+						end
+					else
+						local chance = math.floor(math.random(1, vi))
+						if parent.c_events[i].Name == "Independence" or parent.c_events[i].Name == "Fracture" then
+							if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
+							if delchance == 2 then chance = math.floor(math.random(1, 500)) end
+						elseif parent.c_events[i].Name == "Conquer" then
+							if delchance == 0 then chance = math.floor(math.random(1, 500)) end
+							if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
+						end
+						if chance <= parent.c_events[i].Chance then
+							if parent.c_events[i].Args == 1 then
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+								end
+							elseif parent.c_events[i].Args == 2 then
+								local other = math.random(1, #parent.thisWorld.countries)
+								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+								end
 							end
 						end
 					end
