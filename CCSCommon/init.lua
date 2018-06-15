@@ -852,8 +852,14 @@ return
 						parent.thisWorld.countries[self.Target]:event(parent, "Entered military alliance with "..parent.thisWorld.countries[c1].name)
 					end,
 					Step=function(self, parent, c1)
-						local doEnd = math.random(1, 200)
-						if doEnd < 5 then return self:End(parent, c1) else return 0 end
+						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.Target].name] ~= nil then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.Target].name] < 50 then
+								local doEnd = math.random(1, 50)
+								if doEnd < 5 then return self:End(parent, c1) else return 0 end
+							end
+						end
+						
+						return 0
 					end,
 					End=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[self.Target].name)
@@ -931,7 +937,7 @@ return
 					Inverse=true,
 					Perform=function(self, parent, c1, c2)
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 15 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 10 then
 								parent.thisWorld.countries[c1]:event(parent, "Invaded "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Invaded by "..parent.thisWorld.countries[c1].name)
 								
@@ -959,7 +965,7 @@ return
 					Inverse=true,
 					Perform=function(self, parent, c1, c2)
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 10 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 5 then
 								parent.thisWorld.countries[c1]:event(parent, "Conquered "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Conquered by "..parent.thisWorld.countries[c1].name)
 								

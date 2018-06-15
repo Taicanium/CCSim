@@ -65,17 +65,17 @@ return
 				end
 				
 				if #self.rulernames < 1 then
-					for k=1,math.random(5,8) do
+					for k=1,math.random(5,9) do
 						table.insert(self.rulernames, parent:name())
 					end
 					
-					for k=1,math.random(5,8) do
+					for k=1,math.random(5,9) do
 						table.insert(self.frulernames, parent:name())
 					end
 				end
 				
 				if #self.frulernames < 1 then
-					for k=1,math.random(5,8) do
+					for k=1,math.random(5,9) do
 						table.insert(self.frulernames, parent:name())
 					end
 				end
@@ -225,11 +225,11 @@ return
 			update = function(self, parent, ind)
 				parent:rseed()
 
-				self.stability = self.stability + math.random(-1, 2)
+				self.stability = self.stability + math.random(-2, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 				
-				self.strength = self.strength + math.random(-1, 2)
+				self.strength = self.strength + math.random(-2, 3)
 				if self.strength > 100 then self.strength = 100 end
 				if self.strength < 1 then self.strength = 1 end
 				
@@ -366,7 +366,7 @@ return
 						if self.relations[l.name] == nil then
 							self.relations[l.name] = 40
 						end
-						local v = math.random(-2, 2)
+						local v = math.random(-3, 3)
 						self.relations[l.name] = self.relations[l.name] + v
 						if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
 						if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
