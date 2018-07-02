@@ -383,7 +383,7 @@ return
 					for j=pr,self.maxyears do
 						for k=1,#self.final[i].events do
 							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+								if self.final[i].events[k].Event:sub(1, 10) == "Revolution" then
 									local y = self.final[i].events[k].Year
 									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
 								end
@@ -404,7 +404,7 @@ return
 						
 						for k=1,#self.final[i].events do
 							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 12) ~= "Independence" then
+								if self.final[i].events[k].Event:sub(1, 10) ~= "Revolution" then
 									local y = self.final[i].events[k].Year
 									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
 								end
