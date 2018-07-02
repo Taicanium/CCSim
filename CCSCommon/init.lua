@@ -30,7 +30,7 @@ return
 			end,
 			
 			rseed = function(self)
-				self:sleep(0.002)
+				self:sleep(0.003)
 				local tc = tonumber((os.clock()/10)*(os.time()/100000))
 				local n = tonumber(tostring(tc):reverse())
 				math.randomseed(n)
@@ -287,12 +287,13 @@ return
 							table.insert(self.final, self.thisWorld.countries[i])
 						end
 						if self.showinfo == 1 then
-							local msg = self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name.."): Population "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers..")"
+							local msg = self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers.." rulers)"
 							if self.thisWorld.countries[i].rulers ~= nil then
 								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
-									msg = msg.." - Current ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers]).." (age "..self.thisWorld.countries[i].rulerage..")"
+									msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers]).." (age "..self.thisWorld.countries[i].rulerage..")"
 								end
 							end
+							msg = msg.."\n"
 							print(msg)
 						end
 					end
@@ -341,11 +342,12 @@ return
 					end
 					
 					if self.years == self.maxyears then _running = false end
+					if #self.thisWorld.countries == 0 then _running = false end
 				end
 			end,
 
 			finish = function(self)
-				print("Printing result...")
+				print("\nPrinting result...")
 
 				cns = io.output()
 				io.output("output.txt")
@@ -357,7 +359,7 @@ return
 					io.write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
 					
 					for k=1,#self.final[i].events do
-						if self.final[i].events[k].Event:sub(1, 14) == "Fractured from" or self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
 							newc = true
 							pr = tonumber(self.final[i].events[k].Year)
 						end
@@ -379,6 +381,15 @@ return
 					end
 					
 					for j=pr,self.maxyears do
+						for k=1,#self.final[i].events do
+							if tonumber(self.final[i].events[k].Year) == j then
+								if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+									local y = self.final[i].events[k].Year
+									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
+								end
+							end
+						end
+					
 						for k=fr,#self.final[i].rulers do
 							if tonumber(self.final[i].rulers[k].From) == j then
 								if self.final[i].rulers[k].Title == nil then print("Title NIL") end
@@ -393,8 +404,10 @@ return
 						
 						for k=1,#self.final[i].events do
 							if tonumber(self.final[i].events[k].Year) == j then
-								local y = self.final[i].events[k].Year
-								io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
+								if self.final[i].events[k].Event:sub(1, 12) ~= "Independence" then
+									local y = self.final[i].events[k].Year
+									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
+								end
 							end
 						end
 					end
@@ -404,12 +417,14 @@ return
 				
 				io.flush()
 				io.output(cns)
+				
+				print("Done!")
 			end,
 
 			c_events = {
 				{
 					Name="Coup d'Etat",
-					Chance=12,
+					Chance=15,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -434,7 +449,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=10,
+					Chance=12,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -480,51 +495,8 @@ return
 					end
 				},
 				{
-					Name="Fracture",
-					Chance=2,
-					Target=nil,
-					Args=1,
-					Inverse=false,
-					Perform=function(self, parent, c)
-						local ns = math.random(2,6)
-						local pp = parent.thisWorld.countries[c].population
-
-						parent.thisWorld.countries[c]:event(parent, "Fractured")
-						parent.thisWorld.countries[c].rulers[#parent.thisWorld.countries[c].rulers].To = parent.years
-
-						for i=1,ns do
-							parent:rseed()
-							local s = parent.thisWorld.countries[c]:new()
-							s:set(CCSCommon)
-							s:event(parent, "Fractured from "..parent.thisWorld.countries[c].name)
-							s.rulers = CCSCommon:deepcopy(parent.thisWorld.countries[c].rulers)
-							s.rulernames = CCSCommon:deepcopy(parent.thisWorld.countries[c].rulernames)
-							s.strength = math.floor(parent.thisWorld.countries[c].strength / ns)
-							s.stability = math.floor(parent.thisWorld.countries[c].stability / ns)
-
-							local tmp = math.random(math.floor(math.floor(pp/ns) / 3), math.floor(pp/ns))
-							if tmp < 1 then tmp = 1 end
-							s:setPop(parent, math.random(1, tmp))
-							s.age = 0
-							
-							parent.thisWorld:add(s)
-						end
-						
-						for i=1,#parent.thisWorld.countries do
-							if parent.thisWorld.countries[i] ~= nil then
-								if parent.thisWorld.countries[i].name == parent.thisWorld.countries[c].name then
-									parent.thisWorld:delete(i)
-									i = #parent.thisWorld.countries + 1
-								end
-							end
-						end
-						
-						return -1
-					end
-				},
-				{
 					Name="Civil War",
-					Chance=16,
+					Chance=15,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -599,10 +571,10 @@ return
 				},
 				{
 					Name="War",
-					Chance=35,
+					Chance=15,
 					Target=nil,
 					Args=2,
-					Inverse=false,
+					Inverse=true,
 					Begin=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Declared war on "..parent.thisWorld.countries[self.Target].name)
 						parent.thisWorld.countries[self.Target]:event(parent, "War declared by "..parent.thisWorld.countries[c1].name)
@@ -823,6 +795,14 @@ return
 						return -1
 					end,
 					Perform=function(self, parent, c1, c2)
+						for i=1,#parent.thisWorld.countries[c1].alliances do
+							if parent.thisWorld.countries[c1].alliances[i] == parent.thisWorld.countries[c2].name then return -1 end
+						end
+						
+						for i=1,#parent.thisWorld.countries[c2].alliances do
+							if parent.thisWorld.countries[c2].alliances[i] == parent.thisWorld.countries[c1].name then return -1 end
+						end
+						
 						local already = false
 						for i=1,#parent.thisWorld.countries[c1].ongoing do
 							if parent.thisWorld.countries[c1].ongoing[i].Name == self.Name and parent.thisWorld.countries[c1].ongoing[i].Target == c2 then already = true end
@@ -853,13 +833,14 @@ return
 					end,
 					Step=function(self, parent, c1)
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.Target].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.Target].name] < 50 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.Target].name] < 40 then
 								local doEnd = math.random(1, 50)
 								if doEnd < 5 then return self:End(parent, c1) else return 0 end
 							end
 						end
 						
-						return 0
+						local doEnd = math.random(1, 500)
+						if doEnd < 5 then return self:End(parent, c1) else return 0 end
 					end,
 					End=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[self.Target].name)
@@ -904,7 +885,7 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=8,
+					Chance=6,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -936,6 +917,14 @@ return
 					Args=2,
 					Inverse=true,
 					Perform=function(self, parent, c1, c2)
+						for i=1,#parent.thisWorld.countries[c1].alliances do
+							if parent.thisWorld.countries[c1].alliances[i] == parent.thisWorld.countries[c2].name then return -1 end
+						end
+						
+						for i=1,#parent.thisWorld.countries[c2].alliances do
+							if parent.thisWorld.countries[c2].alliances[i] == parent.thisWorld.countries[c1].name then return -1 end
+						end
+						
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 10 then
 								parent.thisWorld.countries[c1]:event(parent, "Invaded "..parent.thisWorld.countries[c2].name)
@@ -959,11 +948,19 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=2,
+					Chance=3,
 					Target=nil,
 					Args=2,
 					Inverse=true,
 					Perform=function(self, parent, c1, c2)
+						for i=1,#parent.thisWorld.countries[c1].alliances do
+							if parent.thisWorld.countries[c1].alliances[i] == parent.thisWorld.countries[c2].name then return -1 end
+						end
+						
+						for i=1,#parent.thisWorld.countries[c2].alliances do
+							if parent.thisWorld.countries[c2].alliances[i] == parent.thisWorld.countries[c1].name then return -1 end
+						end
+						
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 5 then
 								parent.thisWorld.countries[c1]:event(parent, "Conquered "..parent.thisWorld.countries[c2].name)

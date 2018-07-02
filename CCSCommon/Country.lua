@@ -88,7 +88,7 @@ return
 				
 				self:makename(parent)
 				
-				for i=1,math.random(100,1000) do
+				for i=1,math.random(200,1000) do
 					local n = Person:new()
 					n:makename(parent)
 					self:add(n)
@@ -225,11 +225,11 @@ return
 			update = function(self, parent, ind)
 				parent:rseed()
 
-				self.stability = self.stability + math.random(-2, 3)
+				self.stability = self.stability + math.random(-3, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 				
-				self.strength = self.strength + math.random(-2, 3)
+				self.strength = self.strength + math.random(-3, 3)
 				if self.strength > 100 then self.strength = 100 end
 				if self.strength < 1 then self.strength = 1 end
 				
@@ -383,8 +383,8 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(500 * self.stability)
-				local vi = math.floor(500 * (100 - self.stability))
+				local v = math.floor(math.random(600, 800) * self.stability)
+				local vi = math.floor(math.random(600, 800) * (100 - self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 				
@@ -413,20 +413,9 @@ return
 					end
 				end
 				
-				local delchance = 1
-				if parent.numCountries > parent.maxcountries then delchance = 0 end
-				if parent.numCountries < parent.mincountries then delchance = 2 end
-				
 				for i=1,#parent.c_events do
 					if parent.c_events[i].Inverse == false then
 						local chance = math.floor(math.random(1, v))
-						if parent.c_events[i].Name == "Independence" or parent.c_events[i].Name == "Fracture" then
-							if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
-							if delchance == 2 then chance = math.floor(math.random(1, 500)) end
-						elseif parent.c_events[i].Name == "Conquer" then
-							if delchance == 0 then chance = math.floor(math.random(1, 500)) end
-							if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
-						end
 						if chance <= parent.c_events[i].Chance then
 							if parent.c_events[i].Args == 1 then
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
@@ -446,13 +435,6 @@ return
 						end
 					else
 						local chance = math.floor(math.random(1, vi))
-						if parent.c_events[i].Name == "Independence" or parent.c_events[i].Name == "Fracture" then
-							if delchance == 0 then chance = math.floor(math.random(1, 100000000)) end
-							if delchance == 2 then chance = math.floor(math.random(1, 500)) end
-						elseif parent.c_events[i].Name == "Conquer" then
-							if delchance == 0 then chance = math.floor(math.random(1, 500)) end
-							if delchance == 2 then chance = math.floor(math.random(1, 100000000)) end
-						end
 						if chance <= parent.c_events[i].Chance then
 							if parent.c_events[i].Args == 1 then
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))

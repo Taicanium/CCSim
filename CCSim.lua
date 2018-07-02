@@ -46,8 +46,6 @@ function main()
 	CCSCommon:loop()
 	CCSCommon:finish()
 	CCSCommon.thisWorld = nil
-	
-	print(" Done!")
 end
 
 main()
