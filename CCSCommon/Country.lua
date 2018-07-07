@@ -383,8 +383,8 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				local v = math.floor(math.random(600, 800) * self.stability)
-				local vi = math.floor(math.random(600, 800) * (100 - self.stability))
+				local v = math.floor(math.random(500, 900) * self.stability)
+				local vi = math.floor(math.random(500, 900) * (100 - self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 				
@@ -421,7 +421,7 @@ return
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+									self.ongoing[#self.ongoing]:Begin(parent, ind)
 								end
 							elseif parent.c_events[i].Args == 2 then
 								local other = math.random(1, #parent.thisWorld.countries)
@@ -429,7 +429,7 @@ return
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+									self.ongoing[#self.ongoing]:Begin(parent, ind, other)
 								end
 							end
 						end
@@ -440,7 +440,7 @@ return
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind) end
+									self.ongoing[#self.ongoing]:Begin(parent, ind)
 								end
 							elseif parent.c_events[i].Args == 2 then
 								local other = math.random(1, #parent.thisWorld.countries)
@@ -448,7 +448,7 @@ return
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									if self.ongoing[#self.ongoing].Begin ~= nil then self.ongoing[#self.ongoing]:Begin(parent, ind, other) end
+									self.ongoing[#self.ongoing]:Begin(parent, ind, other)
 								end
 							end
 						end

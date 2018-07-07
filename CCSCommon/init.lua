@@ -340,9 +340,16 @@ return
 										end
 										if found == false then
 											table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name)
+											if i > 1 then msg = msg.."," end
 											msg = msg.." "..wars[#wars]
 										end
 									end
+								end
+								
+								if self.thisWorld.countries[i].ongoing[j].Name == "Civil War" then
+									table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
+									if i > 1 then msg = msg.."," end
+									msg = msg.." "..wars[#wars]
 								end
 							end
 						end
@@ -359,6 +366,7 @@ return
 								end
 								if found == false then
 									table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
+									if i > 1 then msg = msg.."," end
 									msg = msg.." "..alliances[#alliances]
 								end
 							end
@@ -444,7 +452,7 @@ return
 			c_events = {
 				{
 					Name="Coup d'Etat",
-					Chance=15,
+					Chance=13,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -469,7 +477,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=12,
+					Chance=10,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -516,7 +524,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=20,
+					Chance=7,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -581,7 +589,7 @@ return
 						return -1
 					end,
 					Perform=function(self, parent, c)
-						for i=1,#parent.thisWorld.countries[c].ongoing do
+						for i=1,#parent.thisWorld.countries[c].ongoing - 1 do
 							if parent.thisWorld.countries[c].ongoing[i].Name == self.Name then return -1 end
 						end
 						return 0
@@ -822,10 +830,10 @@ return
 						end
 
 						local already = false
-						for i=1,#parent.thisWorld.countries[c1].ongoing do
+						for i=1,#parent.thisWorld.countries[c1].ongoing - 1 do
 							if parent.thisWorld.countries[c1].ongoing[i].Name == self.Name and parent.thisWorld.countries[c1].ongoing[i].Target == c2 then return -1 end
 						end
-						for i=1,#parent.thisWorld.countries[c2].ongoing do
+						for i=1,#parent.thisWorld.countries[c2].ongoing - 1 do
 							if parent.thisWorld.countries[c2].ongoing[i].Name == self.Name and parent.thisWorld.countries[c2].ongoing[i].Target == c1 then return -1 end
 						end
 
@@ -841,7 +849,7 @@ return
 				},
 				{
 					Name="Alliance",
-					Chance=5,
+					Chance=8,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -902,7 +910,7 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=3,
+					Chance=4,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -929,7 +937,7 @@ return
 				},
 				{
 					Name="Invade",
-					Chance=10,
+					Chance=8,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -943,7 +951,7 @@ return
 						end
 
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 10 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 11 then
 								parent.thisWorld.countries[c1]:event(parent, "Invaded "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Invaded by "..parent.thisWorld.countries[c1].name)
 
@@ -965,7 +973,7 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=3,
+					Chance=4,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -979,7 +987,7 @@ return
 						end
 
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 5 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 6 then
 								parent.thisWorld.countries[c1]:event(parent, "Conquered "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Conquered by "..parent.thisWorld.countries[c1].name)
 
