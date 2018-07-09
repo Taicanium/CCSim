@@ -1,4 +1,5 @@
 Person = require("CCSCommon.Person")()
+Party = require("CCSCommon.Party")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
 
@@ -45,6 +46,13 @@ return
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
 					dynastic=true
 				}
+			},
+			
+			partynames = {
+				{"National", "United", "Citizens", "General", "People's", "Joint"},
+				{"National", "United", "Citizens", "General", "People's", "Joint"},
+				{"Liberal", "Moderate", "Conservative", "Economical", "Moral"},
+				{"Party", "Group", "Front", "Coalition", "Force"},
 			},
 
 			final = {},

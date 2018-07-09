@@ -26,6 +26,7 @@ return
 				nl.population = 0
 				nl.birthrate = 100
 				nl.deathrate = 50000
+				nl.parties = {}
 				
 				return nl
 			end,
