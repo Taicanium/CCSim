@@ -499,7 +499,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=10,
+					Chance=8,
 					Target=nil,
 					Args=1,
 					Inverse=false,
