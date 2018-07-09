@@ -32,7 +32,7 @@ return
 				},
 				{
 					name="Democracy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker"},
+					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
 					dynastic=false
 				},
 				{
@@ -51,7 +51,8 @@ return
 			partynames = {
 				{"National", "United", "Citizens", "General", "People's", "Joint"},
 				{"National", "United", "Citizens", "General", "People's", "Joint"},
-				{"Liberal", "Moderate", "Conservative", "Economical", "Moral"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist"},
 				{"Party", "Group", "Front", "Coalition", "Force"},
 			},
 
@@ -305,82 +306,95 @@ return
 
 			loop = function(self)
 				local _running = true
+				local pause = false
+				local oldmsg = ""
+				local msg = ""
+				
+				os.execute(self.clrcmd)
 
 				while _running do
 					self.years = self.years + 1
 					self.thisWorld:update(self)
-					os.execute(self.clrcmd)
-					print("Year "..self.years.." : "..self.numCountries.." countries\n")
-
-					for i=1,#self.thisWorld.countries do
-						isfinal = true
-						for j=1,#self.final do
-							if self.final[j].name == self.thisWorld.countries[i].name then isfinal = false end
-						end
-						if isfinal == true then
-							table.insert(self.final, self.thisWorld.countries[i])
-						end
-						if self.showinfo == 1 then
-							local msg = self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers.." rulers)"
-							if self.thisWorld.countries[i].rulers ~= nil then
-								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
-									msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers]).." (age "..self.thisWorld.countries[i].rulerage..")"
-								end
-							end
-							msg = msg.."\n"
-							print(msg)
-						end
-					end
-
-					if self.showinfo == 1 then
-						local wars = {}
-						local alliances = {}
-
-						local msg = "\nWars:"
+					
+					if pause == false then
+						os.execute(self.clrcmd)
+						msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 						for i=1,#self.thisWorld.countries do
-							for j=1,#self.thisWorld.countries[i].ongoing do
-								if self.thisWorld.countries[i].ongoing[j].Name == "War" then
-									if self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target] ~= nil then
-										local found = false
-										for k=1,#wars do
-											if wars[k] == self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name.."-"..self.thisWorld.countries[i].name then found = true end
-										end
-										if found == false then
-											table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name)
-											if i > 1 then msg = msg.."," end
-											msg = msg.." "..wars[#wars]
+							isfinal = true
+							for j=1,#self.final do
+								if self.final[j].name == self.thisWorld.countries[i].name then isfinal = false end
+							end
+							if isfinal == true then
+								table.insert(self.final, self.thisWorld.countries[i])
+							end
+							if self.showinfo == 1 then
+								msg = msg..self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers.." rulers)"
+								if self.thisWorld.countries[i].rulers ~= nil then
+									if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
+										msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
+										for m=1,#self.thisWorld.countries[i].parties do
+											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
+												msg = msg.." ["..self.thisWorld.countries[i].parties[m].name..", "..self.thisWorld.countries[i].parties[m].popularity.."% popularity]"
+											end
 										end
 									end
 								end
-								
-								if self.thisWorld.countries[i].ongoing[j].Name == "Civil War" then
-									table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
-									if i > 1 then msg = msg.."," end
-									msg = msg.." "..wars[#wars]
-								end
+								msg = msg.."\n\n"
 							end
 						end
 
-						print(msg)
+						if self.showinfo == 1 then
+							local wars = {}
+							local alliances = {}
 
-						msg = "\nAlliances:"
+							msg = msg.."\nWars:"
 
-						for i=1,#self.thisWorld.countries do
-							for j=1,#self.thisWorld.countries[i].alliances do
-								local found = false
-								for k=1,#alliances do
-									if alliances[k] == self.thisWorld.countries[i].alliances[j].."-"..self.thisWorld.countries[i].name.." " then found = true end
+							for i=1,#self.thisWorld.countries do
+								for j=1,#self.thisWorld.countries[i].ongoing do
+									if self.thisWorld.countries[i].ongoing[j].Name == "War" then
+										if self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target] ~= nil then
+											local found = false
+											for k=1,#wars do
+												if wars[k] == self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name.."-"..self.thisWorld.countries[i].name then found = true end
+											end
+											if found == false then
+												table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name)
+												if i > 1 then msg = msg.."," end
+												msg = msg.." "..wars[#wars]
+											end
+										end
+									end
+									
+									if self.thisWorld.countries[i].ongoing[j].Name == "Civil War" then
+										table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
+										if i > 1 then msg = msg.."," end
+										msg = msg.." "..wars[#wars]
+									end
 								end
-								if found == false then
-									table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
-									if i > 1 then msg = msg.."," end
-									msg = msg.." "..alliances[#alliances]
+							end
+
+							msg = msg.."\n\nAlliances:"
+
+							for i=1,#self.thisWorld.countries do
+								for j=1,#self.thisWorld.countries[i].alliances do
+									local found = false
+									for k=1,#alliances do
+										if alliances[k] == self.thisWorld.countries[i].alliances[j].."-"..self.thisWorld.countries[i].name.." " then found = true end
+									end
+									if found == false then
+										table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
+										if i > 1 then msg = msg.."," end
+										msg = msg.." "..alliances[#alliances]
+									end
 								end
 							end
 						end
-
+						
 						print(msg)
+						oldmsg = msg
+					else
+						
 					end
 
 					if self.years == self.maxyears then _running = false end
@@ -589,9 +603,9 @@ return
 								end
 							end
 
-							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..CCSCommon:roman(namenum).." of "..parent.thisWorld.countries[c].name)
+							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..CCSCommon:roman(namenum).." of "..parent.thisWorld.countries[c].name)
 						else
-							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
+							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
 						end
 
 						return -1

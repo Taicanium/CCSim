@@ -9,14 +9,16 @@ return
 				n.surname = ""
 				n.birth = ""
 				n.age = 0
+				n.gender = ""
 				n.level = 2
 				n.prevName = ""
 				n.prevTitle = "Citizen"
 				n.title = "Citizen"
-				n.gender = ""
+				n.party = ""
 				n.father = nil
 				n.mother = nil
 				n.spouse = nil
+				n.isruler = false
 				
 				return n
 			end,
@@ -152,6 +154,35 @@ return
 							else
 								self:dobirth(parent, nl)
 							end
+						end
+					end
+				end
+				
+				if self.party == "" then
+					local pr = math.random(1, #nl.parties)
+					self.party = nl.parties[pr].name
+					nl.parties[pr].membership = nl.parties[pr].membership + 1
+					if self.isruler == true then
+						nl.rulers[#nl.rulers].Party = self.party
+					end
+				else
+					local pcr = 1
+					local pin = -1
+					for i=1,#nl.parties do
+						if nl.parties[i].name == self.party then
+							pcr = nl.parties[i].popularity
+							pin = i
+						end
+					end
+					local pc = math.random(1, 1000*pcr)
+					if pc > 50 and pc < 61 then
+						local pr = math.random(1, #nl.parties)
+						if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
+						self.party = nl.parties[pr].name
+						nl.parties[pr].membership = nl.parties[pr].membership + 1
+						if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
+						if self.isruler == true then
+							nl.rulers[#nl.rulers].Party = self.party
 						end
 					end
 				end

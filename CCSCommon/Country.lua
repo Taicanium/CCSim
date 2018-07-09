@@ -136,9 +136,9 @@ return
 					self.hasruler = 0
 					
 					if parent.systems[self.system].dynastic == true then
-						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name})
+						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
-						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name})
+						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
 					
 					self.rulerage = self.people[newRuler].age
@@ -240,7 +240,7 @@ return
 				if self.population < 150 then
 					self.birthrate = 5
 					self.deathrate = 500000
-				elseif self.population > 1000 then
+				elseif self.population > 1500 then
 					self.birthrate = 10000
 					self.deathrate = 150
 				else
@@ -250,6 +250,42 @@ return
 				
 				self.hasruler = -1
 				self.average = 1
+				
+				local pcmarked = {}
+				
+				for i=1,#self.parties do
+					if self.parties[i]:evaluate(self, parent, ind) == -1 then
+						table.insert(pcmarked, i)
+					end
+				end
+				
+				for i=1,#pcmarked do
+					table.remove(self.parties, pcmarked[i])
+					for j=i,#pcmarked do
+						pcmarked[j] = pcmarked[j] - 1
+					end
+					
+					local par = Party:new()
+					par:define(parent, ind)
+					table.insert(self.parties, par)
+				end
+				
+				if #self.parties > 0 then
+					local largest = 1
+					for i=1,#self.parties do
+						self.parties[i].leading = false
+						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+					end
+					
+					self.parties[largest].leading = true
+				else
+					local pc = math.random(3, 7)
+					for i=1,pc do
+						local par = Party:new()
+						par:define(parent, ind)
+						table.insert(self.parties, par)
+					end
+				end
 				
 				local pmarked = {}
 				
