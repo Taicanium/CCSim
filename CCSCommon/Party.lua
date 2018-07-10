@@ -13,15 +13,12 @@ return
 				p.leading = false
 				p.popularity = 1
 				p.membership = 0
-				p.index = 1
 				
 				return p
 			end,
 			
 			makename = function(self, parent, n)
 				parent:rseed()
-				
-				self.index = #parent.thisWorld.countries[n].parties + 1
 				
 				local n1 = math.random(1, 4)
 				local n2 = math.random(1, 4)
@@ -70,10 +67,8 @@ return
 
 				for i=1,#parent.thisWorld.countries[n].parties do
 					if self.name == parent.thisWorld.countries[n].parties[i].name then
-						if self.index ~= parent.thisWorld.countries[n].parties[i].index then
-							self.name = ""
-							self:makename(parent, n)
-						end
+						self.name = ""
+						self:makename(parent, n)
 					end
 				end
 			end,
