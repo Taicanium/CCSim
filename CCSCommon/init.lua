@@ -349,6 +349,7 @@ return
 							local alliances = {}
 
 							msg = msg.."\nWars:"
+							local count = 0
 
 							for i=1,#self.thisWorld.countries do
 								for j=1,#self.thisWorld.countries[i].ongoing do
@@ -360,21 +361,24 @@ return
 											end
 											if found == false then
 												table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].Target].name)
-												if i > 1 then msg = msg.."," end
+												if count > 0 then msg = msg.."," end
 												msg = msg.." "..wars[#wars]
+												count = count + 1
 											end
 										end
 									end
 									
 									if self.thisWorld.countries[i].ongoing[j].Name == "Civil War" then
 										table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
-										if i > 1 then msg = msg.."," end
+										if count > 0 then msg = msg.."," end
 										msg = msg.." "..wars[#wars]
+										count = count + 1
 									end
 								end
 							end
 
 							msg = msg.."\n\nAlliances:"
+							count = 0
 
 							for i=1,#self.thisWorld.countries do
 								for j=1,#self.thisWorld.countries[i].alliances do
@@ -384,8 +388,9 @@ return
 									end
 									if found == false then
 										table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
-										if i > 1 then msg = msg.."," end
+										if count > 0 then msg = msg.."," end
 										msg = msg.." "..alliances[#alliances]
+										count = count + 1
 									end
 								end
 							end
