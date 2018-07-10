@@ -335,7 +335,8 @@ return
 										msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
 										for m=1,#self.thisWorld.countries[i].parties do
 											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
-												msg = msg.." ["..self.thisWorld.countries[i].parties[m].name..", "..self.thisWorld.countries[i].parties[m].popularity.."% popularity]"
+												msg = msg.."\nRuling party: "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
+												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (Radical)" end
 											end
 										end
 									end

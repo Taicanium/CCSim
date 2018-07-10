@@ -5,7 +5,7 @@ Still heavily in refinement. Definitely should be taken with a grain of salt at 
 
 Long and short: Run the script, answer the prompts, and in response to "Data > " you may type "random" or give the name of a text file with country data in it. See 'File Format' for a description of the required format.
 
-Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries installed via Torch may reduce runtime of this script as drastically as from several minutes to several seconds.
+Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 
 # File Format
 As an alternative to randomly generated data, CCSim supports the use of a text file with predetermined country data to use as a base for its simulation (which remains random). monarchies.txt is a file included with this repository that provides predetermined data on the monarchies of England, France, Belgium, Denmark, and Japan, up to the year 2094 based on assumptions of the futures of those countries to that point. If the user wishes to write their own data file, the required data format is as follows:
@@ -15,6 +15,14 @@ YEAR (n) - This line may technically appear anywhere in the file, but it is reco
 C (s) - Defines a country. (s) is its name, which may include spaces. Note that all following lines, barring a YEAR line, will be considered as relating to this particular country (the 'focus' country), until either the end of the file is reached or a new C line is encountered.
 
 (t) (s1) [s2] (n1) (n2) - Defines a ruler of the focus country. (t) is the ruler's title (which must be one of the titles listed in 'Systems' below), (s1) is their given name, [s2] is their surname (in the case of a non-dynastic ruler; omit s2 otherwise), (n1) is the year they began their rule, and (n2) is the year their rule ended. Note that the n2 value of the last defined ruler does not necessarily need to correspond to the YEAR value; although I have not tested the script's behavior in such a case.
+
+# Politics
+
+The newest feature to be added to CCSim is the simulation of political parties within each country. Every citizen is bound to register for one, but they may change their alignment at random (they are more likely to do so if their party is not popular). In the extended console output of CCSim, the political party to which the current ruler belongs is listed underneath the ruler's name; beside the name of the party, you will see a string of numbers in the format (## P, ## E, ## C). These correspond to, respectively, the party's specific stance on issues relating to personal/individual freedoms; economic and monetary freedoms; and freedom of cultural expression.
+
+Political parties are not presently capable of influencing the output data, except that a radical party (defined as a party whose total freedoms add up to -250 or less, or 250 or more), if it achieves more than 45% popularity, will instantly cause a revolution in that country. Likewise, if the current ruler's party falls below 20% popularity, a revolution will also automatically occur.
+
+In the real world, a focus on personal freedoms but not so much economic freedoms is often indicative of a liberal or neoliberal party, such as the American Democratic party. The opposite, focusing on economic freedom but to some extent sacrificing personal or cultural, is usually indicative of a conservative party, such as the American Republican party. Desiring both is indicative of Libertarianism, while desiring neither is a sign of Authoritarianism.
 
 # Systems
 Currently, CCSim simulates countries operating on five political systems: Republic, Democracy, Monarchy, Empire, and Oligarchy. Any country simulated in CCSim will always have one of these five systems, and data files written for CCSim must list rulers corresponding to them. It is possible for a country to undergo several different events which may result in a change in its political system, and countries listed in a data file do not need to only have one system; for its simulation, CCSim will define the country as having the system corresponding to the most recent ruler's title in the file, i.e. if the last ruler listed for a country has the title of 'King', it will define the country as a monarchy, regardless of any previous titles. Rulers listed in the file must have the highest title in the country's desired system, i.e. 'King' or 'President'. If they do not, the script will not define the system according to them, which will cause unexpected behavior.
@@ -31,7 +39,7 @@ Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Baron/Baroness", "Visc
 
 Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
 
-Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker"
+Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"
 
 Oligarchy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"
 
