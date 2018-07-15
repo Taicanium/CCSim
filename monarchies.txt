@@ -1,5 +1,18 @@
 Year 2094
 C England
+R England
+P London
+S Manchester
+R Scotland
+S Glasgow
+S Edinburgh
+R Ireland
+S Dublin
+S Belfast
+R Wales
+S Cardiff
+S Swansea
+S Newport
 King William 1066 1087
 King William 1087 1100
 King Henry 1100 1135
@@ -48,6 +61,16 @@ King Charles 2019 2034
 King William 2034 2057
 King George 2057 2094
 C France
+R Ile-de-France
+P Paris
+S Versailles
+S Saint-Denis
+R Brittany
+S Rennes
+S Saint-Malo
+R Auvergne
+S Lyon
+S Aurillac
 King Pepin 751 768
 King Carloman 768 771
 King Charles 771 814
@@ -112,6 +135,13 @@ King Alphonse 1975 1989
 King Louis 1989 2045
 King Louis 2045 2094
 C Belgium
+R Flanders
+P Brussels
+S Ghent
+S Antwerp
+R Wallonia
+S Liege
+S Charleroi
 King Leopold 1831 1865
 King Leopold 1865 1909
 King Albert 1909 1934
@@ -121,6 +151,16 @@ King Albert 1993 2013
 King Philip 2013 2047
 Queen Elizabeth 2047 2094
 C Denmark
+R Jutland
+S Aarhus
+S Aalborg
+R Schleswig
+S Kiel
+S Lubeck
+R Funen
+S Odense
+R Copenhagen
+P Copenhagen
 King Gorm 936 958
 King Harald 958 986
 King Sweyn 986 1014
@@ -177,6 +217,12 @@ Queen Margrethe 1972 2023
 King Frederick 2024 2039
 King Christian 2039 2094
 C Russia
+R Moscow
+P Moscow
+S Saint Petersburg
+R Siberia
+S Omsk
+S Barnaul
 Emperor Daniel 1283 1303
 Emperor Yury 1303 1325
 Emperor Ivan 1325 1340
@@ -216,6 +262,13 @@ Emperor Alexander 2041 2050
 Emperor Ivan 2050 2078
 Emperor Nicholas 2078 2094
 C Japan
+R Honshu
+P Tokyo
+S Hiroshima
+R Hokkaido
+S Sapporo
+R Kyushu
+S Nagasaki
 Emperor Kinmei 539 572
 Emperor Bidatsu 572 585
 Emperor Youmei 585 587

@@ -24,8 +24,10 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
+				nl.popChange = 0
 				nl.birthrate = 100
 				nl.deathrate = 50000
+				nl.regions = {}
 				nl.parties = {}
 				
 				return nl
@@ -95,8 +97,28 @@ return
 					self:add(n)
 				end
 				
+				for i=1,math.random(3, 8) do
+					local r = Region:new()
+					r:makename(self, parent)
+					
+					table.insert(self.regions, r)
+				end
+				
+				local rc = math.random(1, #self.regions)
+				local cc = math.random(1, #self.regions[rc].cities)
+				self.regions[rc].cities[cc].capital = true
+				
 				self.founded = parent.years
+				self.popChange = #self.people - self.population
 				self.population = #self.people
+				
+				while self.popChange > 0 do
+					local r = math.random(1, #self.regions)
+					local c = math.random(1, #self.regions[r].cities)
+				
+					self.regions[r].cities[c].population = self.regions[r].cities[c].population + 1
+					self.popChange = self.popChange - 1
+				end
 			end,
 
 			setRuler = function(self, parent, newRuler)
@@ -235,12 +257,13 @@ return
 				if self.strength < 1 then self.strength = 1 end
 				
 				self.age = self.age + 1
+				self.popChange = #self.people - self.population
 				self.population = #self.people
 				
 				if self.population < 150 then
 					self.birthrate = 5
 					self.deathrate = 500000
-				elseif self.population > 1500 then
+				elseif self.population > 1250 then
 					self.birthrate = 10000
 					self.deathrate = 150
 				else
@@ -408,6 +431,10 @@ return
 						if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
 						if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
 					end
+				end
+				
+				for i=1,#self.regions do
+					self.regions[i]:update(self)
 				end
 				
 				self:checkRuler(parent)

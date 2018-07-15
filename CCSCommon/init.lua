@@ -1,5 +1,7 @@
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
+City = require("CCSCommon.City")()
+Region = require("CCSCommon.Region")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
 
@@ -65,7 +67,7 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.003)
+				self:sleep(0.001)
 				local tc = tonumber((os.clock()/10)*(os.time()/100000))
 				local n = tonumber(tostring(tc):reverse())
 				math.randomseed(n)
@@ -114,10 +116,13 @@ return
 				return copy
 			end,
 
-			name = function(self)
+			name = function(self, l)
 				local nom = ""
+				local length = l
+				
+				if l == nil then length = 9 end
 
-				local nl = math.random(3, 9)
+				local nl = math.random(3, length)
 				local nv = 0
 				for i=1,nl do
 					local vc = math.random(1, 100)
@@ -236,6 +241,28 @@ return
 							end
 							nl:setPop(self, 1000)
 							self.thisWorld:add(nl)
+						elseif mat[1] == "R" then
+							local r = Region:new()
+							r.name = mat[2]
+							for q=3,#mat do
+								r.name = r.name.." "..mat[q]
+							end
+							table.insert(self.thisWorld.countries[#self.thisWorld.countries].regions, r)
+						elseif mat[1] == "S" then
+							local s = City:new()
+							s.name = mat[2]
+							for q=3,#mat do
+								s.name = s.name.." "..mat[q]
+							end
+							table.insert(self.thisWorld.countries[#self.thisWorld.countries].regions[#self.thisWorld.countries[#self.thisWorld.countries].regions].cities, s)
+						elseif mat[1] == "P" then
+							local s = City:new()
+							s.name = mat[2]
+							for q=3,#mat do
+								s.name = s.name.." "..mat[q]
+							end
+							s.capital = true
+							table.insert(self.thisWorld.countries[#self.thisWorld.countries].regions[#self.thisWorld.countries[#self.thisWorld.countries].regions].cities, s)
 						else
 							local dynastic = false
 							local number = 1
@@ -299,6 +326,16 @@ return
 						self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
 						self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
 						self.thisWorld.countries[i]:makename(self)
+						self.thisWorld.countries[i].popChange = self.thisWorld.countries[i].population
+						
+						while self.thisWorld.countries[i].popChange > 0 do
+							local r = math.random(1, #self.thisWorld.countries[i].regions)
+							local c = math.random(1, #self.thisWorld.countries[i].regions[r].cities)
+						
+							self.thisWorld.countries[i].regions[r].cities[c].population = self.thisWorld.countries[i].regions[r].cities[c].population + 1
+							self.thisWorld.countries[i].popChange = self.thisWorld.countries[i].popChange - 1
+						end
+						
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
 				end
@@ -330,6 +367,12 @@ return
 							end
 							if self.showinfo == 1 then
 								msg = msg..self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers.." rulers)"
+								msg = msg.."\nCapital: "
+								for j=1,#self.thisWorld.countries[i].regions do
+									for k=1,#self.thisWorld.countries[i].regions[j].cities do
+										if self.thisWorld.countries[i].regions[j].cities[k].capital == true then msg = msg..self.thisWorld.countries[i].regions[j].cities[k].name.." (pop. "..self.thisWorld.countries[i].regions[j].cities[k].population..")" end
+									end
+								end
 								if self.thisWorld.countries[i].rulers ~= nil then
 									if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
 										msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
@@ -390,7 +433,7 @@ return
 									if found == false then
 										table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
 										if count > 0 then msg = msg.."," end
-										msg = msg.." "..alliances[#alliances]
+										msg = msg.." "..alliances[#alliances]:sub(1, #alliances[#alliances] - 1)
 										count = count + 1
 									end
 								end
@@ -759,6 +802,35 @@ return
 									end
 								end
 							end
+							
+							if c1total > c2total + 6 then
+								if #parent.thisWorld.countries[self.Target].regions > 1 then
+									local r = math.random(1, #parent.thisWorld.countries[self.Target].regions)
+									local rm = table.remove(parent.thisWorld.countries[self.Target].regions, r)
+										
+									parent.thisWorld.countries[self.Target]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[c1].name)
+									parent.thisWorld.countries[c1]:event(parent, "Gained the "..rm.name.." region from "..parent.thisWorld.countries[self.Target].name)
+									
+									local cap = false
+									
+									for p=1,#rm.cities do
+										if rm.cities[p].capital == true then
+											cap = true
+											rm.cities[p].capital = false
+										end
+									end
+									
+									if cap == true then
+										local rc = math.random(1, #parent.thisWorld.countries[self.Target].regions)
+										local cc = math.random(1, #parent.thisWorld.countries[self.Target].regions[rc].cities)
+										parent.thisWorld.countries[self.Target].regions[rc].cities[cc].capital = true
+											
+										parent.thisWorld.countries[self.Target]:event(parent, "New capital: "..parent.thisWorld.countries[self.Target].regions[rc].cities[cc].name)
+									end
+									
+									table.insert(parent.thisWorld.countries[c1].regions, rm)
+								end
+							end
 						elseif c2total > c1total + 3 then
 							parent.thisWorld.countries[c1]:event(parent, "Defeat in war with "..parent.thisWorld.countries[self.Target].name)
 							parent.thisWorld.countries[self.Target]:event(parent, "Victory in war with "..parent.thisWorld.countries[c1].name)
@@ -802,6 +874,34 @@ return
 											table.remove(c3.allyOngoing, j)
 											j = #c3.allyOngoing + 1
 										end
+									end
+								end
+							end
+							
+							if c2total > c1total + 6 then
+								if #parent.thisWorld.countries[c1].regions > 1 then
+									local r = math.random(1, #parent.thisWorld.countries[c1].regions)
+									local rm = table.remove(parent.thisWorld.countries[c1].regions, r)
+									table.insert(parent.thisWorld.countries[self.Target].regions, rm)
+									
+									parent.thisWorld.countries[c1]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[self.Target].name)
+									parent.thisWorld.countries[self.Target]:event(parent, "Gained the "..rm.name.." region from "..parent.thisWorld.countries[c1].name)
+									
+									local cap = false
+									
+									for p=1,#rm.cities do
+										if rm.cities[p].capital == true then
+											cap = true
+											rm.cities[p].capital = false
+										end
+									end
+									
+									if cap == true then
+										local rc = math.random(1, #parent.thisWorld.countries[c1].regions)
+										local cc = math.random(1, #parent.thisWorld.countries[c1].regions[rc].cities)
+										parent.thisWorld.countries[c1].regions[rc].cities[cc].capital = true
+										
+										parent.thisWorld.countries[c1]:event(parent, "New capital: "..parent.thisWorld.countries[c1].regions[rc].cities[cc].name)
 									end
 								end
 							end
@@ -993,6 +1093,34 @@ return
 								if parent.thisWorld.countries[c2].stability < 1 then parent.thisWorld.countries[c2].stability = 1 end
 								parent.thisWorld.countries[c1]:setPop(parent, math.floor(parent.thisWorld.countries[c1].population / 1.25))
 								parent.thisWorld.countries[c2]:setPop(parent, math.floor(parent.thisWorld.countries[c2].population / 1.75))
+								
+								local rchance = math.random(1, 30)
+								if rchance < 5 then
+									if #parent.thisWorld.countries[c2].regions > 1 then
+										local r = math.random(1, #parent.thisWorld.countries[c2].regions)
+										local rm = table.remove(parent.thisWorld.countries[c2].regions, r)
+										table.insert(parent.thisWorld.countries[c1].regions, rm)
+										
+										parent.thisWorld.countries[c2]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[c1].name)
+									
+										local cap = false
+										
+										for p=1,#rm.cities do
+											if rm.cities[p].capital == true then
+												cap = true
+												rm.cities[p].capital = false
+											end
+										end
+										
+										if cap == true then
+											local rc = math.random(1, #parent.thisWorld.countries[c2].regions)
+											local cc = math.random(1, #parent.thisWorld.countries[c2].regions[rc].cities)
+											parent.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
+												
+											parent.thisWorld.countries[c2]:event(parent, "New capital: "..parent.thisWorld.countries[c2].regions[rc].cities[cc].name)
+										end
+									end
+								end
 							end
 						end
 
@@ -1001,7 +1129,7 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=4,
+					Chance=5,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -1019,14 +1147,29 @@ return
 								parent.thisWorld.countries[c1]:event(parent, "Conquered "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Conquered by "..parent.thisWorld.countries[c1].name)
 
-								parent.thisWorld.countries[c1].strength = parent.thisWorld.countries[c1].strength - parent.thisWorld.countries[c2].strength - 5
+								parent.thisWorld.countries[c1].strength = parent.thisWorld.countries[c1].strength - parent.thisWorld.countries[c2].strength
 								if parent.thisWorld.countries[c1].strength < 1 then parent.thisWorld.countries[c1].strength = 1 end
-								parent.thisWorld.countries[c1].stability = parent.thisWorld.countries[c1].stability - parent.thisWorld.countries[c2].stability - 5
+								parent.thisWorld.countries[c1].stability = parent.thisWorld.countries[c1].stability - 5
 								if parent.thisWorld.countries[c1].stability < 1 then parent.thisWorld.countries[c1].stability = 1 end
 								parent.thisWorld.countries[c1]:setPop(parent, parent.thisWorld.countries[c1].population + parent.thisWorld.countries[c2].population)
 								if #parent.thisWorld.countries[c2].rulers > 0 then
 									parent.thisWorld.countries[c2].rulers[#parent.thisWorld.countries[c2].rulers].To = parent.years
 								end
+								
+								for i=1,#parent.thisWorld.countries[c2].regions do
+									table.insert(parent.thisWorld.countries[c1].regions, parent:deepcopy(parent.thisWorld.countries[c2].regions[i]))
+									for j=1,#parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities do
+										if parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital == true then
+											parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital = false
+										end
+									end
+								end
+								
+								for i=1,#parent.thisWorld.countries[c2].regions do
+									parent.thisWorld.countries[c2].regions[i] = nil
+								end
+								
+								parent.thisWorld.countries[c2].regions = nil
 
 								parent.thisWorld:delete(c2)
 							end

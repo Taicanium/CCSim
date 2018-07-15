@@ -90,8 +90,8 @@ return
 				local sys = parent.systems[nl.system]
 				
 				if self.gender == "Male" or sys.dynastic == false then
-					local rankLim = 1
-					if sys.dynastic == false then rankLim = 0 end
+					local rankLim = 2
+					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
 						local x = math.random(-125, 100)
 						if x < -75 then
@@ -103,13 +103,13 @@ return
 						end
 						
 						if self.level < 1 then self.level = 1 end
-						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim - 1 end
+						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim end
 					end
 					
 					self.title = sys.ranks[self.level]
 				else
-					local rankLim = 1
-					if sys.dynastic == false then rankLim = 0 end
+					local rankLim = 2
+					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
 						local x = math.random(-125, 100)
 						if x < -75 then
@@ -121,7 +121,7 @@ return
 						end
 						
 						if self.level < 1 then self.level = 1 end
-						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim - 1 end
+						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim end
 					end
 					
 					self.title = sys.franks[self.level]
