@@ -51,11 +51,11 @@ return
 			},
 			
 			partynames = {
-				{"National", "United", "Citizens", "General", "People's", "Joint"},
-				{"National", "United", "Citizens", "General", "People's", "Joint"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist"},
-				{"Party", "Group", "Front", "Coalition", "Force"},
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'"},
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor"},
+				{"Party", "Group", "Front", "Coalition", "Force", "Alliance"},
 			},
 
 			final = {},

@@ -16,9 +16,9 @@ C (s) - Defines a country. (s) is its name, which may include spaces. Note that 
 
 R (s) - Defines a region within the focus country, which presently serves no purpose except as something that can be lost or gained in a war or invasion. This region will be set as the focus region, so that until the next R or C line, one may also define a city within this region.
 
-S (s) - Defines a city, which presently serves no purpose at all.
+S (s) - Defines a city within the focus region, which presently serves no purpose at all.
 
-P (s) - Defines a city, and sets it to be the capital of the focus country.
+P (s) - Defines a city within the focus region, and sets it to be the capital of the focus country.
 
 (t) (s1) [s2] (n1) (n2) - Defines a ruler of the focus country. (t) is the ruler's title (which must be one of the titles listed in 'Systems' below), (s1) is their given name, [s2] is their surname (in the case of a non-dynastic ruler; omit s2 otherwise), (n1) is the year they began their rule, and (n2) is the year their rule ended. Note that the n2 value of the last defined ruler does not necessarily need to correspond to the Year value; although I have not tested the script's behavior in such a case.
 
