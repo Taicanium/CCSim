@@ -81,7 +81,8 @@ return
 				self.cfreedom = math.random(-100, 100)
 				
 				local totalfreedom = self.efreedom + self.pfreedom + self.cfreedom
-				if totalfreedom < -250 or totalfreedom > 250 then radical = true end
+				if totalfreedom < -225 then radical = true end
+				if totalfreedom > 225 then radical = true end
 			end,
 			
 			evaluate = function(self, nl, parent, n)
