@@ -174,15 +174,17 @@ return
 							pin = i
 						end
 					end
-					local pc = math.random(1, 1000*pcr)
-					if pc > 50 and pc < 61 then
-						local pr = math.random(1, #nl.parties)
-						if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
-						self.party = nl.parties[pr].name
-						nl.parties[pr].membership = nl.parties[pr].membership + 1
-						if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
-						if self.isruler == true then
-							nl.rulers[#nl.rulers].Party = self.party
+					if pcr > 0 then
+						local pc = math.random(1, 1000*pcr)
+						if pc > 50 and pc < 61 then
+							local pr = math.random(1, #nl.parties)
+							if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
+							self.party = nl.parties[pr].name
+							nl.parties[pr].membership = nl.parties[pr].membership + 1
+							if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
+							if self.isruler == true then
+								nl.rulers[#nl.rulers].Party = self.party
+							end
 						end
 					end
 				end

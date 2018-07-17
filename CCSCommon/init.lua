@@ -63,18 +63,18 @@ return
 
 			sleep = function(self, t)
 				local n = os.clock()
-				while os.clock() <= n + t do end
+				while os.clock() < n + t do end
 			end,
 
 			rseed = function(self)
-				self:sleep(0.001)
+				self:sleep(0.0005)
 				local tc = tonumber((os.clock()/10)*(os.time()/100000))
 				local n = tonumber(tostring(tc):reverse())
 				math.randomseed(n)
 				math.random(1, 500)
 				x = math.random(4, 13)
 				for i=2,x do
-					math.randomseed(tonumber(tostring(math.random(1, math.floor(i*tc))):reverse()))
+					math.randomseed(math.random(math.floor(n), math.floor(i*n)))
 					math.random(1, 500)
 				end
 				math.random(1, 500)
@@ -807,9 +807,39 @@ return
 								if #parent.thisWorld.countries[self.Target].regions > 1 then
 									local r = math.random(1, #parent.thisWorld.countries[self.Target].regions)
 									local rm = table.remove(parent.thisWorld.countries[self.Target].regions, r)
-										
-									parent.thisWorld.countries[self.Target]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[c1].name)
-									parent.thisWorld.countries[c1]:event(parent, "Gained the "..rm.name.." region from "..parent.thisWorld.countries[self.Target].name)
+									
+									local lossMsg = "Loss of the "..rm.name.." region"
+									local cCount = #rm.cities
+									if cCount > 1 then
+										lossMsg = lossMsg.." (including the cities of "
+									else
+										lossMsg = lossMsg.." (including the city of "
+									end
+									for c=1,#rm.cities-1 do
+										lossMsg = lossMsg..rm.cities[c].name
+										if c < #rm.cities-1 then lossMsg = lossMsg.."," end
+										lossMsg = lossMsg.." "
+									end
+									if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
+									lossMsg = lossMsg.." to "..parent.thisWorld.countries[c1].name
+									
+									local gainMsg = "Gained the "..rm.name.." region"
+									local cCount = #rm.cities
+									if cCount > 1 then
+										gainMsg = gainMsg.." (including the cities of "
+									else
+										gainMsg = gainMsg.." (including the city of "
+									end
+									for c=1,#rm.cities-1 do
+										gainMsg = gainMsg..rm.cities[c].name
+										if c < #rm.cities-1 then gainMsg = gainMsg.."," end
+										gainMsg = gainMsg.." "
+									end
+									if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
+									gainMsg = gainMsg.." from "..parent.thisWorld.countries[self.Target].name
+									
+									parent.thisWorld.countries[self.Target]:event(parent, lossMsg)
+									parent.thisWorld.countries[c1]:event(parent, gainMsg)
 									
 									local cap = false
 									
@@ -884,8 +914,38 @@ return
 									local rm = table.remove(parent.thisWorld.countries[c1].regions, r)
 									table.insert(parent.thisWorld.countries[self.Target].regions, rm)
 									
-									parent.thisWorld.countries[c1]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[self.Target].name)
-									parent.thisWorld.countries[self.Target]:event(parent, "Gained the "..rm.name.." region from "..parent.thisWorld.countries[c1].name)
+									local lossMsg = "Loss of the "..rm.name.." region"
+									local cCount = #rm.cities
+									if cCount > 1 then
+										lossMsg = lossMsg.." (including the cities of "
+									else
+										lossMsg = lossMsg.." (including the city of "
+									end
+									for c=1,#rm.cities-1 do
+										lossMsg = lossMsg..rm.cities[c].name
+										if c < #rm.cities-1 then lossMsg = lossMsg.."," end
+										lossMsg = lossMsg.." "
+									end
+									if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
+									lossMsg = lossMsg.." to "..parent.thisWorld.countries[self.Target].name
+									
+									local gainMsg = "Gained the "..rm.name.." region"
+									local cCount = #rm.cities
+									if cCount > 1 then
+										gainMsg = gainMsg.." (including the cities of "
+									else
+										gainMsg = gainMsg.." (including the city of "
+									end
+									for c=1,#rm.cities-1 do
+										gainMsg = gainMsg..rm.cities[c].name
+										if c < #rm.cities-1 then gainMsg = gainMsg.."," end
+										gainMsg = gainMsg.." "
+									end
+									if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
+									gainMsg = gainMsg.." from "..parent.thisWorld.countries[c1].name
+									
+									parent.thisWorld.countries[c1]:event(parent, lossMsg)
+									parent.thisWorld.countries[self.Target]:event(parent, gainMsg)
 									
 									local cap = false
 									
@@ -1100,8 +1160,39 @@ return
 										local r = math.random(1, #parent.thisWorld.countries[c2].regions)
 										local rm = table.remove(parent.thisWorld.countries[c2].regions, r)
 										table.insert(parent.thisWorld.countries[c1].regions, rm)
+									
+										local lossMsg = "Loss of the "..rm.name.." region"
+										local cCount = #rm.cities
+										if cCount > 1 then
+											lossMsg = lossMsg.." (including the cities of "
+										else
+											lossMsg = lossMsg.." (including the city of "
+										end
+										for c=1,#rm.cities-1 do
+											lossMsg = lossMsg..rm.cities[c].name
+											if c < #rm.cities-1 then lossMsg = lossMsg.."," end
+											lossMsg = lossMsg.." "
+										end
+										if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
+										lossMsg = lossMsg.." to "..parent.thisWorld.countries[c1].name
 										
-										parent.thisWorld.countries[c2]:event(parent, "Loss of the "..rm.name.." region to "..parent.thisWorld.countries[c1].name)
+										local gainMsg = "Gained the "..rm.name.." region"
+										local cCount = #rm.cities
+										if cCount > 1 then
+											gainMsg = gainMsg.." (including the cities of "
+										else
+											gainMsg = gainMsg.." (including the city of "
+										end
+										for c=1,#rm.cities-1 do
+											gainMsg = gainMsg..rm.cities[c].name
+											if c < #rm.cities-1 then gainMsg = gainMsg.."," end
+											gainMsg = gainMsg.." "
+										end
+										if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
+										gainMsg = gainMsg.." from "..parent.thisWorld.countries[c2].name
+										
+										parent.thisWorld.countries[c2]:event(parent, lossMsg)
+										parent.thisWorld.countries[c1]:event(parent, gainMsg)
 									
 										local cap = false
 										
