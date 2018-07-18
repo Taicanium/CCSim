@@ -239,7 +239,6 @@ return
 							for q=3,#mat do
 								nl.name = nl.name.." "..mat[q]
 							end
-							nl:setPop(self, 1000)
 							self.thisWorld:add(nl)
 						elseif mat[1] == "R" then
 							local r = Region:new()
@@ -326,15 +325,7 @@ return
 						self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
 						self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
 						self.thisWorld.countries[i]:makename(self)
-						self.thisWorld.countries[i].popChange = self.thisWorld.countries[i].population
-						
-						while self.thisWorld.countries[i].popChange > 0 do
-							local r = math.random(1, #self.thisWorld.countries[i].regions)
-							local c = math.random(1, #self.thisWorld.countries[i].regions[r].cities)
-						
-							self.thisWorld.countries[i].regions[r].cities[c].population = self.thisWorld.countries[i].regions[r].cities[c].population + 1
-							self.thisWorld.countries[i].popChange = self.thisWorld.countries[i].popChange - 1
-						end
+						self.thisWorld.countries[i]:setPop(self, 1000)
 						
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
@@ -378,8 +369,15 @@ return
 										msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
 										for m=1,#self.thisWorld.countries[i].parties do
 											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
+												msg = msg..", of the "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
+												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
+											end
+										end
+										
+										for m=1,#self.thisWorld.countries[i].parties do
+											if self.thisWorld.countries[i].parties[m].leading == true then
 												msg = msg.."\nRuling party: "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
-												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (Radical)" end
+												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
 											end
 										end
 									end
@@ -548,7 +546,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=8,
+					Chance=6,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -595,7 +593,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=7,
+					Chance=6,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -668,7 +666,7 @@ return
 				},
 				{
 					Name="War",
-					Chance=15,
+					Chance=13,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -1024,7 +1022,16 @@ return
 						for i=1,#parent.thisWorld.countries[c2].ongoing - 1 do
 							if parent.thisWorld.countries[c2].ongoing[i].Name == self.Name and parent.thisWorld.countries[c2].ongoing[i].Target == c1 then return -1 end
 						end
-
+						
+						local c1PTotal = 0
+						local c2PTotal = 0
+						
+						if c1PTotal - c2PTotal < 35 then
+							if c1PTotal - c2PTotal > -35 then
+								return -1
+							end
+						end
+						
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 								self.Target = c2

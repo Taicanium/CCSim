@@ -24,9 +24,8 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
-				nl.popChange = 0
-				nl.birthrate = 100
-				nl.deathrate = 50000
+				nl.birthrate = 25
+				nl.deathrate = 15000
 				nl.regions = {}
 				nl.parties = {}
 				
@@ -48,13 +47,18 @@ return
 				local b = #self.people
 				if b > 0 then
 					if self.people[y] ~= nil then
-						if self.people[y].spouse ~= nil then
-							self.people[y].spouse.spouse = nil
-						end
-						self.people[y].spouse = nil
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						local w = table.remove(self.people, y)
 						if w ~= nil then
+							for i=1,#self.regions do
+								if self.regions[i].name == w.name then
+									for j=1,#self.regions[i].cities do
+										if self.regions[i].cities[j].name == w.city then
+											self.regions[i].cities[j].population = self.regions[i].cities[j].population - 1
+										end
+									end
+								end
+							end
 							w:destroy()
 							w = nil
 						end
@@ -82,26 +86,30 @@ return
 						table.insert(self.frulernames, parent:name())
 					end
 				end
+				
+				self.population = 1000
 			end,
 
 			set = function(self, parent)
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				
+				self.population = math.random(200,1000)
 				self:makename(parent)
 				
-				for i=1,math.random(200,1000) do
-					local n = Person:new()
-					n:makename(parent)
-					self:add(n)
-				end
+				local rCount = math.random(3, 8)
 				
-				for i=1,math.random(3, 8) do
+				for i=1,rCount do
 					local r = Region:new()
 					r:makename(self, parent)
 					
 					table.insert(self.regions, r)
+				end
+				
+				for i=1,self.population do
+					local n = Person:new()
+					n:makename(parent, self)
+					self:add(n)
 				end
 				
 				local rc = math.random(1, #self.regions)
@@ -109,16 +117,6 @@ return
 				self.regions[rc].cities[cc].capital = true
 				
 				self.founded = parent.years
-				self.popChange = #self.people - self.population
-				self.population = #self.people
-				
-				while self.popChange > 0 do
-					local r = math.random(1, #self.regions)
-					local c = math.random(1, #self.regions[r].cities)
-				
-					self.regions[r].cities[c].population = self.regions[r].cities[c].population + 1
-					self.popChange = self.popChange - 1
-				end
 			end,
 
 			setRuler = function(self, parent, newRuler)
@@ -221,28 +219,34 @@ return
 			end,
 
 			setPop = function(self, parent, u)
-				while u < #self.people do
-					if #self.people > 1 then
-						local r = math.random(1, #self.people)
-						while self.people[r].isruler == true do
-							r = math.random(1, #self.people)
-						end
-						self:delete(r)
-					else
-						u = #self.people + 1000
+				self.population = u
+			
+				for i=1,#self.regions do
+					self.regions[i].population = math.ceil(self.population / #self.regions)
+				end
+				
+				self.population = 0
+				
+				for i=1,#self.regions do
+					self.population = self.population + self.regions[i].population
+				end
+				
+				if #self.people > 1 then
+					local r = math.random(1, #self.people)
+					while self.people[r].isruler == true do
+						r = math.random(1, #self.people)
 					end
+					self:delete(r)
 				end
 				
-				while u > #self.people do
-					local nn = Person:new()
-					nn:makename(parent)
-					nn.age = math.random(1, 121)
-					nn.level = 2
-					nn.title = "Citizen"
-					self:add(nn)
+				for i=1,self.population do
+					local n = Person:new()
+					n:makename(parent, self)
+					n.age = math.random(1, 30)
+					n.level = 2
+					n.title = "Citizen"
+					self:add(n)
 				end
-				
-				self.population = #self.people
 			end,
 
 			update = function(self, parent, ind)
@@ -257,30 +261,11 @@ return
 				if self.strength < 1 then self.strength = 1 end
 				
 				self.age = self.age + 1
-				self.popChange = #self.people - self.population
-				self.population = #self.people
-				
-				if self.population < 150 then
-					self.birthrate = 5
-					self.deathrate = 500000
-				elseif self.population > 1250 then
-					self.birthrate = 10000
-					self.deathrate = 150
-				else
-					self.birthrate = 35
-					self.deathrate = 50000
-				end
 				
 				self.hasruler = -1
 				self.average = 1
 				
 				local pcmarked = {}
-				
-				for i=1,#self.parties do
-					if self.parties[i]:evaluate(self, parent, ind) == -1 then
-						table.insert(pcmarked, i)
-					end
-				end
 				
 				for i=1,#pcmarked do
 					table.remove(self.parties, pcmarked[i])
@@ -312,6 +297,14 @@ return
 				
 				local pmarked = {}
 				
+				for i=1,#self.regions do
+					self.regions[i].population = 0
+					
+					for j=1,#self.regions[i].cities do
+						self.regions[i].cities[j].population = 0
+					end
+				end
+				
 				for i=1,#self.people do
 					if self.people[i] ~= nil then
 						if self.people[i].isruler == true then
@@ -321,16 +314,27 @@ return
 						
 						self.people[i]:update(parent, self)
 						
+						for j=1,#self.regions do
+							if self.regions[j].name == self.people[i].region then
+								for k=1,#self.regions[j].cities do
+									if self.regions[j].cities[k].name == self.people[i].city then
+										self.regions[j].population = self.regions[j].population + 1
+										self.regions[j].cities[k].population = self.regions[j].cities[k].population + 1
+									end
+								end
+							end
+						end
+						
 						local age = self.people[i].age
-						if age >= 122 then
+						if age > 121 then
 							if self.people[i].isruler == true then
 								self.hasruler = -1
 							end
 							
 							table.insert(pmarked, i)
 						else
-							local d = math.random(1, self.deathrate - self.people[i].age)
-							if d == 3 then
+							local d = math.random(1, self.deathrate - math.pow(self.people[i].age, 2))
+							if d < 5 then
 								if self.people[i].isruler == true then
 									self.hasruler = -1
 								end
@@ -351,6 +355,45 @@ return
 				end
 				
 				if #self.people > 0 then self.average = self.average / #self.people end
+				
+				if #self.parties > 0 then
+					local largest = 1
+					for i=1,#self.parties do
+						self.parties[i].leading = false
+						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+					end
+					
+					self.parties[largest].leading = true
+				else
+					local pc = math.random(3, 7)
+					for i=1,pc do
+						local par = Party:new()
+						par:define(parent, ind)
+						table.insert(self.parties, par)
+					end
+				end
+				
+				local largestParty = -1
+				local largestPartyMem = -1
+				
+				for i=1,#self.parties do
+					if self.parties[i].membership > largestPartyMem then
+						largestParty = i
+						largestPartyMem = self.parties[i].membership
+					end
+					
+					self.parties[i].leading = false
+				end
+
+				if largestParty ~= -1 then
+					self.parties[largestParty].leading = true
+				end
+				
+				for i=1,#self.parties do
+					if self.parties[i]:evaluate(self, parent, ind) == -1 then
+						table.insert(pcmarked, i)
+					end
+				end
 				
 				local omarked = {}
 				local amarked = {}
@@ -433,8 +476,12 @@ return
 					end
 				end
 				
-				for i=1,#self.regions do
-					self.regions[i]:update(self)
+				self.population = #self.people
+				
+				if self.population > 2000 then
+					self.birthrate = 10000000
+				else
+					self.birthrate = 25
 				end
 				
 				self:checkRuler(parent)

@@ -7,6 +7,7 @@ return
 				
 				r.name = ""
 				r.cities = {}
+				r.population = 0
 				
 				return r
 			end,
@@ -24,19 +25,15 @@ return
 					end
 				end
 				
-				for i=1,math.random(2, 4) do
+				local cCount = math.random(2, 4)
+				
+				for i=1,cCount do
 					local c = City:new()
 					c:makename(country, parent)
 					
 					table.insert(self.cities, c)
 				end
 			end,
-			
-			update = function(self, country)
-				for i=1,#self.cities do
-					self.cities[i]:update(country)
-				end
-			end
 		}
 		
 		return Region

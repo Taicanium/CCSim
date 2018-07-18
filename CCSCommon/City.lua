@@ -7,7 +7,6 @@ return
 				
 				c.name = ""
 				c.capital = false
-				c.age = 0
 				c.population = 0
 				
 				return c
@@ -26,26 +25,6 @@ return
 							end
 						end
 					end
-				end
-			end,
-			
-			update = function(self, country)
-				self.age = self.age + 1
-				
-				while country.popChange > 0 do
-					local r = math.random(1, #country.regions)
-					local c = math.random(1, #country.regions[r].cities)
-				
-					country.regions[r].cities[c].population = country.regions[r].cities[c].population + 1
-					country.popChange = country.popChange - 1
-				end
-				
-				while country.popChange < 0 do
-					local r = math.random(1, #country.regions)
-					local c = math.random(1, #country.regions[r].cities)
-					
-					country.regions[r].cities[c].population = country.regions[r].cities[c].population - 1
-					country.popChange = country.popChange + 1
 				end
 			end
 		}

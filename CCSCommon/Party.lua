@@ -107,12 +107,13 @@ return
 				
 				self.popularity = tonumber(math.floor(totalvalue/totalfactors))
 				
-				if nl.rulers[#nl.rulers].Party == self.name then
-					if self.popularity < 20 then
-						for i=1,#parent.c_events do
-							if parent.c_events[i].Name == "Revolution" then
-								parent.c_events[i]:Perform(parent, n)
-								return -1
+				if #nl.rulers > 0 then
+					if nl.rulers[#nl.rulers].Party == self.name then
+						if self.popularity < 20 then
+							for i=1,#parent.c_events do
+								if parent.c_events[i].Name == "Revolution" then
+									parent.c_events[i]:Perform(parent, n)
+								end
 							end
 						end
 					end
@@ -124,7 +125,6 @@ return
 							for i=1,#parent.c_events do
 								if parent.c_events[i].Name == "Revolution" then
 									parent.c_events[i]:Perform(parent, n)
-									return -1
 								end
 							end
 						end
