@@ -216,6 +216,77 @@ return
 
 				return fin
 			end,
+			
+			RegionTransfer = function(self, c1, c2, rm)
+				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
+					local r = math.random(1, #self.thisWorld.countries[c2].regions)
+					local rm = table.remove(self.thisWorld.countries[c2].regions, r)
+					table.insert(self.thisWorld.countries[c1].regions, rm)
+					
+					for i=#self.thisWorld.countries[c2].people,1,-1 do
+						if self.thisWorld.countries[c2].people[i].region == rm.name then
+							if self.thisWorld.countries[c2].people[i].isruler == false then
+								local pm = table.remove(self.thisWorld.countries[c2].people, i)
+								table.insert(self.thisWorld.countries[c1].people, pm)
+								i = i - 1
+							else
+								self.thisWorld.countries[c2].people[i].region = ""
+								self.thisWorld.countries[c2].people[i].city = ""
+							end
+						end
+					end
+				
+					local lossMsg = "Loss of the "..rm.name.." region"
+					local cCount = #rm.cities
+					if cCount > 1 then
+						lossMsg = lossMsg.." (including the cities of "
+					else
+						lossMsg = lossMsg.." (including the city of "
+					end
+					for c=1,#rm.cities-1 do
+						lossMsg = lossMsg..rm.cities[c].name
+						if c < #rm.cities-1 then lossMsg = lossMsg.."," end
+						lossMsg = lossMsg.." "
+					end
+					if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
+					lossMsg = lossMsg.." to "..self.thisWorld.countries[c1].name
+					
+					local gainMsg = "Gained the "..rm.name.." region"
+					local cCount = #rm.cities
+					if cCount > 1 then
+						gainMsg = gainMsg.." (including the cities of "
+					else
+						gainMsg = gainMsg.." (including the city of "
+					end
+					for c=1,#rm.cities-1 do
+						gainMsg = gainMsg..rm.cities[c].name
+						if c < #rm.cities-1 then gainMsg = gainMsg.."," end
+						gainMsg = gainMsg.." "
+					end
+					if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
+					gainMsg = gainMsg.." from "..self.thisWorld.countries[c2].name
+					
+					self.thisWorld.countries[c2]:event(self, lossMsg)
+					self.thisWorld.countries[c1]:event(self, gainMsg)
+				
+					local cap = false
+					
+					for p=1,#rm.cities do
+						if rm.cities[p].capital == true then
+							cap = true
+							rm.cities[p].capital = false
+						end
+					end
+					
+					if cap == true then
+						local rc = math.random(1, #self.thisWorld.countries[c2].regions)
+						local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
+						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
+							
+						self.thisWorld.countries[c2]:event(self, "New capital: "..self.thisWorld.countries[c2].regions[rc].cities[cc].name)
+					end
+				end
+			end,
 
 			fromFile = function(self, datin)
 				local f = assert(io.open(datin, "r"))
@@ -366,12 +437,17 @@ return
 								end
 								if self.thisWorld.countries[i].rulers ~= nil then
 									if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
-										msg = msg.."\nCurrent ruler: "..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
-										for m=1,#self.thisWorld.countries[i].parties do
-											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
-												msg = msg..", of the "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
-												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
+										msg = msg.."\nCurrent ruler: "
+										if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].To == "Current" then
+											msg = msg..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
+											for m=1,#self.thisWorld.countries[i].parties do
+												if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
+													msg = msg..", of the "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
+													if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
+												end
 											end
+										else
+											msg = msg.."None"
 										end
 										
 										for m=1,#self.thisWorld.countries[i].parties do
@@ -593,7 +669,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=6,
+					Chance=4,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -769,13 +845,13 @@ return
 								end
 
 								if c3 ~= nil then
-									for j=1,#c3.allyOngoing do
+									for j=#c3.allyOngoing,1,-1 do
 										if c3.allyOngoing[j] == self.Name.."?"..parent.thisWorld.countries[c1].name..":"..parent.thisWorld.countries[self.Target].name then
 											c3.strength = c3.strength + 5
 
 											c3:event(parent, "Victory with "..parent.thisWorld.countries[c1].name.." against "..parent.thisWorld.countries[self.Target].name)
 											table.remove(c3.allyOngoing, j)
-											j = #c3.allyOngoing + 1
+											j = 0
 										end
 									end
 								end
@@ -789,13 +865,13 @@ return
 								end
 
 								if c3 ~= nil then
-									for j=1,#c3.allyOngoing do
+									for j=#c3.allyOngoing,1,-1 do
 										if c3.allyOngoing[j] == self.Name.."?"..parent.thisWorld.countries[self.Target].name..":"..parent.thisWorld.countries[c1].name then
 											c3.strength = c3.strength - 5
 
 											c3:event(parent, "Defeat with "..parent.thisWorld.countries[self.Target].name.." in war with "..parent.thisWorld.countries[c1].name)
 											table.remove(c3.allyOngoing, j)
-											j = #c3.allyOngoing + 1
+											j = 0
 										end
 									end
 								end
@@ -803,60 +879,7 @@ return
 							
 							if c1total > c2total + 6 then
 								if #parent.thisWorld.countries[self.Target].regions > 1 then
-									local r = math.random(1, #parent.thisWorld.countries[self.Target].regions)
-									local rm = table.remove(parent.thisWorld.countries[self.Target].regions, r)
-									
-									local lossMsg = "Loss of the "..rm.name.." region"
-									local cCount = #rm.cities
-									if cCount > 1 then
-										lossMsg = lossMsg.." (including the cities of "
-									else
-										lossMsg = lossMsg.." (including the city of "
-									end
-									for c=1,#rm.cities-1 do
-										lossMsg = lossMsg..rm.cities[c].name
-										if c < #rm.cities-1 then lossMsg = lossMsg.."," end
-										lossMsg = lossMsg.." "
-									end
-									if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
-									lossMsg = lossMsg.." to "..parent.thisWorld.countries[c1].name
-									
-									local gainMsg = "Gained the "..rm.name.." region"
-									local cCount = #rm.cities
-									if cCount > 1 then
-										gainMsg = gainMsg.." (including the cities of "
-									else
-										gainMsg = gainMsg.." (including the city of "
-									end
-									for c=1,#rm.cities-1 do
-										gainMsg = gainMsg..rm.cities[c].name
-										if c < #rm.cities-1 then gainMsg = gainMsg.."," end
-										gainMsg = gainMsg.." "
-									end
-									if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
-									gainMsg = gainMsg.." from "..parent.thisWorld.countries[self.Target].name
-									
-									parent.thisWorld.countries[self.Target]:event(parent, lossMsg)
-									parent.thisWorld.countries[c1]:event(parent, gainMsg)
-									
-									local cap = false
-									
-									for p=1,#rm.cities do
-										if rm.cities[p].capital == true then
-											cap = true
-											rm.cities[p].capital = false
-										end
-									end
-									
-									if cap == true then
-										local rc = math.random(1, #parent.thisWorld.countries[self.Target].regions)
-										local cc = math.random(1, #parent.thisWorld.countries[self.Target].regions[rc].cities)
-										parent.thisWorld.countries[self.Target].regions[rc].cities[cc].capital = true
-											
-										parent.thisWorld.countries[self.Target]:event(parent, "New capital: "..parent.thisWorld.countries[self.Target].regions[rc].cities[cc].name)
-									end
-									
-									table.insert(parent.thisWorld.countries[c1].regions, rm)
+									parent:RegionTransfer(c1, self.Target, rm)
 								end
 							end
 						elseif c2total > c1total + 3 then
@@ -874,13 +897,13 @@ return
 								end
 
 								if c3 ~= nil then
-									for j=1,#c3.allyOngoing do
+									for j=#c3.allyOngoing,1,-1 do
 										if c3.allyOngoing[j] == self.Name.."?"..parent.thisWorld.countries[c1].name..":"..parent.thisWorld.countries[self.Target].name then
 											c3.strength = c3.strength - 5
 
 											c3:event(parent, "Defeat with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.Target].name)
 											table.remove(c3.allyOngoing, j)
-											j = #c3.allyOngoing + 1
+											j = 0
 										end
 									end
 								end
@@ -894,13 +917,13 @@ return
 								end
 
 								if c3 ~= nil then
-									for j=1,#c3.allyOngoing do
+									for j=#c3.allyOngoing,1,-1 do
 										if c3.allyOngoing[j] == self.Name.."?"..parent.thisWorld.countries[self.Target].name..":"..parent.thisWorld.countries[c1].name then
 											c3.strength = c3.strength + 5
 
 											c3:event(parent, "Victory with "..parent.thisWorld.countries[self.Target].name.." against "..parent.thisWorld.countries[c1].name)
 											table.remove(c3.allyOngoing, j)
-											j = #c3.allyOngoing + 1
+											j = 0
 										end
 									end
 								end
@@ -908,59 +931,7 @@ return
 							
 							if c2total > c1total + 6 then
 								if #parent.thisWorld.countries[c1].regions > 1 then
-									local r = math.random(1, #parent.thisWorld.countries[c1].regions)
-									local rm = table.remove(parent.thisWorld.countries[c1].regions, r)
-									table.insert(parent.thisWorld.countries[self.Target].regions, rm)
-									
-									local lossMsg = "Loss of the "..rm.name.." region"
-									local cCount = #rm.cities
-									if cCount > 1 then
-										lossMsg = lossMsg.." (including the cities of "
-									else
-										lossMsg = lossMsg.." (including the city of "
-									end
-									for c=1,#rm.cities-1 do
-										lossMsg = lossMsg..rm.cities[c].name
-										if c < #rm.cities-1 then lossMsg = lossMsg.."," end
-										lossMsg = lossMsg.." "
-									end
-									if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
-									lossMsg = lossMsg.." to "..parent.thisWorld.countries[self.Target].name
-									
-									local gainMsg = "Gained the "..rm.name.." region"
-									local cCount = #rm.cities
-									if cCount > 1 then
-										gainMsg = gainMsg.." (including the cities of "
-									else
-										gainMsg = gainMsg.." (including the city of "
-									end
-									for c=1,#rm.cities-1 do
-										gainMsg = gainMsg..rm.cities[c].name
-										if c < #rm.cities-1 then gainMsg = gainMsg.."," end
-										gainMsg = gainMsg.." "
-									end
-									if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
-									gainMsg = gainMsg.." from "..parent.thisWorld.countries[c1].name
-									
-									parent.thisWorld.countries[c1]:event(parent, lossMsg)
-									parent.thisWorld.countries[self.Target]:event(parent, gainMsg)
-									
-									local cap = false
-									
-									for p=1,#rm.cities do
-										if rm.cities[p].capital == true then
-											cap = true
-											rm.cities[p].capital = false
-										end
-									end
-									
-									if cap == true then
-										local rc = math.random(1, #parent.thisWorld.countries[c1].regions)
-										local cc = math.random(1, #parent.thisWorld.countries[c1].regions[rc].cities)
-										parent.thisWorld.countries[c1].regions[rc].cities[cc].capital = true
-										
-										parent.thisWorld.countries[c1]:event(parent, "New capital: "..parent.thisWorld.countries[c1].regions[rc].cities[cc].name)
-									end
+									parent:RegionTransfer(self.Target, c1, rm)
 								end
 							end
 						else
@@ -993,11 +964,11 @@ return
 								end
 
 								if c3 ~= nil then
-									for j=1,#c3.allyOngoing do
+									for j=#c3.allyOngoing,1,-1 do
 										if c3.allyOngoing[j] == self.Name.."?"..parent.thisWorld.countries[self.Target].name..":"..parent.thisWorld.countries[c1].name then
 											c3:event(parent, "Treaty with "..parent.thisWorld.countries[self.Target].name.." in war with "..parent.thisWorld.countries[c1].name)
 											table.remove(c3.allyOngoing, j)
-											j = #c3.allyOngoing + 1
+											j = 0
 										end
 									end
 								end
@@ -1044,7 +1015,7 @@ return
 				},
 				{
 					Name="Alliance",
-					Chance=8,
+					Chance=12,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -1067,17 +1038,17 @@ return
 						parent.thisWorld.countries[c1]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[self.Target].name)
 						parent.thisWorld.countries[self.Target]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[c1].name)
 
-						for i=1,#parent.thisWorld.countries[self.Target].alliances do
+						for i=#parent.thisWorld.countries[self.Target].alliances,1,-1 do
 							if parent.thisWorld.countries[self.Target].alliances[i] == parent.thisWorld.countries[c1].name then
 								table.remove(parent.thisWorld.countries[self.Target].alliances, i)
-								i = #parent.thisWorld.countries[self.Target].alliances + 1
+								i = 0
 							end
 						end
 
-						for i=1,#parent.thisWorld.countries[c1].alliances do
+						for i=#parent.thisWorld.countries[c1].alliances,1,-1 do
 							if parent.thisWorld.countries[c1].alliances[i] == parent.thisWorld.countries[self.Target].name then
 								table.remove(parent.thisWorld.countries[c1].alliances, i)
-								i = #parent.thisWorld.countries[c1].alliances + 1
+								i = 0
 							end
 						end
 
@@ -1164,59 +1135,7 @@ return
 								local rchance = math.random(1, 30)
 								if rchance < 5 then
 									if #parent.thisWorld.countries[c2].regions > 1 then
-										local r = math.random(1, #parent.thisWorld.countries[c2].regions)
-										local rm = table.remove(parent.thisWorld.countries[c2].regions, r)
-										table.insert(parent.thisWorld.countries[c1].regions, rm)
-									
-										local lossMsg = "Loss of the "..rm.name.." region"
-										local cCount = #rm.cities
-										if cCount > 1 then
-											lossMsg = lossMsg.." (including the cities of "
-										else
-											lossMsg = lossMsg.." (including the city of "
-										end
-										for c=1,#rm.cities-1 do
-											lossMsg = lossMsg..rm.cities[c].name
-											if c < #rm.cities-1 then lossMsg = lossMsg.."," end
-											lossMsg = lossMsg.." "
-										end
-										if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
-										lossMsg = lossMsg.." to "..parent.thisWorld.countries[c1].name
-										
-										local gainMsg = "Gained the "..rm.name.." region"
-										local cCount = #rm.cities
-										if cCount > 1 then
-											gainMsg = gainMsg.." (including the cities of "
-										else
-											gainMsg = gainMsg.." (including the city of "
-										end
-										for c=1,#rm.cities-1 do
-											gainMsg = gainMsg..rm.cities[c].name
-											if c < #rm.cities-1 then gainMsg = gainMsg.."," end
-											gainMsg = gainMsg.." "
-										end
-										if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
-										gainMsg = gainMsg.." from "..parent.thisWorld.countries[c2].name
-										
-										parent.thisWorld.countries[c2]:event(parent, lossMsg)
-										parent.thisWorld.countries[c1]:event(parent, gainMsg)
-									
-										local cap = false
-										
-										for p=1,#rm.cities do
-											if rm.cities[p].capital == true then
-												cap = true
-												rm.cities[p].capital = false
-											end
-										end
-										
-										if cap == true then
-											local rc = math.random(1, #parent.thisWorld.countries[c2].regions)
-											local cc = math.random(1, #parent.thisWorld.countries[c2].regions[rc].cities)
-											parent.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
-												
-											parent.thisWorld.countries[c2]:event(parent, "New capital: "..parent.thisWorld.countries[c2].regions[rc].cities[cc].name)
-										end
+										parent:RegionTransfer(c1, c2, rm)
 									end
 								end
 							end

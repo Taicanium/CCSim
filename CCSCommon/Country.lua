@@ -8,7 +8,6 @@ return
 				nl.name = ""
 				nl.founded = 0
 				nl.age = 0
-				nl.average = 1
 				nl.hasruler = -1
 				nl.people = {}
 				nl.events = {}
@@ -24,7 +23,7 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
-				nl.birthrate = 25
+				nl.birthrate = 20
 				nl.deathrate = 15000
 				nl.regions = {}
 				nl.parties = {}
@@ -180,7 +179,7 @@ return
 							if parent.systems[self.system].dynastic == true then
 								for e=1,#self.people do
 									if self.people[e].level == #parent.systems[self.system].ranks - 1 then
-										if self.people[e].age < self.average + 25 then
+										if self.people[e].age < 80 then
 											chil = true
 											table.insert(chils, e)
 											if self.people[e].gender == "Male" then male = true end
@@ -205,7 +204,7 @@ return
 									self:setRuler(parent, chils[1])
 								else
 									for q=1,#chils do
-										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < self.average + 25 then
+										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < 80 then
 											if self.hasruler == -1 then
 												self:setRuler(parent, chils[q])
 											end
@@ -263,26 +262,14 @@ return
 				self.age = self.age + 1
 				
 				self.hasruler = -1
-				self.average = 1
-				
-				local pcmarked = {}
-				
-				for i=1,#pcmarked do
-					table.remove(self.parties, pcmarked[i])
-					for j=i,#pcmarked do
-						pcmarked[j] = pcmarked[j] - 1
-					end
-					
-					local par = Party:new()
-					par:define(parent, ind)
-					table.insert(self.parties, par)
-				end
 				
 				if #self.parties > 0 then
 					local largest = 1
 					for i=1,#self.parties do
 						self.parties[i].leading = false
 						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+						
+						self.parties[i]:evaluate(self, parent, ind)
 					end
 					
 					self.parties[largest].leading = true
@@ -294,8 +281,6 @@ return
 						table.insert(self.parties, par)
 					end
 				end
-				
-				local pmarked = {}
 				
 				for i=1,#self.regions do
 					self.regions[i].population = 0
@@ -331,7 +316,7 @@ return
 								self.hasruler = -1
 							end
 							
-							table.insert(pmarked, i)
+							self:delete(i)
 						else
 							local d = math.random(1, self.deathrate - math.pow(self.people[i].age, 2))
 							if d < 5 then
@@ -339,22 +324,11 @@ return
 									self.hasruler = -1
 								end
 								
-								table.insert(pmarked, i)
-							else
-								self.average = self.average + age
+								self:delete(i)
 							end
 						end
 					end
 				end
-				
-				for i=1,#pmarked do
-					self:delete(pmarked[i])
-					for j=i,#pmarked do
-						pmarked[i] = pmarked[i] - 1
-					end
-				end
-				
-				if #self.people > 0 then self.average = self.average / #self.people end
 				
 				if #self.parties > 0 then
 					local largest = 1
@@ -389,16 +363,7 @@ return
 					self.parties[largestParty].leading = true
 				end
 				
-				for i=1,#self.parties do
-					if self.parties[i]:evaluate(self, parent, ind) == -1 then
-						table.insert(pcmarked, i)
-					end
-				end
-				
-				local omarked = {}
-				local amarked = {}
-				
-				for i=1,#self.ongoing do
+				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].Target ~= nil then
 							local found = false
@@ -414,13 +379,14 @@ return
 							end
 							
 							if found == false then
-								table.insert(omarked, i)
+								local ro = table.remove(self.ongoing, i)
+								ro = nil
 							end
 						end
 					end
 				end
 				
-				for i=1,#self.alliances do
+				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
 					
@@ -434,21 +400,8 @@ return
 					end
 					
 					if found == false then
-						table.insert(amarked, i)
-					end
-				end
-				
-				for i=1,#omarked do
-					table.remove(self.ongoing, omarked[i])
-					for j=i,#omarked do
-						omarked[j] = omarked[j] - 1
-					end
-				end
-				
-				for i=1,#amarked do
-					table.remove(self.alliances, amarked[i])
-					for j=i,#amarked do
-						amarked[j] = amarked[j] - 1
+						local ra = table.remove(self.alliances, i)
+						ra = nil
 					end
 				end
 				
@@ -481,7 +434,7 @@ return
 				if self.population > 2000 then
 					self.birthrate = 10000000
 				else
-					self.birthrate = 25
+					self.birthrate = 20
 				end
 				
 				self:checkRuler(parent)
@@ -502,25 +455,18 @@ return
 				if self.ongoing == nil then self.ongoing = {} end
 				if self.relations == nil then self.relations = {} end
 				
-				local omarked = {}
-				
-				for i=1,#self.ongoing do
+				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].Step ~= nil then
 							local r = self.ongoing[i]:Step(parent, ind)
 							if r == -1 then
-								table.insert(omarked, i)
+								local ro = table.remove(self.ongoing, i)
+								ro = nil
 							end
 						else
-							table.insert(omarked, i)
+							local ro = table.remove(self.ongoing, i)
+							ro = nil
 						end
-					end
-				end
-				
-				for i=1,#omarked do
-					table.remove(self.ongoing, omarked[i])
-					for j=i,#omarked do
-						omarked[j] = omarked[j] - 1
 					end
 				end
 				
@@ -554,12 +500,14 @@ return
 									self.ongoing[#self.ongoing]:Begin(parent, ind)
 								end
 							elseif parent.c_events[i].Args == 2 then
-								local other = math.random(1, #parent.thisWorld.countries)
-								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-								else
-									self.ongoing[#self.ongoing]:Begin(parent, ind, other)
+								if #parent.thisWorld.countries > 1 then
+									local other = math.random(1, #parent.thisWorld.countries)
+									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+									if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:Begin(parent, ind, other)
+									end
 								end
 							end
 						end
