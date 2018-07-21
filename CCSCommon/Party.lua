@@ -13,6 +13,7 @@ return
 				p.leading = false
 				p.popularity = 1
 				p.membership = 0
+				p.revolted = false
 				
 				return p
 			end,
@@ -81,8 +82,8 @@ return
 				self.cfreedom = math.random(-100, 100)
 				
 				local totalfreedom = self.efreedom + self.pfreedom + self.cfreedom
-				if totalfreedom < -225 then radical = true end
-				if totalfreedom > 225 then radical = true end
+				if totalfreedom < -175 then self.radical = true end
+				if totalfreedom > 175 then self.radical = true end
 			end,
 			
 			evaluate = function(self, nl, parent, n)
@@ -108,11 +109,12 @@ return
 				self.popularity = tonumber(math.floor(totalvalue/totalfactors))
 				
 				if #nl.rulers > 0 then
-					if nl.rulers[#nl.rulers].Party == self.name then
-						if self.popularity < 20 then
+					if nl.rulers[#nl.rulers].Party == self.name or self.leading == true then
+						if self.popularity < 10 then
 							for i=1,#parent.c_events do
 								if parent.c_events[i].Name == "Revolution" then
 									parent.c_events[i]:Perform(parent, n)
+									self.revolted = true
 								end
 							end
 						end
@@ -120,11 +122,12 @@ return
 				end
 				
 				if self.radical == true then
-					if nl.rulers[#nl.rulers].Party ~= self.name then
-						if self.popularity > 45 then
+					if nl.rulers[#nl.rulers].Party ~= self.name or self.leading == true then
+						if self.popularity > 80 then
 							for i=1,#parent.c_events do
 								if parent.c_events[i].Name == "Revolution" then
 									parent.c_events[i]:Perform(parent, n)
+									self.revolted = true
 								end
 							end
 						end

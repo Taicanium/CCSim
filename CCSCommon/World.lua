@@ -33,9 +33,7 @@ return
 											if self.countries[i].ongoing[j].Target ~= nil then
 												if self.countries[i].ongoing[j].Target == nz then
 													table.remove(self.countries[i].ongoing, j)
-												end
-												
-												if self.countries[i].ongoing[j].Target > nz then
+												elseif self.countries[i].ongoing[j].Target > nz then
 													self.countries[i].ongoing[j].Target = self.countries[i].ongoing[j].Target - 1
 												end
 											end
@@ -51,7 +49,7 @@ return
 									for j=#self.countries[i].alliances,1,-1 do
 										if self.countries[i].alliances[j] ~= nil then
 											if self.countries[i].alliances[j] == p.name then
-												table.remove(#self.countries[i].alliances, j)
+												table.remove(self.countries[i].alliances, j)
 											end
 										end
 									end

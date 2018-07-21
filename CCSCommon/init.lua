@@ -289,10 +289,14 @@ return
 			end,
 
 			fromFile = function(self, datin)
+				os.execute(clrcmd)
+				print("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
 				self.thisWorld = World:new()
 
+				print("Reading data...")
+				
 				while done == false do
 					local l = f:read()
 					if l == nil then done = true
@@ -391,11 +395,14 @@ return
 					end
 				end
 
+				print("Constructing initial populations...")
+				
 				for i=1,#self.thisWorld.countries do
 					if self.thisWorld.countries[i] ~= nil then
 						self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
 						self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
 						self.thisWorld.countries[i]:makename(self)
+						
 						self.thisWorld.countries[i]:setPop(self, 1000)
 						
 						table.insert(self.final, self.thisWorld.countries[i])
@@ -409,8 +416,8 @@ return
 				local oldmsg = ""
 				local msg = ""
 				
-				os.execute(self.clrcmd)
-
+				print("\nBegin Simulation!")
+				
 				while _running do
 					self.years = self.years + 1
 					self.thisWorld:update(self)
@@ -428,7 +435,7 @@ return
 								table.insert(self.final, self.thisWorld.countries[i])
 							end
 							if self.showinfo == 1 then
-								msg = msg..self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." ("..#self.thisWorld.countries[i].rulers.." rulers)"
+								msg = msg..self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
 								msg = msg.."\nCapital: "
 								for j=1,#self.thisWorld.countries[i].regions do
 									for k=1,#self.thisWorld.countries[i].regions[j].cities do
@@ -523,6 +530,10 @@ return
 					if self.years == self.maxyears then _running = false end
 					if #self.thisWorld.countries == 0 then _running = false end
 				end
+				
+				self:finish()
+				
+				print("\nEnd Simulation!")
 			end,
 
 			finish = function(self)
@@ -590,8 +601,6 @@ return
 
 				io.flush()
 				io.output(cns)
-
-				print("Done!")
 			end,
 
 			c_events = {
@@ -997,8 +1006,8 @@ return
 						local c1PTotal = 0
 						local c2PTotal = 0
 						
-						if c1PTotal - c2PTotal < 35 then
-							if c1PTotal - c2PTotal > -35 then
+						if c1PTotal - c2PTotal < 15 then
+							if c1PTotal - c2PTotal > -15 then
 								return -1
 							end
 						end

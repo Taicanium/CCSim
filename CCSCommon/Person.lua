@@ -232,33 +232,35 @@ return
 					end
 				end
 				
-				if self.party == "" then
-					local pr = math.random(1, #nl.parties)
-					self.party = nl.parties[pr].name
-					nl.parties[pr].membership = nl.parties[pr].membership + 1
-					if self.isruler == true then
-						nl.rulers[#nl.rulers].Party = self.party
-					end
-				else
-					local pcr = 1
-					local pin = -1
-					for i=1,#nl.parties do
-						if nl.parties[i].name == self.party then
-							pcr = nl.parties[i].popularity
-							pin = i
+				if #nl.parties > 0 then
+					if self.party == "" then
+						local pr = math.random(1, #nl.parties)
+						self.party = nl.parties[pr].name
+						nl.parties[pr].membership = nl.parties[pr].membership + 1
+						if self.isruler == true then
+							nl.rulers[#nl.rulers].Party = self.party
 						end
-					end
-					if pcr > 0 then
-						if pcr < 50 then
-							local pc = math.random(1, pcr)
-							if pc == 15 then
-								local pr = math.random(1, #nl.parties)
-								if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
-								self.party = nl.parties[pr].name
-								nl.parties[pr].membership = nl.parties[pr].membership + 1
-								if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
-								if self.isruler == true then
-									nl.rulers[#nl.rulers].Party = self.party
+					else
+						local pcr = 1
+						local pin = -1
+						for i=1,#nl.parties do
+							if nl.parties[i].name == self.party then
+								pcr = nl.parties[i].popularity
+								pin = i
+							end
+						end
+						if pcr > 0 then
+							if pcr < 50 then
+								local pc = math.random(1, pcr)
+								if pc == 15 then
+									local pr = math.random(1, #nl.parties)
+									if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
+									self.party = nl.parties[pr].name
+									nl.parties[pr].membership = nl.parties[pr].membership + 1
+									if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
+									if self.isruler == true then
+										nl.rulers[#nl.rulers].Party = self.party
+									end
 								end
 							end
 						end
