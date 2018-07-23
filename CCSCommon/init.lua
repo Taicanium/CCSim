@@ -389,11 +389,13 @@ return
 					self.thisWorld.countries[c1]:event(self, gainMsg)
 				
 					local cap = false
+					local oldCap = ""
 					
 					for p=1,#rm.cities do
 						if rm.cities[p].capital == true then
 							cap = true
 							rm.cities[p].capital = false
+							oldCap = rm.cities[p].name
 						end
 					end
 					
@@ -401,8 +403,9 @@ return
 						local rc = math.random(1, #self.thisWorld.countries[c2].regions)
 						local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
 						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
-							
-						self.thisWorld.countries[c2]:event(self, "New capital: "..self.thisWorld.countries[c2].regions[rc].cities[cc].name)
+					
+						parent.thisWorld.countries[c]:event("Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
+						parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
 					end
 				end
 			end,
