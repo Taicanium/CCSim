@@ -404,7 +404,7 @@ return
 						local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
 						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
 					
-						parent.thisWorld.countries[c]:event("Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
+						parent.thisWorld.countries[c]:event(self, "Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
 						parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
 					end
 				end
@@ -1343,7 +1343,7 @@ return
 							local cc = math.random(1, #parent.thisWorld.countries[c].regions[rc].cities)
 						
 							if parent.thisWorld.countries[c].regions[rc].cities[cc].name ~= oldCap then
-								parent.thisWorld.countries[c]:event("Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
+								parent.thisWorld.countries[c]:event(parent, "Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
 								parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
 							end
 						end
