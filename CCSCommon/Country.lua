@@ -437,7 +437,7 @@ return
 				
 				self.population = #self.people
 				
-				if self.population > 2500 then
+				if self.population > 1500 then
 					self.deathrate = 1332
 					self.birthrate = 20000
 				else
@@ -518,6 +518,23 @@ return
 									end
 								end
 							end
+						end
+					end
+				end
+				
+				local revCount = 0
+				
+				for i=1,#self.events do
+					if self.events[i].Year > parent.years - 50 then
+						if self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end
+					end
+				end
+				
+				if revCount > 8 then
+					self:event(parent, "Collapsed")
+					for i=#parent.thisWorld.countries,1,-1 do
+						if parent.thisWorld.countries[i].name == self.name then
+							parent.thisWorld:delete(i)
 						end
 					end
 				end

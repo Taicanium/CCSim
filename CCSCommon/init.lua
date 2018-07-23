@@ -404,8 +404,8 @@ return
 						local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
 						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
 					
-						self.thisWorld.countries[c]:event(self, "Capital moved from "..oldCap.." to "..self.thisWorld.countries[c].regions[rc].cities[cc].name)
-						self.thisWorld.countries[c].regions[rc].cities[cc].capital = true
+						self.thisWorld.countries[c2]:event(self, "Capital moved from "..oldCap.." to "..self.thisWorld.countries[c2].regions[rc].cities[cc].name)
+						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
 					end
 				end
 			end,
@@ -671,7 +671,7 @@ return
 					io.write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
 
 					for k=1,#self.final[i].events do
-						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+						if self.final[i].events[k].Event:gsub("of the ,", ","):sub(1, 12) == "Independence" then
 							newc = true
 							pr = tonumber(self.final[i].events[k].Year)
 						end
@@ -695,9 +695,9 @@ return
 					for j=pr,self.maxyears do
 						for k=1,#self.final[i].events do
 							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) == "Revolution" then
+								if self.final[i].events[k].Event:gsub("of the ,", ","):sub(1, 10) == "Revolution" then
 									local y = self.final[i].events[k].Year
-									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
+									io.write(string.format(y..": "..self.final[i].events[k].Event:gsub("of the ,", ",").."\n"))
 								end
 							end
 						end
@@ -710,9 +710,9 @@ return
 
 						for k=1,#self.final[i].events do
 							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) ~= "Revolution" then
+								if self.final[i].events[k].Event:gsub("of the ,", ","):sub(1, 10) ~= "Revolution" then
 									local y = self.final[i].events[k].Year
-									io.write(string.format(y..": "..self.final[i].events[k].Event.."\n"))
+									io.write(string.format(y..": "..self.final[i].events[k].Event:gsub("of the ,", ",").."\n"))
 								end
 							end
 						end
@@ -728,7 +728,7 @@ return
 			c_events = {
 				{
 					Name="Coup d'Etat",
-					Chance=13,
+					Chance=8,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -753,7 +753,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=4,
+					Chance=2,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -800,7 +800,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=3,
+					Chance=2,
 					Target=nil,
 					Args=1,
 					Inverse=false,
