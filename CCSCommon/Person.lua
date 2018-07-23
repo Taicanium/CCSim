@@ -48,8 +48,8 @@ return
 			end,
 
 			makename = function(self, parent, nl)
-				self.name = parent:name()
-				self.surname = parent:name()
+				self.name = parent:name(true, 6)
+				self.surname = parent:name(true, 6)
 				
 				local r = math.random(1, 1000)
 				if r < 501 then self.gender = "Male" else self.gender = "Female" end
@@ -121,7 +121,7 @@ return
 			update = function(self, parent, nl)
 				self.age = self.age + 1
 				
-				if self.surname == nil then self.surname = parent:name() end
+				if self.surname == nil then self.surname = parent:name(true, 6) end
 				
 				local sys = parent.systems[nl.system]
 				

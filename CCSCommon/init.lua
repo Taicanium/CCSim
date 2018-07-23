@@ -17,9 +17,13 @@ return
 			years = 0,
 			yearstorun = 0,
 
-			vowels = {"A", "E", "I", "O", "U"},
-			consonants = {"B", "C", "D", "F", "G", "H", "L", "M", "N", "P", "R", "S", "T", "V"},
-
+			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bl", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wr", "Wh", "Wy", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "cia", "y", "ar", "ich", "a", "us", "es", "is", "lit", "ec", "tria"},
+			
+			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
+			vowels = {"a", "e", "i", "o", "u", "y"},
+			
 			systems = {
 				{
 					name="Monarchy",
@@ -116,29 +120,74 @@ return
 				return copy
 			end,
 
-			name = function(self, l)
+			name = function(self, personal, l)
 				local nom = ""
-				local length = l
+				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
 				
-				if l == nil then length = 9 end
-
-				local nl = math.random(3, length)
-				local nv = 0
-				for i=1,nl do
-					local vc = math.random(1, 100)
-					if vc < math.random(20, 60) then
-						local c = math.random(1, #self.consonants)
-						if i == 1 then nom = nom..self.consonants[c] else nom = nom..string.lower(self.consonants[c]) end
-					else
-						local v = math.random(1, #self.vowels)
-						if i == 1 then nom = nom..self.vowels[v] else nom = nom..string.lower(self.vowels[v]) end
-						nv = nv + 1
+				local taken = {}
+				
+				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
+				table.insert(taken, string.lower(nom))
+				
+				while string.len(nom) < length do
+					local ieic = false -- initial ends in consonant
+					local mbwc = false -- middle begins with consonant
+					local ebwc = false -- ending begins with consonant
+					for i=1,#self.consonants do
+						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
+					end
+					
+					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
+					local istaken = false
+					
+					for i=1,#taken do
+						if taken[i] == mid then istaken = true end
+					end
+					
+					for i=1,#self.consonants do
+						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
+					end
+					
+					if istaken == false then
+						if ieic == true then
+							if mbwc == false then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						else
+							if mbwc == true then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						end
 					end
 				end
-
-				if nv == 0 then
-					local v = math.random(1, #self.vowels)
-					nom = nom..string.lower(self.vowels[v])
+				
+				if personal == false then
+					local ending = self.endgroups[math.random(1, #self.endgroups)]	
+					nom = nom..ending
+				end
+				
+				local check = true
+				
+				while check == true do
+					check = false
+					for i=1,string.len(nom)-1 do
+						if nom:sub(i, i) == nom:sub(i+1, i+1) then
+							check = true
+							
+							local newnom = ""
+							
+							for j=1,i do
+								newnom = newnom..nom:sub(j, j)
+							end
+							for j=i+2,string.len(nom) do
+								newnom = newnom..nom:sub(j, j)
+							end
+							
+							nom = newnom
+						end
+					end
 				end
 
 				return nom
@@ -631,7 +680,7 @@ return
 				},
 				{
 					Name="Revolution",
-					Chance=6,
+					Chance=4,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -1201,6 +1250,40 @@ return
 							end
 						end
 
+						return -1
+					end
+				},
+				{
+					Name="Capital Migration",
+					Chance=2,
+					Target=nil,
+					Args=1,
+					Inverse=false,
+					Perform=function(self, parent, c)
+						local cCount = 0
+						local oldCap = ""
+						
+						for i=1,#parent.thisWorld.countries[c].regions do
+							for j=1,#parent.thisWorld.countries[c].regions[i].cities do
+								cCount = cCount + 1
+								
+								if parent.thisWorld.countries[c].regions[i].cities[j].capital == true then
+									oldCap = parent.thisWorld.countries[c].regions[rc].cities[j].name
+									parent.thisWorld.countries[c].regions[rc].cities[j].capital = false
+								end
+							end
+						end
+					
+						if cCount > 1 then
+							local rc = math.random(1, #parent.thisWorld.countries[c].regions)
+							local cc = math.random(1, #parent.thisWorld.countries[c].regions[rc].cities)
+						
+							if parent.thisWorld.countries[c].regions[rc].cities[cc].name ~= oldCap then
+								parent.thisWorld.countries[c]:event("Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
+								parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
+							end
+						end
+						
 						return -1
 					end
 				}

@@ -68,22 +68,22 @@ return
 
 			makename = function(self, parent)
 				if self.name == "" or self.name == nil then
-					self.name = parent:name()
+					self.name = parent:name(false)
 				end
 				
 				if #self.rulernames < 1 then
 					for k=1,math.random(5,9) do
-						table.insert(self.rulernames, parent:name())
+						table.insert(self.rulernames, parent:name(true, 7))
 					end
 					
 					for k=1,math.random(5,9) do
-						table.insert(self.frulernames, parent:name())
+						table.insert(self.frulernames, parent:name(true, 7))
 					end
 				end
 				
 				if #self.frulernames < 1 then
 					for k=1,math.random(5,9) do
-						table.insert(self.frulernames, parent:name())
+						table.insert(self.frulernames, parent:name(true, 7))
 					end
 				end
 				
@@ -110,7 +110,7 @@ return
 					table.insert(self.regions, r)
 				end
 				
-				print("\nConstructing initial population with size "..self.population.."...")
+				print("Constructing initial population with size "..self.population.."...\n")
 				
 				for i=1,self.population do
 					local n = Person:new()

@@ -13,13 +13,13 @@ return
 			end,
 			
 			makename = function(self, country, parent)
-				self.name = parent:name(7)
+				self.name = parent:name(false, 7)
 				local dup = true
 				while dup == true do
 					dup = false
 					for i=1,#country.regions do
 						if self.name == country.regions[i].name then
-							self.name = parent:name()
+							self.name = parent:name(false, 7)
 							dup = true
 						end
 					end

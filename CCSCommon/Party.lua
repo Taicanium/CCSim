@@ -119,15 +119,15 @@ return
 							end
 						end
 					end
-				end
-				
-				if self.radical == true then
-					if nl.rulers[#nl.rulers].Party ~= self.name or self.leading == true then
-						if self.popularity > 80 then
-							for i=1,#parent.c_events do
-								if parent.c_events[i].Name == "Revolution" then
-									parent.c_events[i]:Perform(parent, n)
-									self.revolted = true
+					
+					if self.radical == true then
+						if nl.rulers[#nl.rulers].Party ~= self.name or self.leading == true then
+							if self.popularity > 80 then
+								for i=1,#parent.c_events do
+									if parent.c_events[i].Name == "Revolution" then
+										parent.c_events[i]:Perform(parent, n)
+										self.revolted = true
+									end
 								end
 							end
 						end
