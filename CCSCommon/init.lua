@@ -19,7 +19,7 @@ return
 
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bl", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wr", "Wh", "Wy", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret"},
-			endgroups = {"land", "ia", "lia", "gia", "ria", "cia", "y", "ar", "ich", "a", "us", "es", "is", "lit", "ec", "tria"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "cia", "y", "ar", "ich", "a", "us", "es", "is", "ec", "tria"},
 			
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
 			vowels = {"a", "e", "i", "o", "u", "y"},
@@ -132,7 +132,6 @@ return
 				while string.len(nom) < length do
 					local ieic = false -- initial ends in consonant
 					local mbwc = false -- middle begins with consonant
-					local ebwc = false -- ending begins with consonant
 					for i=1,#self.consonants do
 						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
 					end
@@ -188,6 +187,77 @@ return
 							nom = newnom
 						end
 					end
+					for i=1,string.len(nom)-3 do
+						if nom:sub(i, i+1) == nom:sub(i+2, i+3) then
+							check = true
+							
+							local newnom = ""
+							
+							for j=1,i+1 do
+								newnom = newnom..nom:sub(j, j)
+							end
+							for j=i+4,string.len(nom) do
+								newnom = newnom..nom:sub(j, j)
+							end
+							
+							nom = newnom
+						end
+						if nom:sub(i, i) == nom:sub(i+2, i+2) then
+							check = true
+							
+							local newnom = ""
+							
+							for j=1,i+1 do
+								newnom = newnom..nom:sub(j, j)
+							end
+							newnom = newnom..self.consonants[math.random(1, #self.consonants)]
+							for j=i+3,string.len(nom) do
+								newnom = newnom..nom:sub(j, j)
+							end
+							
+							nom = newnom
+						end
+					end
+					for i=1,string.len(nom)-2 do
+						local hasvowel = false
+						for j=i,i+2 do
+							for k=1,#self.vowels do
+								if nom:sub(j, j) == self.vowels[k] then
+									hasvowel = true
+								end
+							end
+							
+							if j > i then -- Make an exception for the 'th' group.
+								if string.lower(nom):sub(j-1, j-1) == 't' then
+									if string.lower(nom):sub(j, j) == 'h' then
+										hasvowel = true
+									end
+								end
+							end
+						end
+						
+						if hasvowel == false then
+							check = true
+							
+							local newnom = ""
+						
+							for j=1,i+1 do
+								newnom = newnom..nom:sub(j, j)
+							end
+							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
+							for j=i+3,string.len(nom) do
+								newnom = newnom..nom:sub(j, j)
+							end
+							
+							nom = newnom
+						end
+					end
+					
+					nom = nom:gsub("ee", "i")
+					nom = nom:gsub("yi", "y")
+					nom = nom:gsub("yy", "y")
+					nom = nom:gsub("uu", "u")
+					nom = nom:gsub("ou", "o")
 				end
 
 				return nom
@@ -727,7 +797,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=4,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -800,7 +870,7 @@ return
 				},
 				{
 					Name="War",
-					Chance=13,
+					Chance=12,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -1052,15 +1122,6 @@ return
 							if parent.thisWorld.countries[c2].ongoing[i].Name == self.Name and parent.thisWorld.countries[c2].ongoing[i].Target == c1 then return -1 end
 						end
 						
-						local c1PTotal = 0
-						local c2PTotal = 0
-						
-						if c1PTotal - c2PTotal < 15 then
-							if c1PTotal - c2PTotal > -15 then
-								return -1
-							end
-						end
-						
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 								self.Target = c2
@@ -1268,8 +1329,8 @@ return
 								cCount = cCount + 1
 								
 								if parent.thisWorld.countries[c].regions[i].cities[j].capital == true then
-									oldCap = parent.thisWorld.countries[c].regions[rc].cities[j].name
-									parent.thisWorld.countries[c].regions[rc].cities[j].capital = false
+									oldCap = parent.thisWorld.countries[c].regions[i].cities[j].name
+									parent.thisWorld.countries[c].regions[i].cities[j].capital = false
 								end
 							end
 						end

@@ -281,29 +281,29 @@ return
 							end
 						end
 					end
+					
+					local largest = 1
+				
+					for i=1,#self.parties do
+						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+						self.parties[i]:evaluate(self, parent, ind)
+					end
+					
+					self.parties[largest].leading = true
+					
+					for i=1,#self.regions do
+						self.regions[i].population = 0
+						
+						for j=1,#self.regions[i].cities do
+							self.regions[i].cities[j].population = 0
+						end
+					end
 				else
 					local pc = math.random(3, 6)
 					for i=1,pc do
 						local par = Party:new()
 						par:define(parent, ind)
 						table.insert(self.parties, par)
-					end
-				end
-				
-				local largest = 1
-				
-				for i=1,#self.parties do
-					if self.parties[i].membership > self.parties[largest].membership then largest = i end
-					self.parties[i]:evaluate(self, parent, ind)
-				end
-				
-				self.parties[largest].leading = true
-				
-				for i=1,#self.regions do
-					self.regions[i].population = 0
-					
-					for j=1,#self.regions[i].cities do
-						self.regions[i].cities[j].population = 0
 					end
 				end
 				
@@ -421,10 +421,11 @@ return
 				
 				self.population = #self.people
 				
-				if self.population > 2000 then
-					self.birthrate = 20000
+				if self.population > 2500 then
 					self.deathrate = 1332
+					self.birthrate = 20000
 				else
+					self.deathrate = 15000
 					self.birthrate = 15
 				end
 				
