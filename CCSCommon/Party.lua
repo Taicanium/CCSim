@@ -102,14 +102,12 @@ return
 					end
 				end
 				
-				if self.leading == false then
-					totalvalue = (100*totalfactors)-totalvalue
-				end
-				
 				self.popularity = tonumber(math.floor(totalvalue/totalfactors))
 				
+				if self.leading == false then self.popularity = 100-self.popularity end
+				
 				if #nl.rulers > 0 then
-					if nl.rulers[#nl.rulers].Party == self.name or self.leading == true then
+					if self.leading == true then
 						if self.popularity < 10 then
 							for i=1,#parent.c_events do
 								if parent.c_events[i].Name == "Revolution" then
@@ -120,8 +118,19 @@ return
 						end
 					end
 					
+					if nl.rulers[#nl.rulers].Party == self.name then
+						if self.popularity < 15 then
+							for i=1,#parent.c_events do
+								if parent.c_events[i].Name == "Coup d'Etat" then
+									parent.c_events[i]:Perform(parent, n)
+									self.revolted = true
+								end
+							end
+						end
+					end
+					
 					if self.radical == true then
-						if nl.rulers[#nl.rulers].Party ~= self.name or self.leading == true then
+						if nl.rulers[#nl.rulers].Party ~= self.name and self.leading == true then
 							if self.popularity > 80 then
 								for i=1,#parent.c_events do
 									if parent.c_events[i].Name == "Revolution" then

@@ -270,44 +270,21 @@ return
 				
 				self.hasruler = -1
 				
-				if #self.parties > 0 then
-					for i=#self.parties,1,-1 do
-						self.parties[i].leading = false
-						
-						if self.parties[i].revolted == true then
-							local pr = table.remove(self.parties, i)
-							for j=#self.people,1,-1 do
-								if self.people[j].party == pr.name then self.people[j].party = "" end
-							end
-						end
-					end
+				for i=1,#self.regions do
+					self.regions[i].population = 0
 					
-					local largest = 1
-				
-					for i=1,#self.parties do
-						if self.parties[i].membership > self.parties[largest].membership then largest = i end
-						self.parties[i]:evaluate(self, parent, ind)
-					end
-					
-					self.parties[largest].leading = true
-					
-					for i=1,#self.regions do
-						self.regions[i].population = 0
-						
-						for j=1,#self.regions[i].cities do
-							self.regions[i].cities[j].population = 0
-						end
-					end
-				else
-					local pc = math.random(3, 6)
-					for i=1,pc do
-						local par = Party:new()
-						par:define(parent, ind)
-						table.insert(self.parties, par)
+					for j=1,#self.regions[i].cities do
+						self.regions[i].cities[j].population = 0
 					end
 				end
 				
 				self.averageAge = 0
+				
+				if #self.parties > 0 then
+					for i=1,#self.parties do
+						self.parties[i].membership = 0
+					end
+				end
 				
 				for i=1,#self.people do
 					if self.people[i] ~= nil then
@@ -317,6 +294,12 @@ return
 						end
 						
 						self.people[i]:update(parent, self)
+						
+						if #self.parties > 0 then
+							for i=1,#self.parties do
+								if self.people[i].party == self.parties[i].name then self.parties[i].membership = self.parties[i].membership + 1 end
+							end
+						end
 						
 						self.averageAge = self.averageAge + self.people[i].age
 						
@@ -348,6 +331,39 @@ return
 								self:delete(i)
 							end
 						end
+					end
+				end
+				
+				if #self.parties > 0 then
+					for i=#self.parties,1,-1 do
+						self.parties[i].leading = false
+						
+						if self.parties[i].revolted == true then
+							local pr = table.remove(self.parties, i)
+							for j=#self.people,1,-1 do
+								if self.people[j].party == pr.name then self.people[j].party = "" end
+							end
+						end
+					end
+					
+					local largest = -1
+				
+					for i=1,#self.parties do
+						if largest == -1 then largest = i end
+						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+					end
+					
+					if largest ~= -1 then self.parties[largest].leading = true end
+					
+					for i=1,#self.parties do
+						self.parties[i]:evaluate(self, parent, ind)
+					end
+				else
+					local pc = math.random(3, 6)
+					for i=1,pc do
+						local par = Party:new()
+						par:define(parent, ind)
+						table.insert(self.parties, par)
 					end
 				end
 				
