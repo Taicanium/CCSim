@@ -17,7 +17,7 @@ return
 			years = 0,
 			yearstorun = 0,
 
-			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bl", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wr", "Wh", "Wy", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
+			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wr", "Wh", "Wy", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret"},
 			endgroups = {"land", "ia", "lia", "gia", "ria", "cia", "y", "ar", "ich", "a", "us", "es", "is", "ec", "tria"},
 			
@@ -258,6 +258,9 @@ return
 					nom = nom:gsub("yy", "y")
 					nom = nom:gsub("uu", "u")
 					nom = nom:gsub("ou", "o")
+					nom = nom:gsub("kg", "g")
+					nom = nom:gsub("gk", "g")
+					nom = nom:gsub("uo", "o")
 				end
 
 				return nom
@@ -783,7 +786,7 @@ return
 
 						parent.thisWorld.countries[c]:event(parent, "Revolution: "..oldsys.." to "..parent.systems[parent.thisWorld.countries[c].system].name)
 
-						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - 15
+						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability + 10
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 
 						if math.floor(#parent.thisWorld.countries[c].people / 10) > 1 then

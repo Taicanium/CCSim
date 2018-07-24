@@ -11,7 +11,7 @@ return
 				p.cfreedom = 0
 				p.radical = false
 				p.leading = false
-				p.popularity = 1
+				p.popularity = 50
 				p.membership = 0
 				p.revolted = false
 				
@@ -87,62 +87,6 @@ return
 			end,
 			
 			evaluate = function(self, nl, parent, n)
-				local totalvalue = 1
-				local totalfactors = 2
-				
-				totalvalue = totalvalue + nl.stability
-				totalvalue = totalvalue + nl.strength
-				
-				for i, l in pairs(nl.relations) do
-					for j, k in pairs(parent.thisWorld.countries) do
-						if i.name == k.name then
-							totalvalue = totalvalue + nl.relations[i.name]
-							totalfactors = totalfactors + 1
-						end
-					end
-				end
-				
-				self.popularity = tonumber(math.floor(totalvalue/totalfactors))
-				
-				if self.leading == false then self.popularity = 100-self.popularity end
-				
-				if #nl.rulers > 0 then
-					if self.leading == true then
-						if self.popularity < 10 then
-							for i=1,#parent.c_events do
-								if parent.c_events[i].Name == "Revolution" then
-									parent.c_events[i]:Perform(parent, n)
-									self.revolted = true
-								end
-							end
-						end
-					end
-					
-					if nl.rulers[#nl.rulers].Party == self.name then
-						if self.popularity < 15 then
-							for i=1,#parent.c_events do
-								if parent.c_events[i].Name == "Coup d'Etat" then
-									parent.c_events[i]:Perform(parent, n)
-									self.revolted = true
-								end
-							end
-						end
-					end
-					
-					if self.radical == true then
-						if nl.rulers[#nl.rulers].Party ~= self.name and self.leading == true then
-							if self.popularity > 80 then
-								for i=1,#parent.c_events do
-									if parent.c_events[i].Name == "Revolution" then
-										parent.c_events[i]:Perform(parent, n)
-										self.revolted = true
-									end
-								end
-							end
-						end
-					end
-				end
-				
 				return 0
 			end
 		}

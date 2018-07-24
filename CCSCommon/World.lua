@@ -42,7 +42,7 @@ return
 									for j=#self.countries[i].allyOngoing,1,-1 do
 										if self.countries[i].allyOngoing[j] ~= nil then
 											if self.countries[i].allyOngoing[j]:find(p.name) then
-												table.remove(#self.countries[i].allyOngoing, j)
+												table.remove(self.countries[i].allyOngoing, j)
 											end
 										end
 									end

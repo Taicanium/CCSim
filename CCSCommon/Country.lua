@@ -24,8 +24,8 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
-				nl.birthrate = 20
-				nl.deathrate = 15000
+				nl.birthrate = 15
+				nl.deathrate = 20000
 				nl.regions = {}
 				nl.parties = {}
 				
@@ -258,11 +258,11 @@ return
 			update = function(self, parent, ind)
 				parent:rseed()
 
-				self.stability = self.stability + math.random(-3, 3)
+				self.stability = self.stability + math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 				
-				self.strength = self.strength + math.random(-3, 3)
+				self.strength = self.strength + math.random(-2, 2)
 				if self.strength > 100 then self.strength = 100 end
 				if self.strength < 1 then self.strength = 1 end
 				
@@ -283,6 +283,7 @@ return
 				if #self.parties > 0 then
 					for i=1,#self.parties do
 						self.parties[i].membership = 0
+						self.parties[i].popularity = 0
 					end
 				end
 				
@@ -295,9 +296,18 @@ return
 						
 						self.people[i]:update(parent, self)
 						
+						local belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
+						
 						if #self.parties > 0 then
 							for i=1,#self.parties do
-								if self.people[i].party == self.parties[i].name then self.parties[i].membership = self.parties[i].membership + 1 end
+								if self.people[i].party == self.parties[i].name then
+									self.parties[i].membership = self.parties[i].membership + 1
+								end
+	
+								local partytotal = self.parties[i].pfreedom + self.parties[i].efreedom + self.parties[i].cfreedom
+								if math.abs(belieftotal - partytotal) < 100 then
+									self.parties[i].popularity = self.parties[i].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
+								end
 							end
 						end
 						
@@ -337,6 +347,8 @@ return
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do
 						self.parties[i].leading = false
+						
+						self.parties[i].popularity = math.floor(self.parties[i].popularity)
 						
 						if self.parties[i].revolted == true then
 							local pr = table.remove(self.parties, i)
@@ -437,11 +449,11 @@ return
 				
 				self.population = #self.people
 				
-				if self.population > 1500 then
+				if self.population > 5000 then
 					self.deathrate = 1332
 					self.birthrate = 20000
 				else
-					self.deathrate = 15000
+					self.deathrate = 20000
 					self.birthrate = 15
 				end
 				

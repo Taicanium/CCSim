@@ -22,6 +22,9 @@ return
 				n.spouse = nil
 				n.isruler = false
 				n.parentRuler = false
+				n.pbelief = 0
+				n.ebelief = 0
+				n.cbelief = 0
 				
 				return n
 			end,
@@ -44,6 +47,9 @@ return
 				self.spouse = nil
 				self.isruler = nil
 				self.parentRuler = nil
+				self.pbelief = nil
+				self.ebelief = nil
+				self.cbelief = nil
 				self = nil
 			end,
 
@@ -53,6 +59,10 @@ return
 				
 				local r = math.random(1, 1000)
 				if r < 501 then self.gender = "Male" else self.gender = "Female" end
+				
+				self.pbelief = math.random(-100, 100)
+				self.ebelief = math.random(-100, 100)
+				self.cbelief = math.random(-100, 100)
 				
 				self.birth = parent.years
 				self.age = math.random(1, 30)
@@ -198,6 +208,10 @@ return
 					end
 					local cc = math.random(1, #nl.regions[nc].cities)
 					self.city = nl.regions[nc].cities[cc].name
+					if self.spouse ~= nil then
+						self.spouse.city = self.city
+						self.spouse.region = self.region
+					end
 				end
 				
 				if self.spouse == nil then
@@ -235,32 +249,14 @@ return
 				if #nl.parties > 0 then
 					if self.party == "" then
 						local pr = math.random(1, #nl.parties)
-						self.party = nl.parties[pr].name
-						nl.parties[pr].membership = nl.parties[pr].membership + 1
-						if self.isruler == true then
-							nl.rulers[#nl.rulers].Party = self.party
-						end
-					else
-						local pcr = 1
-						local pin = -1
-						for i=1,#nl.parties do
-							if nl.parties[i].name == self.party then
-								pcr = nl.parties[i].popularity
-								pin = i
-							end
-						end
-						if pcr > 0 then
-							if pcr < 50 then
-								local pc = math.random(1, pcr)
-								if pc == 15 then
-									local pr = math.random(1, #nl.parties)
-									if #nl.parties > 1 then while nl.parties[pr].name == self.party do pr = math.random(1, #nl.parties) end end
-									self.party = nl.parties[pr].name
-									nl.parties[pr].membership = nl.parties[pr].membership + 1
-									if pin ~= -1 then nl.parties[pin].membership = nl.parties[pin].membership - 1 end
-									if self.isruler == true then
-										nl.rulers[#nl.rulers].Party = self.party
-									end
+						local belieftotal = self.pbelief + self.ebelief + self.cbelief
+						local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
+						if belieftotal - partytotal > -30 then
+							if belieftotal - partytotal < 30 then
+								self.party = nl.parties[pr].name
+								nl.parties[pr].membership = nl.parties[pr].membership + 1
+								if self.isruler == true then
+									nl.rulers[#nl.rulers].Party = self.party
 								end
 							end
 						end
