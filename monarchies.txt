@@ -158,9 +158,8 @@ R Schleswig
 S Kiel
 S Lubeck
 R Funen
-S Odense
-R Copenhagen
 P Copenhagen
+S Odense
 King Gorm 936 958
 King Harald 958 986
 King Sweyn 986 1014
@@ -217,7 +216,7 @@ Queen Margrethe 1972 2023
 King Frederick 2024 2039
 King Christian 2039 2094
 C Russia
-R Moscow
+R Ural
 P Moscow
 S Saint Petersburg
 R Siberia

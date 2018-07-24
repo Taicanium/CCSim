@@ -90,10 +90,7 @@ return
 			
 			dobirth = function(self, parent, nl)
 				local nn = Person:new()
-				nn:makename(parent, nl)
-				
-				local sys = parent.systems[nl.system]
-				
+			
 				if self.gender == "Male" then
 					nn.father = self
 					nn.mother = self.spouse
@@ -103,6 +100,10 @@ return
 					nn.mother = self
 					nn.surname = self.spouse.surname
 				end
+			
+				nn:makename(parent, nl)
+				
+				local sys = parent.systems[nl.system]
 				
 				nn.age = 0
 				
@@ -238,11 +239,9 @@ return
 				end
 				
 				if self.spouse ~= nil then
-					if self.age < 65 and self.age > 14 then
-						local tmp = math.random(1, nl.birthrate)
-						if tmp < 3 then
-							self:dobirth(parent, nl)
-						end
+					local tmp = math.random(1, nl.birthrate)
+					if tmp == 1 then
+						self:dobirth(parent, nl)
 					end
 				end
 				
