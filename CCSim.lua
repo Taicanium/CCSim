@@ -32,7 +32,7 @@ function main()
 	if string.lower(datin) == "random" then
 		CCSCommon.thisWorld = World:new()
 	
-		CCSCommon.numCountries = 8
+		CCSCommon.numCountries = 10
 	
 		for j=1,CCSCommon.numCountries do
 			local nl = Country:new()

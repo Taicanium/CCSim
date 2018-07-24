@@ -284,6 +284,7 @@ return
 					for i=1,#self.parties do
 						self.parties[i].membership = 0
 						self.parties[i].popularity = 0
+						self.parties[i].leading = false
 					end
 				end
 				
@@ -299,14 +300,19 @@ return
 						local belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
 						
 						if #self.parties > 0 then
-							for i=1,#self.parties do
-								if self.people[i].party == self.parties[i].name then
-									self.parties[i].membership = self.parties[i].membership + 1
-								end
-	
+							for i=#self.parties,1,-1 do
 								local partytotal = self.parties[i].pfreedom + self.parties[i].efreedom + self.parties[i].cfreedom
 								if math.abs(belieftotal - partytotal) < 100 then
 									self.parties[i].popularity = self.parties[i].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
+								end
+							
+								if self.parties[i].revolted == true then
+									local pr = table.remove(self.parties, i)
+									pr = nil
+								else
+									if self.people[i].party == self.parties[i].name then
+										self.parties[i].membership = self.parties[i].membership + 1
+									end
 								end
 							end
 						end
@@ -346,16 +352,7 @@ return
 				
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do
-						self.parties[i].leading = false
-						
 						self.parties[i].popularity = math.floor(self.parties[i].popularity)
-						
-						if self.parties[i].revolted == true then
-							local pr = table.remove(self.parties, i)
-							for j=#self.people,1,-1 do
-								if self.people[j].party == pr.name then self.people[j].party = "" end
-							end
-						end
 					end
 					
 					local largest = -1
@@ -366,17 +363,6 @@ return
 					end
 					
 					if largest ~= -1 then self.parties[largest].leading = true end
-					
-					for i=1,#self.parties do
-						self.parties[i]:evaluate(self, parent, ind)
-					end
-				else
-					local pc = math.random(3, 6)
-					for i=1,pc do
-						local par = Party:new()
-						par:define(parent, ind)
-						table.insert(self.parties, par)
-					end
 				end
 				
 				self.averageAge = self.averageAge / #self.people

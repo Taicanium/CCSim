@@ -72,22 +72,6 @@ return
 						self:makename(parent, n)
 					end
 				end
-			end,
-			
-			define = function(self, parent, n)
-				self:makename(parent, n)
-				
-				self.efreedom = math.random(-100, 100)
-				self.pfreedom = math.random(-100, 100)
-				self.cfreedom = math.random(-100, 100)
-				
-				local totalfreedom = self.efreedom + self.pfreedom + self.cfreedom
-				if totalfreedom < -175 then self.radical = true end
-				if totalfreedom > 175 then self.radical = true end
-			end,
-			
-			evaluate = function(self, nl, parent, n)
-				return 0
 			end
 		}
 		
