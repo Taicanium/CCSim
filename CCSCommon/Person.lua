@@ -83,8 +83,12 @@ return
 							nc = i
 						end
 					end
-					local cc = math.random(1, #nl.regions[nc].cities)
-					self.city = nl.regions[nc].cities[cc].name
+					if nl.regions[nc] ~= nil then
+						if nl.regions[nc].cities[cc] ~= nil then
+							local cc = math.random(1, #nl.regions[nc].cities)
+							self.city = nl.regions[nc].cities[cc].name
+						end
+					end
 				end
 			end,
 			
@@ -208,10 +212,16 @@ return
 						end
 					end
 					local cc = math.random(1, #nl.regions[nc].cities)
-					self.city = nl.regions[nc].cities[cc].name
-					if self.spouse ~= nil then
-						self.spouse.city = self.city
-						self.spouse.region = self.region
+					if nl.regions[nc] ~= nil then
+						if nl.regions[nc].cities[cc] ~= nil then
+							local cc = math.random(1, #nl.regions[nc].cities)
+							self.city = nl.regions[nc].cities[cc].name
+							
+							if self.spouse ~= nil then
+								self.spouse.city = self.city
+								self.spouse.region = self.region
+							end
+						end
 					end
 				end
 				

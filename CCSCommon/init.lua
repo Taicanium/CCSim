@@ -17,9 +17,9 @@ return
 			years = 0,
 			yearstorun = 0,
 
-			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wr", "Wh", "Wy", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
-			middlegroups = {"gar", "rit", "er", "ar", "ir", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret"},
-			endgroups = {"land", "ia", "lia", "gia", "ria", "cia", "y", "ar", "ich", "a", "us", "es", "is", "ec", "tria"},
+			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ich", "a", "us", "es", "is", "ec", "tria", "tra", "rich"},
 			
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
 			vowels = {"a", "e", "i", "o", "u", "y"},
@@ -172,7 +172,7 @@ return
 				while check == true do
 					check = false
 					for i=1,string.len(nom)-1 do
-						if nom:sub(i, i) == nom:sub(i+1, i+1) then
+						if string.lower(nom:sub(i, i)) == string.lower(nom:sub(i+1, i+1)) then
 							check = true
 							
 							local newnom = ""
@@ -188,7 +188,7 @@ return
 						end
 					end
 					for i=1,string.len(nom)-3 do
-						if nom:sub(i, i+1) == nom:sub(i+2, i+3) then
+						if string.lower(nom:sub(i, i+1)) == string.lower(nom:sub(i+2, i+3)) then
 							check = true
 							
 							local newnom = ""
@@ -202,7 +202,7 @@ return
 							
 							nom = newnom
 						end
-						if nom:sub(i, i) == nom:sub(i+2, i+2) then
+						if string.lower(nom:sub(i, i)) == string.lower(nom:sub(i+2, i+2)) then
 							check = true
 							
 							local newnom = ""
@@ -218,18 +218,34 @@ return
 							nom = newnom
 						end
 					end
+					for i=1,string.len(nom)-5 do
+						if string.lower(nom:sub(i, i+2)) == string.lower(nom:sub(i+3, i+5)) then
+							check = true
+							
+							local newnom = ""
+							
+							for j=1,i+2 do
+								newnom = newnom..nom:sub(j, j)
+							end
+							for j=i+6,string.len(nom) do
+								newnom = newnom..nom:sub(j, j)
+							end
+							
+							nom = newnom
+						end
+					end
 					for i=1,string.len(nom)-2 do
 						local hasvowel = false
 						for j=i,i+2 do
 							for k=1,#self.vowels do
-								if nom:sub(j, j) == self.vowels[k] then
+								if string.lower(nom:sub(j, j)) == self.vowels[k] then
 									hasvowel = true
 								end
 							end
 							
 							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nom):sub(j-1, j-1) == 't' then
-									if string.lower(nom):sub(j, j) == 'h' then
+								if string.lower(nom:sub(j-1, j-1)) == 't' then
+									if string.lower(nom:sub(j, j)) == 'h' then
 										hasvowel = true
 									end
 								end
@@ -253,14 +269,59 @@ return
 						end
 					end
 					
-					nom = nom:gsub("ee", "i")
-					nom = nom:gsub("yi", "y")
-					nom = nom:gsub("yy", "y")
-					nom = nom:gsub("uu", "u")
-					nom = nom:gsub("ou", "o")
-					nom = nom:gsub("kg", "g")
-					nom = nom:gsub("gk", "g")
-					nom = nom:gsub("uo", "o")
+					local nomlower = string.lower(nom)
+					
+					for i=1,2 do						
+						nomlower = nomlower:gsub("ee", "i")
+						nomlower = nomlower:gsub("yi", "y")
+						nomlower = nomlower:gsub("yy", "y")
+						nomlower = nomlower:gsub("uu", "u")
+						nomlower = nomlower:gsub("ou", "o")
+						nomlower = nomlower:gsub("kg", "g")
+						nomlower = nomlower:gsub("gk", "g")
+						nomlower = nomlower:gsub("rz", "z")
+						nomlower = nomlower:gsub("y", "t")
+						nomlower = nomlower:gsub("dl", "l")
+						nomlower = nomlower:gsub("tl", "l")
+						nomlower = nomlower:gsub("cg", "c")
+						nomlower = nomlower:gsub("gc", "g")
+						nomlower = nomlower:gsub("tp", "t")
+						nomlower = nomlower:gsub("dt", "t")
+						nomlower = nomlower:gsub("ct", "t")
+						nomlower = nomlower:gsub("tc", "t")
+						nomlower = nomlower:gsub("hc", "c")
+						nomlower = nomlower:gsub("fd", "d")
+						nomlower = nomlower:gsub("df", "d")
+						nomlower = nomlower:gsub("ae", "a")
+						nomlower = nomlower:gsub("gl", "l")
+						nomlower = nomlower:gsub("bt", "b")
+						nomlower = nomlower:gsub("tb", "t")
+						nomlower = nomlower:gsub("ua", "a")
+						nomlower = nomlower:gsub("oe", "e")
+						nomlower = nomlower:gsub("pg", "g")
+						nomlower = nomlower:gsub("ui", "i")
+						nomlower = nomlower:gsub("mt", "m")
+						nomlower = nomlower:gsub("lt", "l")
+						nomlower = nomlower:gsub("rt", "r")
+						nomlower = nomlower:gsub("gj", "g")
+						nomlower = nomlower:gsub("tn", "t")
+						nomlower = nomlower:gsub("jz", "j")
+						nomlower = nomlower:gsub("zt", "t")
+						nomlower = nomlower:gsub("gd", "d")
+						nomlower = nomlower:gsub("dg", "g")
+						nomlower = nomlower:gsub("jg", "j")
+						nomlower = nomlower:gsub("jc", "j")
+						nomlower = nomlower:gsub("hg", "g")
+						nomlower = nomlower:gsub("tm", "t")
+						nomlower = nomlower:gsub("oa", "a")
+						nomlower = nomlower:gsub("cp", "c")
+						nomlower = nomlower:gsub("fh", "f")
+						nomlower = nomlower:gsub("uo", "o")
+						nomlower = nomlower:gsub("kid", "cid")
+					end
+					
+					nom = string.upper(nomlower:sub(1, 1))
+					nom = nom..nomlower:sub(2, string.len(nomlower))
 				end
 
 				return nom
@@ -523,9 +584,16 @@ return
 				print("Constructing initial populations...")
 				
 				for i=1,#self.thisWorld.countries do
+					if math.fmod(i, 5) == 0 then print(tostring(math.ceil(i/#self.thisWorld.countries*100)).."% done") end 
 					if self.thisWorld.countries[i] ~= nil then
-						self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
-						self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
+						if #self.thisWorld.countries[i].rulers > 0 then
+							self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
+							self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
+						else
+							self.thisWorld.countries[i].founded = self.years
+							self.thisWorld.countries[i].age = 0
+							self.thisWorld.countries[i].system = math.random(1, #self.systems)
+						end
 						self.thisWorld.countries[i]:makename(self)
 						
 						self.thisWorld.countries[i]:setPop(self, 1000)
@@ -674,7 +742,7 @@ return
 					io.write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
 
 					for k=1,#self.final[i].events do
-						if self.final[i].events[k].Event:gsub("of the ,", ","):sub(1, 12) == "Independence" then
+						if self.final[i].events[k].Event:gsub(" of the ,", ","):sub(1, 12) == "Independence" then
 							newc = true
 							pr = tonumber(self.final[i].events[k].Year)
 						end

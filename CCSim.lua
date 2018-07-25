@@ -7,9 +7,9 @@ function main()
 	if clrarr == nil then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	
 	os.execute(CCSCommon.clrcmd)
-	io.write(string.format("\tCCSIM : Compact Country Simulator\n\n"))
+	io.write(string.format("\n\tCCSIM : Compact Country Simulator\n\n"))
 	
-	io.write(string.format("\n How many years should the simulation run? > "))
+	io.write(string.format("\nHow many years should the simulation run? > "))
 	local datin = io.read()
 	
 	CCSCommon.maxyears = tonumber(datin)
@@ -20,13 +20,13 @@ function main()
 		CCSCommon.maxyears = tonumber(datin)
 	end
 	
-	io.write(string.format("\n Do you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
+	io.write(string.format("\nDo you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
 	datin = io.read()
 	datin = string.lower(datin)
 	
 	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
 	
-	io.write(string.format("\n Data > "))
+	io.write(string.format("\nData > "))
 	datin = io.read()
 	
 	if string.lower(datin) == "random" then

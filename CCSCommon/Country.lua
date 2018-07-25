@@ -24,7 +24,7 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
-				nl.birthrate = 7
+				nl.birthrate = 5
 				nl.deathrate = 2662
 				nl.regions = {}
 				nl.parties = {}
@@ -435,10 +435,10 @@ return
 				
 				self.population = #self.people
 				
-				if self.population > 5000 then
+				if self.population > 1000 then
 					self.birthrate = 15000
 				else
-					self.birthrate = 7
+					self.birthrate = 5
 				end
 				
 				self:checkRuler(parent)
