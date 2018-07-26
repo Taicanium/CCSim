@@ -89,9 +89,12 @@ King Frederick 1906 1912
 King Christian 1912 1947
 King Frederick 1947 1972
 Queen Margrethe 1972 2019
-C El Salvador
+C Egypt
 R Delta
 P Cairo
+C El Salvador
+R San Salvador
+P San Salvador
 C Finland
 R Helsinki
 P Helsinki
@@ -373,6 +376,8 @@ C Switzerland
 R Bern
 P Bern
 C Syria
+R Aleppo
+S Aleppo
 R Damascus
 P Damascus
 C Taiwan

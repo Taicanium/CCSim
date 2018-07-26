@@ -871,66 +871,124 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=2,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Inverse=false,
+					Status = 0,
+					OpIntervened = {},
+					GovIntervened = {},
 					Begin=function(self, parent, c)
 						parent.thisWorld.countries[c]:event(parent, "Beginning of civil war")
+						self.Status = 0 -- -50 is victory for the opposition side; 50 is victory for the present government.
+						self.Status = self.Status + (parent.thisWorld.countries[c].stability - 50) -- 100 means the present government is entirely stable. 0 means it's practically collapsed already. So, 50 means neither side gets an advantage; else, one does.
+						self.OpIntervened = {}
+						self.GovIntervened = {}
 					end,
 					Step=function(self, parent, c)
-						local doEnd = math.random(1, 75)
-						if doEnd < 5 then return self:End(parent, c) else return 0 end
-					end,
-					End=function(self, parent, c)
-						for q=1,#parent.thisWorld.countries[c].people do
-							if parent.thisWorld.countries[c].people[q] ~= nil then
-								if parent.thisWorld.countries[c].people[q].isruler == true then
-									parent.thisWorld.countries[c]:delete(q)
-								end
-							end
-						end
-
-						local oldsys = parent.systems[parent.thisWorld.countries[c].system].name
-
-						parent.thisWorld.countries[c].system = math.random(1, #parent.systems)
-
-						local ind = 1
-						for q=1,#parent.thisWorld.countries do
-							if parent.thisWorld.countries[q].name == parent.thisWorld.countries[c].name then
-								ind = q
-								q = #parent.thisWorld.countries + 1
-							end
-						end
-						parent.thisWorld.countries[c]:checkRuler(parent)
-
-						local newRuler = nil
-						for i=1,#parent.thisWorld.countries[c].people do
-							if parent.thisWorld.countries[c].people[i].isruler == true then newRuler = i end
-						end
-
-						local namenum = 0
-						local prevTitle = ""
-						if parent.thisWorld.countries[c].people[newRuler].prevTitle ~= nil then prevTitle = parent.thisWorld.countries[c].people[newRuler].prevTitle.." " end
-
-						if prevTitle == "Homeless " then prevTitle = "" end
-						if prevTitle == "Citizen " then prevTitle = "" end
-						if prevTitle == "Mayor " then prevTitle = "" end
-
-						if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
-							for i=1,#parent.thisWorld.countries[c].rulers do
-								if tonumber(parent.thisWorld.countries[c].rulers[i].From) >= parent.thisWorld.countries[c].founded then
-									if parent.thisWorld.countries[c].rulers[i].Name == parent.thisWorld.countries[c].people[newRuler].name then
-										if parent.thisWorld.countries[c].rulers[i].Title == parent.thisWorld.countries[c].people[newRuler].title then
-											namenum = namenum + 1
+						for i=1,#parent.thisWorld.countries do
+							for j=1,#self.OpIntervened do if self.OpIntervened[j] == parent.thisWorld.countries[i].name then i = c end end
+							for j=1,#self.GovIntervened do if self.GovIntervened[j] == parent.thisWorld.countries[i].name then i = c end end
+							if i ~= c then
+								if parent.thisWorld.countries[i].relations[parent.thisWorld.countries[c].name] ~= nil then
+									if parent.thisWorld.countries[i].relations[parent.thisWorld.countries[c].name] < 50 then
+										local intervene = math.random(1, parent.thisWorld.countries[i].relations[parent.thisWorld.countries[c].name]*3)
+										if intervene == 1 then
+											parent.thisWorld.countries[c]:event(parent, "Intervention on the side of the opposition by "..parent.thisWorld.countries[i].name)
+											parent.thisWorld.countries[i]:event(parent, "Intervention in the "..parent.thisWorld.countries[c].name.." civil war on the side of the opposition")
+											table.insert(self.OpIntervened, parent.thisWorld.countries[i].name)
+										end
+									elseif parent.thisWorld.countries[i].relations[parent.thisWorld.countries[c].name] > 50 then
+										local intervene = math.random(50, (150-parent.thisWorld.countries[i].relations[parent.thisWorld.countries[c].name])*3)
+										if intervene == 50 then
+											parent.thisWorld.countries[c]:event(parent, "Intervention on the side of the government by "..parent.thisWorld.countries[i].name)
+											parent.thisWorld.countries[i]:event(parent, "Intervention in the "..parent.thisWorld.countries[c].name.." civil war on the side of the government")
+											table.insert(self.GovIntervened, parent.thisWorld.countries[i].name)
 										end
 									end
 								end
 							end
+						end
+						
+						local varistab = parent.thisWorld.countries[c].stability - 50
+						
+						for i=1,#self.OpIntervened do
+							for j=#parent.thisWorld.countries,1,-1 do
+								if parent.thisWorld.countries[j].name == self.OpIntervened[i] then
+									varistab = varistab - (parent.thisWorld.countries[j].stability - 50)
+									
+									j = 1
+								end
+							end
+						end
+						
+						for i=1,#self.GovIntervened do
+							for j=#parent.thisWorld.countries,1,-1 do
+								if parent.thisWorld.countries[j].name == self.GovIntervened[i] then
+									varistab = varistab + (parent.thisWorld.countries[j].stability - 50)
+									
+									j = 1
+								end
+							end
+						end
+						
+						self.Status = self.Status + math.ceil(math.random(varistab-10,varistab+10)/10)
+						
+						if self.Status <= -50 then return self:End(parent, c) elseif self.Status >= 50 then return self:End(parent, c) else return 0 end
+					end,
+					End=function(self, parent, c)
+						if self.Status >= 50 then -- Government victory
+							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..parent.thisWorld.countries[c].rulers[#parent.thisWorld.countries[c].rulers].Title.." "..parent.thisWorld.countries[c].rulers[#parent.thisWorld.countries[c].rulers].Name.." "..parent:roman(parent.thisWorld.countries[c].rulers[#parent.thisWorld.countries[c].rulers].Number).." of "..parent.thisWorld.countries[c].rulers[#parent.thisWorld.countries[c].rulers].Country)
+						else -- Opposition victory
+							for q=1,#parent.thisWorld.countries[c].people do
+								if parent.thisWorld.countries[c].people[q] ~= nil then
+									if parent.thisWorld.countries[c].people[q].isruler == true then
+										parent.thisWorld.countries[c]:delete(q)
+									end
+								end
+							end
 
-							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..CCSCommon:roman(namenum).." of "..parent.thisWorld.countries[c].name)
-						else
-							parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
+							local oldsys = parent.systems[parent.thisWorld.countries[c].system].name
+
+							parent.thisWorld.countries[c].system = math.random(1, #parent.systems)
+
+							local ind = 1
+							for q=1,#parent.thisWorld.countries do
+								if parent.thisWorld.countries[q].name == parent.thisWorld.countries[c].name then
+									ind = q
+									q = #parent.thisWorld.countries + 1
+								end
+							end
+							parent.thisWorld.countries[c]:checkRuler(parent)
+
+							local newRuler = nil
+							for i=1,#parent.thisWorld.countries[c].people do
+								if parent.thisWorld.countries[c].people[i].isruler == true then newRuler = i end
+							end
+
+							local namenum = 0
+							local prevTitle = ""
+							if parent.thisWorld.countries[c].people[newRuler].prevTitle ~= nil then prevTitle = parent.thisWorld.countries[c].people[newRuler].prevTitle.." " end
+
+							if prevTitle == "Homeless " then prevTitle = "" end
+							if prevTitle == "Citizen " then prevTitle = "" end
+							if prevTitle == "Mayor " then prevTitle = "" end
+
+							if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
+								for i=1,#parent.thisWorld.countries[c].rulers do
+									if tonumber(parent.thisWorld.countries[c].rulers[i].From) >= parent.thisWorld.countries[c].founded then
+										if parent.thisWorld.countries[c].rulers[i].Name == parent.thisWorld.countries[c].people[newRuler].name then
+											if parent.thisWorld.countries[c].rulers[i].Title == parent.thisWorld.countries[c].people[newRuler].title then
+												namenum = namenum + 1
+											end
+										end
+									end
+								end
+
+								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent:roman(namenum).." of "..parent.thisWorld.countries[c].name)
+							else
+								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
+							end
 						end
 
 						return -1
@@ -1269,7 +1327,7 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=4,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -1390,7 +1448,7 @@ return
 				},
 				{
 					Name="Capital Migration",
-					Chance=2,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Inverse=false,
