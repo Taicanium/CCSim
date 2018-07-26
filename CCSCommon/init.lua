@@ -420,33 +420,42 @@ return
 					end
 				
 					local lossMsg = "Loss of the "..rm.name.." region"
+					local gainMsg = "Gained the "..rm.name.." region"
+					
 					local cCount = #rm.cities
 					if cCount > 1 then
 						lossMsg = lossMsg.." (including the cities of "
-					else
-						lossMsg = lossMsg.." (including the city of "
-					end
-					for c=1,#rm.cities-1 do
-						lossMsg = lossMsg..rm.cities[c].name
-						if c < #rm.cities-1 then lossMsg = lossMsg.."," end
-						lossMsg = lossMsg.." "
-					end
-					if cCount > 1 then lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then lossMsg = lossMsg..rm.cities[#rm.cities].name..")" else lossMsg = lossMsg..")" end
-					lossMsg = lossMsg.." to "..self.thisWorld.countries[c1].name
-					
-					local gainMsg = "Gained the "..rm.name.." region"
-					local cCount = #rm.cities
-					if cCount > 1 then
 						gainMsg = gainMsg.." (including the cities of "
-					else
+					elseif cCount == 1 then
+						lossMsg = lossMsg.." (including the city of "
 						gainMsg = gainMsg.." (including the city of "
 					end
+					
 					for c=1,#rm.cities-1 do
+						lossMsg = lossMsg..rm.cities[c].name
 						gainMsg = gainMsg..rm.cities[c].name
-						if c < #rm.cities-1 then gainMsg = gainMsg.."," end
+						
+						if c < #rm.cities-1 then
+							lossMsg = lossMsg..","
+							gainMsg = gainMsg..","
+						end
+						
+						lossMsg = lossMsg.." "
 						gainMsg = gainMsg.." "
 					end
-					if cCount > 1 then gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")" elseif cCount == 1 then gainMsg = gainMsg..rm.cities[#rm.cities].name..")"else gainMsg = gainMsg..")" end
+					
+					if cCount > 1 then
+						lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")"
+						gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")"
+					elseif cCount == 1 then
+						lossMsg = lossMsg..rm.cities[#rm.cities].name..")"
+						gainMsg = gainMsg..rm.cities[#rm.cities].name..")"
+					else
+						lossMsg = lossMsg..")"
+						gainMsg = gainMsg..")"
+					end
+					
+					lossMsg = lossMsg.." to "..self.thisWorld.countries[c1].name
 					gainMsg = gainMsg.." from "..self.thisWorld.countries[c2].name
 					
 					self.thisWorld.countries[c2]:event(self, lossMsg)
@@ -465,17 +474,24 @@ return
 					
 					if cap == true then
 						local rc = math.random(1, #self.thisWorld.countries[c2].regions)
-						local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
-						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
-					
-						self.thisWorld.countries[c2]:event(self, "Capital moved from "..oldCap.." to "..self.thisWorld.countries[c2].regions[rc].cities[cc].name)
-						self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
+						
+						if self.thisWorld.countries[c2].regions[rc] ~= nil then
+							local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
+						
+							if self.thisWorld.countries[c2].regions[rc].cities[cc] ~= nil then
+								self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
+								local msg = "Capital moved "
+								if oldCap ~= "" then msg = msg.."from "..oldCap.." " end
+								msg = msg.."to "..self.thisWorld.countries[c2].regions[rc].cities[cc].name
+								
+								self.thisWorld.countries[c2]:event(self, msg)
+							end
+						end
 					end
 				end
 			end,
 
 			fromFile = function(self, datin)
-				os.execute(clrcmd)
 				print("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false

@@ -110,6 +110,11 @@ return
 					table.insert(self.regions, r)
 				end
 				
+				local rc = math.random(1, #self.regions)
+				local cc = math.random(1, #self.regions[rc].cities)
+				self.regions[rc].cities[cc].capital = true
+				
+				print("Capital city: "..self.regions[rc].cities[cc].name.." in the region of "..self.regions[rc].name)
 				print("Constructing initial population with size "..self.population.."...\n")
 				
 				for i=1,self.population do
@@ -117,10 +122,6 @@ return
 					n:makename(parent, self)
 					self:add(n)
 				end
-				
-				local rc = math.random(1, #self.regions)
-				local cc = math.random(1, #self.regions[rc].cities)
-				self.regions[rc].cities[cc].capital = true
 				
 				self.founded = parent.years
 			end,
