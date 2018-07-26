@@ -884,7 +884,7 @@ return
 				},
 				{
 					Name="Civil War",
-					Chance=3,
+					Chance=2,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -1340,7 +1340,7 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=3,
+					Chance=2,
 					Target=nil,
 					Args=1,
 					Inverse=false,
@@ -1410,7 +1410,7 @@ return
 				},
 				{
 					Name="Conquer",
-					Chance=5,
+					Chance=3,
 					Target=nil,
 					Args=2,
 					Inverse=true,
@@ -1461,7 +1461,7 @@ return
 				},
 				{
 					Name="Capital Migration",
-					Chance=3,
+					Chance=2,
 					Target=nil,
 					Args=1,
 					Inverse=false,
