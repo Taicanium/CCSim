@@ -419,10 +419,10 @@ return
 						end
 					end
 				
-					local lossMsg = "Loss of the "..rm.name.." region"
-					local gainMsg = "Gained the "..rm.name.." region"
+					local lossMsg = "Loss of the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
+					local gainMsg = "Gained the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
 					
-					local cCount = #rm.cities
+					local cCount = #self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities
 					if cCount > 1 then
 						lossMsg = lossMsg.." (including the cities of "
 						gainMsg = gainMsg.." (including the cities of "
@@ -431,11 +431,11 @@ return
 						gainMsg = gainMsg.." (including the city of "
 					end
 					
-					for c=1,#rm.cities-1 do
-						lossMsg = lossMsg..rm.cities[c].name
-						gainMsg = gainMsg..rm.cities[c].name
+					for c=1,#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities-1 do
+						lossMsg = lossMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[c].name
+						gainMsg = gainMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[c].name
 						
-						if c < #rm.cities-1 then
+						if c < #self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities-1 then
 							lossMsg = lossMsg..","
 							gainMsg = gainMsg..","
 						end
@@ -445,14 +445,11 @@ return
 					end
 					
 					if cCount > 1 then
-						lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")"
-						gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")"
+						lossMsg = lossMsg.."and "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
+						gainMsg = gainMsg.."and "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
 					elseif cCount == 1 then
-						lossMsg = lossMsg..rm.cities[#rm.cities].name..")"
-						gainMsg = gainMsg..rm.cities[#rm.cities].name..")"
-					else
-						lossMsg = lossMsg..")"
-						gainMsg = gainMsg..")"
+						lossMsg = lossMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
+						gainMsg = gainMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
 					end
 					
 					lossMsg = lossMsg.." to "..self.thisWorld.countries[c1].name
@@ -464,11 +461,11 @@ return
 					local cap = false
 					local oldCap = ""
 					
-					for p=1,#rm.cities do
-						if rm.cities[p].capital == true then
+					for p=1,#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities do
+						if self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].capital == true then
 							cap = true
-							rm.cities[p].capital = false
-							oldCap = rm.cities[p].name
+							self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].capital = false
+							oldCap = self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].name
 						end
 					end
 					
