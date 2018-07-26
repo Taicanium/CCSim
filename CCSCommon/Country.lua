@@ -187,7 +187,7 @@ return
 							if parent.systems[self.system].dynastic == true then
 								for e=1,#self.people do
 									if self.people[e].level == #parent.systems[self.system].ranks - 1 then
-										if self.people[e].age < 80 then
+										if self.people[e].age < self.averageAge + 20 then
 											chil = true
 											table.insert(chils, e)
 											if self.people[e].gender == "Male" then male = true end
@@ -205,14 +205,16 @@ return
 									g = math.random(1,2500)
 								end
 								if g == 2 then
-									self:setRuler(parent, z)
+									if self.people[z].age < self.averageAge + 20 then
+										self:setRuler(parent, z)
+									end
 								end
 							else
 								if male == false then
 									self:setRuler(parent, chils[1])
 								else
 									for q=1,#chils do
-										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < 80 then
+										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < self.averageAge + 20 then
 											if self.hasruler == -1 then
 												self:setRuler(parent, chils[q])
 											end
@@ -448,7 +450,7 @@ return
 			end,
 
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e, Year=parent.years})
+				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" .", "."), Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)

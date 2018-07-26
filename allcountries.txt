@@ -2,15 +2,51 @@ Year 2019
 C Afghanistan
 R Kabul
 P Kabul
+C Albania
+R Tirana
+P Tirana
+C Andorra
+R Andorra la Vella
+P Andorra la Vella
+C Angola
+R Luanda
+P Luanda
+C Antigua and Barbuda
+R St. John's
+P St. John's
 C Argentina
 R Buenos Aires
 P Buenos Aires
+C Armenia
+R Yerevan
+P Yerevan
 C Australia
 R Canberra
 P Canberra
 R Sydney
 S Sydney
 S Melbourne
+C Austria
+R Vienna
+P Vienna
+C Azerbaijan
+R Baku
+P Baku
+C Bahamas
+R Nassau
+P Nassau
+C Bahrain
+R Manama
+P Manama
+C Bangladesh
+R Dhaka
+P Dhaka
+C Barbados
+R Bridgetown
+P Bridgetown
+C Belarus
+R Minsk
+P Minsk
 C Belgium
 R Flanders
 P Brussels
@@ -26,6 +62,102 @@ King Leopold 1934 1951
 King Baudouin 1951 1993
 King Albert 1993 2013
 King Philip 2013 2019
+C Belize
+R Belmopan
+P Belmopan
+C Benin
+R Porto Novo
+P Porto Novo
+C Bhutan
+R Thimphu
+P Thimphu
+C Bolivia
+R La Paz
+P Sucre
+C Bosnia and Herzegovina
+R Sarajevo
+P Sarajevo
+C Botswana
+R Gaborone
+P Gaborone
+C Brazil
+R Brasilia
+P Brasilia
+C Brunei
+R Bandar Seri Begawan
+P Bandar Seri Begawan
+C Bulgaria
+R Sofia
+P Sofia
+C Burkina Faso
+R Ouagadougou
+P Ouagadougou
+C Burundi
+R Bujumbura
+P Bujumbura
+C Cambodia
+R Phnom Penh
+P Phnom Penh
+C Cameroon
+R Yaounde
+P Yaounde
+C Canada
+R Ottawa
+P Ottawa
+C Cape Verde
+R Praia
+P Praia
+C Central African Republic
+R Bangui
+P Bangui
+C Chad
+R N'Djamena
+P N'Djamena
+C Chile
+R Santiago
+P Santiago
+C China
+R Beijing
+P Beijing
+S Shanghai
+R Nanjing
+P Nanjing
+S Nanking
+R Tibet
+S Lhasa
+C Colombia
+R Bogota
+P Bogota
+C Comoros
+R Moroni
+P Moroni
+C Congo
+R Brazzaville
+P Brazzaville
+C Costa Rica
+R San Jose
+P San Jose
+C Cote d'Ivoire
+R Yamoussoukro
+P Yamoussoukro
+C Croatia
+R Zagreb
+P Zagreb
+C Cuba
+R Havana
+P Havana
+C Cyprus
+R Nicosia
+P Nicosia
+C Cyprus
+R Nicosia
+P Nicosia
+C Czechia
+R Prague
+P Prague
+C Democratic Republic of the Congo
+R Kinshasa
+P Kinshasa
 C Denmark
 R Jutland
 S Aarhus
@@ -89,12 +221,46 @@ King Frederick 1906 1912
 King Christian 1912 1947
 King Frederick 1947 1972
 Queen Margrethe 1972 2019
+C Djibouti
+R Djibouti
+P Djibouti
+C Dominica
+R Roseau
+P Roseau
+C Dominican Republic
+R Santo Domingo
+P Santo Domingo
+C East Timor
+R Dili
+P Dili
+C Ecuador
+R Quito
+P Quito
 C Egypt
-R Delta
+R Nile Delta
 P Cairo
+S Alexandria
 C El Salvador
 R San Salvador
 P San Salvador
+C El Salvador
+R San Salvador
+P San Salvador
+C Equatorial Guinea
+R Malabo
+P Malabo
+C Eritrea
+R Asmara
+P Asmara
+C Estonia
+R Tallinn
+P Tallinn
+C Ethiopia
+R Addis Ababa
+P Addis Ababa
+C Fiji
+R Suva
+P Suva
 C Finland
 R Helsinki
 P Helsinki
@@ -171,12 +337,72 @@ King Alphonse 1936 1941
 King Henry 1941 1975
 King Alphonse 1975 1989
 King Louis 1989 2019
+C French Guiana
+R Cayenne
+P Cayenne
+C Gabon
+R Libreville
+P Libreville
+C Georgia
+R Tbilisi
+P Tbilisi
 C Germany
 R Berlin
 P Berlin
+C Ghana
+R Accra
+P Accra
 C Greece
 R Athens
 P Athens
+C Grenada
+R St. George's
+P St. George's
+C Guatemala
+R Guatemala City
+P Guatemala City
+C Guinea
+R Conakry
+P Conakry
+C Guinea-Bissau
+R Bissau
+P Bissau
+C Guyana
+R Georgetown
+P Georgetown
+C Haiti
+R Port-au-Prince
+P Port-au-Prince
+C Honduras
+R Tegucigalpa
+P Tegucigalpa
+C Hungary
+R Budapest
+P Budapest
+C Iceland
+R Reykjavik
+P Reykjavik
+C India
+R New Delhi
+P New Delhi
+C Indonesia
+R Jakarta
+P Jakarta
+C Iran
+R Tehran
+P Tehran
+C Iraq
+R Baghdad
+P Baghdad
+C Israel
+R Jerusalem
+P Jerusalem
+C Italy
+R Rome
+P Rome
+C Jamaica
+R Kingston
+P Kingston
 C Japan
 R Honshu
 P Tokyo
@@ -282,18 +508,170 @@ Emperor Meiji 1867 1912
 Emperor Taishou 1912 1926
 Emperor Shouwa 1926 1989
 Emperor Heisei 1989 2019
+C Jordan
+R Amman
+P Amman
+C Kazakhstan
+R Astana
+P Astana
+C Kazakhstan
+R Astana
+P Astana
+C Kenya
+R Nairobi
+P Nairobi
+C Kiribati
+R South Tarawa
+P South Tarawa
+C Kuwait
+R Kuwait City
+P Kuwait City
+C Kyrgyzstan
+R Bishkek
+P Bishkek
+C Laos
+R Vientiane
+P Vientiane
+C Latvia
+R Riga
+P Riga
+C Lebanon
+R Beirut
+P Beirut
+C Lesotho
+R Maseru
+P Maseru
+C Liberia
+R Monrovia
+P Monrovia
+C Libya
+R Tripoli
+P Tripoli
+C Liechtenstein
+R Vaduz
+P Vaduz
+C Lithuania
+R Vilnius
+P Vilnius
+C Luxembourg
+R Luxembourg
+P Luxembourg
+C Macedonia
+R Skopje
+P Skopje
+C Madagascar
+R Antananarivo
+P Antananarivo
+C Malawi
+R Lilongwe
+P Lilongwe
+C Malaysia
+R Kuala Lumpur
+P Kuala Lumpur
+C Maldives
+R Male
+P Male
+C Mali
+R Bamako
+P Bamako
+C Malta
+R Valletta
+P Valletta
+C Marshall Islands
+R Majuro
+P Majuro
+C Mauritania
+R Nouakchott
+P Nouakchott
+C Mauritius
+R Port Louis
+P Port Louis
+C Mexico
+R Mexico City
+P Mexico City
+C Micronesia
+R Palikir
+P Palikir
+C Moldova
+R Chi'inau
+P Chi'inau
+C Monaco
+R Monaco
+P Monaco
+C Mongolia
+R Ulaanbaatar
+P Ulaanbaatar
+C Montenegro
+R Podgorica
+P Podgorica
+C Morocco
+R Rabat
+P Rabat
+C Mozambique
+R Maputo
+P Maputo
+C Myanmar
+R Naypyidaw
+P Naypyidaw
+C Namibia
+R Windhoek
+P Windhoek
+C Nauru
+R Yaren
+P Yaren
+C Nepal
+R Kathmandu
+P Kathmandu
+C Netherlands
+R Amsterdam
+P Amsterdam
+C New Zealand
+R Wellington
+P Wellington
+C Nicaragua
+R Managua
+P Managua
+C Niger
+R Niamey
+P Niamey
 C Nigeria
-R Lhasa
-P Lhasa
+R Abuja
+P Abuja
+R Lagos
+S Lagos
+C North Korea
+R Pyongyang
+P Pyongyang
 C Norway
 R Sorlandet
 P Oslo
+C Oman
+R Muscat
+P Muscat
+C Pakistan
+R Islamabad
+P Islamabad
+C Palau
+R Ngerulmud
+P Ngerulmud
+C Palestine
+R Ramallah
+P Ramallah
 C Panama
 R Panama City
 P Panama City
+C Papua New Guinea
+R Port Moresby
+P Port Moresby
+C Paraguay
+R Asuncion
+P Asuncion
 C Peru
 R Lima
 P Lima
+C Philippines
+R Manila
+P Manila
 C Poland
 R Warsaw
 P Warsaw
@@ -301,6 +679,12 @@ S Krakow
 C Portugal
 R Lisbon
 P Lisbon
+C Qatar
+R Doha
+P Doha
+C Romania
+R Bucharest
+P Bucharest
 C Russia
 R Ural
 P Moscow
@@ -342,6 +726,54 @@ Emperor Alexander 1881 1894
 Emperor Nicholas 1894 1940
 Emperor Alexis 1940 1991
 Emperor Nicholas 1991 2019
+C Rwanda
+R Kigali
+P Kigali
+C Saint Kitts and Nevis
+R Basseterre
+P Basseterre
+C Saint Lucia
+R Castries
+P Castries
+C Saint Vincent and the Grenadines
+R Kingstown
+P Kingstown
+C Samoa
+R Apia
+P Apia
+C San Marino
+R San Marino
+P San Marino
+C Saudi Arabia
+R Riyadh
+P Riyadh
+C Senegal
+R Dakar
+P Dakar
+C Serbia
+R Belgrade
+P Belgrade
+C Seychelles
+R Victoria
+P Victoria
+C Sierra Leone
+R Freetown
+P Freetown
+C Singapore
+R Singapore
+P Singapore
+C Slovakia
+R Bratislava
+P Bratislava
+C Slovenia
+R Ljubljana
+P Ljubljana
+C Solomon Islands
+R Honiara
+P Honiara
+C South Korea
+R Seoul
+P Seoul
 C South Sudan
 R Juba
 P Juba
@@ -403,12 +835,15 @@ S Nonthaburi
 S Pak Kret
 R Pathum Thani
 S Rangsit
+C The Gambia
+R Banjul
+P Banjul
 C Togo
 R Lome
 P Lome
 C Tonga
-R Nukuʻalofa
-P Nukuʻalofa
+R Nuku'alofa
+P Nuku'alofa
 C Trinidad
 R Port of Spain
 P Port of Spain
@@ -626,10 +1061,13 @@ C Venezuela
 R Greater Caracas
 P Caracas
 C Vietnam
-R North
+R North Vietnam
 P Hanoi
-R South
+R South Vietnam
 R Ho Chi Minh City
+C Western Sahara
+R La'youn
+P La'youn
 C Yemen
 R Sana'a
 P Sana'a
@@ -641,327 +1079,3 @@ P Lusaka
 C Zimbabwe
 R Harare
 P Harare
-C Albania
-R Tirana
-P Tirana
-C Andorra
-R Andorra la Vella
-P Andorra la Vella
-C Armenia
-R Yerevan
-P Yerevan
-C Austria
-R Vienna
-P Vienna
-C Azerbaijan
-R Baku
-P Baku
-C Belarus
-R Minsk
-P Minsk
-C Bosnia and Herzegovina
-R Sarajevo
-P Sarajevo
-C Bulgaria
-R Sofia
-P Sofia
-C Croatia
-R Zagreb
-P Zagreb
-C Cyprus
-R Nicosia
-P Nicosia
-C Czech Republic
-R Prague
-P Prague
-C Estonia
-R Tallinn
-P Tallinn
-C Georgia
-R Tbilisi
-P Tbilisi
-C Hungary
-R Budapest
-P Budapest
-C Iceland
-R Reykjavik
-P Reykjavik
-C Italy
-R Rome
-P Rome
-C Kazakhstan
-R Astana
-P Astana
-C Latvia
-R Riga
-P Riga
-C Liechtenstein
-R Vaduz
-P Vaduz
-C Lithuania
-R Vilnius
-P Vilnius
-C Luxembourg
-R Luxembourg
-P Luxembourg
-C Macedonia
-R Skopje
-P Skopje
-C Malta
-R Valletta
-P Valletta
-C Moldova
-R Chi'inau
-P Chi'inau
-C Monaco
-R Monaco
-P Monaco
-C Montenegro
-R Podgorica
-P Podgorica
-C Netherlands
-R Amsterdam
-P Amsterdam
-C Romania
-R Bucharest
-P Bucharest
-C San Marino
-R San Marino
-P San Marino
-C Serbia
-R Belgrade
-P Belgrade
-C Slovakia
-R Bratislava
-P Bratislava
-C Slovenia
-R Ljubljana
-P Ljubljana
-C Armenia
-R Yerevan
-P Yerevan
-C Azerbaijan
-R Baku
-P Baku
-C Bahrain
-R Manama
-P Manama
-C Bangladesh
-R Dhaka
-P Dhaka
-C Bhutan
-R Thimphu
-P Thimphu
-C Brunei
-R Bandar Seri Begawan
-P Bandar Seri Begawan
-C Cambodia
-R Phnom Penh
-P Phnom Penh
-C China
-R Beijing
-P Beijing
-C Cyprus
-R Nicosia
-P Nicosia
-C East Timor
-R Dili
-P Dili
-C Georgia
-R Tbilisi
-P Tbilisi
-C India
-R New Delhi
-P New Delhi
-C Indonesia
-R Jakarta
-P Jakarta
-C Iran
-R Tehran
-P Tehran
-C Iraq
-R Baghdad
-P Baghdad
-C Israel
-R Jerusalem
-P Jerusalem
-C Jordan
-R Amman
-P Amman
-C Kazakhstan
-R Astana
-P Astana
-C Kuwait
-R Kuwait City
-P Kuwait City
-C Kyrgyzstan
-R Bishkek
-P Bishkek
-C Laos
-R Vientiane
-P Vientiane
-C Lebanon
-R Beirut
-P Beirut
-C Malaysia
-R Kuala Lumpur
-P Kuala Lumpur
-C Maldives
-R Male
-P Male
-C Mongolia
-R Ulaanbaatar
-P Ulaanbaatar
-C Myanmar
-R Naypyidaw
-P Naypyidaw
-C Nepal
-R Kathmandu
-P Kathmandu
-C North Korea
-R Pyongyang
-P Pyongyang
-C Oman
-R Muscat
-P Muscat
-C Pakistan
-R Islamabad
-P Islamabad
-C Palestine
-R Ramallah
-P Ramallah
-C Philippines
-R Manila
-P Manila
-C Qatar
-R Doha
-P Doha
-C Saudi Arabia
-R Riyadh
-P Riyadh
-C Singapore
-R Singapore
-P Singapore
-C South Korea
-R Seoul
-P Seoul
-C Bolivia
-R La Paz
-P Sucre
-C Brazil
-R Brasilia
-P Brasilia
-C Chile
-R Santiago
-P Santiago
-C Colombia
-R Bogota
-P Bogota
-C Ecuador
-R Quito
-P Quito
-C French Guiana
-R Cayenne
-P Cayenne
-C Guyana
-R Georgetown
-P Georgetown
-C Paraguay
-R Asuncion
-P Asuncion
-C Antigua and Barbuda
-R St. John's
-P St. John's
-C Bahamas
-R Nassau
-P Nassau
-C Barbados
-R Bridgetown
-P Bridgetown
-C Belize
-R Belmopan
-P Belmopan
-C Canada
-R Ottawa
-P Ottawa
-C Costa Rica
-R San Jose
-P San Jose
-C Cuba
-R Havana
-P Havana
-C Dominica
-R Roseau
-P Roseau
-C Dominican Republic
-R Santo Domingo
-P Santo Domingo
-C El Salvador
-R San Salvador
-P San Salvador
-C Grenada
-R St. George's
-P St. George's
-C Guatemala
-R Guatemala City
-P Guatemala City
-C Haiti
-R Port-au-Prince
-P Port-au-Prince
-C Honduras
-R Tegucigalpa
-P Tegucigalpa
-C Jamaica
-R Kingston
-P Kingston
-C Mexico
-R Mexico City
-P Mexico City
-C Nicaragua
-R Managua
-P Managua
-C Saint Kitts and Nevis
-R Basseterre
-P Basseterre
-C Saint Lucia
-R Castries
-P Castries
-C Saint Vincent and the Grenadines
-R Kingstown
-P Kingstown
-C Micronesia
-R Palikir
-P Palikir
-C Fiji
-R Suva
-P Suva
-C Kiribati
-R South Tarawa
-P South Tarawa
-C Marshall Islands
-R Majuro
-P Majuro
-C Nauru
-R Yaren
-P Yaren
-C New Zealand
-R Wellington
-P Wellington
-C Palau
-R Ngerulmud
-P Ngerulmud
-C Papua New Guinea
-R Port Moresby
-P Port Moresby
-C Samoa
-R Apia
-P Apia
-C Solomon Islands
-R Honiara
-P Honiara
-C Tonga
-R Nuku'alofa
-P Nuku'alofa
-C Tuvalu
-R Funafuti
-P Funafuti

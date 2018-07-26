@@ -332,6 +332,17 @@ return
 					
 					table.insert(nl.parties, newp)
 				end
+				
+				if self.isruler == true then
+					if self.age > 80 then
+						local retirechance = math.random(1, 10)
+						if retirechance == 1 then
+							nl.hasruler = -1
+							self.isruler = false
+							self.level = #parent.systems[nl.system].ranks - 2
+						end
+					end
+				end
 			end
 		}
 		
