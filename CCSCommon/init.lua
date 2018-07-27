@@ -1143,7 +1143,7 @@ return
 						
 						self.Status = self.Status + varistab
 						
-						if self.Status <= -100 then self:End(parent, c1) elseif self.Status >= 100 then self:End(parent, c1) end
+						if self.Status <= -100 then return self:End(parent, c1) elseif self.Status >= 100 then return self:End(parent, c1) end
 					end,
 					End=function(self, parent, c1)
 						local c1strength = parent.thisWorld.countries[c1].strength
@@ -1173,6 +1173,8 @@ return
 									parent:RegionTransfer(c1, self.Target, rm)
 								end
 							end
+							
+							return -1
 						elseif self.Status <= -100 then
 							parent.thisWorld.countries[c1]:event(parent, "Defeat in war with "..parent.thisWorld.countries[self.Target].name)
 							parent.thisWorld.countries[self.Target]:event(parent, "Victory in war with "..parent.thisWorld.countries[c1].name)
@@ -1195,20 +1197,11 @@ return
 									parent:RegionTransfer(self.Target, c1, rm)
 								end
 							end
-						else
-							parent.thisWorld.countries[c1]:event(parent, "Treaty in war with "..parent.thisWorld.countries[self.Target].name)
-							parent.thisWorld.countries[self.Target]:event(parent, "Treaty in war with "..parent.thisWorld.countries[c1].name)
-
-							for i=1,#parent:getAllyOngoing(c1, self.Target, self.Name) do
-								parent.thisWorld.countries[i]:event(parent, "Treaty with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.Target].name)
-							end
-
-							for i=1,#parent:getAllyOngoing(self.Target, c1, self.Name) do
-								parent.thisWorld.countries[i]:event(parent, "Treaty with "..parent.thisWorld.countries[self.Target].name.." in war with "..parent.thisWorld.countries[c1].name)
-							end
+							
+							return -1
 						end
-
-						return -1
+						
+						return 0
 					end,
 					Perform=function(self, parent, c1, c2)
 						for i=1,#parent.thisWorld.countries[c1].alliances do
@@ -1300,19 +1293,63 @@ return
 				},
 				{
 					Name="Independence",
-					Chance=2,
+					Chance=3,
 					Target=nil,
 					Args=1,
 					Inverse=false,
 					Perform=function(self, parent, c)
+						parent:rseed()
+					
 						local newl = Country:new()
-						newl:set(CCSCommon)
-
+						
+						local nc = table.remove(parent.thisWorld.countries[c].regions, math.random(1, #parent.thisWorld.countries[c].regions))
+						
+						newl.system = math.random(1, #parent.systems)
+						newl.population = math.random(200,1000)
+						
+						newl:makename(parent)
+						newl.name = nc.name
+						
+						print("Defining country: "..newl.name)
+						
+						local rCount = math.random(3, 8)
+						
+						for i=1,rCount do
+							local r = Region:new()
+							r:makename(newl, parent)
+							
+							print("Region: "..r.name)
+							
+							table.insert(newl.regions, r)
+						end
+						
+						for i=1,#nc.cities do
+							local newc = City:new()
+							newc.name = nc.cities[i].name
+							
+							table.insert(newl.regions[math.random(1, #newl.regions)].cities, newc)
+						end
+						
+						local rc = math.random(1, #newl.regions)
+						local cc = math.random(1, #newl.regions[rc].cities)
+						newl.regions[rc].cities[cc].capital = true
+						
+						print("Capital city: "..newl.regions[rc].cities[cc].name.." in the region of "..newl.regions[rc].name)
+						print("Constructing initial population with size "..newl.population.."...\n")
+						
+						for i=1,newl.population do
+							local n = Person:new()
+							n:makename(parent, newl)
+							newl:add(n)
+						end
+						
+						newl.founded = parent.years
+						
 						parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 						newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 
-						newl.rulers = CCSCommon:deepcopy(parent.thisWorld.countries[c].rulers)
-						newl.rulernames = CCSCommon:deepcopy(parent.thisWorld.countries[c].rulernames)
+						newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+						newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
 
 						parent.thisWorld:add(newl)
 

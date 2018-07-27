@@ -217,6 +217,7 @@ return
 										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < self.averageAge + 20 then
 											if self.hasruler == -1 then
 												self:setRuler(parent, chils[q])
+												q = #chils + 1
 											end
 										end
 									end
@@ -450,7 +451,7 @@ return
 			end,
 
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" .", "."), Year=parent.years})
+				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" \\.", "."), Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)
