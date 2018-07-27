@@ -1370,11 +1370,6 @@ return
 							
 							if capital == true then
 								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
-								print(#parent.thisWorld.countries[c].regions)
-								print(regc)
-								print(parent.thisWorld.countries[c].regions[regc])
-								print(parent.thisWorld.countries[c].regions[regc].cities)
-								local cc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
 								parent.thisWorld.countries[c].regions[regc].cities[cc].capital = true
 							
 								local msg = "Capital moved "
