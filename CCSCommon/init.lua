@@ -1370,13 +1370,15 @@ return
 							
 							if capital == true then
 								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
-								local citc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
-								parent.thisWorld.countries[c].regions[regc].cities[citc].capital = true
-							
-								local msg = "Capital moved "
-								if oldCap ~= "" then msg = msg.."from "..oldCap end
-								msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[citc].name
-								parent.thisWorld.countries[c]:event(parent, msg)
+								if #parent.thisWorld.countries[c].regions[regc].cities > 0 then
+									local citc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
+									parent.thisWorld.countries[c].regions[regc].cities[citc].capital = true
+								
+									local msg = "Capital moved "
+									if oldCap ~= "" then msg = msg.."from "..oldCap end
+									msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[citc].name
+									parent.thisWorld.countries[c]:event(parent, msg)
+								end
 							end
 						end
 
@@ -1501,11 +1503,13 @@ return
 						
 							if cCount > 1 then
 								local rc = math.random(1, #parent.thisWorld.countries[c].regions)
-								local cc = math.random(1, #parent.thisWorld.countries[c].regions[rc].cities)
-							
-								if parent.thisWorld.countries[c].regions[rc].cities[cc].name ~= oldCap then
-									parent.thisWorld.countries[c]:event(parent, "Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
-									parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
+								if #parent.thisWorld.countries[c].regions[rc].cities > 0 then
+									local cc = math.random(1, #parent.thisWorld.countries[c].regions[rc].cities)
+								
+									if parent.thisWorld.countries[c].regions[rc].cities[cc].name ~= oldCap then
+										parent.thisWorld.countries[c]:event(parent, "Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
+										parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
+									end
 								end
 							end
 						end
