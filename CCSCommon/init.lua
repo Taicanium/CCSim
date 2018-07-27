@@ -1300,82 +1300,88 @@ return
 					Perform=function(self, parent, c)
 						parent:rseed()
 					
-						local newl = Country:new()
+						if #parent.thisWorld.countries[c].regions > 1 then
+							local newl = Country:new()
 						
-						local nc = table.remove(parent.thisWorld.countries[c].regions, math.random(1, #parent.thisWorld.countries[c].regions))
-						
-						newl.system = math.random(1, #parent.systems)
-						newl.population = math.random(200,1000)
-						
-						newl:makename(parent)
-						newl.name = nc.name
-						
-						print("Defining country: "..newl.name)
-						
-						local rCount = math.random(3, 8)
-						
-						for i=1,rCount do
-							local r = Region:new()
-							r:makename(newl, parent)
+							local nc = table.remove(parent.thisWorld.countries[c].regions, math.random(1, #parent.thisWorld.countries[c].regions))
 							
-							print("Region: "..r.name)
+							newl.system = math.random(1, #parent.systems)
+							newl.population = math.random(200,1000)
 							
-							table.insert(newl.regions, r)
-						end
-						
-						local capital = true
-						local oldCap = ""
-						
-						for i=1,#nc.cities do
-							local newc = City:new()
-							newc.name = nc.cities[i].name
+							newl:makename(parent)
+							newl.name = nc.name
 							
-							if nc.cities[i].capital == true then
-								capital = true
-								oldCap = nc.cities[i].name
+							print("Defining country: "..newl.name)
+							
+							local rCount = math.random(3, 8)
+							
+							for i=1,rCount do
+								local r = Region:new()
+								r:makename(newl, parent)
+								
+								print("Region: "..r.name)
+								
+								table.insert(newl.regions, r)
 							end
 							
-							table.insert(newl.regions[math.random(1, #newl.regions)].cities, newc)
-						end
-						
-						local rc = math.random(1, #newl.regions)
-						local cc = math.random(1, #newl.regions[rc].cities)
-						newl.regions[rc].cities[cc].capital = true
-						
-						print("Capital city: "..newl.regions[rc].cities[cc].name.." in the region of "..newl.regions[rc].name)
-						print("Constructing initial population with size "..newl.population.."...\n")
-						
-						for i=1,newl.population do
-							local n = Person:new()
-							n:makename(parent, newl)
-							newl:add(n)
-						end
-						
-						newl.founded = parent.years
-						
-						parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
-						newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
+							local capital = true
+							local oldCap = ""
+							
+							for i=1,#nc.cities do
+								local newc = City:new()
+								newc.name = nc.cities[i].name
+								
+								if nc.cities[i].capital == true then
+									capital = true
+									oldCap = nc.cities[i].name
+								end
+								
+								table.insert(newl.regions[math.random(1, #newl.regions)].cities, newc)
+							end
+							
+							local rc = math.random(1, #newl.regions)
+							local cc = math.random(1, #newl.regions[rc].cities)
+							newl.regions[rc].cities[cc].capital = true
+							
+							print("Capital city: "..newl.regions[rc].cities[cc].name.." in the region of "..newl.regions[rc].name)
+							print("Constructing initial population with size "..newl.population.."...\n")
+							
+							for i=1,newl.population do
+								local n = Person:new()
+								n:makename(parent, newl)
+								newl:add(n)
+							end
+							
+							newl.founded = parent.years
+							
+							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
+							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 
-						newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
-						newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
+							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
 
-						parent.thisWorld:add(newl)
+							parent.thisWorld:add(newl)
 
-						parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 15)
-						if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
+							parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 15)
+							if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
 
-						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
-						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
-						
-						if capital == true then
-							local nc = math.random(1, #parent.thisWorld.countries[c].regions)
-							local cc = math.random(1, #parent.thisWorld.countries[c].regions[nc].cities)
-							parent.thisWorld.countries[c].regions[nc].cities[cc].capital = true
-						
-							local msg = "Capital moved "
-							if oldCap ~= "" then msg = msg.."from "..oldCap end
-							msg = msg.."to "..parent.thisWorld.countries[c].regions[nc].cities[cc].name
-							parent.thisWorld.countries[c]:event(parent, msg)
+							parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
+							if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+							
+							if capital == true then
+								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
+								print(#parent.thisWorld.countries[c].regions)
+								print(regc)
+								print(parent.thisWorld.countries[c].regions[regc])
+								print(parent.thisWorld.countries[c].regions[regc].cities)
+								local cc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
+								parent.thisWorld.countries[c].regions[regc].cities[cc].capital = true
+							
+								local msg = "Capital moved "
+								if oldCap ~= "" then msg = msg.."from "..oldCap end
+								msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[cc].name
+								parent.thisWorld.countries[c]:event(parent, msg)
+							end
 						end
 
 						return -1
