@@ -1370,11 +1370,12 @@ return
 							
 							if capital == true then
 								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
-								parent.thisWorld.countries[c].regions[regc].cities[cc].capital = true
+								local citc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
+								parent.thisWorld.countries[c].regions[regc].cities[citc].capital = true
 							
 								local msg = "Capital moved "
 								if oldCap ~= "" then msg = msg.."from "..oldCap end
-								msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[cc].name
+								msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[citc].name
 								parent.thisWorld.countries[c]:event(parent, msg)
 							end
 						end
