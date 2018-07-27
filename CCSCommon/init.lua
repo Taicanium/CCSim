@@ -1141,7 +1141,7 @@ return
 							varistab = varistab - parent.thisWorld.countries[i].strength - 50
 						end
 						
-						self.Status = self.Status + varistab
+						self.Status = self.Status + math.ceil(math.random(varistab-15, varistab+15)/2)
 						
 						if self.Status <= -100 then return self:End(parent, c1) elseif self.Status >= 100 then return self:End(parent, c1) end
 					end,
@@ -1323,9 +1323,17 @@ return
 							table.insert(newl.regions, r)
 						end
 						
+						local capital = true
+						local oldCap = ""
+						
 						for i=1,#nc.cities do
 							local newc = City:new()
 							newc.name = nc.cities[i].name
+							
+							if nc.cities[i].capital == true then
+								capital = true
+								oldCap = nc.cities[i].name
+							end
 							
 							table.insert(newl.regions[math.random(1, #newl.regions)].cities, newc)
 						end
@@ -1358,6 +1366,17 @@ return
 
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+						
+						if capital == true then
+							local nc = math.random(1, #parent.thisWorld.countries[c].regions)
+							local cc = math.random(1, #parent.thisWorld.countries[c].regions[nc].cities)
+							parent.thisWorld.countries[c].regions[nc].cities[cc].capital = true
+						
+							local msg = "Capital moved "
+							if oldCap ~= "" then msg = msg.."from "..oldCap end
+							msg = msg.."to "..parent.thisWorld.countries[c].regions[nc].cities[cc].name
+							parent.thisWorld.countries[c]:event(parent, msg)
+						end
 
 						return -1
 					end
