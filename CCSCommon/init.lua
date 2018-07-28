@@ -8,6 +8,10 @@ World = require("CCSCommon.World")()
 return
 	function()
 		local CCSCommon = {
+			metatables = {["World"]={mtname = "World", __index=World, __call=function() return World:new() end}, ["Country"]={mtname = "Country", __index=Country, __call=function() return Country:new() end}, ["City"]={mtname = "City", __index=City, __call=function() return City:new() end}, ["Person"]={mtname = "Person", __index=Person, __call=function() return Person:new() end}, ["Party"]={mtname = "Party", __index=Party, __call=function() return Party:new() end}, ["Region"]={mtname = "Region", __index=Region, __call=function() return Region:new() end}},
+			
+			autosaveDur = 100,
+		
 			numCountries = 0,
 
 			clrcmd = "",
@@ -103,21 +107,20 @@ return
 				return cloned
 			end,
 
-			deepcopy = function(self, dat)
+			deepnil = function(self, dat)
 				local final_type = type(dat)
-				local copy
 				if final_type == "table" then
-					copy = {}
 					for final_key, final_value in next, dat, nil do
-						copy[self:deepcopy(final_key)] = self:deepcopy(final_value)
+						self:deepnil(final_key)
+						final_key = nil
+						self:deepnil(final_value)
+						final_value = nil
 					end
-					setmetatable(copy, self:deepcopy(getmetatable(dat)))
-				elseif final_type == "function" then
-					copy = self:fncopy(dat)
+					setmetatable(dat, nil)
+					dat = nil
 				else
-					copy = dat
+					dat = nil
 				end
-				return copy
 			end,
 
 			name = function(self, personal, l)
@@ -852,6 +855,33 @@ return
 				
 				return acOut
 			end,
+			
+			checkAutoload = function(self)
+				local f = io.open("in_progress.dat", "r")
+				if f ~= nil then
+					f:close()
+					self:deepnil(f)
+					f = nil
+				
+					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
+					local res = io.read()
+					
+					if res == "y" then
+						local savedData = World:autoload(self)
+						for i, j in pairs(savedData) do
+							if type(j) ~= "function" then
+								self:deepnil(self[i])
+								self[i] = nil
+								self[i] = j
+							end
+						end
+						
+						return true
+					end
+				end
+				
+				return false
+			end,
 
 			c_events = {
 				{
@@ -1357,8 +1387,8 @@ return
 							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 
-							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
-							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
+							newl.rulers = parent.thisWorld.countries[c].rulers
+							newl.rulernames = parent.thisWorld.countries[c].rulernames
 
 							parent.thisWorld:add(newl)
 
@@ -1458,7 +1488,7 @@ return
 								end
 								
 								for i=1,#parent.thisWorld.countries[c2].regions do
-									table.insert(parent.thisWorld.countries[c1].regions, parent:deepcopy(parent.thisWorld.countries[c2].regions[i]))
+									table.insert(parent.thisWorld.countries[c1].regions, parent.thisWorld.countries[c2].regions[i])
 									for j=1,#parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities do
 										if parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital == true then
 											parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital = false

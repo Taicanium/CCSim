@@ -9,38 +9,50 @@ function main()
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\tCCSIM : Compact Country Simulator\n\n"))
 	
-	io.write(string.format("\nHow many years should the simulation run? > "))
-	local datin = io.read()
-	
-	CCSCommon.maxyears = tonumber(datin)
-	while CCSCommon.maxyears == nil do
-		io.write(string.format("\n Please enter a number. > "))
-		datin = io.read()
+	if CCSCommon:checkAutoload() == false then
+		io.write(string.format("\nHow many years should the simulation run? > "))
+		local datin = io.read()
 		
 		CCSCommon.maxyears = tonumber(datin)
-	end
-	
-	io.write(string.format("\nDo you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
-	datin = io.read()
-	datin = string.lower(datin)
-	
-	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
-	
-	io.write(string.format("\nData > "))
-	datin = io.read()
-	
-	if string.lower(datin) == "random" then
-		CCSCommon.thisWorld = World:new()
-	
-		CCSCommon.numCountries = 10
-	
-		for j=1,CCSCommon.numCountries do
-			local nl = Country:new()
-			nl:set(CCSCommon)
-			CCSCommon.thisWorld:add(nl)
+		while CCSCommon.maxyears == nil do
+			io.write(string.format("\n Please enter a number. > "))
+			datin = io.read()
+			
+			CCSCommon.maxyears = tonumber(datin)
 		end
-	else
-		CCSCommon:fromFile(datin)
+		
+		io.write(string.format("\nDo you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
+		datin = io.read()
+		datin = string.lower(datin)
+		
+		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
+		
+		io.write(string.format("\nHow often do you want the world data to be autosaved? Enter -1 for never. > "))
+		datin = io.read()
+		CCSCommon.autosaveDur = tonumber(datin)
+		while CCSCommon.autosaveDur == nil do
+			io.write(string.format("\n Please enter a number. > "))
+			datin = io.read()
+			
+			CCSCommon.autosaveDur = tonumber(datin)
+		end
+		
+		io.write(string.format("\nData > "))
+		datin = io.read()
+		
+		if string.lower(datin) == "random" then
+			CCSCommon.thisWorld = World:new()
+		
+			CCSCommon.numCountries = 10
+		
+			for j=1,CCSCommon.numCountries do
+				local nl = Country:new()
+				nl:set(CCSCommon)
+				CCSCommon.thisWorld:add(nl)
+			end
+		else
+			CCSCommon:fromFile(datin)
+		end
 	end
 	
 	CCSCommon:loop()

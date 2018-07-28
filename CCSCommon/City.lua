@@ -3,7 +3,7 @@ return
 		local City = {
 			new = function(self)
 				local c = {}
-				setmetatable(c, {__index=self, __call=function() return City:new() end})
+				setmetatable(c, {mtname = "City", __index=self, __call=function() return City:new() end})
 				
 				c.name = ""
 				c.capital = false

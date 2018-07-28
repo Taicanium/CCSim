@@ -3,7 +3,7 @@ return
 		local Person = {
 			new = function(self)
 				local n = {}
-				setmetatable(n, {__index=self, __call=function() return Person:new() end})
+				setmetatable(n, {mtname = "Person", __index=self, __call=function() return Person:new() end})
 				
 				n.name = ""
 				n.surname = ""
@@ -17,8 +17,6 @@ return
 				n.party = ""
 				n.region = ""
 				n.city = ""
-				n.father = nil
-				n.mother = nil
 				n.spouse = nil
 				n.isruler = false
 				n.parentRuler = false
@@ -42,8 +40,6 @@ return
 				self.party = nil
 				self.region = nil
 				self.city = nil
-				self.father = nil
-				self.mother = nil
 				self.spouse = nil
 				self.isruler = nil
 				self.parentRuler = nil
@@ -96,12 +92,8 @@ return
 				local nn = Person:new()
 			
 				if self.gender == "Male" then
-					nn.father = self
-					nn.mother = self.spouse
 					nn.surname = self.surname
 				else
-					nn.father = self.spouse
-					nn.mother = self
 					nn.surname = self.spouse.surname
 				end
 			
@@ -211,15 +203,19 @@ return
 							nc = i
 						end
 					end
-					local cc = math.random(1, #nl.regions[nc].cities)
-					if nl.regions[nc] ~= nil then
-						if nl.regions[nc].cities[cc] ~= nil then
+					if nc ~= 0 then
+						if #nl.regions[nc].cities > 0 then
 							local cc = math.random(1, #nl.regions[nc].cities)
-							self.city = nl.regions[nc].cities[cc].name
-							
-							if self.spouse ~= nil then
-								self.spouse.city = self.city
-								self.spouse.region = self.region
+							if nl.regions[nc] ~= nil then
+								if nl.regions[nc].cities[cc] ~= nil then
+									local cc = math.random(1, #nl.regions[nc].cities)
+									self.city = nl.regions[nc].cities[cc].name
+									
+									if self.spouse ~= nil then
+										self.spouse.city = self.city
+										self.spouse.region = self.region
+									end
+								end
 							end
 						end
 					end
