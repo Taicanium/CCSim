@@ -50,6 +50,8 @@ function main()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
 			end
+			
+			CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 		else
 			CCSCommon:fromFile(datin)
 		end

@@ -8,6 +8,9 @@ return
 				c.name = ""
 				c.capital = false
 				c.population = 0
+				c.x = 0
+				c.y = 0
+				c.z = 0
 				
 				return c
 			end,

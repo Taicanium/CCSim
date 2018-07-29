@@ -28,6 +28,7 @@ return
 				nl.deathrate = 2662
 				nl.regions = {}
 				nl.parties = {}
+				nl.nodes = {}
 				
 				return nl
 			end,
@@ -89,6 +90,60 @@ return
 				
 				self.population = 1000
 			end,
+			
+			setTerritory = function(self, parent)
+				for x=1,#parent.thisWorld.planetdefined do
+					if parent.thisWorld.planet[parent.thisWorld.planetdefined[x][1]][parent.thisWorld.planetdefined[x][2]][parent.thisWorld.planetdefined[x][3]].country == self.name then table.insert(self.nodes, parent.thisWorld.planetdefined[x]) end
+				end
+			
+				for i=1,#self.regions do
+					local j = math.random(1, #self.nodes)
+					
+					table.insert(self.regions[i].nodes, self.nodes[j])
+				end
+				
+				local done = false
+				
+				while done == false do
+					done = true
+				
+					for r=1,#self.regions do
+						for i=1,#self.regions[r].nodes do
+							for x=-1,1 do
+								if parent.thisWorld.planet[self.nodes[i][1]+x] ~= nil then
+									for y=-1,1 do
+										if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y] ~= nil then
+											for z=-1,1 do
+												if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y][self.nodes[i][3]+z] ~= nil then
+													if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y][self.nodes[i][3]+z].country == self.name then
+														local found = false
+														for r2=1,#self.regions do
+															for i2=1,#self.regions[r2].nodes do
+																if self.regions[r2].nodes[i2][1] == self.regions[r].nodes[i][1] then
+																	if self.regions[r2].nodes[i2][2] == self.regions[r].nodes[i][2] then
+																		if self.regions[r2].nodes[i2][3] == self.regions[r].nodes[i][3] then
+																			found = true
+																		end
+																	end
+																end
+															end
+														end
+														
+														if found == false then
+															done = false
+															table.insert(self.regions[r].nodes, {self.nodes[i][1]+x, self.nodes[i][2]+y, self.nodes[i][3]+z})
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end,
 
 			set = function(self, parent)
 				parent:rseed()
@@ -104,8 +159,6 @@ return
 				for i=1,rCount do
 					local r = Region:new()
 					r:makename(self, parent)
-					
-					print("Region: "..r.name)
 					
 					table.insert(self.regions, r)
 				end

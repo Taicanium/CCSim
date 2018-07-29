@@ -8,6 +8,7 @@ return
 				r.name = ""
 				r.cities = {}
 				r.population = 0
+				r.nodes = {}
 				
 				return r
 			end,

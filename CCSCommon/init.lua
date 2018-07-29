@@ -322,6 +322,9 @@ return
 						nomlower = nomlower:gsub("fh", "f")
 						nomlower = nomlower:gsub("uo", "o")
 						nomlower = nomlower:gsub("kid", "cid")
+						nomlower = nomlower:gsub("tga", "tia")
+						nomlower = nomlower:gsub("fv", "v")
+						nomlower = nomlower:gsub("vf", "f")
 						
 						for j=1,#self.consonants do
 							if nomlower:sub(1, 1) == self.consonants[j] then
@@ -441,7 +444,7 @@ return
 							end
 						end
 					end
-				
+					
 					local lossMsg = "Loss of the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
 					local gainMsg = "Gained the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
 					
