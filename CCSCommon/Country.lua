@@ -3,7 +3,7 @@ return
 		local Country = {
 			new = function(self)
 				local nl = {}
-				setmetatable(nl, {mtname = "Country", __index=self, __call=function() return Country:new() end})
+				setmetatable(nl, self)
 				
 				nl.name = ""
 				nl.founded = 0
@@ -428,15 +428,11 @@ return
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].Target ~= nil then
 							local found = false
-							local er = parent.thisWorld.countries[self.ongoing[i].Target].name:reverse()
+							local er = parent.thisWorld.countries[self.ongoing[i].Target].name
 							
 							for j=1,#parent.thisWorld.countries do
-								local nr = parent.thisWorld.countries[j].name:reverse()
-								if string.len(er) >= string.len(nr) then
-									if er:sub(1, #nr) == nr then
-										found = true
-									end
-								end
+								local nr = parent.thisWorld.countries[j].name
+								if nr == er then found = true end
 							end
 							
 							if found == false then
@@ -498,6 +494,23 @@ return
 					self.birthrate = 5
 				end
 				
+				local capfound = false
+				local indicator = false
+				
+				for i=1,#self.regions do
+					for j=1,#self.regions[i].cities do
+						if self.regions[i].cities[j].capital == true then
+							if capfound == false then
+								indicator = true
+							else
+								self.regions[i].cities[j].capital = false
+							end
+							
+							if indicator == true then capfound = true end
+						end
+					end
+				end
+				
 				self:checkRuler(parent)
 				
 				self:eventloop(parent, ind)
@@ -536,7 +549,7 @@ return
 						local chance = math.floor(math.random(1, v))
 						if chance <= parent.c_events[i].Chance then
 							if parent.c_events[i].Args == 1 then
-								table.insert(self.ongoing, parent.c_events[i])
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
 									self.ongoing[#self.ongoing]:Begin(parent, ind)
@@ -544,7 +557,7 @@ return
 							elseif parent.c_events[i].Args == 2 then
 								local other = math.random(1, #parent.thisWorld.countries)
 								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-								table.insert(self.ongoing, parent.c_events[i])
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
 									self.ongoing[#self.ongoing]:Begin(parent, ind, other)
@@ -555,7 +568,7 @@ return
 						local chance = math.floor(math.random(1, vi))
 						if chance <= parent.c_events[i].Chance then
 							if parent.c_events[i].Args == 1 then
-								table.insert(self.ongoing, parent.c_events[i])
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
 									self.ongoing[#self.ongoing]:Begin(parent, ind)
@@ -564,7 +577,7 @@ return
 								if #parent.thisWorld.countries > 1 then
 									local other = math.random(1, #parent.thisWorld.countries)
 									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-									table.insert(self.ongoing, parent.c_events[i])
+									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 									if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 									else
 										self.ongoing[#self.ongoing]:Begin(parent, ind, other)
@@ -593,6 +606,9 @@ return
 				end
 			end
 		}
+		
+		Country.__index = Country
+		Country.__call = function() return Country:new() end
 		
 		return Country
 	end

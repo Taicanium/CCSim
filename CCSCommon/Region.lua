@@ -3,7 +3,7 @@ return
 		local Region = {
 			new = function(self)
 				local r = {}
-				setmetatable(r, {mtname = "Region", __index=self, __call=function() return Region:new() end})
+				setmetatable(r, self)
 				
 				r.name = ""
 				r.cities = {}
@@ -36,6 +36,9 @@ return
 				end
 			end,
 		}
+		
+		Region.__index = Region
+		Region.__call=function() return Region:new() end
 		
 		return Region
 	end

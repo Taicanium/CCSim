@@ -3,7 +3,7 @@ return
 		local Person = {
 			new = function(self)
 				local n = {}
-				setmetatable(n, {mtname = "Person", __index=self, __call=function() return Person:new() end})
+				setmetatable(n, self)
 				
 				n.name = ""
 				n.surname = ""
@@ -341,6 +341,9 @@ return
 				end
 			end
 		}
+		
+		Person.__index = Person
+		Person.__call=function() return Person:new() end
 		
 		return Person
 	end

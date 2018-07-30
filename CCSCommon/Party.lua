@@ -3,7 +3,7 @@ return
 		local Party = {
 			new = function(self)
 				local p = {}
-				setmetatable(p, {mtname = "Party", __index=self, __call=function() return Party:new() end})
+				setmetatable(p, self)
 				
 				p.name = ""
 				p.efreedom = 0
@@ -74,6 +74,9 @@ return
 				end
 			end
 		}
+		
+		Party.__index = Party
+		Party.__call = function() return Party:new() end
 		
 		return Party
 	end

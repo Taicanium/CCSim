@@ -3,7 +3,9 @@ return
 		local World = {
 			new = function(self)
 				local nm = {}
-				setmetatable(nm, {mtname = "World", __index=self, __call=function() return World:new() end})
+				setmetatable(nm, self)
+				self.__index = self
+				self.__call=function() return World:new() end
 				
 				nm.countries = {}
 				nm.planet = {}
@@ -328,61 +330,53 @@ return
 			end,
 			
 			rOutput = function(self, parent)
+				print("Writing R data...")
+			
 				local r = self.planetR
 			
 				cns = io.output()
 				io.output("data.r")
 				io.write("x <- c(")
-				for x=-r,r do
-					for y=-r,r do
-						for z=-r,r do
-							if self.planet[x][y][z] ~= nil then
-								io.write(tostring(x)..", ")
-							end
-						end
-					end
-				end
-
-				io.write("0)\ny <- c(")
-				for x=-r,r do
-					for y=-r,r do
-						for z=-r,r do
-							if self.planet[x][y][z] ~= nil then
-								io.write(tostring(y)..", ")
-							end
-						end
-					end
-				end
-
-				io.write("0)\nz <- c(")
-				for x=-r,r do
-					for y=-r,r do
-						for z=-r,r do
-							if self.planet[x][y][z] ~= nil then
-								io.write(tostring(z)..", ")
-							end
-						end
-					end
+				
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					io.write(self.planet[x][y][z].x)
+					if i < #self.planetdefined then io.write(", ") end
 				end
 				
-				io.write("0)\n")
+				io.write(")\ny <- c(")
 				
-				if #self.countries > 0 then
-					io.write("cs <- c(")
-					for x=-r,r do
-						for y=-r,r do
-							for z=-r,r do
-								if self.planet[x][y][z] ~= nil then
-									io.write("\""..self.planet[x][y][z].country.."\", ")
-								end
-							end
-						end
-					end
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					io.write(self.planet[x][y][z].y)
+					if i < #self.planetdefined then io.write(", ") end
 				end
 				
-				io.write("\"\")\n")
+				io.write(")\nz <- c(")
 				
-				io.write("library(\"rgl\")\nlibrary(\"car\")\ninpdata <- data.frame(X=x, Y=y, Z=z)\ncsc <- as.numeric(as.factor(cs))\ncsd <- paste(levels(as.factor(cs)))\ncse <- paste(levels(as.factor(csc)))\nscatter3d(x=inpdata[[1]], y=inpdata[[2]], z=inpdata[[3]], pch=19, cex.symbols=1.5, fill=FALSE, grid=FALSE, surface=FALSE, fogtype=\"none\", point.col=csc)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=1, inset=c(0.02))\nSys.sleep(10000)")
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					io.write(self.planet[x][y][z].z)
+					if i < #self.planetdefined then io.write(", ") end
+				end
+				
+				io.write(")\ncs <- c(")
+				
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					io.write("\""..self.planet[x][y][z].country.."\"")
+					if i < #self.planetdefined then io.write(", ") end
+				end
+				
+				io.write(")\nlibrary(\"rgl\")\nlibrary(\"car\")\ninpdata <- data.frame(X=x, Y=y, Z=z)\ncsc <- as.numeric(as.factor(cs))\ncsd <- paste(levels(as.factor(cs)))\ncse <- paste(levels(as.factor(csc)))\nscatter3d(x=inpdata[[1]], y=inpdata[[2]], z=inpdata[[3]], pch=19, cex.symbols=2, fill=FALSE, grid=FALSE, surface=FALSE, fogtype=\"none\", point.col=csc)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=1, inset=c(0.02))\nSys.sleep(10000)")
 
 				io.write()
 				io.flush()
@@ -413,6 +407,9 @@ return
 				end
 			end
 		}
+		
+		World.__index = World
+		World.__call = function() return World:new() end
 		
 		return World
 	end

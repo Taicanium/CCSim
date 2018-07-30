@@ -8,7 +8,7 @@ World = require("CCSCommon.World")()
 return
 	function()
 		local CCSCommon = {
-			metatables = {["World"]={mtname = "World", __index=World, __call=function() return World:new() end}, ["Country"]={mtname = "Country", __index=Country, __call=function() return Country:new() end}, ["City"]={mtname = "City", __index=City, __call=function() return City:new() end}, ["Person"]={mtname = "Person", __index=Person, __call=function() return Person:new() end}, ["Party"]={mtname = "Party", __index=Party, __call=function() return Party:new() end}, ["Region"]={mtname = "Region", __index=Region, __call=function() return Region:new() end}},
+			metatables = {["World"]=World, ["Country"]=Country, ["Region"]=Region, ["City"]=City, ["Person"]=Person, ["Party"]=Party},
 			
 			autosaveDur = 100,
 		
@@ -121,6 +121,19 @@ return
 				else
 					dat = nil
 				end
+			end,
+			
+			deepcopy = function(self, obj, seen)
+				if type(obj) == "function" then return self:fncopy(obj)
+				else if type(obj) ~= "table" then return obj end end
+				if seen == nil then seen = {} end
+				if seen and seen[obj] then return seen[obj] end
+
+				local s = seen or {}
+				local res = setmetatable({}, getmetatable(obj))
+				s[obj] = res
+				for k, v in pairs(obj) do res[self:deepcopy(k, s)] = self:deepcopy(v, s) end
+				return res
 			end,
 
 			name = function(self, personal, l)
@@ -283,6 +296,7 @@ return
 						nomlower = nomlower:gsub("kg", "g")
 						nomlower = nomlower:gsub("gk", "g")
 						nomlower = nomlower:gsub("sz", "s")
+						nomlower = nomlower:gsub("ue", "e")
 						nomlower = nomlower:gsub("zs", "z")
 						nomlower = nomlower:gsub("rz", "z")
 						nomlower = nomlower:gsub("y", "t")
@@ -325,6 +339,7 @@ return
 						nomlower = nomlower:gsub("tga", "tia")
 						nomlower = nomlower:gsub("fv", "v")
 						nomlower = nomlower:gsub("vf", "f")
+						nomlower = nomlower:gsub("vt", "t")
 						
 						for j=1,#self.consonants do
 							if nomlower:sub(1, 1) == self.consonants[j] then
@@ -430,14 +445,14 @@ return
 				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
 					local r = math.random(1, #self.thisWorld.countries[c2].regions)
 					local rm = table.remove(self.thisWorld.countries[c2].regions, r)
-					table.insert(self.thisWorld.countries[c1].regions, rm)
 					
 					for i=#self.thisWorld.countries[c2].people,1,-1 do
 						if self.thisWorld.countries[c2].people[i].region == rm.name then
 							if self.thisWorld.countries[c2].people[i].isruler == false then
 								local pm = table.remove(self.thisWorld.countries[c2].people, i)
+								pm.region = ""
+								pm.city = ""
 								table.insert(self.thisWorld.countries[c1].people, pm)
-								i = i - 1
 							else
 								self.thisWorld.countries[c2].people[i].region = ""
 								self.thisWorld.countries[c2].people[i].city = ""
@@ -445,10 +460,10 @@ return
 						end
 					end
 					
-					local lossMsg = "Loss of the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
-					local gainMsg = "Gained the "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].name.." region"
+					local lossMsg = "Loss of the "..rm.name.." region"
+					local gainMsg = "Gained the "..rm.name.." region"
 					
-					local cCount = #self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities
+					local cCount = #rm.cities
 					if cCount > 1 then
 						lossMsg = lossMsg.." (including the cities of "
 						gainMsg = gainMsg.." (including the cities of "
@@ -457,11 +472,11 @@ return
 						gainMsg = gainMsg.." (including the city of "
 					end
 					
-					for c=1,#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities-1 do
-						lossMsg = lossMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[c].name
-						gainMsg = gainMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[c].name
+					for c=1,#rm.cities-1 do
+						lossMsg = lossMsg..rm.cities[c].name
+						gainMsg = gainMsg..rm.cities[c].name
 						
-						if c < #self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities-1 then
+						if c < #rm.cities-1 then
 							lossMsg = lossMsg..","
 							gainMsg = gainMsg..","
 						end
@@ -471,11 +486,11 @@ return
 					end
 					
 					if cCount > 1 then
-						lossMsg = lossMsg.."and "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
-						gainMsg = gainMsg.."and "..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
+						lossMsg = lossMsg.."and "..rm.cities[#rm.cities].name..")"
+						gainMsg = gainMsg.."and "..rm.cities[#rm.cities].name..")"
 					elseif cCount == 1 then
-						lossMsg = lossMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
-						gainMsg = gainMsg..self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities].name..")"
+						lossMsg = lossMsg..rm.cities[#rm.cities].name..")"
+						gainMsg = gainMsg..rm.cities[#rm.cities].name..")"
 					end
 					
 					lossMsg = lossMsg.." to "..self.thisWorld.countries[c1].name
@@ -487,11 +502,11 @@ return
 					local cap = false
 					local oldCap = ""
 					
-					for p=1,#self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities do
-						if self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].capital == true then
+					for p=1,#rm.cities do
+						if rm.cities[p].capital == true then
 							cap = true
-							self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].capital = false
-							oldCap = self.thisWorld.countries[c1].regions[#self.thisWorld.countries[c1].regions].cities[p].name
+							rm.cities[p].capital = false
+							oldCap = rm.cities[p].name
 						end
 					end
 					
@@ -511,6 +526,8 @@ return
 							end
 						end
 					end
+					
+					table.insert(self.thisWorld.countries[c1].regions, rm)
 				end
 			end,
 
@@ -769,6 +786,8 @@ return
 			end,
 
 			finish = function(self)
+				os.remove("in_progress.dat")
+			
 				print("\nPrinting result...")
 
 				cns = io.output()
@@ -1206,8 +1225,6 @@ return
 									parent:RegionTransfer(c1, self.Target, rm)
 								end
 							end
-							
-							return -1
 						elseif self.Status <= -100 then
 							parent.thisWorld.countries[c1]:event(parent, "Defeat in war with "..parent.thisWorld.countries[self.Target].name)
 							parent.thisWorld.countries[self.Target]:event(parent, "Victory in war with "..parent.thisWorld.countries[c1].name)
@@ -1230,11 +1247,9 @@ return
 									parent:RegionTransfer(self.Target, c1, rm)
 								end
 							end
-							
-							return -1
 						end
 						
-						return 0
+						return -1
 					end,
 					Perform=function(self, parent, c1, c2)
 						for i=1,#parent.thisWorld.countries[c1].alliances do
@@ -1390,8 +1405,8 @@ return
 							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 
-							newl.rulers = parent.thisWorld.countries[c].rulers
-							newl.rulernames = parent.thisWorld.countries[c].rulernames
+							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
 
 							parent.thisWorld:add(newl)
 
@@ -1401,16 +1416,18 @@ return
 							parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
 							if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 							
-							if capital == true then
+							while capital == true do
 								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
 								if #parent.thisWorld.countries[c].regions[regc].cities > 0 then
 									local citc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
 									parent.thisWorld.countries[c].regions[regc].cities[citc].capital = true
 								
 									local msg = "Capital moved "
-									if oldCap ~= "" then msg = msg.."from "..oldCap end
+									if oldCap ~= "" then msg = msg.."from "..oldCap.." "  end
 									msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[citc].name
 									parent.thisWorld.countries[c]:event(parent, msg)
+									
+									capital = false
 								end
 							end
 						end

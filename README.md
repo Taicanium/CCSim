@@ -5,6 +5,8 @@ Still heavily in refinement. Definitely should be taken with a grain of salt at 
 
 Long and short: Run the script, answer the prompts, and in response to "Data > " you may type "random" or give the name of a text file with country data in it. See 'File Format' for a description of the required format.
 
+Upon generating a random world, the script will output a file called "data.r" in the root directory, which is written in the R programming language. This script file can be executed to produce an interactive 3D model view of the world's initial state, including coloring to indicate the territory of each country. R is an interpreted language just like Lua, and an R interpreter is available at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
+
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 
 # File Format
