@@ -4,8 +4,6 @@ return
 			new = function(self)
 				local nm = {}
 				setmetatable(nm, self)
-				self.__index = self
-				self.__call=function() return World:new() end
 				
 				nm.countries = {}
 				nm.planet = {}
@@ -69,13 +67,17 @@ return
 			end,
 
 			savetable = function(self, parent, t, f)
-				local exceptions = {"spouse", "metatables"}
+				local exceptions = {"spouse", "metatables", "__index", "__call", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "constructVoxelPlanet", "destroy", "add", "delete", "update"}
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5, ["nyx"]=6}
 				
 				if getmetatable(t) ~= nil then
-					f:write(string.len(tostring(string.len(getmetatable(t).mtname))))
-					f:write(string.len(getmetatable(t).mtname))
-					f:write(getmetatable(t).mtname)
+					for i=1,#parent.metatables do
+						if parent.metatables[i][1] == getmetatable(t) then
+							f:write(string.len(tostring(string.len(parent.metatables[i][2]))))
+							f:write(string.len(parent.metatables[i][2]))
+							f:write(parent.metatables[i][2])
+						end
+					end
 				else
 					f:write("15nilmt")
 				end
@@ -85,12 +87,10 @@ return
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
 					if isexception == false then
 						f:write(types[type(i)])
-						if types[type(i)] == nil then print(type(i)) os.execute("pause") end
 						f:write(string.len(tostring(string.len(tostring(i)))))
 						f:write(string.len(tostring(i)))
 						f:write(tostring(i))
 						f:write(types[type(j)])
-						if types[type(j)] == nil then print(type(j)) os.execute("pause") end
 						
 						if type(j) == "function" then
 							local data = string.dump(j)
@@ -161,7 +161,8 @@ return
 					elseif typej == "function" then
 						nextlen = tonumber(f:read(1))
 						nextlen = tonumber(f:read(nextlen))
-						nextj = self:loadfunction(parent, nexti, f:read(nextlen))
+						local fndata = f:read(nextlen)
+						nextj = self:loadfunction(parent, nexti, fndata)
 					elseif typej == "table" then
 						nextj = self:loadtable(parent, f)
 					end
@@ -170,13 +171,18 @@ return
 					typei = types[tonumber(f:read(1))]
 				end
 				
-				if mt ~= "nilmt" then setmetatable(tableout, parent.metatables[mt]) end
+				if mt ~= "nilmt" then
+					for i=1,#parent.metatables do
+						if parent.metatables[i][2] == mt then setmetatable(tableout, parent.metatables[i][1]) end
+					end
+				end
 				
 				return tableout
 			end,
 			
 			getfunctionvalues = function(self, fnname, fn, t)
 				local found = false
+				local exceptions = {"__index"}
 			
 				for i, j in pairs(t) do
 					if type(j) == "function" then
@@ -192,7 +198,9 @@ return
 							end
 						end
 					elseif type(j) == "table" then
-						self:getfunctionvalues(fnname, fn, j)
+						local isexception = false
+						for q=1,#exceptions do if exceptions[q] == i then isexception = true end end
+						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
 					end
 				end
 			end,

@@ -8,7 +8,7 @@ World = require("CCSCommon.World")()
 return
 	function()
 		local CCSCommon = {
-			metatables = {["World"]=World, ["Country"]=Country, ["Region"]=Region, ["City"]=City, ["Person"]=Person, ["Party"]=Party},
+			metatables = {{World, "World"}, {Country, "Country"}, {Region, "Region"}, {City, "City"}, {Person, "Person"}, {Party, "Party"}},
 			
 			autosaveDur = 100,
 		
