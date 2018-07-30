@@ -15,7 +15,7 @@ function main()
 		
 		CCSCommon.maxyears = tonumber(datin)
 		while CCSCommon.maxyears == nil do
-			io.write(string.format("\n Please enter a number. > "))
+			io.write(string.format("\nPlease enter a number. > "))
 			datin = io.read()
 			
 			CCSCommon.maxyears = tonumber(datin)

@@ -333,6 +333,8 @@ return
 						nomlower = nomlower:gsub("tm", "t")
 						nomlower = nomlower:gsub("oa", "a")
 						nomlower = nomlower:gsub("cp", "c")
+						nomlower = nomlower:gsub("pb", "b")
+						nomlower = nomlower:gsub("bp", "b")
 						nomlower = nomlower:gsub("fh", "f")
 						nomlower = nomlower:gsub("uo", "o")
 						nomlower = nomlower:gsub("kid", "cid")

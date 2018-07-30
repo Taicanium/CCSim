@@ -137,7 +137,7 @@ return
 					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
-							local x = math.random(-125, 100)
+							local x = math.random(-100, 100)
 							if x < -75 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
@@ -162,7 +162,7 @@ return
 					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
-							local x = math.random(-125, 100)
+							local x = math.random(-100, 100)
 							if x < -75 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
@@ -185,7 +185,7 @@ return
 				end
 				
 				local cChange = math.random(1, 150)
-				if cChange < 5 then
+				if cChange == 5 then
 					self.city = ""
 					self.region = ""
 				end
@@ -258,7 +258,7 @@ return
 					
 					for i=1,#nl.parties do
 						local ptotal = nl.parties[i].cfreedom + nl.parties[i].pfreedom + nl.parties[i].efreedom
-						if math.abs(belieftotal - ptotal) < 100 then pmatch = true end
+						if math.abs(belieftotal - ptotal) < 125 then pmatch = true end
 					end
 					
 					if pmatch == false then
@@ -285,7 +285,7 @@ return
 					if self.party == "" then
 						local pr = math.random(1, #nl.parties)
 						local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
-						if math.abs(belieftotal - partytotal) < 100 then
+						if math.abs(belieftotal - partytotal) < 125 then
 							self.party = nl.parties[pr].name
 							nl.parties[pr].membership = nl.parties[pr].membership + 1
 							if self.isruler == true then
@@ -302,7 +302,7 @@ return
 							
 								local pr = math.random(1, #nl.parties)
 								local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
-								if math.abs(belieftotal - partytotal) < 100 then
+								if math.abs(belieftotal - partytotal) < 125 then
 									self.party = nl.parties[pr].name
 									nl.parties[pr].membership = nl.parties[pr].membership + 1
 									if self.isruler == true then
