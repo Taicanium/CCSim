@@ -21,6 +21,7 @@ return
 				nl.allyOngoing = {}
 				nl.alliances = {}
 				nl.system = 1
+				nl.formalities = {}
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
@@ -86,6 +87,10 @@ return
 					for k=1,math.random(5,9) do
 						table.insert(self.frulernames, parent:name(true, 7))
 					end
+				end
+				
+				for i=1,#parent.systems do
+					self.formalities[i] = parent.systems[i].formalities[math.random(1, #parent.systems[i].formalities)]
 				end
 				
 				self.population = 1000

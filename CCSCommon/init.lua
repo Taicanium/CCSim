@@ -33,27 +33,32 @@ return
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
 					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
+					formalities={"Kingdom", "Crown", "Lordship"},
 					dynastic=true
 				},
 				{
 					name="Republic",
 					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
+					formalities={"Republic", "United Republic", "Commonwealth"},
 					dynastic=false
 				},
 				{
 					name="Democracy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
+					formalities={"Union", "Land", "State"},
 					dynastic=false
 				},
 				{
 					name="Oligarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
+					formalities={"People's Republic", "Autocracy", "Premiership"},
 					dynastic=false
 				},
 				{
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
+					formalities={"Empire", "Emirate", "Magistrate"},
 					dynastic=true
 				}
 			},
@@ -686,7 +691,7 @@ return
 								table.insert(self.final, self.thisWorld.countries[i])
 							end
 							if self.showinfo == 1 then
-								msg = msg..self.thisWorld.countries[i].name.." ("..self.systems[self.thisWorld.countries[i].system].name..") - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
+								msg = msg..self.thisWorld.countries[i].formalities[self.thisWorld.countries[i].system].." of "..self.thisWorld.countries[i].name.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
 								msg = msg.."\nCapital: "
 								for j=1,#self.thisWorld.countries[i].regions do
 									for k=1,#self.thisWorld.countries[i].regions[j].cities do
