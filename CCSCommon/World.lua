@@ -11,6 +11,7 @@ return
 				nm.planet = {}
 				nm.planetdefined = {}
 				nm.planetR = 0
+				nm.fromFile = false
 
 				return nm
 			end,
@@ -293,7 +294,6 @@ return
 				
 				local allDefined = false
 				local defined = 0
-				local olddefined = 0
 				local passes = 0
 				
 				while allDefined == false do
@@ -338,15 +338,6 @@ return
 						
 						self.planet[x][y][z].countryset = false
 					end
-					
-					if defined == olddefined then
-						if defined ~= #self.planetdefined then
-							print("WARNING: INFINITE LOOP!")
-							os.execute("pause")
-						end
-					end
-					
-					olddefined = defined
 					
 					if math.fmod(passes, 10) == 0 then print(tostring(math.floor(defined/#self.planetdefined*100)).."% done") end
 				end

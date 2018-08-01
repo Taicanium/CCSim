@@ -24,7 +24,7 @@ return
 
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "By", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Cy", "Da", "De", "Di", "Do", "Du", "Dr", "Dy", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ly", "Ma", "Me", "Mi", "Mo", "Mu", "My", "Na", "Ne", "Ni", "No", "Nu", "Ny", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Py", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Ry", "Sa", "Se", "Si", "So", "Su", "Sh", "Sy", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Ty", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Zy", "Tha", "Thu", "The"},
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni"},
-			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ich", "a", "us", "es", "is", "ec", "tria", "tra", "rich"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "ric"},
 			
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
 			vowels = {"a", "e", "i", "o", "u", "y"},
@@ -34,41 +34,41 @@ return
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
 					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship"},
+					formalities={"Kingdom", "Crown", "Lordship", "Autocracy", "Dominion"},
 					dynastic=true
 				},
 				{
 					name="Republic",
 					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
-					formalities={"Republic", "United Republic", "Commonwealth"},
+					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation"},
 					dynastic=false
 				},
 				{
 					name="Democracy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
-					formalities={"Union", "Land", "State"},
+					formalities={"Union", "Democratic Republic", "Free State", "Realm"},
 					dynastic=false
 				},
 				{
 					name="Oligarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
-					formalities={"People's Republic", "Autocracy", "Premiership"},
+					formalities={"People's Republic", "Premiership", "Patriciate"},
 					dynastic=false
 				},
 				{
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
-					formalities={"Empire", "Emirate", "Magistrate"},
+					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
 					dynastic=true
 				}
 			},
 			
 			partynames = {
-				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'"},
-				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor"},
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free"},
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor", "Monarchist"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Union", "Unionist", "Revivalist", "Labor", "Monarchist"},
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance"},
 			},
 
@@ -343,6 +343,7 @@ return
 						nomlower = nomlower:gsub("bp", "b")
 						nomlower = nomlower:gsub("fh", "f")
 						nomlower = nomlower:gsub("uo", "o")
+						nomlower = nomlower:gsub("vh", "v")
 						nomlower = nomlower:gsub("kid", "cid")
 						nomlower = nomlower:gsub("tga", "tia")
 						nomlower = nomlower:gsub("fv", "v")
@@ -361,6 +362,7 @@ return
 								if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, #nomlower) end
 								if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, #nomlower) end
 								if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, #nomlower) end
+								if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, #nomlower) end
 								if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, #nomlower) end
 								if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, #nomlower) end
 								if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, #nomlower) end
@@ -446,6 +448,26 @@ return
 					tmp = tmp - 1
 				end
 
+				return fin
+			end,
+			
+			ordinal = function(self, n)
+				local tmp = tonumber(n)
+				if tmp == nil then return n end
+				local fin = ""
+				
+				local ts = tostring(n)
+				if ts:sub(#ts, #ts) == "1" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."st" end
+				elseif ts:sub(#ts, #ts) == "2" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."nd" end
+				elseif ts:sub(#ts, #ts) == "3" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."rd" end
+				else fin = ts.."th" end
+				
 				return fin
 			end,
 			
@@ -673,6 +695,8 @@ return
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
 				end
+				
+				self.thisWorld.fromFile = true
 			end,
 
 			loop = function(self)
@@ -703,14 +727,21 @@ return
 						local wars = {}
 						local alliances = {}
 						
-						for i=1,#self.thisWorld.countries do							
-							msg = msg..self.thisWorld.countries[i].formalities[self.thisWorld.countries[i].system].." of "..self.thisWorld.countries[i].name.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
+						for i=1,#self.thisWorld.countries do
+							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
+							else msg = msg..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name].." of "..self.thisWorld.countries[i].name end
+							msg = msg.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
 							msg = msg.."\nCapital: "
+							local capFound = false
 							for j=1,#self.thisWorld.countries[i].regions do
 								for k=1,#self.thisWorld.countries[i].regions[j].cities do
-									if self.thisWorld.countries[i].regions[j].cities[k].capital == true then msg = msg..self.thisWorld.countries[i].regions[j].cities[k].name.." (pop. "..self.thisWorld.countries[i].regions[j].cities[k].population..")" end
+									if self.thisWorld.countries[i].regions[j].cities[k].capital == true then	
+										capFound = true
+										msg = msg..self.thisWorld.countries[i].regions[j].cities[k].name.." (pop. "..self.thisWorld.countries[i].regions[j].cities[k].population..")"
+									end
 								end
 							end
+							if capFound == false then msg = msg.."None"
 							if self.thisWorld.countries[i].rulers ~= nil then
 								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
 									msg = msg.."\nCurrent ruler: "
@@ -982,7 +1013,9 @@ return
 						parent.thisWorld.countries[c]:checkRuler(parent)
 
 						parent.thisWorld.countries[c]:event(parent, "Revolution: "..oldsys.." to "..parent.systems[parent.thisWorld.countries[c].system].name)
-
+						parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
+						if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+						
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability + 10
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 
@@ -1119,8 +1152,12 @@ return
 								end
 
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent:roman(namenum).." of "..parent.thisWorld.countries[c].name)
+								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
+								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
 							else
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
+								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
+								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
 							end
 						end
 
@@ -1376,8 +1413,8 @@ return
 							newl.system = math.random(1, #parent.systems)
 							newl.population = math.random(200,1000)
 							
-							newl:makename(parent)
 							newl.name = nc.name
+							newl:makename(parent)
 							
 							for i=1,#nc.nodes do
 								local x = nc.nodes[i][1]
@@ -1385,6 +1422,8 @@ return
 								local z = nc.nodes[i][3]
 								
 								parent.thisWorld.planet[x][y][z].country = newl.name
+								parent.thisWorld.planet[x][y][z].region = ""
+								parent.thisWorld.planet[x][y][z].city = ""
 							end
 							
 							local rCount = math.random(3, 8)
@@ -1427,6 +1466,9 @@ return
 							
 							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
+							
+							newl.snt[parent.systems[newl.system].name] = 1
+							if parent.thisWorld.fromFile == false then newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name]) end
 
 							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
 							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)

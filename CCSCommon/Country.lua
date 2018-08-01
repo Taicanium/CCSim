@@ -21,7 +21,10 @@ return
 				nl.allyOngoing = {}
 				nl.alliances = {}
 				nl.system = 1
+				nl.snt = {} -- System, Number of Times
 				nl.formalities = {}
+				nl.demonym = ""
+				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
@@ -97,8 +100,27 @@ return
 				end
 				
 				for i=1,#parent.systems do
-					self.formalities[i] = parent.systems[i].formalities[math.random(1, #parent.systems[i].formalities)]
+					self.formalities[parent.systems[i].name] = parent.systems[i].formalities[math.random(1, #parent.systems[i].formalities)]
+					local tf = math.random(2, 200)
+					if math.floor(tf/2) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
+				
+				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name.."n"
+				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1).."ian"
+				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+				elseif self.name:sub(#self.name, #self.name) == "i" then self.demonym = self.name.."an"
+				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name.."nian"
+				elseif self.name:sub(#self.name, #self.name) == "k" then self.demonym = self.name:sub(1, #self.name-1).."cian"
+				elseif self.name:sub(#self.name-3, #self.name) == "land" then
+					local split = self.name:sub(1, #self.name-4)
+					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1).."ian"
+					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-2).."ian"
+					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
+					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
+					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
+					else self.demonym = split.."ian" end
+				else self.demonym = self.name.."ian" end
 				
 				self.population = 1000
 			end,
@@ -149,7 +171,6 @@ return
 				
 				local allDefined = false
 				local defined = 0
-				local olddefined = 0
 				local passes = 0
 				
 				while allDefined == false do
@@ -198,15 +219,6 @@ return
 						
 						parent.thisWorld.planet[x][y][z].regionset = false
 					end
-					
-					if defined == olddefined then
-						if defined ~= #self.nodes then
-							print("WARNING: INFINITE LOOP!")
-							os.execute("pause")
-						end
-					end
-					
-					olddefined = defined
 				end
 				
 				for i=1,#self.nodes do
@@ -221,7 +233,9 @@ return
 				for i=1,#self.regions do
 					if #self.regions[i].cities > #self.regions[i].nodes then
 						for j=#self.regions[i].cities,#self.regions[i].nodes+1,-1 do
-							table.remove(self.regions[i].cities, j)
+							local cm = table.remove(self.regions[i].cities, j)
+							parent:deepnil(cm)
+							cm = nil
 						end
 					end
 					
@@ -410,6 +424,10 @@ return
 
 			update = function(self, parent, ind)
 				parent:rseed()
+				
+				for i=1,#parent.systems do
+					if self.snt[parent.systems[i].name] == nil then self.snt[parent.systems[i].name] = 0 end
+				end
 
 				self.stability = self.stability + math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
