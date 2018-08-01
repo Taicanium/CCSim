@@ -741,7 +741,7 @@ return
 									end
 								end
 							end
-							if capFound == false then msg = msg.."None"
+							if capFound == false then msg = msg.."None" end
 							if self.thisWorld.countries[i].rulers ~= nil then
 								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
 									msg = msg.."\nCurrent ruler: "
