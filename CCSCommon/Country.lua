@@ -104,6 +104,8 @@ return
 			end,
 			
 			setTerritory = function(self, parent)
+				self.nodes = {}
+				
 				for i=1,#parent.thisWorld.planetdefined do
 					local x = parent.thisWorld.planetdefined[i][1]
 					local y = parent.thisWorld.planetdefined[i][2]
@@ -147,6 +149,7 @@ return
 				
 				local allDefined = false
 				local defined = 0
+				local olddefined = 0
 				local passes = 0
 				
 				while allDefined == false do
@@ -195,6 +198,15 @@ return
 						
 						parent.thisWorld.planet[x][y][z].regionset = false
 					end
+					
+					if defined == olddefined then
+						if defined ~= #self.nodes then
+							print("WARNING: INFINITE LOOP!")
+							os.execute("pause")
+						end
+					end
+					
+					olddefined = defined
 				end
 				
 				for i=1,#self.nodes do

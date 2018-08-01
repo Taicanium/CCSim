@@ -7,6 +7,7 @@ return
 				
 				nm.countries = {}
 				nm.cColors = {}
+				nm.cTriplets = {}
 				nm.planet = {}
 				nm.planetdefined = {}
 				nm.planetR = 0
@@ -61,6 +62,7 @@ return
 							end
 							
 							self.cColors[p.name] = nil
+							self.cTriplets[p.name] = nil
 							
 							p:destroy()
 							p = nil
@@ -291,6 +293,7 @@ return
 				
 				local allDefined = false
 				local defined = 0
+				local olddefined = 0
 				local passes = 0
 				
 				while allDefined == false do
@@ -335,6 +338,15 @@ return
 						
 						self.planet[x][y][z].countryset = false
 					end
+					
+					if defined == olddefined then
+						if defined ~= #self.planetdefined then
+							print("WARNING: INFINITE LOOP!")
+							os.execute("pause")
+						end
+					end
+					
+					olddefined = defined
 					
 					if math.fmod(passes, 10) == 0 then print(tostring(math.floor(defined/#self.planetdefined*100)).."% done") end
 				end
@@ -400,10 +412,7 @@ return
 												if self.planet[dx+x][dy+y][dz+z] ~= nil then
 													if self.planet[dx+x][dy+y][dz+z].country ~= "" then
 														if self.planet[dx+x][dy+y][dz+z].countryset == false then
-															self.planet[x][y][z].country = self.planet[dx+x][dy+y][dz+z].country
-															self.planet[x][y][z].region = self.planet[dx+x][dy+y][dz+z].region
-															self.planet[x][y][z].city = ""
-															self.planet[dx+x][dy+y][dz+z].countryset = true
+															table.insert(ct, {dx+x, dy+y, dz+z})
 														end
 													end
 												end
@@ -412,6 +421,9 @@ return
 									end
 								end
 							end
+							
+							local c = math.random(1, #ct)
+							self.planet[x][y][z].country = self.planet[ct[c][1]][ct[c][2]][ct[c][3]].country
 						end
 					end
 					
@@ -474,10 +486,10 @@ return
 						local unique = false
 						while unique == false do
 							local found = false
-							for j=1,#self.cColors do
-								if self.cColors[j][1] > r-30 and self.cColors[j][1] < r+30 then
-									if self.cColors[j][2] > g-30 and self.cColors[j][2] < g+30 then
-										if self.cColors[j][3] > b-30 and self.cColors[j][3] < b+30 then
+							for k, j in pairs(self.cTriplets) do
+								if j[1] > r-30 and j[1] < r+30 then
+									if j[2] > g-30 and j[2] < g+30 then
+										if j[3] > b-30 and j[3] < b+30 then
 											r = math.random(0, 255)
 											g = math.random(0, 255)
 											b = math.random(0, 255)
@@ -506,6 +518,7 @@ return
 						if string.len(bh) == 1 then bh = "0"..bh end
 						
 						self.cColors[self.countries[i].name] = "#"..rh..gh..bh
+						self.cTriplets[self.countries[i].name] = {r, g, b}
 					end
 				end
 				
