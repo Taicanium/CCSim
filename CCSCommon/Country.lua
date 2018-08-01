@@ -39,6 +39,13 @@ return
 					self.people[i]:destroy()
 					self.people[i] = nil
 				end
+				
+				for i=1,#self.nodes do
+					self.nodes[i][1] = nil
+					self.nodes[i][2] = nil
+					self.nodes[i][3] = nil
+					self.nodes[i] = nil
+				end
 			end,
 
 			add = function(self, n)
@@ -97,46 +104,79 @@ return
 			end,
 			
 			setTerritory = function(self, parent)
-				for x=1,#parent.thisWorld.planetdefined do
-					if parent.thisWorld.planet[parent.thisWorld.planetdefined[x][1]][parent.thisWorld.planetdefined[x][2]][parent.thisWorld.planetdefined[x][3]].country == self.name then table.insert(self.nodes, parent.thisWorld.planetdefined[x]) end
+				for i=1,#parent.thisWorld.planetdefined do
+					local x = parent.thisWorld.planetdefined[i][1]
+					local y = parent.thisWorld.planetdefined[i][2]
+					local z = parent.thisWorld.planetdefined[i][3]
+					
+					if parent.thisWorld.planet[x][y][z].country == self.name then table.insert(self.nodes, {x, y, z}) end
+				end
+				
+				for i=1,#self.nodes do
+					local x = self.nodes[i][1]
+					local y = self.nodes[i][2]
+					local z = self.nodes[i][3]
+					
+					parent.thisWorld.planet[x][y][z].region = ""
+				end
+			
+				if #self.regions > #self.nodes then
+					for i=#self.regions,#self.nodes+1,-1 do
+						rm = table.remove(self.regions, i)
+						parent:deepnil(rm)
+						rm = nil
+					end
 				end
 			
 				for i=1,#self.regions do
-					local j = math.random(1, #self.nodes)
-					
-					table.insert(self.regions[i].nodes, self.nodes[j])
+					local located = false
+				
+					while located == false do
+						local j = math.random(1, #self.nodes)
+						
+						local x = self.nodes[j][1]
+						local y = self.nodes[j][2]
+						local z = self.nodes[j][3]
+						
+						if parent.thisWorld.planet[x][y][z].region == "" then
+							parent.thisWorld.planet[x][y][z].region = self.regions[i].name
+							located = true
+						end
+					end
 				end
 				
-				local done = false
+				local allDefined = false
+				local defined = 0
+				local passes = 0
 				
-				while done == false do
-					done = true
-				
-					for r=1,#self.regions do
-						for i=1,#self.regions[r].nodes do
-							for x=-1,1 do
-								if parent.thisWorld.planet[self.nodes[i][1]+x] ~= nil then
-									for y=-1,1 do
-										if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y] ~= nil then
-											for z=-1,1 do
-												if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y][self.nodes[i][3]+z] ~= nil then
-													if parent.thisWorld.planet[self.nodes[i][1]+x][self.nodes[i][2]+y][self.nodes[i][3]+z].country == self.name then
-														local found = false
-														for r2=1,#self.regions do
-															for i2=1,#self.regions[r2].nodes do
-																if self.regions[r2].nodes[i2][1] == self.regions[r].nodes[i][1] then
-																	if self.regions[r2].nodes[i2][2] == self.regions[r].nodes[i][2] then
-																		if self.regions[r2].nodes[i2][3] == self.regions[r].nodes[i][3] then
-																			found = true
-																		end
-																	end
-																end
+				while allDefined == false do
+					allDefined = true
+					defined = 0
+					passes = passes + 1
+					
+					local regIndex = 1
+					
+					for i=1,#self.nodes do
+						local x = self.nodes[i][1]
+						local y = self.nodes[i][2]
+						local z = self.nodes[i][3]
+					
+						if parent.thisWorld.planet[x][y][z].region ~= "" then
+							defined = defined + 1
+							if parent.thisWorld.planet[x][y][z].regionset == false then
+								for dx=-1,1 do
+									for dy=-1,1 do
+										for dz=-1,1 do
+											if parent.thisWorld.planet[dx+x] ~= nil then
+												if parent.thisWorld.planet[dx+x][dy+y] ~= nil then
+													if parent.thisWorld.planet[dx+x][dy+y][dz+z] ~= nil then
+														if parent.thisWorld.planet[dx+x][dy+y][dz+z].country == parent.thisWorld.planet[x][y][z].country then
+															if parent.thisWorld.planet[dx+x][dy+y][dz+z].region == "" then
+																parent.thisWorld.planet[dx+x][dy+y][dz+z].region = parent.thisWorld.planet[x][y][z].region
+																for m=1,#self.regions do if self.regions[m].name == parent.thisWorld.planet[x][y][z].region then regIndex = m end end
+																parent.thisWorld.planet[dx+x][dy+y][dz+z].regionset = true
+																allDefined = false
 															end
-														end
-														
-														if found == false then
-															done = false
-															table.insert(self.regions[r].nodes, {self.nodes[i][1]+x, self.nodes[i][2]+y, self.nodes[i][3]+z})
 														end
 													end
 												end
@@ -147,6 +187,50 @@ return
 							end
 						end
 					end
+					
+					for i=1,#self.nodes do
+						local x = self.nodes[i][1]
+						local y = self.nodes[i][2]
+						local z = self.nodes[i][3]
+						
+						parent.thisWorld.planet[x][y][z].regionset = false
+					end
+				end
+				
+				for i=1,#self.nodes do
+					local x = self.nodes[i][1]
+					local y = self.nodes[i][2]
+					local z = self.nodes[i][3]
+					for j=#self.regions,1,-1 do
+						if parent.thisWorld.planet[x][y][z].region == self.regions[j].name then table.insert(self.regions[j].nodes, {x, y, z}) end
+					end
+				end
+				
+				for i=1,#self.regions do
+					if #self.regions[i].cities > #self.regions[i].nodes then
+						for j=#self.regions[i].cities,#self.regions[i].nodes+1,-1 do
+							table.remove(self.regions[i].cities, j)
+						end
+					end
+					
+					for j=1,#self.regions[i].cities do
+						local rnd = math.random(1, #self.regions[i].nodes)
+						local x = self.regions[i].nodes[rnd][1]
+						local y = self.regions[i].nodes[rnd][2]
+						local z = self.regions[i].nodes[rnd][3]
+						
+						while parent.thisWorld.planet[x][y][z].city ~= "" do
+							rnd = math.random(1, #self.regions[i].nodes)
+							x = self.regions[i].nodes[rnd][1]
+							y = self.regions[i].nodes[rnd][2]
+							z = self.regions[i].nodes[rnd][3]
+						end
+						
+						self.regions[i].cities[j].x = x
+						self.regions[i].cities[j].y = y
+						self.regions[i].cities[j].z = z
+						parent.thisWorld.planet[x][y][z].city = self.regions[i].cities[j].name
+					end
 				end
 			end,
 
@@ -156,8 +240,6 @@ return
 				self.system = math.random(1, #parent.systems)
 				self.population = math.random(200,1000)
 				self:makename(parent)
-				
-				print("Defining country: "..self.name)
 				
 				local rCount = math.random(3, 8)
 				
@@ -171,9 +253,6 @@ return
 				local rc = math.random(1, #self.regions)
 				local cc = math.random(1, #self.regions[rc].cities)
 				self.regions[rc].cities[cc].capital = true
-				
-				print("Capital city: "..self.regions[rc].cities[cc].name.." in the region of "..self.regions[rc].name)
-				print("Constructing initial population with size "..self.population.."...\n")
 				
 				for i=1,self.population do
 					local n = Person:new()
@@ -512,6 +591,27 @@ return
 							end
 							
 							if indicator == true then capfound = true end
+						end
+					end
+				end
+				
+				if #self.regions > 1 then
+					for i=#self.regions,2,-1 do
+						if #self.regions[i].nodes < 6 then
+							local j = math.random(1, #self.regions)
+							while j == i do j = math.random(1, #self.regions) end
+							
+							for k=1,#self.regions[i].nodes do
+								local x = self.regions[i].nodes[k][1]
+								local y = self.regions[i].nodes[k][2]
+								local z = self.regions[i].nodes[k][3]
+								parent.thisWorld.planet[x][y][z].region = self.regions[j].name
+								table.insert(self.regions[j].nodes, {x, y, z})
+							end
+							
+							local rm = table.remove(self.regions, i)
+							parent:deepnil(rm)
+							rm = nil
 						end
 					end
 				end

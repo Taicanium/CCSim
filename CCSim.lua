@@ -27,15 +27,7 @@ function main()
 		
 		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
 		
-		io.write(string.format("\nDo you want to produce a 3D map of the initial world state in R (y/n)? > "))
-		datin = io.read()
-		datin = string.lower(datin)
-		
-		local doR = false
-		
-		if string.lower(datin) == "y" then doR = true end
-		
-		io.write(string.format("\nHow often do you want the world data to be autosaved? Enter -1 for never. > "))
+		io.write(string.format("\nHow often do you want the world data to be autosaved? Enter a number of years, or -1 for never. > "))
 		datin = io.read()
 		CCSCommon.autosaveDur = tonumber(datin)
 		while CCSCommon.autosaveDur == nil do
@@ -43,6 +35,16 @@ function main()
 			datin = io.read()
 			
 			CCSCommon.autosaveDur = tonumber(datin)
+		end
+		
+		if CCSCommon.autosaveDur ~= -1 then
+			io.write(string.format("\nDo you want to produce a 3D map of the autosaved world state in R (y/n)? > "))
+			datin = io.read()
+			datin = string.lower(datin)
+			
+			CCSCommon.doR = false
+			
+			if string.lower(datin) == "y" then CCSCommon.doR = true end
 		end
 		
 		io.write(string.format("\nData > "))
@@ -53,13 +55,15 @@ function main()
 		
 			CCSCommon.numCountries = 10
 		
+			print("Defining countries...")
+		
 			for j=1,CCSCommon.numCountries do
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
 			end
 			
-			if doR == true then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
+			if CCSCommon.doR == true then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 		else
 			CCSCommon:fromFile(datin)
 		end
