@@ -21,7 +21,7 @@ return
 				nl.allyOngoing = {}
 				nl.alliances = {}
 				nl.system = 1
-				nl.snt = {} -- System, Number of Times
+				nl.snt = {} -- System, Number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
 				nl.formalities = {}
 				nl.demonym = ""
 				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
@@ -108,6 +108,7 @@ return
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name.."n"
 				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+				elseif self.name:sub(#self.name, #self.name) == "s" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "i" then self.demonym = self.name.."an"
 				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name.."nian"
 				elseif self.name:sub(#self.name, #self.name) == "k" then self.demonym = self.name:sub(1, #self.name-1).."cian"
@@ -116,6 +117,7 @@ return
 					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
 					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-2).."ian"
+					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-2).."ian"
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
@@ -287,6 +289,9 @@ return
 				end
 				
 				self.founded = parent.years
+				
+				self.snt[parent.systems[self.system].name] = 1
+				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name]
 			end,
 
 			setRuler = function(self, parent, newRuler)
@@ -314,7 +319,7 @@ return
 					
 					for i=1,#self.rulers do
 						if tonumber(self.rulers[i].From) >= self.founded then
-							if self.rulers[i].Name == self.people[newRuler].name then
+							if self.rulers[i].name == self.people[newRuler].name then
 								if self.rulers[i].Title == self.people[newRuler].title then
 									namenum = namenum + 1
 								end
@@ -326,9 +331,9 @@ return
 					self.hasruler = 0
 					
 					if parent.systems[self.system].dynastic == true then
-						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
-						table.insert(self.rulers, {Name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
 					
 					self.rulerage = self.people[newRuler].age
@@ -540,9 +545,9 @@ return
 				
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].Target ~= nil then
+						if self.ongoing[i].target ~= nil then
 							local found = false
-							local er = parent.thisWorld.countries[self.ongoing[i].Target].name
+							local er = parent.thisWorld.countries[self.ongoing[i].target].name
 							
 							for j=1,#parent.thisWorld.countries do
 								local nr = parent.thisWorld.countries[j].name
@@ -652,7 +657,7 @@ return
 			end,
 
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" \\.", "."), Year=parent.years})
+				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" \\.", "."):gsub("from  to", "to"), Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)
@@ -666,8 +671,8 @@ return
 				
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].Step ~= nil then
-							local r = self.ongoing[i]:Step(parent, ind)
+						if self.ongoing[i].doStep ~= nil then
+							local r = self.ongoing[i]:doStep(parent, ind)
 							if r == -1 then
 								local ro = table.remove(self.ongoing, i)
 								ro = nil
@@ -680,42 +685,42 @@ return
 				end
 				
 				for i=1,#parent.c_events do
-					if parent.c_events[i].Inverse == false then
+					if parent.c_events[i].inverse == false then
 						local chance = math.floor(math.random(1, v))
-						if chance <= parent.c_events[i].Chance then
-							if parent.c_events[i].Args == 1 then
+						if chance <= parent.c_events[i].chance then
+							if parent.c_events[i].args == 1 then
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									self.ongoing[#self.ongoing]:Begin(parent, ind)
+									self.ongoing[#self.ongoing]:beginEvent(parent, ind)
 								end
-							elseif parent.c_events[i].Args == 2 then
+							elseif parent.c_events[i].args == 2 then
 								local other = math.random(1, #parent.thisWorld.countries)
 								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+								if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									self.ongoing[#self.ongoing]:Begin(parent, ind, other)
+									self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
 								end
 							end
 						end
 					else
 						local chance = math.floor(math.random(1, vi))
-						if chance <= parent.c_events[i].Chance then
-							if parent.c_events[i].Args == 1 then
+						if chance <= parent.c_events[i].chance then
+							if parent.c_events[i].args == 1 then
 								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing]:Perform(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									self.ongoing[#self.ongoing]:Begin(parent, ind)
+									self.ongoing[#self.ongoing]:beginEvent(parent, ind)
 								end
-							elseif parent.c_events[i].Args == 2 then
+							elseif parent.c_events[i].args == 2 then
 								if #parent.thisWorld.countries > 1 then
 									local other = math.random(1, #parent.thisWorld.countries)
 									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
 									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-									if self.ongoing[#self.ongoing]:Perform(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+									if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 									else
-										self.ongoing[#self.ongoing]:Begin(parent, ind, other)
+										self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
 									end
 								end
 							end

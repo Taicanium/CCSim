@@ -36,11 +36,11 @@ return
 								if self.countries[i] ~= nil then
 									for j=#self.countries[i].ongoing,1,-1 do
 										if self.countries[i].ongoing[j] ~= nil then
-											if self.countries[i].ongoing[j].Target ~= nil then
-												if self.countries[i].ongoing[j].Target == nz then
+											if self.countries[i].ongoing[j].target ~= nil then
+												if self.countries[i].ongoing[j].target == nz then
 													table.remove(self.countries[i].ongoing, j)
-												elseif self.countries[i].ongoing[j].Target > nz then
-													self.countries[i].ongoing[j].Target = self.countries[i].ongoing[j].Target - 1
+												elseif self.countries[i].ongoing[j].target > nz then
+													self.countries[i].ongoing[j].target = self.countries[i].ongoing[j].target - 1
 												end
 											end
 										end
@@ -73,7 +73,7 @@ return
 			end,
 
 			savetable = function(self, parent, t, f)
-				local exceptions = {"spouse", "metatables", "__index", "__call", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "constructVoxelPlanet", "destroy", "add", "delete", "update"}
+				local exceptions = {"spouse", "metatables", "__index", "__call", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "constructVoxelPlanet", "destroy", "add", "delete", "update", "makename", "name"}
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5, ["nyx"]=6}
 				
 				if getmetatable(t) ~= nil then

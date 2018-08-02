@@ -51,6 +51,8 @@ function main()
 		datin = io.read()
 		
 		if string.lower(datin) == "random" then
+			CCSCommon.doR = false
+			
 			CCSCommon.thisWorld = World:new()
 		
 			CCSCommon.numCountries = 10
