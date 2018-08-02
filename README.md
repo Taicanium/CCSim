@@ -4,6 +4,7 @@ Compact Country Simulator; A teensy tiny, highly experimental Lua script that si
 Long and short: Run the script, answer the prompts, and in response to "Data > " you may type "random" or give the name of a text file with country data in it. See 'File Format' for a description of the required format.
 
 If the player sets it as such, upon generating a random world, the script will output a file called "initial.r" in the root directory, which is written in the R programming language. This script file can be executed to produce an interactive 3D model view of the world's initial state, including coloring to indicate the territory of each country. If autosaving is enabled, CCSim will also generate a file labeled "in_progress.r" each time an autosave occurs, and will also generate a "final.r" upon the simulation's completion. A warning should be given that when the CCSim R scripts are executed, they will initially allocate a lot of memory (anywhere from 2 to 4 GB), but this will be cleared once the data is finished loading.
+
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
 
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
@@ -44,7 +45,11 @@ Notably, when randomly generating countries, CCSim also generates a set of rando
 The titles in each system are as follows:
 
 Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marquess", "Lord/Lady", "Duke/Duchess", "Prince/Princess", "King/Queen"
+
 Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
+
 Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"
+
 Oligarchy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"
+
 Empire: "Homeless", "Citizen", "Mayor", "Lord/Lady", "Governor", "Viceroy/Vicereine", "Prince/Princess", "Emperor/Empress"
