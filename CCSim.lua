@@ -51,8 +51,6 @@ function main()
 		datin = io.read()
 		
 		if string.lower(datin) == "random" then
-			CCSCommon.doR = false
-			
 			CCSCommon.thisWorld = World:new()
 		
 			CCSCommon.numCountries = 10
@@ -67,6 +65,7 @@ function main()
 			
 			if CCSCommon.doR == true then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 		else
+			CCSCommon.doR = false
 			CCSCommon:fromFile(datin)
 		end
 	end
