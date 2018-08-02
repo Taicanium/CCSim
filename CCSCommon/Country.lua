@@ -291,7 +291,7 @@ return
 				self.founded = parent.years
 				
 				self.snt[parent.systems[self.system].name] = 1
-				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name]
+				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 
 			setRuler = function(self, parent, newRuler)
