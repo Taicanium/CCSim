@@ -127,8 +127,6 @@ return
 				
 				parent:deepnil(f)
 				f = nil
-				
-				if parent.doR == true then self:rOutput(parent, "in_progress.r") end
 			end,
 			
 			loadtable = function(self, parent, f)
@@ -428,7 +426,8 @@ return
 				end
 			
 				local f = io.open(label, "w+")
-				f:write("x <- c(")
+				
+				f:write("library(\"rgl\")\nlibrary(\"car\")\nx <- c(")
 				
 				for i=1,#self.planetdefined do
 					local x = self.planetdefined[i][1]
@@ -597,7 +596,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 				
-				f:write(")\nlibrary(\"rgl\")\nlibrary(\"car\")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.5, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.7)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nSys.sleep(10000)")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.5, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.7)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nSys.sleep(10000)")
 
 				f:flush()
 				f:close()
