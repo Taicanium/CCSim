@@ -33,6 +33,7 @@ return
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
+				nl.civilWars = 0
 				
 				return nl
 			end,
@@ -122,7 +123,15 @@ return
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
 					else self.demonym = split.."ian" end
-				else self.demonym = self.name.."ian" end
+				else
+					if self.name:sub(#self.name-1, #self.name) == "an" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-1, #self.name) == "en" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-1, #self.name) == "un" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-2, #self.name) == "iar" then self.demonym = self.name:sub(1, #self.name-3).."ian"
+					elseif self.name:sub(#self.name-1, #self.name) == "ar" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
+					else self.demonym = self.name.."ian" end
+				end
 				
 				self.population = 1000
 			end,

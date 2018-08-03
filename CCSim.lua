@@ -38,7 +38,7 @@ function main()
 		end
 		
 		if CCSCommon.autosaveDur ~= -1 then
-			io.write(string.format("\nDo you want to produce a 3D map of the autosaved world state in R (y/n)? > "))
+			io.write(string.format("\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > "))
 			datin = io.read()
 			datin = string.lower(datin)
 			
