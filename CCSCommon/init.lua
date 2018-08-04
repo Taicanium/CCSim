@@ -1484,12 +1484,17 @@ return
 								table.insert(newl.regions, r)
 							end
 							
-							local capital = true
+							local capital = false
 							local oldCap = ""
 							
 							for i=1,#nc.cities do
 								local newc = City:new()
 								newc.name = nc.cities[i].name
+								newc.x = nc.cities[i].x
+								newc.y = nc.cities[i].y
+								newc.z = nc.cities[i].z
+								newc.capital = false
+								parent.thisWorld.planet[newc.x][newc.y][newc.z].city = newc.name
 								
 								if nc.cities[i].capital == true then
 									capital = true

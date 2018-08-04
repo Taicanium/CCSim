@@ -238,7 +238,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				print("Constructing voxel planet...")
 				
-				local r = math.random(50, 70)
+				local r = math.random(65, 80)
 				self.planetR = r
 				
 				for x=-r,r do
@@ -596,7 +596,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 				
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.3, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.7)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nSys.sleep(10000)")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nSys.sleep(10000)")
 
 				f:flush()
 				f:close()
