@@ -6,11 +6,10 @@ return
 				setmetatable(c, self)
 				
 				c.name = ""
-				c.capital = false
 				c.population = 0
-				c.x = 0
-				c.y = 0
-				c.z = 0
+				c.x = nil
+				c.y = nil
+				c.z = nil
 				
 				return c
 			end,
@@ -29,6 +28,7 @@ return
 						end
 					end
 				end
+				
 			end
 		}
 		

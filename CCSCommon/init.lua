@@ -14,11 +14,13 @@ return
 			doR = false,
 		
 			numCountries = 0,
+			popLimit = 10000,
 
 			clrcmd = "",
 			showinfo = 0,
 
-			maxyears = 0,
+			startyear = 1,
+			maxyears = 1,
 			years = 1,
 			yearstorun = 0,
 
@@ -116,17 +118,11 @@ return
 			deepnil = function(self, dat)
 				local final_type = type(dat)
 				if final_type == "table" then
-					for final_key, final_value in next, dat, nil do
-						self:deepnil(final_key)
-						final_key = nil
-						self:deepnil(final_value)
-						final_value = nil
+					for final_key, final_value in pairs(dat) do
+						self:deepnil(dat[final_key])
 					end
-					setmetatable(dat, nil)
 					dat = nil
-				else
-					dat = nil
-				end
+				else dat = nil end
 			end,
 			
 			deepcopy = function(self, obj, seen)
@@ -350,6 +346,7 @@ return
 						nomlower = nomlower:gsub("fv", "v")
 						nomlower = nomlower:gsub("vf", "f")
 						nomlower = nomlower:gsub("vt", "t")
+						nomlower = nomlower:gsub("aia", "ia")
 						
 						for j=1,#self.consonants do
 							if nomlower:sub(1, 1) == self.consonants[j] then
@@ -473,6 +470,7 @@ return
 					tmp = tmp - 1
 				end
 
+				
 				return fin
 			end,
 			
@@ -565,12 +563,12 @@ return
 					local cap = false
 					local oldCap = ""
 					
-					for p=1,#rm.cities do
-						if rm.cities[p].capital == true then
-							cap = true
-							rm.cities[p].capital = false
-							oldCap = rm.cities[p].name
-						end
+					if r == self.thisWorld.countries[c2].capitalregion then
+						local cc = self.thisWorld.countries[c2].capitalcity
+						oldcap =  rm.cities[cc].name
+						cap = true
+					elseif r < self.thisWorld.countries[c2].capitalregion then
+						self.thisWorld.countries[c2].capitalregion = self.thisWorld.countries[c2].capitalregion - 1
 					end
 					
 					if cap == true then
@@ -580,7 +578,8 @@ return
 							local cc = math.random(1, #self.thisWorld.countries[c2].regions[rc].cities)
 						
 							if self.thisWorld.countries[c2].regions[rc].cities[cc] ~= nil then
-								self.thisWorld.countries[c2].regions[rc].cities[cc].capital = true
+								self.thisWorld.countries[c2].capitalregion = rc
+								self.thisWorld.countries[c2].capitalcity = cc
 								local msg = "Capital moved "
 								if oldCap ~= "" then msg = msg.."from "..oldCap.." " end
 								msg = msg.."to "..self.thisWorld.countries[c2].regions[rc].cities[cc].name
@@ -611,8 +610,9 @@ return
 							table.insert(mat, tostring(q))
 						end
 						if mat[1] == "Year" then
+							self.startyear = tonumber(mat[2])
 							self.years = tonumber(mat[2])
-							self.maxyears = self.maxyears + self.years
+							self.maxyears = self.maxyears + self.startyear
 						elseif mat[1] == "C" then
 							local nl = Country:new()
 							nl.name = mat[2]
@@ -640,7 +640,8 @@ return
 							for q=3,#mat do
 								s.name = s.name.." "..mat[q]
 							end
-							s.capital = true
+							self.thisWorld.countries[#self.thisWorld.countries].capitalregion = #self.thisWorld.countries[#self.thisWorld.countries].regions
+							self.thisWorld.countries[#self.thisWorld.countries].capitalcity = #self.thisWorld.countries[#self.thisWorld.countries].regions[#self.thisWorld.countries[#self.thisWorld.countries].regions].cities
 							table.insert(self.thisWorld.countries[#self.thisWorld.countries].regions[#self.thisWorld.countries[#self.thisWorld.countries].regions].cities, s)
 						else
 							local dynastic = false
@@ -715,7 +716,7 @@ return
 						end
 						self.thisWorld.countries[i]:makename(self)
 						
-						self.thisWorld.countries[i]:setPop(self, 1000)
+						self.thisWorld.countries[i]:setPop(self, self.popLimit)
 						
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
@@ -755,17 +756,13 @@ return
 							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
 							else msg = msg..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name].." of "..self.thisWorld.countries[i].name end
 							msg = msg.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
-							msg = msg.."\nCapital: "
-							local capFound = false
-							for j=1,#self.thisWorld.countries[i].regions do
-								for k=1,#self.thisWorld.countries[i].regions[j].cities do
-									if self.thisWorld.countries[i].regions[j].cities[k].capital == true then	
-										capFound = true
-										msg = msg..self.thisWorld.countries[i].regions[j].cities[k].name.." (pop. "..self.thisWorld.countries[i].regions[j].cities[k].population..")"
-									end
-								end
-							end
-							if capFound == false then msg = msg.."None" end
+							local cr = self.thisWorld.countries[i].capitalregion
+							if self.thisWorld.countries[i].regions[cr] ~= nil then
+								local cc = self.thisWorld.countries[i].capitalcity
+								if self.thisWorld.countries[i].regions[cr].cities[cc] ~= nil then
+									msg = msg.."\nCapital: "..self.thisWorld.countries[i].regions[cr].cities[cc].name.." (pop. "..self.thisWorld.countries[i].regions[cr].cities[cc].population..")"
+								else msg = msg.."\nCapital: No capital city" end
+							else msg = msg.."\nCapital: No capital region" end
 							if self.thisWorld.countries[i].rulers ~= nil then
 								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
 									msg = msg.."\nCurrent ruler: "
@@ -843,7 +840,7 @@ return
 					print(msg)
 					oldmsg = msg
 
-					if self.years == self.maxyears then
+					if self.years >= self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
 					end
@@ -975,7 +972,6 @@ return
 				local f = io.open("in_progress.dat", "r")
 				if f ~= nil then
 					f:close()
-					self:deepnil(f)
 					f = nil
 				
 					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
@@ -985,12 +981,9 @@ return
 						local savedData = World:autoload(self)
 						for i, j in pairs(savedData) do
 							if type(j) ~= "function" then
-								self:deepnil(self[i])
-								self[i] = nil
 								self[i] = j
 							end
 						end
-						
 						return true
 					end
 				end
@@ -1021,6 +1014,7 @@ return
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - 5
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 
+						
 						return -1
 					end
 				},
@@ -1063,13 +1057,14 @@ return
 
 						if math.floor(#parent.thisWorld.countries[c].people / 10) > 1 then
 							for d=1,math.random(1, math.floor(#parent.thisWorld.countries[c].people / 10)) do
-								local z = math.random(1,#parent.thisWorld.countries[c].people)
+								local z = math.random(1, #parent.thisWorld.countries[c].people)
 								parent.thisWorld.countries[c]:delete(z)
 							end
 						end
 
 						parent:rseed()
 
+						
 						return -1
 					end
 				},
@@ -1215,7 +1210,7 @@ return
 				},
 				{
 					name="War",
-					chance=12,
+					chance=10,
 					target=nil,
 					args=2,
 					status = 0,
@@ -1287,7 +1282,7 @@ return
 						
 						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
 						
-						if self.status <= -100 then return self:endEvent(parent, c1) elseif self.status >= 100 then return self:endEvent(parent, c1) end
+						if self.status <= -100 then return self:endEvent(parent, c1) end
 					end,
 					endEvent=function(self, parent, c1)
 						local c1strength = parent.thisWorld.countries[c1].strength
@@ -1380,6 +1375,7 @@ return
 								return 0
 							end
 						end
+						
 
 						return -1
 					end
@@ -1398,12 +1394,12 @@ return
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] < 40 then
 								local doEnd = math.random(1, 50)
-								if doEnd < 5 then return self:endEvent(parent, c1) else return 0 end
+								if doEnd < 5 then return 0 end
 							end
 						end
 
 						local doEnd = math.random(1, 500)
-						if doEnd < 5 then return self:endEvent(parent, c1) else return 0 end
+						if doEnd < 5 then return 0 end
 					end,
 					endEvent=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[self.target].name)
@@ -1423,6 +1419,7 @@ return
 							end
 						end
 
+						
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
@@ -1456,14 +1453,14 @@ return
 					
 						if #parent.thisWorld.countries[c].regions > 1 then
 							local newl = Country:new()
-						
 							local nc = table.remove(parent.thisWorld.countries[c].regions, math.random(1, #parent.thisWorld.countries[c].regions))
 							
-							newl.system = math.random(1, #parent.systems)
-							newl.population = math.random(200,1000)
-							
 							newl.name = nc.name
-							newl:makename(parent)
+							
+							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
+							
+							newl.nodes = {}
 							
 							for i=1,#nc.nodes do
 								local x = nc.nodes[i][1]
@@ -1473,90 +1470,67 @@ return
 								parent.thisWorld.planet[x][y][z].country = newl.name
 								parent.thisWorld.planet[x][y][z].region = ""
 								parent.thisWorld.planet[x][y][z].city = ""
-							end
-							
-							local rCount = math.random(3, 8)
-							
-							for i=1,rCount do
-								local r = Region:new()
-								r:makename(newl, parent)
 								
-								table.insert(newl.regions, r)
+								table.insert(newl.nodes, {x, y, z})
 							end
-							
-							local capital = false
-							local oldCap = ""
-							
-							for i=1,#nc.cities do
-								local newc = City:new()
-								newc.name = nc.cities[i].name
-								newc.x = nc.cities[i].x
-								newc.y = nc.cities[i].y
-								newc.z = nc.cities[i].z
-								newc.capital = false
-								parent.thisWorld.planet[newc.x][newc.y][newc.z].city = newc.name
-								
-								if nc.cities[i].capital == true then
-									capital = true
-									oldCap = nc.cities[i].name
-								end
-								
-								table.insert(newl.regions[math.random(1, #newl.regions)].cities, newc)
-							end
-							
-							local rc = math.random(1, #newl.regions)
-							local cc = math.random(1, #newl.regions[rc].cities)
-							newl.regions[rc].cities[cc].capital = true
-							
-							for i=1,newl.population do
-								local n = Person:new()
-								n:makename(parent, newl)
-								newl:add(n)
-							end
-							
-							newl:setTerritory(parent)
-							
-							newl.founded = parent.years
 							
 							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 							
-							newl.snt[parent.systems[newl.system].name] = 1
-							if parent.thisWorld.fromFile == false then newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name]) end
-
-							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
-							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
-
-							parent.thisWorld:add(newl)
-
-							parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 15)
-							if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
-
-							parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 15)
-							if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+							newl:set(parent)
+							if parent.doR == true then newl:setTerritory(parent) end
 							
-							while capital == true do
-								local regc = math.random(1, #parent.thisWorld.countries[c].regions)
-								if #parent.thisWorld.countries[c].regions[regc].cities > 0 then
-									local citc = math.random(1, #parent.thisWorld.countries[c].regions[regc].cities)
-									parent.thisWorld.countries[c].regions[regc].cities[citc].capital = true
-								
-									local msg = "Capital moved "
-									if oldCap ~= "" then msg = msg.."from "..oldCap.." "  end
-									msg = msg.."to "..parent.thisWorld.countries[c].regions[regc].cities[citc].name
-									parent.thisWorld.countries[c]:event(parent, msg)
+							for i=1,#nc.cities do
+								if parent.doR == true then
+									local x = nc.cities[i].x
+									local y = nc.cities[i].y
+									local z = nc.cities[i].z
 									
-									capital = false
+									if parent.thisWorld.planet[x][y][z].city ~= "" then
+										for j=1,#newl.regions do
+											for k=#newl.regions[j].cities,1,-1 do
+												if newl.regions[j].cities[k].name == parent.thisWorld.planet[x][y][z].city then
+													local cr = table.remove(newl.regions[j].cities, k)
+													parent:deepnil(cr)
+													cr = nil
+												end
+											end
+										end
+										
+										parent.thisWorld.planet[x][y][z].city = nc.cities[i].name
+									end
+									
+									if parent.thisWorld.planet[x][y][z].region ~= "" then
+										for j=1,#newl.regions do
+											if newl.regions[j].name == parent.thisWorld.planet[x][y][z].region then table.insert(newl.regions[j].cities, nc.cities[i]) end
+										end
+									end
+								else
+									table.insert(newl.regions[math.random(1, #newl.regions)].cities, nc.cities[i])
 								end
 							end
+
+							local rc = math.random(1, #newl.regions)
+							local cc = math.random(1, #newl.regions[rc].cities)
+							newl.capitalregion = rc
+							newl.capitalcity = cc
+							
+							parent.thisWorld:add(newl)
+
+							parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 10)
+							if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
+
+							parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
+							if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 						end
+						
 
 						return -1
 					end
 				},
 				{
 					name="Invade",
-					chance=8,
+					chance=6,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -1593,13 +1567,14 @@ return
 								end
 							end
 						end
+						
 
 						return -1
 					end
 				},
 				{
 					name="Conquer",
-					chance=3,
+					chance=2,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -1636,46 +1611,40 @@ return
 								end
 								
 								for i=1,#parent.thisWorld.countries[c2].regions do
-									table.insert(parent.thisWorld.countries[c1].regions, parent.thisWorld.countries[c2].regions[i])
-									for j=1,#parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities do
-										if parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital == true then
-											parent.thisWorld.countries[c1].regions[#parent.thisWorld.countries[c1].regions].cities[j].capital = false
-										end
-									end
+									table.insert(parent.thisWorld.countries[c1].regions, parent:deepcopy(parent.thisWorld.countries[c2].regions[i]))
 								end
 								
-								for i=1,#parent.thisWorld.countries[c2].regions do
-									parent.thisWorld.countries[c2].regions[i] = nil
-								end
-								
-								parent.thisWorld.countries[c2].regions = nil
-
 								parent.thisWorld:delete(c2)
 							end
 						end
 
+						
 						return -1
 					end
 				},
 				{
 					name="Capital Migration",
-					chance=2,
+					chance=3,
 					target=nil,
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
 						if #parent.thisWorld.countries[c].regions > 0 then
 							local cCount = 0
+							local orc = parent.thisWorld.countries[c].capitalregion
+							local occ = parent.thisWorld.countries[c].capitalcity
+							
 							local oldCap = ""
+							
+							if parent.thisWorld.countries[c].regions[orc] ~= nil then
+								if parent.thisWorld.countries[c].regions[orc].cities[occ] ~= nil then
+									oldCap = parent.thisWorld.countries[c].regions[orc].cities[occ].name
+								end
+							end
 							
 							for i=1,#parent.thisWorld.countries[c].regions do
 								for j=1,#parent.thisWorld.countries[c].regions[i].cities do
 									cCount = cCount + 1
-									
-									if parent.thisWorld.countries[c].regions[i].cities[j].capital == true then
-										oldCap = parent.thisWorld.countries[c].regions[i].cities[j].name
-										parent.thisWorld.countries[c].regions[i].cities[j].capital = false
-									end
 								end
 							end
 						
@@ -1685,13 +1654,17 @@ return
 									local cc = math.random(1, #parent.thisWorld.countries[c].regions[rc].cities)
 								
 									if parent.thisWorld.countries[c].regions[rc].cities[cc].name ~= oldCap then
-										parent.thisWorld.countries[c]:event(parent, "Capital moved from "..oldCap.." to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name)
-										parent.thisWorld.countries[c].regions[rc].cities[cc].capital = true
+										local msg = "Capital moved "
+										if oldCap ~= "" then msg = msg.."from "..oldCap.." " end
+										msg = msg.."to "..parent.thisWorld.countries[c].regions[rc].cities[cc].name
+										parent.thisWorld.countries[c]:event(parent, msg)
+										parent.thisWorld.countries[c].capitalregion = rc
+										parent.thisWorld.countries[c].capitalcity = cc
 									end
 								end
 							end
 						end
-						
+
 						return -1
 					end
 				}

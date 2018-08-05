@@ -43,13 +43,14 @@ return
 					self.people[i]:destroy()
 					self.people[i] = nil
 				end
-				
 				for i=1,#self.nodes do
 					self.nodes[i][1] = nil
 					self.nodes[i][2] = nil
 					self.nodes[i][3] = nil
 					self.nodes[i] = nil
 				end
+				self.people = nil
+				self.nodes = nil
 			end,
 
 			add = function(self, n)
@@ -64,7 +65,7 @@ return
 						local w = table.remove(self.people, y)
 						if w ~= nil then
 							for i=1,#self.regions do
-								if self.regions[i].name == w.name then
+								if self.regions[i].name == w.region then
 									for j=1,#self.regions[i].cities do
 										if self.regions[i].cities[j].name == w.city then
 											self.regions[i].cities[j].population = self.regions[i].cities[j].population - 1
@@ -85,17 +86,17 @@ return
 				end
 				
 				if #self.rulernames < 1 then
-					for k=1,math.random(5,9) do
+					for k=1,math.random(5, 9) do
 						table.insert(self.rulernames, parent:name(true, 7))
 					end
 					
-					for k=1,math.random(5,9) do
+					for k=1,math.random(5, 9) do
 						table.insert(self.frulernames, parent:name(true, 7))
 					end
 				end
 				
 				if #self.frulernames < 1 then
-					for k=1,math.random(5,9) do
+					for k=1,math.random(5, 9) do
 						table.insert(self.frulernames, parent:name(true, 7))
 					end
 				end
@@ -133,7 +134,7 @@ return
 					else self.demonym = self.name.."ian" end
 				end
 				
-				self.population = 1000
+				self.population = math.random(math.floor(parent.popLimit/5), parent.popLimit)
 			end,
 			
 			setTerritory = function(self, parent)
@@ -153,6 +154,7 @@ return
 					local z = self.nodes[i][3]
 					
 					parent.thisWorld.planet[x][y][z].region = ""
+					parent.thisWorld.planet[x][y][z].city = ""
 				end
 			
 				if #self.regions > #self.nodes then
@@ -175,6 +177,7 @@ return
 						
 						if parent.thisWorld.planet[x][y][z].region == "" then
 							parent.thisWorld.planet[x][y][z].region = self.regions[i].name
+							table.insert(self.regions[i].nodes, {x, y, z})
 							located = true
 						end
 					end
@@ -188,8 +191,6 @@ return
 					allDefined = true
 					defined = 0
 					passes = passes + 1
-					
-					local regIndex = 1
 					
 					for i=1,#self.nodes do
 						local x = self.nodes[i][1]
@@ -208,7 +209,6 @@ return
 														if parent.thisWorld.planet[dx+x][dy+y][dz+z].country == parent.thisWorld.planet[x][y][z].country then
 															if parent.thisWorld.planet[dx+x][dy+y][dz+z].region == "" then
 																parent.thisWorld.planet[dx+x][dy+y][dz+z].region = parent.thisWorld.planet[x][y][z].region
-																for m=1,#self.regions do if self.regions[m].name == parent.thisWorld.planet[x][y][z].region then regIndex = m end end
 																parent.thisWorld.planet[dx+x][dy+y][dz+z].regionset = true
 																allDefined = false
 															end
@@ -232,15 +232,6 @@ return
 					end
 				end
 				
-				for i=1,#self.nodes do
-					local x = self.nodes[i][1]
-					local y = self.nodes[i][2]
-					local z = self.nodes[i][3]
-					for j=#self.regions,1,-1 do
-						if parent.thisWorld.planet[x][y][z].region == self.regions[j].name then table.insert(self.regions[j].nodes, {x, y, z}) end
-					end
-				end
-				
 				for i=1,#self.regions do
 					if #self.regions[i].cities > #self.regions[i].nodes then
 						for j=#self.regions[i].cities,#self.regions[i].nodes+1,-1 do
@@ -251,22 +242,24 @@ return
 					end
 					
 					for j=1,#self.regions[i].cities do
-						local rnd = math.random(1, #self.regions[i].nodes)
-						local x = self.regions[i].nodes[rnd][1]
-						local y = self.regions[i].nodes[rnd][2]
-						local z = self.regions[i].nodes[rnd][3]
-						
-						while parent.thisWorld.planet[x][y][z].city ~= "" do
-							rnd = math.random(1, #self.regions[i].nodes)
-							x = self.regions[i].nodes[rnd][1]
-							y = self.regions[i].nodes[rnd][2]
-							z = self.regions[i].nodes[rnd][3]
+						if self.regions[i].cities[j].x == nil then
+							local rnd = math.random(1, #self.regions[i].nodes)
+							local x = self.regions[i].nodes[rnd][1]
+							local y = self.regions[i].nodes[rnd][2]
+							local z = self.regions[i].nodes[rnd][3]
+							
+							while parent.thisWorld.planet[x][y][z].city ~= "" do
+								rnd = math.random(1, #self.regions[i].nodes)
+								x = self.regions[i].nodes[rnd][1]
+								y = self.regions[i].nodes[rnd][2]
+								z = self.regions[i].nodes[rnd][3]
+							end
+							
+							self.regions[i].cities[j].x = x
+							self.regions[i].cities[j].y = y
+							self.regions[i].cities[j].z = z
+							parent.thisWorld.planet[x][y][z].city = self.regions[i].cities[j].name
 						end
-						
-						self.regions[i].cities[j].x = x
-						self.regions[i].cities[j].y = y
-						self.regions[i].cities[j].z = z
-						parent.thisWorld.planet[x][y][z].city = self.regions[i].cities[j].name
 					end
 				end
 			end,
@@ -275,7 +268,7 @@ return
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				self.population = math.random(200,1000)
+				self.population = math.random(math.floor(parent.popLimit/5), parent.popLimit)
 				self:makename(parent)
 				
 				local rCount = math.random(3, 8)
@@ -284,12 +277,17 @@ return
 					local r = Region:new()
 					r:makename(self, parent)
 					
-					table.insert(self.regions, r)
+					self.regions[i] = r
 				end
 				
 				local rc = math.random(1, #self.regions)
-				local cc = math.random(1, #self.regions[rc].cities)
-				self.regions[rc].cities[cc].capital = true
+				if self.regions[rc] ~= nil then
+					local cc = math.random(1, #self.regions[rc].cities)
+					if self.regions[rc].cities[cc] ~= nil then
+						self.capitalregion = rc
+						self.capitalcity = cc
+					end
+				end
 				
 				for i=1,self.population do
 					local n = Person:new()
@@ -374,12 +372,12 @@ return
 							end
 							
 							if chil == false then
-								local z = math.random(1,#self.people)
+								local z = math.random(1, #self.people)
 								local g = 0
 								if parent.systems[self.system].dynastic == true then
-									g = math.random(1,math.floor(5000/(math.pow(self.people[z].level, 2))))
+									g = math.random(1, math.floor(5000/(math.pow(self.people[z].level, 2))))
 								else
-									g = math.random(1,2500)
+									g = math.random(1, 2500)
 								end
 								if g == 2 then
 									if self.people[z].age < self.averageAge + 20 then
@@ -616,46 +614,31 @@ return
 				
 				self.population = #self.people
 				
-				if self.population > 1000 then
+				if self.population > parent.popLimit then
 					self.birthrate = 15000
 				else
 					self.birthrate = 5
 				end
 				
-				local capfound = false
-				local indicator = false
-				
-				for i=1,#self.regions do
-					for j=1,#self.regions[i].cities do
-						if self.regions[i].cities[j].capital == true then
-							if capfound == false then
-								indicator = true
-							else
-								self.regions[i].cities[j].capital = false
+				if parent.doR == true then
+					if #self.regions > 1 then
+						for i=#self.regions,2,-1 do
+							if #self.regions[i].nodes < 6 then
+								local j = math.random(1, #self.regions)
+								while j == i do j = math.random(1, #self.regions) end
+								
+								for k=1,#self.regions[i].nodes do
+									local x = self.regions[i].nodes[k][1]
+									local y = self.regions[i].nodes[k][2]
+									local z = self.regions[i].nodes[k][3]
+									parent.thisWorld.planet[x][y][z].region = self.regions[j].name
+									table.insert(self.regions[j].nodes, {x, y, z})
+								end
+								
+								local rm = table.remove(self.regions, i)
+								parent:deepnil(rm)
+								rm = nil
 							end
-							
-							if indicator == true then capfound = true end
-						end
-					end
-				end
-				
-				if #self.regions > 1 then
-					for i=#self.regions,2,-1 do
-						if #self.regions[i].nodes < 6 then
-							local j = math.random(1, #self.regions)
-							while j == i do j = math.random(1, #self.regions) end
-							
-							for k=1,#self.regions[i].nodes do
-								local x = self.regions[i].nodes[k][1]
-								local y = self.regions[i].nodes[k][2]
-								local z = self.regions[i].nodes[k][3]
-								parent.thisWorld.planet[x][y][z].region = self.regions[j].name
-								table.insert(self.regions[j].nodes, {x, y, z})
-							end
-							
-							local rm = table.remove(self.regions, i)
-							parent:deepnil(rm)
-							rm = nil
 						end
 					end
 				end
@@ -666,7 +649,7 @@ return
 			end,
 
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e:gsub("of the ,", ","):gsub(" ,", ","):gsub(" \\.", "."):gsub("from  to", "to"), Year=parent.years})
+				table.insert(self.events, {Event=e, Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)
@@ -753,6 +736,7 @@ return
 						end
 					end
 				end
+				
 			end
 		}
 		

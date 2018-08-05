@@ -69,7 +69,9 @@ return
 				
 				if self.region == "" then
 					local rc = math.random(1, #nl.regions)
-					self.region = nl.regions[rc].name
+					if nl.regions[rc] ~= nil then
+						self.region = nl.regions[rc].name
+					end
 				end
 				
 				if self.city == "" then
@@ -192,8 +194,10 @@ return
 				
 				if self.region == "" or self.region == nil then
 					local rc = math.random(1, #nl.regions)
-					self.region = nl.regions[rc].name
-					self.city = ""
+					if nl.regions[rc] ~= nil then
+						self.region = nl.regions[rc].name
+						self.city = ""
+					end
 				end
 				
 				if self.city == "" or self.city == nil then

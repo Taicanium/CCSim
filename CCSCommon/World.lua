@@ -73,7 +73,7 @@ return
 			end,
 
 			savetable = function(self, parent, t, f)
-				local exceptions = {"spouse", "metatables", "__index", "__call", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "constructVoxelPlanet", "destroy", "add", "delete", "update", "makename", "name"}
+				local exceptions = {"spouse", "metatables", "__index", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "stderr"}
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5, ["nyx"]=6}
 				
 				if getmetatable(t) ~= nil then
@@ -124,8 +124,6 @@ return
 				
 				f:flush()
 				f:close()
-				
-				parent:deepnil(f)
 				f = nil
 			end,
 			
@@ -227,7 +225,6 @@ return
 				local newParent = self:loadtable(parent, f)
 				
 				f:close()
-				parent:deepnil(f)
 				f = nil
 				
 				print("File closed.")
@@ -606,6 +603,8 @@ return
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 				
+				local f0 = os.clock()
+				
 				for i=1,#self.countries do
 					if self.countries[i] ~= nil then
 						self.countries[i]:update(parent, i)
@@ -620,11 +619,26 @@ return
 					end
 				end
 				
+				local f1 = os.clock() - f0
+				
+				if parent.years > parent.startyear + 1 then
+					if f1 > 0.25 then
+						if parent.popLimit > 1000 then
+							parent.popLimit = math.floor(parent.popLimit - (500 * (f1 / 0.3)))
+						end
+						
+						if parent.popLimit < 1000 then parent.popLimit = 1000 end
+					elseif f1 < 0.05 then
+						parent.popLimit = math.floor(parent.popLimit + (500 * (0.08 / f1)))
+					end
+				end
+				
 				if parent.autosaveDur > 0 then
 					if math.fmod(parent.years, parent.autosaveDur) == 0 then
 						self:autosave(parent)
 					end
 				end
+				
 			end
 		}
 		
