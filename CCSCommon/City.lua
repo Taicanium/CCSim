@@ -1,8 +1,8 @@
 return
 	function()
-		local City = {
+		City = {
 			new = function(self)
-				local c = {}
+				c = {}
 				setmetatable(c, self)
 				
 				c.name = ""
@@ -16,19 +16,6 @@ return
 			
 			makename = function(self, country, parent)
 				self.name = parent:name(true, 7)
-				local dup = true
-				while dup == true do
-					dup = false
-					for i=1,#country.regions do
-						for j=1,#country.regions[i].cities do
-							if self.name == country.regions[i].cities[j].name then
-								self.name = parent:name(false, 7)
-								dup = true
-							end
-						end
-					end
-				end
-				
 			end
 		}
 		

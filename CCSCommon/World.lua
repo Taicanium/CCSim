@@ -1,8 +1,8 @@
 return
 	function()
-		local World = {
+		World = {
 			new = function(self)
-				local nm = {}
+				nm = {}
 				setmetatable(nm, self)
 				
 				nm.countries = {}
@@ -30,7 +30,7 @@ return
 			delete = function(self, nz)
 				if nz > 0 and nz <= #self.countries then
 					if self.countries[nz] ~= nil then
-						local p = table.remove(self.countries, nz)
+						p = table.remove(self.countries, nz)
 						if p ~= nil then
 							for i=#self.countries,1,-1 do
 								if self.countries[i] ~= nil then
@@ -73,8 +73,8 @@ return
 			end,
 
 			savetable = function(self, parent, t, f)
-				local exceptions = {"spouse", "metatables", "__index", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction", "stderr"}
-				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5, ["nyx"]=6}
+				exceptions = {"spouse", "metatables", "__index", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction"}
+				types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5, ["nyx"]=6}
 				
 				if getmetatable(t) ~= nil then
 					for i=1,#parent.metatables do
@@ -89,7 +89,7 @@ return
 				end
 				
 				for i, j in pairs(t) do
-					local isexception = false
+					isexception = false
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
 					if isexception == false then
 						f:write(types[type(i)])
@@ -99,7 +99,7 @@ return
 						f:write(types[type(j)])
 						
 						if type(j) == "function" then
-							local data = string.dump(j)
+							data = string.dump(j)
 							
 							f:write(string.len(tostring(string.len(data))))
 							f:write(string.len(data))
@@ -118,9 +118,9 @@ return
 			end,
 			
 			autosave = function(self, parent)
-				local f = io.open("in_progress.dat", "w+b")
+				f = io.open("in_progress.dat", "w+b")
 			
-				self:savetable(parent, parent, f)
+				self:savetable(parent, self, f)
 				
 				f:flush()
 				f:close()
@@ -128,26 +128,26 @@ return
 			end,
 			
 			loadtable = function(self, parent, f)
-				local tableout = {}
+				tableout = {}
 				
-				local types = {"string", "number", "boolean", "table", "function", "nyx"}
+				types = {"string", "number", "boolean", "table", "function", "nyx"}
 				
-				local nextlen = tonumber(f:read(1))
+				nextlen = tonumber(f:read(1))
 				nextlen = tonumber(f:read(nextlen))
-				local mt = f:read(nextlen)
+				mt = f:read(nextlen)
 				
-				local typei = types[tonumber(f:read(1))]
+				typei = types[tonumber(f:read(1))]
 				
 				while typei ~= "nyx" do
 					nextlen = tonumber(f:read(1))
 					nextlen = tonumber(f:read(nextlen))
-					local nexti = f:read(nextlen)
+					nexti = f:read(nextlen)
 					if typei == "string" then nexti = tostring(nexti)
 					elseif typei == "number" then nexti = tonumber(nexti) end
 					
-					local typej = types[tonumber(f:read(1))]
+					typej = types[tonumber(f:read(1))]
 					
-					local nextj = nil
+					nextj = nil
 					
 					if typej == "string" then
 						nextlen = tonumber(f:read(1))
@@ -160,12 +160,12 @@ return
 					elseif typej == "boolean" then
 						nextlen = tonumber(f:read(1))
 						nextlen = tonumber(f:read(nextlen))
-						local b = f:read(nextlen)
+						b = f:read(nextlen)
 						if b == "false" then nextj = false else nextj = true end
 					elseif typej == "function" then
 						nextlen = tonumber(f:read(1))
 						nextlen = tonumber(f:read(nextlen))
-						local fndata = f:read(nextlen)
+						fndata = f:read(nextlen)
 						nextj = self:loadfunction(parent, nexti, fndata)
 					elseif typej == "table" then
 						nextj = self:loadtable(parent, f)
@@ -185,15 +185,15 @@ return
 			end,
 			
 			getfunctionvalues = function(self, fnname, fn, t)
-				local found = false
-				local exceptions = {"__index"}
+				found = false
+				exceptions = {"__index"}
 			
 				for i, j in pairs(t) do
 					if type(j) == "function" then
 						if string.dump(fn) == string.dump(j) then
-							local q = 1
+							q = 1
 							while true do
-								local name = debug.getupvalue(j, q)
+								name = debug.getupvalue(j, q)
 								if not name then
 									break
 								end
@@ -202,7 +202,7 @@ return
 							end
 						end
 					elseif type(j) == "table" then
-						local isexception = false
+						isexception = false
 						for q=1,#exceptions do if exceptions[q] == i then isexception = true end end
 						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
 					end
@@ -210,7 +210,7 @@ return
 			end,
 			
 			loadfunction = function(self, parent, fnname, fndata)
-				local fn = load(fndata)
+				fn = load(fndata)
 				
 				self:getfunctionvalues(fnname, fn, self)
 				
@@ -219,13 +219,19 @@ return
 			
 			autoload = function(self, parent)
 				print("Opening data file...")
-				local f = io.open("in_progress.dat", "r+b")
+				f = io.open("in_progress.dat", "r+b")
 				print("Reading data file...")
 				
-				local newParent = self:loadtable(parent, f)
+				savedData = self:loadtable(parent, f)
 				
 				f:close()
 				f = nil
+				
+				for i, j in pairs(savedData) do
+					if type(j) ~= "function" then
+						self[i] = j
+					end
+				end
 				
 				print("File closed.")
 				
@@ -235,7 +241,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				print("Constructing voxel planet...")
 				
-				local r = math.random(65, 80)
+				r = math.random(65, 80)
 				self.planetR = r
 				
 				for x=-r,r do
@@ -243,7 +249,7 @@ return
 					for y=-r,r do
 						self.planet[x][y] = {}
 						for z=-r,r do
-							local fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
+							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
 							if fsqrt > r-0.5 and fsqrt < r+0.5 then
 								self.planet[x][y][z] = {}
 								self.planet[x][y][z].x = x
@@ -264,22 +270,23 @@ return
 				print("Rooting countries...")
 				
 				for i=1,#self.countries do
-					local located = false
+					located = false
 				
-					local x = 1
-					local y = 1
-					local z = 1
+					rnd = math.random(1, #self.planetdefined)
+				
+					x = self.planetdefined[rnd][1]
+					y = self.planetdefined[rnd][2]
+					z = self.planetdefined[rnd][3]
 				
 					while located == false do
 						located = true
+						if self.planet[x][y][z].country ~= "" then located = false end
 						
-						local rnd = math.random(1, #self.planetdefined)
+						rnd = math.random(1, #self.planetdefined)
 				
 						x = self.planetdefined[rnd][1]
 						y = self.planetdefined[rnd][2]
 						z = self.planetdefined[rnd][3]
-						
-						if self.planet[x][y][z].country ~= "" then located = false end
 					end
 					
 					self.planet[x][y][z].country = self.countries[i].name
@@ -287,9 +294,9 @@ return
 				
 				print("Setting territories...")
 				
-				local allDefined = false
-				local defined = 0
-				local passes = 0
+				allDefined = false
+				defined = 0
+				passes = 0
 				
 				while allDefined == false do
 					allDefined = true
@@ -297,9 +304,9 @@ return
 					passes = passes + 1
 				
 					for i=1,#self.planetdefined do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
+						x = self.planetdefined[i][1]
+						y = self.planetdefined[i][2]
+						z = self.planetdefined[i][3]
 						
 						if self.planet[x][y][z].country ~= "" then
 							defined = defined + 1
@@ -327,9 +334,9 @@ return
 					end
 					
 					for i=1,#self.planetdefined do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
+						x = self.planetdefined[i][1]
+						y = self.planetdefined[i][2]
+						z = self.planetdefined[i][3]
 						
 						self.planet[x][y][z].countryset = false
 					end
@@ -350,129 +357,51 @@ return
 			rOutput = function(self, parent, label)
 				print("Writing R data...")
 			
-				while allDefined == false do
-					allDefined = true
-					for i=1,#self.planetdefined do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
-						local cnt = self.planet[x][y][z].country
-						local found = false
-						for j=1,#self.countries do
-							if self.countries[j].name == cnt then found = true end
-							for k=1,#self.countries[j].regions do
-								if self.planet[x][y][z].region == self.countries[j].regions[k] then
-									self.planet[x][y][z].country = self.countries[j].name
-									found = true
-								end
-							end
-						end
-						if found == false then
-							self.planet[x][y][z].country = ""
-							allDefined = false
-						end
-					end
-				end
-			
-				local allDefined = false
-			
-				while allDefined == false do
-					allDefined = true
-					for i=1,#self.planetdefined do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
-						local cnt = self.planet[x][y][z].country
-						local found = false
-						for j=1,#self.countries do
-							if self.countries[j].name == cnt then found = true end
-						end
-						if found == false then
-							allDefined = false
-							local ct = {}
-							for dx=-1,1 do
-								 for dy=-1,1 do
-									for dz=-1,1 do
-										if self.planet[dx+x] ~= nil then
-											if self.planet[dx+x][dy+y] ~= nil then
-												if self.planet[dx+x][dy+y][dz+z] ~= nil then
-													if self.planet[dx+x][dy+y][dz+z].country ~= "" then
-														if self.planet[dx+x][dy+y][dz+z].countryset == false then
-															table.insert(ct, {dx+x, dy+y, dz+z})
-														end
-													end
-												end
-											end
-										end
-									end
-								end
-							end
-							
-							local c = math.random(1, #ct)
-							self.planet[x][y][z].country = self.planet[ct[c][1]][ct[c][2]][ct[c][3]].country
-						end
-					end
-					
-					for i=1,#self.planetdefined do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
-						
-						self.planet[x][y][z].countryset = false
-					end
-				end
-			
-				local f = io.open(label, "w+")
+				f = io.open(label, "w+")
 				
 				f:write("library(\"rgl\")\nlibrary(\"car\")\nx <- c(")
 				
 				for i=1,#self.planetdefined do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
-					f:write(self.planet[x][y][z].x)
+					x = self.planetdefined[i][1]
+					f:write(x)
 					if i < #self.planetdefined then f:write(", ") end
 				end
 				
 				f:write(")\ny <- c(")
 				
 				for i=1,#self.planetdefined do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
-					f:write(self.planet[x][y][z].y)
+					y = self.planetdefined[i][2]
+					f:write(y)
 					if i < #self.planetdefined then f:write(", ") end
 				end
 				
 				f:write(")\nz <- c(")
 				
 				for i=1,#self.planetdefined do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
-					f:write(self.planet[x][y][z].z)
+					z = self.planetdefined[i][3]
+					f:write(z)
 					if i < #self.planetdefined then f:write(", ") end
 				end
 				
 				f:write(")\ncs <- c(")
 				
 				for i=1,#self.planetdefined do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
+					x = self.planetdefined[i][1]
+					y = self.planetdefined[i][2]
+					z = self.planetdefined[i][3]
 					f:write("\""..self.planet[x][y][z].country.."\"")
 					if i < #self.planetdefined then f:write(", ") end
 				end
 				
 				for i=1,#self.countries do
 					if self.cColors[self.countries[i].name] == nil then
-						local r = math.random(0, 255)
-						local g = math.random(0, 255)
-						local b = math.random(0, 255)
+						r = math.random(0, 255)
+						g = math.random(0, 255)
+						b = math.random(0, 255)
 						
-						local unique = false
+						unique = false
 						while unique == false do
-							local found = false
+							found = false
 							for k, j in pairs(self.cTriplets) do
 								if j[1] > r-30 and j[1] < r+30 then
 									if j[2] > g-30 and j[2] < g+30 then
@@ -497,11 +426,11 @@ return
 							end
 						end	
 						
-						local rh = string.format("%x", r)
+						rh = string.format("%x", r)
 						if string.len(rh) == 1 then rh = "0"..rh end
-						local gh = string.format("%x", g)
+						gh = string.format("%x", g)
 						if string.len(gh) == 1 then gh = "0"..gh end
-						local bh = string.format("%x", b)
+						bh = string.format("%x", b)
 						if string.len(bh) == 1 then bh = "0"..bh end
 						
 						self.cColors[self.countries[i].name] = "#"..rh..gh..bh
@@ -509,14 +438,14 @@ return
 					end
 				end
 				
-				local cCoords = {}
-				local cTexts = {}
+				cCoords = {}
+				cTexts = {}
 				
 				for i=1,#self.countries do
-					for j=1,#self.countries[i].regions do
-						for k=1,#self.countries[i].regions[j].cities do
-							table.insert(cCoords, {self.countries[i].regions[j].cities[k].x, self.countries[i].regions[j].cities[k].y, self.countries[i].regions[j].cities[k].z})
-							table.insert(cTexts, self.countries[i].regions[j].cities[k].name)
+					for j, k in pairs(self.countries[i].regions) do
+						for l, m in pairs(k.cities) do
+							table.insert(cCoords, {m.x, m.y, m.z})
+							table.insert(cTexts, m.name)
 						end
 					end
 				end
@@ -524,10 +453,10 @@ return
 				f:write(")\ncsc <- c(")
 				
 				for i=1,#self.planetdefined do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
-					local isCity = false
+					x = self.planetdefined[i][1]
+					y = self.planetdefined[i][2]
+					z = self.planetdefined[i][3]
+					isCity = false
 					for j=1,#cCoords do
 						if x == cCoords[j][1] then
 							if y == cCoords[j][2] then
@@ -558,7 +487,7 @@ return
 				f:write(")\ncityx <- c(")
 				
 				for i=1,#cCoords do
-					local x = cCoords[i][1]
+					x = cCoords[i][1]
 					if x < 0 then x = x - 3 end
 					if x > 0 then x = x + 3 end
 					f:write(x)
@@ -568,7 +497,7 @@ return
 				f:write(")\ncityy <- c(")
 				
 				for i=1,#cCoords do
-					local y = cCoords[i][2]
+					y = cCoords[i][2]
 					if y < 0 then y = y - 3 end
 					if y > 0 then y = y + 3 end
 					f:write(y)
@@ -578,7 +507,7 @@ return
 				f:write(")\ncityz <- c(")
 				
 				for i=1,#cCoords do
-					local z = cCoords[i][3]
+					z = cCoords[i][3]
 					if z < 0 then z = z - 3 end
 					if z > 0 then z = z + 3 end
 					f:write(z)
@@ -588,12 +517,12 @@ return
 				f:write(")\ncitytexts <- c(")
 				
 				for i=1,#cTexts do
-					local txt = cTexts[i]
+					txt = cTexts[i]
 					f:write("\""..txt.."\"")
 					if i < #cTexts then f:write(", ") end
 				end
 				
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nSys.sleep(10000)")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(5)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=1)\nSys.sleep(5)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nif (interactive() == false) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
@@ -603,7 +532,7 @@ return
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 				
-				local f0 = os.clock()
+				f0 = os.clock()
 				
 				for i=1,#self.countries do
 					if self.countries[i] ~= nil then
@@ -619,7 +548,7 @@ return
 					end
 				end
 				
-				local f1 = os.clock() - f0
+				f1 = os.clock() - f0
 				
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.25 then

@@ -1,8 +1,8 @@
 return
 	function()
-		local Region = {
+		Region = {
 			new = function(self)
-				local r = {}
+				r = {}
 				setmetatable(r, self)
 				
 				r.name = ""
@@ -15,24 +15,24 @@ return
 			
 			makename = function(self, country, parent)
 				self.name = parent:name(false, 7)
-				local dup = true
+				dup = true
 				while dup == true do
 					dup = false
-					for i=1,#country.regions do
-						if self.name == country.regions[i].name then
+					for i, j in pairs(country.regions) do
+						if self.name == j.name then
 							self.name = parent:name(false, 7)
 							dup = true
 						end
 					end
 				end
 				
-				local cCount = math.random(2, 4)
+				cCount = math.random(3, 6)
 				
 				for i=1,cCount do
-					local c = City:new()
+					c = City:new()
 					c:makename(country, parent)
 					
-					table.insert(self.cities, c)
+					self.cities[c.name] = c
 				end
 			end,
 		}

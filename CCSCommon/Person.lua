@@ -1,8 +1,8 @@
 return
 	function()
-		local Person = {
+		Person = {
 			new = function(self)
-				local n = {}
+				n = {}
 				setmetatable(n, self)
 				
 				n.name = ""
@@ -53,7 +53,7 @@ return
 				self.name = parent:name(true, 6)
 				self.surname = parent:name(true, 6)
 				
-				local r = math.random(1, 1000)
+				r = math.random(1, 1000)
 				if r < 501 then self.gender = "Male" else self.gender = "Female" end
 				
 				self.pbelief = math.random(-100, 100)
@@ -66,32 +66,10 @@ return
 					self.level = 2
 					self.title = "Citizen"
 				end
-				
-				if self.region == "" then
-					local rc = math.random(1, #nl.regions)
-					if nl.regions[rc] ~= nil then
-						self.region = nl.regions[rc].name
-					end
-				end
-				
-				if self.city == "" then
-					local nc = 0
-					for i=1,#nl.regions do
-						if nl.regions[i].name == self.region then
-							nc = i
-						end
-					end
-					if nl.regions[nc] ~= nil then
-						if nl.regions[nc].cities[cc] ~= nil then
-							local cc = math.random(1, #nl.regions[nc].cities)
-							self.city = nl.regions[nc].cities[cc].name
-						end
-					end
-				end
 			end,
 			
 			dobirth = function(self, parent, nl)
-				local nn = Person:new()
+				nn = Person:new()
 			
 				if self.gender == "Male" then
 					nn.surname = self.surname
@@ -101,7 +79,7 @@ return
 			
 				nn:makename(parent, nl)
 				
-				local sys = parent.systems[nl.system]
+				sys = parent.systems[parent.thisWorld.countries[nl].system]
 				
 				nn.age = 0
 				
@@ -121,10 +99,7 @@ return
 				end
 				
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
-				nl:add(nn)
-				
-				nn.region = self.region
-				nn.city = self.city
+				parent.thisWorld.countries[nl]:add(nn)
 			end,
 
 			update = function(self, parent, nl)
@@ -132,14 +107,14 @@ return
 				
 				if self.surname == nil then self.surname = parent:name(true, 6) end
 				
-				local sys = parent.systems[nl.system]
+				sys = parent.systems[parent.thisWorld.countries[nl].system]
 				
 				if self.gender == "Male" or sys.dynastic == false then
-					local rankLim = 2
+					rankLim = 2
 					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
-							local x = math.random(-100, 100)
+							x = math.random(-100, 100)
 							if x < -75 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
@@ -160,11 +135,11 @@ return
 						self.title = "Citizen"
 					end
 				else
-					local rankLim = 2
+					rankLim = 2
 					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
-							local x = math.random(-100, 100)
+							x = math.random(-100, 100)
 							if x < -75 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
@@ -186,61 +161,20 @@ return
 					end
 				end
 				
-				local cChange = math.random(1, 150)
-				if cChange == 5 then
-					self.city = ""
-					self.region = ""
-				end
-				
-				if self.region == "" or self.region == nil then
-					local rc = math.random(1, #nl.regions)
-					if nl.regions[rc] ~= nil then
-						self.region = nl.regions[rc].name
-						self.city = ""
-					end
-				end
-				
-				if self.city == "" or self.city == nil then
-					local nc = 0
-					for i=1,#nl.regions do
-						if nl.regions[i].name == self.region then
-							nc = i
-						end
-					end
-					if nc ~= 0 then
-						if #nl.regions[nc].cities > 0 then
-							local cc = math.random(1, #nl.regions[nc].cities)
-							if nl.regions[nc] ~= nil then
-								if nl.regions[nc].cities[cc] ~= nil then
-									local cc = math.random(1, #nl.regions[nc].cities)
-									self.city = nl.regions[nc].cities[cc].name
-									
-									if self.spouse ~= nil then
-										self.spouse.city = self.city
-										self.spouse.region = self.region
-									end
-								end
-							end
-						end
-					end
-				end
-				
 				if self.spouse == nil then
 					if self.age > 15 then
-						local c = math.random(1, 6)
+						c = math.random(1, 6)
 						if c == 2 then
-							local m = math.random(1, #nl.people)
-							if nl.people[m].spouse == nil then
-								if nl.people[m].city == self.city then
-									if self.gender ~= nl.people[m].gender then
-										self.spouse = nl.people[m]
-										nl.people[m].spouse = self
-										
-										if self.level >= nl.people[m].level then
-											nl.people[m].surname = self.surname
-										else
-											self.surname = nl.people[m].surname
-										end
+							m = math.random(1, #parent.thisWorld.countries[nl].people)
+							if parent.thisWorld.countries[nl].people[m].spouse == nil then
+								if self.gender ~= parent.thisWorld.countries[nl].people[m].gender then
+									self.spouse = parent.thisWorld.countries[nl].people[m]
+									parent.thisWorld.countries[nl].people[m].spouse = self
+									
+									if self.level >= parent.thisWorld.countries[nl].people[m].level then
+										parent.thisWorld.countries[nl].people[m].surname = self.surname
+									else
+										self.surname = parent.thisWorld.countries[nl].people[m].surname
 									end
 								end
 							end
@@ -249,100 +183,131 @@ return
 				end
 				
 				if self.spouse ~= nil then
-					local tmp = math.random(1, nl.birthrate)
+					tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
 					if tmp == 1 then
 						self:dobirth(parent, nl)
 					end
 				end
 				
-				local belieftotal = self.pbelief + self.ebelief + self.cbelief
+				belieftotal = self.pbelief + self.ebelief + self.cbelief
 				
-				if #nl.parties > 0 then
-					local pmatch = false
+				if #parent.thisWorld.countries[nl].parties > 0 then
+					pmatch = false
 					
-					for i=1,#nl.parties do
-						local ptotal = nl.parties[i].cfreedom + nl.parties[i].pfreedom + nl.parties[i].efreedom
+					for i=1,#parent.thisWorld.countries[nl].parties do
+						ptotal = parent.thisWorld.countries[nl].parties[i].cfreedom + parent.thisWorld.countries[nl].parties[i].pfreedom + parent.thisWorld.countries[nl].parties[i].efreedom
 						if math.abs(belieftotal - ptotal) < 125 then pmatch = true end
 					end
 					
 					if pmatch == false then
-						local newp = Party:new()
-						local ni = 0
-						for i=1,#parent.thisWorld.countries do if parent.thisWorld.countries[i].name == nl.name then ni = i end end
+						newp = Party:new()
+						ni = 0
+						for i=1,#parent.thisWorld.countries do if parent.thisWorld.countries[i].name == parent.thisWorld.countries[nl].name then ni = i end end
 						newp:makename(parent, ni)
 						newp.cfreedom = self.cbelief
 						newp.efreedom = self.ebelief
 						newp.pfreedom = self.pbelief
 						
-						if math.abs(belieftotal) > 225 then newp.radical = true end
+						if math.abs(belieftotal) > 200 then newp.radical = true end
 						
 						self.party = newp.name
 						newp.membership = 1
 						
 						if self.isruler == true then
-							nl.rulers[#nl.rulers].Party = self.party
+							parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Party = self.party
 						end
 						
-						table.insert(nl.parties, newp)
+						table.insert(parent.thisWorld.countries[nl].parties, newp)
 					end
 					
 					if self.party == "" then
-						local pr = math.random(1, #nl.parties)
-						local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
+						pr = math.random(1, #parent.thisWorld.countries[nl].parties)
+						partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
 						if math.abs(belieftotal - partytotal) < 125 then
-							self.party = nl.parties[pr].name
-							nl.parties[pr].membership = nl.parties[pr].membership + 1
+							self.party = parent.thisWorld.countries[nl].parties[pr].name
+							parent.thisWorld.countries[nl].parties[pr].membership = parent.thisWorld.countries[nl].parties[pr].membership + 1
 							if self.isruler == true then
-								nl.rulers[#nl.rulers].Party = self.party
+								parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Party = self.party
 							end
 						end
 					else
-						local pi = 0
-						for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = i end end
+						pi = 0
+						for i=1,#parent.thisWorld.countries[nl].parties do if parent.thisWorld.countries[nl].parties[i].name == self.party then pi = i end end
 						if pi ~= 0 then
-							local cc = math.random(1, 100 * nl.parties[pi].popularity)
+							cc = math.random(1, 100 * parent.thisWorld.countries[nl].parties[pi].popularity)
 							if cc == 10 then
-								nl.parties[pi].membership = nl.parties[pi].membership - 1
+								parent.thisWorld.countries[nl].parties[pi].membership = parent.thisWorld.countries[nl].parties[pi].membership - 1
 							
-								local pr = math.random(1, #nl.parties)
-								local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
+								pr = math.random(1, #parent.thisWorld.countries[nl].parties)
+								partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
 								if math.abs(belieftotal - partytotal) < 125 then
-									self.party = nl.parties[pr].name
-									nl.parties[pr].membership = nl.parties[pr].membership + 1
+									self.party = parent.thisWorld.countries[nl].parties[pr].name
+									parent.thisWorld.countries[nl].parties[pr].membership = parent.thisWorld.countries[nl].parties[pr].membership + 1
 									if self.isruler == true then
-										nl.rulers[#nl.rulers].Party = self.party
+										parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Party = self.party
 									end
 								end
 							end
 						end
 					end
 				else
-					local newp = Party:new()
-					local ni = 0
-					for i=1,#parent.thisWorld.countries do if parent.thisWorld.countries[i].name == nl.name then ni = i end end
+					newp = Party:new()
+					ni = 0
+					for i=1,#parent.thisWorld.countries do if parent.thisWorld.countries[i].name == parent.thisWorld.countries[nl].name then ni = i end end
 					newp:makename(parent, ni)
 					newp.cfreedom = self.cbelief
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief
 					
-					if math.abs(belieftotal) > 225 then newp.radical = true end
+					if math.abs(belieftotal) > 200 then newp.radical = true end
 					
 					self.party = newp.name
 					newp.membership = 1
 					
-					table.insert(nl.parties, newp)
+					table.insert(parent.thisWorld.countries[nl].parties, newp)
 				end
 				
 				if self.isruler == true then
 					if self.age > 80 then
-						local retirechance = math.random(1, 10)
+						retirechance = math.random(1, 10)
 						if retirechance == 1 then
-							nl.hasruler = -1
+							parent.thisWorld.countries[nl].hasruler = -1
 							self.isruler = false
-							self.level = #parent.systems[nl.system].ranks - 2
+							self.level = #parent.systems[parent.thisWorld.countries[nl].system].ranks - 2
 						end
 					end
 				end
+				
+				local movechance = math.random(1, 25)
+				if movechance == 12 then
+					self.region = ""
+					self.city = ""
+				end
+				
+				if self.region == "" then
+					while parent.thisWorld.countries[nl].regions[self.region] == nil do
+						local values = {}
+						for i, j in pairs(parent.thisWorld.countries[nl].regions) do table.insert(values, j.name) end
+						self.region = values[math.random(1, #values)]
+						self.city = ""
+					end
+				end
+				
+				if self.city == "" then
+					while parent.thisWorld.countries[nl].regions[self.region].cities[self.city] == nil do
+						local values = {}
+						for i, j in pairs(parent.thisWorld.countries[nl].regions[self.region].cities) do table.insert(values, j.name) end
+						if #values < 1 then print("ERROR") end
+						self.city = values[math.random(1, #values)]
+					end
+				end
+				
+				if parent.thisWorld.countries[nl].regions[self.region] ~= nil then
+					parent.thisWorld.countries[nl].regions[self.region].population = parent.thisWorld.countries[nl].regions[self.region].population + 1
+					if parent.thisWorld.countries[nl].regions[self.region].cities[self.city] ~= nil then
+						parent.thisWorld.countries[nl].regions[self.region].cities[self.city].population = parent.thisWorld.countries[nl].regions[self.region].cities[self.city].population + 1
+					else self.city = "" end
+				else self.region = "" end
 			end
 		}
 		
