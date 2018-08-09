@@ -499,14 +499,17 @@ return
 				return fin
 			end,
 			
-			RegionTransfer = function(self, c1, c2, r)
+			RegionTransfer = function(self, c1, c2, r, cont)
 				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
 					local rCount = 0
 					for i, j in pairs(self.thisWorld.countries[c2].regions) do
 						rCount = rCount + 1
 					end
 					
-					if rCount > 1 then
+					local lim = 1
+					if cont == false then lim = 0 end
+					
+					if rCount > lim then
 						local rm = self.thisWorld.countries[c2].regions[r]
 						
 						if rm ~= nil then
@@ -541,28 +544,30 @@ return
 							self:deepnil(self.thisWorld.countries[c2].regions[rn.name])
 							self.thisWorld.countries[c2].regions[rn.name] = nil
 							
-							if self.thisWorld.countries[c2].capitalregion == rn.name then
-								local msg = "Capital moved from "..self.thisWorld.countries[c2].capitalcity.." to "
-							
-								self.thisWorld.countries[c2].capitalregion = nil
-								self.thisWorld.countries[c2].capitalcity = nil
-							
-								while self.thisWorld.countries[c2].capitalregion == nil do
-									for i, j in pairs(self.thisWorld.countries[c2].regions) do
-										local chance = math.random(1, 10)
-										if chance == 5 then self.thisWorld.countries[c2].capitalregion = j.name end
-									end
-								end
+							if cont == true then
+								if self.thisWorld.countries[c2].capitalregion == rn.name then
+									local msg = "Capital moved from "..self.thisWorld.countries[c2].capitalcity.." to "
 								
-								while self.thisWorld.countries[c2].capitalcity == nil do
-									for i, j in pairs(self.thisWorld.countries[c2].regions[self.thisWorld.countries[c2].capitalregion].cities) do
-										local chance = math.random(1, 25)
-										if chance == 12 then self.thisWorld.countries[c2].capitalcity = j.name end
-									end
-								end
+									self.thisWorld.countries[c2].capitalregion = nil
+									self.thisWorld.countries[c2].capitalcity = nil
 								
-								msg = msg..self.thisWorld.countries[c2].capitalcity
-								self.thisWorld.countries[c2]:event(self, msg)
+									while self.thisWorld.countries[c2].capitalregion == nil do
+										for i, j in pairs(self.thisWorld.countries[c2].regions) do
+											local chance = math.random(1, 10)
+											if chance == 5 then self.thisWorld.countries[c2].capitalregion = j.name end
+										end
+									end
+									
+									while self.thisWorld.countries[c2].capitalcity == nil do
+										for i, j in pairs(self.thisWorld.countries[c2].regions[self.thisWorld.countries[c2].capitalregion].cities) do
+											local chance = math.random(1, 25)
+											if chance == 12 then self.thisWorld.countries[c2].capitalcity = j.name end
+										end
+									end
+									
+									msg = msg..self.thisWorld.countries[c2].capitalcity
+									self.thisWorld.countries[c2]:event(self, msg)
+								end
 							end
 							
 							self.thisWorld.countries[c1].regions[rn.name] = rn
@@ -961,6 +966,7 @@ return
 					res = io.read()
 					
 					if res == "y" then
+						self.thisWorld:autoload(self)
 						return true
 					end
 				end
@@ -1299,7 +1305,7 @@ return
 										if chance == 12 then rname = b.name end
 									end
 								end
-								parent:RegionTransfer(c1, self.target, rname)
+								parent:RegionTransfer(c1, self.target, rname, true)
 							end
 						elseif self.status <= -100 then
 							parent.thisWorld.countries[c1]:event(parent, "Defeat in war with "..parent.thisWorld.countries[self.target].name)
@@ -1333,7 +1339,7 @@ return
 										if chance == 12 then rname = b.name end
 									end
 								end
-								parent:RegionTransfer(self.target, c1, rname)
+								parent:RegionTransfer(self.target, c1, rname, true)
 							end
 						end
 						
@@ -1452,9 +1458,6 @@ return
 							
 							newl.name = nc.name
 							
-							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
-							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
-							
 							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
 							
@@ -1470,6 +1473,9 @@ return
 							end
 							
 							if parent.doR == true then newl:setTerritory(parent) end
+							
+							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
 							
 							parent.thisWorld:add(newl)
 
@@ -1526,7 +1532,7 @@ return
 											if chance == 12 then rname = b.name end
 										end
 									end
-									parent:RegionTransfer(c1, c2, rname)
+									parent:RegionTransfer(c1, c2, rname, true)
 								end
 							end
 						end
@@ -1574,7 +1580,7 @@ return
 								end
 								
 								for i, j in pairs(parent.thisWorld.countries[c2].regions) do
-									parent:RegionTransfer(c1, c2, j.name)
+									parent:RegionTransfer(c1, c2, j.name, false)
 								end
 								
 								parent.thisWorld:delete(c2)
@@ -1605,9 +1611,9 @@ return
 											parent.thisWorld.countries[c].capitalregion = j.name
 											parent.thisWorld.countries[c].capitalcity = l.name
 											
-											local msg = "Capital moved "
-											if oldcap ~= "" then msg = msg.."from "..oldcap end
-											msg = msg.."to "..parent.thisWorld.countries[c].capitalcity
+											local msg = "Capital moved"
+											if oldcap ~= "" then msg = msg.." from "..oldcap end
+											msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
 											
 											parent.thisWorld.countries[c]:event(parent, msg)
 										end

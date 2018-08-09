@@ -284,22 +284,17 @@ return
 					self.city = ""
 				end
 				
-				if self.region == "" then
-					while parent.thisWorld.countries[nl].regions[self.region] == nil do
-						local values = {}
-						for i, j in pairs(parent.thisWorld.countries[nl].regions) do table.insert(values, j.name) end
-						self.region = values[math.random(1, #values)]
-						self.city = ""
-					end
+				if self.region == "" or parent.thisWorld.countries[nl].regions[self.region] == nil then
+					local values = {}
+					for i, j in pairs(parent.thisWorld.countries[nl].regions) do table.insert(values, j.name) end
+					self.region = values[math.random(1, #values)]
+					self.city = ""
 				end
 				
-				if self.city == "" then
-					while parent.thisWorld.countries[nl].regions[self.region].cities[self.city] == nil do
-						local values = {}
-						for i, j in pairs(parent.thisWorld.countries[nl].regions[self.region].cities) do table.insert(values, j.name) end
-						if #values < 1 then print("ERROR") end
-						self.city = values[math.random(1, #values)]
-					end
+				if self.city == "" or parent.thisWorld.countries[nl].regions[self.region].cities[self.city] then
+					local values = {}
+					for i, j in pairs(parent.thisWorld.countries[nl].regions[self.region].cities) do table.insert(values, j.name) end
+					self.city = values[math.random(1, #values)]
 				end
 				
 				if parent.thisWorld.countries[nl].regions[self.region] ~= nil then
