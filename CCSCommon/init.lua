@@ -125,16 +125,27 @@ return
 				else dat = nil end
 			end,
 			
-			deepcopy = function(self, obj, seen)
-				if type(obj) == "function" then return self:fncopy(obj)
-				else if type(obj) ~= "table" then return obj end end
-				if seen == nil then seen = {} end
-				if seen and seen[obj] then return seen[obj] end
-
-				s = seen or {}
-				res = setmetatable({}, getmetatable(obj))
-				s[obj] = res
-				for k, v in pairs(obj) do res[self:deepcopy(k, s)] = self:deepcopy(v, s) end
+			deepcopy = function(self, obj)
+				local res = nil
+				local t = type(obj)
+				local exceptions = {"spouse", "metatables", "__index", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction"}
+				
+				if t == "table" then
+					local nobj = {}
+					for i, j in pairs(obj) do
+						local isexception = false
+						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
+						if isexception == false then nobj[self:deepcopy(i)] = self:deepcopy(j) end
+					end
+					if getmetatable(obj) ~= nil then setmetatable(nobj, self:deepcopy(getmetatable(obj))) end
+					res = nobj
+				elseif t == "function" then
+					local fn = self:fncopy(obj)
+					res = fn
+				else
+					res = obj
+				end
+				
 				return res
 			end,
 
@@ -1494,7 +1505,7 @@ return
 				},
 				{
 					name="Invade",
-					chance=6,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=true,

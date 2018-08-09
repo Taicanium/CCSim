@@ -610,14 +610,15 @@ return
 				if self.capitalregion == nil or self.regions[self.capitalregion] == nil then
 					self.capitalregion = nil
 					local values = {}
-					for i, j in self.regions do table.insert(values, j.name) end
+					for i, j in pairs(self.regions) do table.insert(values, j.name) end
 					self.capitalregion = values[math.random(1, #values)]
+					self.capitalcity = nil
 				end
 				
 				if self.capitalcity == nil or self.regions[self.capitalregion].cities[self.capitalcity] == nil then
 					self.capitalcity = nil
 					local values = {}
-					for i, j in self.regions[self.capitalregion].cities do table.insert(values, j.name) end
+					for i, j in pairs(self.regions[self.capitalregion].cities) do table.insert(values, j.name) end
 					self.capitalcity = values[math.random(1, #values)]
 				end
 				
