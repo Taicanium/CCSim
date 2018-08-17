@@ -90,8 +90,7 @@ return
 				math.random(1, 500)
 				x = math.random(4, 13)
 				for i=2,x do
-					if math.ceil(math.pow(i*n, 2)) - math.floor(n) < 1 then math.randomseed(math.random(math.floor(n), math.floor(n)+1))
-					else math.randomseed(math.random(math.floor(n), math.ceil(math.pow(i*n, 2)))) end
+					math.randomseed(math.pow(i*n, 2))
 					math.random(1, 500)
 				end
 				math.random(1, 500)
