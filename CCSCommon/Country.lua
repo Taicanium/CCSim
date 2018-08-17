@@ -155,7 +155,7 @@ return
 				local rCount = 0
 				for i, j in pairs(self.regions) do rCount = rCount + 1 end
 				
-				while rCount > #self.nodes do
+				while rCount >= #self.nodes do
 					local r = ""
 					for j, k in pairs(self.regions) do if r == "" then r = k.name end end
 					parent:deepnil(self.regions[r])
@@ -234,39 +234,51 @@ return
 					local cCount = 0
 					for k, l in pairs(j.cities) do cCount = cCount + 1 end
 					
-					while cCount > #j.nodes do
+					while cCount >= #j.nodes do
 						local r = ""
-						for k, l in pairs(self.regions) do if r == "" then r = l.name end end
+						for k, l in pairs(j.cities) do if r == "" then r = l.name end end
+						local x = j.cities[r].x
+						local y = j.cities[r].y
+						local z = j.cities[r].z
+						if j.cities[r].x ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
 						parent:deepnil(j.cities[r])
 						j.cities[r] = nil
 						cCount = 0
-						for m, n in pairs(self.regions) do cCount = cCount + 1 end
-						print(#self.nodes)
-						print(cCount)
+						for m, n in pairs(j.cities) do cCount = cCount + 1 end
+					end
+				end
+				
+				for i, j in pairs(self.regions) do
+					for k=1,#j.nodes do
+						local x = j.nodes[k][1]
+						local y = j.nodes[k][2]
+						local z = j.nodes[k][3]
+						
+						parent.thisWorld.planet[x][y][z].city = ""
 					end
 				end
 				
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
-						if j.x == nil then
-							local pd = self.nodes[math.random(1, #self.nodes)]
+						if l.x == nil or l.y == nil or l.z == nil then
+							local pd = j.nodes[math.random(1, #j.nodes)]
 							local x = pd[1]
 							local y = pd[2]
 							local z = pd[3]
+							
 							while parent.thisWorld.planet[x][y][z].city ~= "" do
-								pd = self.nodes[math.random(1, #self.nodes)]
+								pd = j.nodes[math.random(1, #j.nodes)]
 								x = pd[1]
 								y = pd[2]
 								z = pd[3]
 							end
-								
-							parent.thisWorld.planet[x][y][z].city = l.name
+							
 							l.x = x
 							l.y = y
 							l.z = z
-						else
-							parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
 						end
+						
+						parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
 					end
 				end
 			end,

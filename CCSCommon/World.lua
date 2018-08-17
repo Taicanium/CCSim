@@ -79,8 +79,9 @@ return
 				if getmetatable(t) ~= nil then
 					for i=1,#parent.metatables do
 						if parent.metatables[i][1] == getmetatable(t) then
-							f:write(string.len(tostring(string.len(parent.metatables[i][2]))))
-							f:write(string.len(parent.metatables[i][2]))
+							nextlen = string.len(parent.metatables[i][2])
+							f:write(string.len(tostring(nextlen)))
+							f:write(nextlen)
 							f:write(parent.metatables[i][2])
 						end
 					end
@@ -93,22 +94,27 @@ return
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
 					if isexception == false then
 						f:write(types[type(i)])
-						f:write(string.len(tostring(string.len(tostring(i)))))
-						f:write(string.len(tostring(i)))
+						nextlen = string.len(tostring(i))
+						f:write(string.len(tostring(nextlen)))
+						f:write(nextlen)
 						f:write(tostring(i))
 						f:write(types[type(j)])
 						
 						if type(j) == "function" then
 							data = string.dump(j)
 							
-							f:write(string.len(tostring(string.len(data))))
-							f:write(string.len(data))
+							nextlen = string.len(tostring(data))
+							f:write(string.len(tostring(nextlen)))
+							f:write(nextlen)
 							f:write(data)
 						elseif type(j) == "table" then
 							self:savetable(parent, j, f)
+						elseif type(j) == "boolean" then
+							if j == false then f:write("0") else f:write("1") end
 						else
-							f:write(string.len(tostring(string.len(tostring(j)))))
-							f:write(string.len(tostring(j)))
+							nextlen = string.len(tostring(j))
+							f:write(string.len(tostring(nextlen)))
+							f:write(nextlen)
 							f:write(tostring(j))
 						end
 					end
@@ -129,42 +135,55 @@ return
 			
 			loadtable = function(self, parent, f)
 				tableout = {}
-				
+
 				types = {"string", "number", "boolean", "table", "function", "nyx"}
 				
-				nextlen = tonumber(f:read(1))
-				nextlen = tonumber(f:read(nextlen))
+				local mt = "nilmt"
+				
+				local lin = f:read(1)
+				local nextlen = tonumber(lin)
+				lin = f:read(nextlen)
+				nextlen = tonumber(lin)
 				mt = f:read(nextlen)
 				
-				typei = types[tonumber(f:read(1))]
+				lin = f:read(1)
+				nextlen = tonumber(lin)
+				local typei = types[nextlen]
 				
 				while typei ~= "nyx" do
-					nextlen = tonumber(f:read(1))
-					nextlen = tonumber(f:read(nextlen))
+					lin = f:read(1)
+					nextlen = tonumber(lin)
+					lin = f:read(nextlen)
+					nextlen = tonumber(lin)
 					nexti = f:read(nextlen)
 					if typei == "string" then nexti = tostring(nexti)
 					elseif typei == "number" then nexti = tonumber(nexti) end
 					
-					typej = types[tonumber(f:read(1))]
+					local typej = types[tonumber(f:read(1))]
 					
-					nextj = nil
+					local nextj = nil
 					
 					if typej == "string" then
-						nextlen = tonumber(f:read(1))
-						nextlen = tonumber(f:read(nextlen))
+						lin = f:read(1)
+						nextlen = tonumber(lin)
+						lin = f:read(nextlen)
+						nextlen = tonumber(lin)
 						nextj = tostring(f:read(nextlen))
 					elseif typej == "number" then
-						nextlen = tonumber(f:read(1))
-						nextlen = tonumber(f:read(nextlen))
+						lin = f:read(1)
+						nextlen = tonumber(lin)
+						lin = f:read(nextlen)
+						nextlen = tonumber(lin)
 						nextj = tonumber(f:read(nextlen))
 					elseif typej == "boolean" then
-						nextlen = tonumber(f:read(1))
-						nextlen = tonumber(f:read(nextlen))
-						b = f:read(nextlen)
-						if b == "false" then nextj = false else nextj = true end
+						lin = f:read(1)
+						nextlen = tonumber(lin)
+						if nextlen == 0 then nextj = false else nextj = true end
 					elseif typej == "function" then
-						nextlen = tonumber(f:read(1))
-						nextlen = tonumber(f:read(nextlen))
+						lin = f:read(1)
+						nextlen = tonumber(lin)
+						lin = f:read(nextlen)
+						nextlen = tonumber(lin)
 						fndata = f:read(nextlen)
 						nextj = self:loadfunction(parent, nexti, fndata)
 					elseif typej == "table" then
@@ -172,7 +191,10 @@ return
 					end
 					
 					tableout[nexti] = nextj
-					typei = types[tonumber(f:read(1))]
+					
+					lin = f:read(1)
+					nextlen = tonumber(lin)
+					typei = types[nextlen]
 				end
 				
 				if mt ~= "nilmt" then
@@ -222,7 +244,7 @@ return
 				f = io.open("in_progress.dat", "r+b")
 				print("Reading data file...")
 				
-				savedData = self:loadtable(parent, f)
+				local savedData = self:loadtable(parent, f)
 				
 				f:close()
 				f = nil

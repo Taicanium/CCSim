@@ -37,15 +37,13 @@ function main()
 			CCSCommon.autosaveDur = tonumber(datin)
 		end
 		
-		if CCSCommon.autosaveDur ~= -1 then
-			io.write(string.format("\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > "))
-			datin = io.read()
-			datin = string.lower(datin)
-			
-			CCSCommon.doR = false
-			
-			if string.lower(datin) == "y" then CCSCommon.doR = true end
-		end
+		io.write(string.format("\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > "))
+		datin = io.read()
+		datin = string.lower(datin)
+		
+		CCSCommon.doR = false
+		
+		if string.lower(datin) == "y" then CCSCommon.doR = true end
 		
 		io.write(string.format("\nData > "))
 		datin = io.read()

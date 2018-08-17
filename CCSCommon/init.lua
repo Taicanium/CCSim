@@ -972,6 +972,8 @@ return
 				if f ~= nil then
 					f:close()
 					f = nil
+					
+					self.thisWorld = World:new()
 				
 					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
 					res = io.read()
@@ -1386,7 +1388,7 @@ return
 				},
 				{
 					name="Alliance",
-					chance=12,
+					chance=8,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -1398,12 +1400,14 @@ return
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] < 40 then
 								doEnd = math.random(1, 50)
-								if doEnd < 5 then return 0 end
+								if doEnd < 5 then return self:endEvent(parent, c1) end
 							end
 						end
 
 						doEnd = math.random(1, 500)
-						if doEnd < 5 then return 0 end
+						if doEnd < 5 then return self:endEvent(parent, c1) end
+						
+						return 0
 					end,
 					endEvent=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Military alliance severed with "..parent.thisWorld.countries[self.target].name)
@@ -1423,7 +1427,6 @@ return
 							end
 						end
 
-						
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
@@ -1617,16 +1620,18 @@ return
 							for i, j in pairs(parent.thisWorld.countries[c].regions) do
 								for k, l in pairs(j.cities) do
 									if l.name ~= oldcap then
-										local chance = math.random(1, 50)
-										if chance == 25 then
-											parent.thisWorld.countries[c].capitalregion = j.name
-											parent.thisWorld.countries[c].capitalcity = l.name
-											
-											local msg = "Capital moved"
-											if oldcap ~= "" then msg = msg.." from "..oldcap end
-											msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
-											
-											parent.thisWorld.countries[c]:event(parent, msg)
+										if parent.thisWorld.countries[c].capitalcity == nil then
+											local chance = math.random(1, 100)
+											if chance == 35 then
+												parent.thisWorld.countries[c].capitalregion = j.name
+												parent.thisWorld.countries[c].capitalcity = l.name
+												
+												local msg = "Capital moved"
+												if oldcap ~= "" then msg = msg.." from "..oldcap end
+												msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
+												
+												parent.thisWorld.countries[c]:event(parent, msg)
+											end
 										end
 									end
 								end
