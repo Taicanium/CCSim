@@ -232,7 +232,7 @@ return
 			end,
 			
 			loadfunction = function(self, parent, fnname, fndata)
-				fn = load(fndata)
+				fn = loadstring(fndata)
 				
 				self:getfunctionvalues(fnname, fn, self)
 				

@@ -102,7 +102,7 @@ return
 
 			fncopy = function(self, fn)
 				dumped = string.dump(fn)
-				cloned = load(dumped)
+				cloned = loadstring(dumped)
 				i = 1
 				while true do
 					name = debug.getupvalue(fn, i)
