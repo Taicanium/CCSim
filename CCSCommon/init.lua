@@ -90,7 +90,7 @@ return
 				math.random(1, 500)
 				x = math.random(4, 13)
 				for i=2,x do
-					math.randomseed(math.random(math.floor(n), math.floor(i*n)))
+					math.randomseed(math.random(math.floor(n), math.ceil(math.pow(i*n, 2))))
 					math.random(1, 500)
 				end
 				math.random(1, 500)
