@@ -489,8 +489,6 @@ return
 					if largest ~= -1 then self.parties[largest].leading = true end
 				end
 				
-				self.averageAge = self.averageAge / #self.people
-				
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].target ~= nil then
@@ -633,6 +631,8 @@ return
 						end
 					end
 				end
+				
+				self.averageAge = self.averageAge / #self.people
 				
 				for i=#self.parties,1,-1 do
 					self.parties[i].popularity = math.ceil(self.parties[i].popularity)

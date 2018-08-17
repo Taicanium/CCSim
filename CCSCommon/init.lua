@@ -83,14 +83,15 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.0005)
-				tc = tonumber((os.clock()/10)*(os.time()/100000))
+				if self.clrcmd == "clear" then self:sleep(0.000002) else self:sleep(0.0005) end
+				tc = tonumber(os.clock()*os.time())
 				n = tonumber(tostring(tc):reverse())
+				if self.clrcmd == "clear" then n = n * 1000 end
 				math.randomseed(n)
 				math.random(1, 500)
 				x = math.random(4, 13)
 				for i=2,x do
-					math.randomseed(math.pow(i*n, 2))
+					math.randomseed(math.random(n, i*n))
 					math.random(1, 500)
 				end
 				math.random(1, 500)
