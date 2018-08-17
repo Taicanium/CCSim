@@ -474,64 +474,6 @@ return
 					end
 				end
 				
-				for i, j in pairs(self.regions) do
-					j.population = 0
-					for k, l in pairs(j.cities) do
-						l.population = 0
-					end
-				end
-				
-				for i=1,#self.people do
-					if self.people[i] ~= nil then
-						if self.people[i].isruler == true then
-							self.hasruler = 0
-							self.rulerage = self.people[i].age
-						end
-						
-						self.people[i]:update(parent, ind)
-						
-						belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
-						
-						if #self.parties > 0 then
-							for i=#self.parties,1,-1 do
-								partytotal = self.parties[i].pfreedom + self.parties[i].efreedom + self.parties[i].cfreedom
-								if math.abs(belieftotal - partytotal) < 100 then
-									self.parties[i].popularity = self.parties[i].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
-								end
-							
-								if self.parties[i].revolted == true then
-									pr = table.remove(self.parties, i)
-									pr = nil
-								else
-									if self.people[i].party == self.parties[i].name then
-										self.parties[i].membership = self.parties[i].membership + 1
-									end
-								end
-							end
-						end
-						
-						self.averageAge = self.averageAge + self.people[i].age
-						
-						age = self.people[i].age
-						if age > 121 then
-							if self.people[i].isruler == true then
-								self.hasruler = -1
-							end
-							
-							self:delete(i)
-						else
-							d = math.random(1, math.ceil(self.deathrate - (self.people[i].age * math.sqrt(self.people[i].age))))
-							if d < 5 then
-								if self.people[i].isruler == true then
-									self.hasruler = -1
-								end
-								
-								self:delete(i)
-							end
-						end
-					end
-				end
-				
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do
 						self.parties[i].popularity = math.floor(self.parties[i].popularity)
@@ -632,6 +574,64 @@ return
 					local values = {}
 					for i, j in pairs(self.regions[self.capitalregion].cities) do table.insert(values, j.name) end
 					self.capitalcity = values[math.random(1, #values)]
+				end
+				
+				for i, j in pairs(self.regions) do
+					j.population = 0
+					for k, l in pairs(j.cities) do
+						l.population = 0
+					end
+				end
+				
+				for i=1,#self.people do
+					if self.people[i] ~= nil then
+						if self.people[i].isruler == true then
+							self.hasruler = 0
+							self.rulerage = self.people[i].age
+						end
+						
+						belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
+						
+						if #self.parties > 0 then
+							for i=#self.parties,1,-1 do
+								partytotal = self.parties[i].pfreedom + self.parties[i].efreedom + self.parties[i].cfreedom
+								if math.abs(belieftotal - partytotal) < 100 then
+									self.parties[i].popularity = self.parties[i].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
+								end
+							
+								if self.parties[i].revolted == true then
+									pr = table.remove(self.parties, i)
+									pr = nil
+								else
+									if self.people[i].party == self.parties[i].name then
+										self.parties[i].membership = self.parties[i].membership + 1
+									end
+								end
+							end
+						end
+						
+						self.people[i]:update(parent, ind)
+						
+						self.averageAge = self.averageAge + self.people[i].age
+						
+						age = self.people[i].age
+						if age > 121 then
+							if self.people[i].isruler == true then
+								self.hasruler = -1
+							end
+							
+							self:delete(i)
+						else
+							d = math.random(1, math.ceil(self.deathrate - (self.people[i].age * math.sqrt(self.people[i].age))))
+							if d < 5 then
+								if self.people[i].isruler == true then
+									self.hasruler = -1
+								end
+								
+								self:delete(i)
+							end
+						end
+					end
 				end
 				
 				self:checkRuler(parent)

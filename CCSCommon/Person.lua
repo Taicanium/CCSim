@@ -234,7 +234,7 @@ return
 						pi = 0
 						for i=1,#parent.thisWorld.countries[nl].parties do if parent.thisWorld.countries[nl].parties[i].name == self.party then pi = i end end
 						if pi ~= 0 then
-							cc = math.random(1, 100 * parent.thisWorld.countries[nl].parties[pi].popularity)
+							cc = math.random(1, 100 * parent.thisWorld.countries[nl].parties[pi].popularity + 1)
 							if cc == 10 then
 								parent.thisWorld.countries[nl].parties[pi].membership = parent.thisWorld.countries[nl].parties[pi].membership - 1
 							
