@@ -593,18 +593,18 @@ return
 						belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
 						
 						if #self.parties > 0 then
-							for i=#self.parties,1,-1 do
-								partytotal = self.parties[i].pfreedom + self.parties[i].efreedom + self.parties[i].cfreedom
+							for j=#self.parties,1,-1 do
+								partytotal = self.parties[j].pfreedom + self.parties[j].efreedom + self.parties[j].cfreedom
 								if math.abs(belieftotal - partytotal) < 100 then
-									self.parties[i].popularity = self.parties[i].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
+									self.parties[j].popularity = self.parties[j].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
 								end
 							
-								if self.parties[i].revolted == true then
+								if self.parties[j].revolted == true then
 									pr = table.remove(self.parties, i)
 									pr = nil
 								else
-									if self.people[i].party == self.parties[i].name then
-										self.parties[i].membership = self.parties[i].membership + 1
+									if self.people[i].party == self.parties[j].name then
+										self.parties[j].membership = self.parties[j].membership + 1
 									end
 								end
 							end
@@ -632,6 +632,10 @@ return
 							end
 						end
 					end
+				end
+				
+				for i=#self.parties,1,-1 do
+					self.parties[i].popularity = math.ceil(self.parties[i].popularity)
 				end
 				
 				self:checkRuler(parent)
