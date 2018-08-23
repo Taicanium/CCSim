@@ -554,7 +554,7 @@ return
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 				
-				f0 = os.clock()
+				f0 = socket.gettime()
 				
 				for i=1,#self.countries do
 					if self.countries[i] ~= nil then
@@ -570,7 +570,7 @@ return
 					end
 				end
 				
-				f1 = os.clock() - f0
+				f1 = socket.gettime() - f0
 				
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.25 then

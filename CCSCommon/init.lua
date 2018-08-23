@@ -1,3 +1,5 @@
+socket = require("socket")
+
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
 City = require("CCSCommon.City")()
@@ -78,15 +80,15 @@ return
 			thisWorld = nil,
 
 			sleep = function(self, t)
-				n = os.clock()
-				while os.clock() < n + t do end
+				n = socket.gettime()
+				while socket.gettime() < n + t do end
 			end,
 
 			rseed = function(self)
-				if self.clrcmd == "clear" then self:sleep(0.000002) else self:sleep(0.0005) end
-				tc = tonumber(os.clock()*os.time())
+				self:sleep(0.0002)
+				tc = tonumber(socket.gettime())
 				n = tonumber(tostring(tc):reverse())
-				if self.clrcmd == "clear" then n = n * 1000 end
+				n = n * 100000
 				math.randomseed(n)
 				math.random(1, 500)
 				x = math.random(4, 13)
