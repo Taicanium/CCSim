@@ -89,10 +89,11 @@ return
 				tc = tonumber(socket.gettime())
 				n = tonumber(tostring(tc):reverse())
 				n = n * 100000
+				n = math.ceil(n)
 				math.randomseed(n)
 				math.random(1, 500)
 				x = math.random(4, 13)
-				for i=2,x do
+				for i=3,x do
 					math.randomseed(math.random(n, i*n))
 					math.random(1, 500)
 				end
