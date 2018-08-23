@@ -86,9 +86,10 @@ return
 
 			rseed = function(self)
 				self:sleep(0.0002)
-				tc = tonumber(socket.gettime())
+				tc = socket.gettime()
 				n = tonumber(tostring(tc):reverse())
-				n = n * 100000
+				while n < 1000000 do n = n * 10 end
+				while n > 100000000 do n = n / 10 end
 				n = math.ceil(n)
 				math.randomseed(n)
 				math.random(1, 500)
