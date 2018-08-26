@@ -103,12 +103,12 @@ return
 					nn.lastRoyalAncestor = self.lastRoyalAncestor
 					if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
 					if self.royal == true then
-						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..self:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
+						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
 					end
 					if self.spouse.royal == true then
 						nn.maternalLineTimes = 0
 						nn.royalSystem = self.spouse.royalSystem
-						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..self:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
+						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
 					end
 					nn.royalInfo = {
 						Gens=nn.royalGenerations,
