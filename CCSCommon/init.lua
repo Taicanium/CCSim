@@ -539,8 +539,13 @@ return
 				if n > 1 then
 					if n > 2 then
 						if n > 3 then
-							msgout = tostring(n).."-times-great-grand"
-							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+							if n > 4 then
+								msgout = tostring(n - 2).."-times-great-grand"
+								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+							else
+								msgout = "great-great-grand"
+								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+							end
 						else
 							msgout = "great-grand"
 							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
@@ -1530,7 +1535,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=3,
+					chance=2,
 					target=nil,
 					args=1,
 					inverse=false,

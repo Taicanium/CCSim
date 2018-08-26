@@ -211,7 +211,6 @@ return
 			end,
 			
 			loadfunction = function(self, parent, fnname, fndata)
-				print(fnname)
 				local fn = loadstring(fndata)
 				
 				self:getfunctionvalues(fnname, fn, self)
