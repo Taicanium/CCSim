@@ -20,9 +20,16 @@ return
 				n.spouse = nil
 				n.isruler = false
 				n.parentRuler = false
+				n.royal = false
+				n.royalSystem = ""
+				n.royalGenerations = -1
+				n.maternalLineTimes = -1
+				n.lastRoyalAncestor = ""
+				n.royalInfo = {Gens=-1, LastAncestor=""}
 				n.pbelief = 0
 				n.ebelief = 0
 				n.cbelief = 0
+				n.number = -1
 				
 				return n
 			end,
@@ -43,9 +50,16 @@ return
 				self.spouse = nil
 				self.isruler = nil
 				self.parentRuler = nil
+				self.royal = nil
+				self.royalSystem = nil
+				self.royalGenerations = nil
+				self.maternalLineTimes = nil
+				self.lastRoyalAncestor = nil
+				self.royalInfo = nil
 				self.pbelief = nil
 				self.ebelief = nil
 				self.cbelief = nil
+				self.number = -1
 				self = nil
 			end,
 
@@ -82,6 +96,25 @@ return
 				sys = parent.systems[parent.thisWorld.countries[nl].system]
 				
 				nn.age = 0
+				
+				if self.royalGenerations ~= -1 then
+					if self.royalGenerations ~= -1 then nn.royalGenerations = self.royalGenerations + 1 end
+					nn.royalSystem = self.royalSystem
+					nn.lastRoyalAncestor = self.lastRoyalAncestor
+					if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
+					if self.royal == true then
+						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..self:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country
+					end
+					if self.spouse.royal == true then
+						nn.maternalLineTimes = 0
+						nn.royalSystem = self.spouse.royalSystem
+						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..self:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country
+					end
+					nn.royalInfo = {
+						Gens=nn.royalGenerations,
+						LastAncestor=nn.lastRoyalAncestor
+					}
+				end
 				
 				if self.title == sys.ranks[#sys.ranks] then
 					nn.level = self.level - 1

@@ -38,7 +38,7 @@ return
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
 					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Autocracy", "Dominion"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion"},
 					dynastic=true
 				},
 				{
@@ -85,20 +85,20 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.0002)
+				self:sleep(0.001)
 				tc = socket.gettime()
 				n = tonumber(tostring(tc):reverse())
 				while n < 1000000 do n = n * 10 end
 				while n > 100000000 do n = n / 10 end
 				n = math.ceil(n)
 				math.randomseed(n)
-				math.random(1, 500)
-				x = math.random(4, 13)
+				math.random(1, 100)
+				x = math.random(4, 6)
 				for i=3,x do
 					math.randomseed(math.random(n, i*n))
-					math.random(1, 500)
+					math.random(1, 100)
 				end
-				math.random(1, 500)
+				math.random(1, 100)
 			end,
 
 			getRulerString = function(self, data)
@@ -153,158 +153,124 @@ return
 				
 				return res
 			end,
-
-			name = function(self, personal, l)
-				nom = ""
-				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
-				
-				taken = {}
-				
-				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
-				table.insert(taken, string.lower(nom))
-				
-				while string.len(nom) < length do
-					ieic = false -- initial ends in consonant
-					mbwc = false -- middle begins with consonant
-					for i=1,#self.consonants do
-						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
-					end
-					
-					mid = self.middlegroups[math.random(1, #self.middlegroups)]
-					istaken = false
-					
-					for i=1,#taken do
-						if taken[i] == mid then istaken = true end
-					end
-					
-					for i=1,#self.consonants do
-						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
-					end
-					
-					if istaken == false then
-						if ieic == true then
-							if mbwc == false then
-								nom = nom..mid
-								table.insert(taken, mid)
-							end
-						else
-							if mbwc == true then
-								nom = nom..mid
-								table.insert(taken, mid)
-							end
-						end
-					end
-				end
-				
-				if personal == false then
-					ending = self.endgroups[math.random(1, #self.endgroups)]	
-					nom = nom..ending
-				end
-				
+			
+			namecheck = function(self, nom)
+				nomin = nom
 				check = true
-				
 				while check == true do
 					check = false
-					for i=1,string.len(nom)-1 do
-						if string.lower(nom:sub(i, i)) == string.lower(nom:sub(i+1, i+1)) then
+					
+					for i=1,string.len(nomin)-1 do
+						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
 							check = true
-							
+
 							newnom = ""
-							
+
 							for j=1,i do
-								newnom = newnom..nom:sub(j, j)
+								newnom = newnom..nomin:sub(j, j)
 							end
-							for j=i+2,string.len(nom) do
-								newnom = newnom..nom:sub(j, j)
+							for j=i+2,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
 							end
-							
-							nom = newnom
+
+							nomin = newnom
 						end
 					end
-					for i=1,string.len(nom)-3 do
-						if string.lower(nom:sub(i, i+1)) == string.lower(nom:sub(i+2, i+3)) then
-							check = true
-							
-							newnom = ""
-							
-							for j=1,i+1 do
-								newnom = newnom..nom:sub(j, j)
-							end
-							for j=i+4,string.len(nom) do
-								newnom = newnom..nom:sub(j, j)
-							end
-							
-							nom = newnom
+					
+					for i=1,string.len(nomin)-3 do
+						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
+						check = true
+
+						newnom = ""
+
+						for j=1,i+1 do
+							newnom = newnom..nomin:sub(j, j)
 						end
-						if string.lower(nom:sub(i, i)) == string.lower(nom:sub(i+2, i+2)) then
-							check = true
-							
-							newnom = ""
-							
-							for j=1,i+1 do
-								newnom = newnom..nom:sub(j, j)
-							end
-							newnom = newnom..self.consonants[math.random(1, #self.consonants)]
-							for j=i+3,string.len(nom) do
-								newnom = newnom..nom:sub(j, j)
-							end
-							
-							nom = newnom
+						for j=i+4,string.len(nomin) do
+							newnom = newnom..nomin:sub(j, j)
+						end
+
+						nomin = newnom
+					end
+					
+					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
+						check = true
+
+						newnom = ""
+
+						for j=1,i+1 do
+							newnom = newnom..nomin:sub(j, j)
+						end
+						
+						newnom = newnom..self.consonants[math.random(1, #self.consonants)]
+						
+						for j=i+3,string.len(nomin) do
+							newnom = newnom..nomin:sub(j, j)
+						end
+
+						nomin = newnom
+						
 						end
 					end
-					for i=1,string.len(nom)-5 do
-						if string.lower(nom:sub(i, i+2)) == string.lower(nom:sub(i+3, i+5)) then
+					
+					for i=1,string.len(nomin)-5 do
+						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
 							check = true
-							
+
 							newnom = ""
-							
+
 							for j=1,i+2 do
-								newnom = newnom..nom:sub(j, j)
-							end
-							for j=i+6,string.len(nom) do
-								newnom = newnom..nom:sub(j, j)
+								newnom = newnom..nomin:sub(j, j)
 							end
 							
-							nom = newnom
+							for j=i+6,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
+							end
+
+							nomin = newnom
 						end
 					end
-					for i=1,string.len(nom)-2 do
+					
+					for i=1,string.len(nomin)-2 do
 						hasvowel = false
+						
 						for j=i,i+2 do
 							for k=1,#self.vowels do
-								if string.lower(nom:sub(j, j)) == self.vowels[k] then
+								if string.lower(nomin:sub(j, j)) == self.vowels[k] then
 									hasvowel = true
 								end
 							end
-							
+
 							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nom:sub(j-1, j-1)) == 't' then
-									if string.lower(nom:sub(j, j)) == 'h' then
+								if string.lower(nomin:sub(j-1, j-1)) == 't' then
+									if string.lower(nomin:sub(j, j)) == 'h' then
 										hasvowel = true
 									end
 								end
 							end
 						end
-						
+
 						if hasvowel == false then
 							check = true
-							
+
 							newnom = ""
-						
+
 							for j=1,i+1 do
-								newnom = newnom..nom:sub(j, j)
-							end
-							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
-							for j=i+3,string.len(nom) do
-								newnom = newnom..nom:sub(j, j)
+								newnom = newnom..nomin:sub(j, j)
 							end
 							
-							nom = newnom
+							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
+							
+							for j=i+3,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
+							end
+
+							nomin = newnom
 						end
 					end
-					
-					nomlower = string.lower(nom)
-					
+
+					nomlower = string.lower(nomin)
+
 					nomlower = nomlower:gsub("aa", "a")
 					nomlower = nomlower:gsub("ee", "i")
 					nomlower = nomlower:gsub("ii", "i")
@@ -355,6 +321,7 @@ return
 					nomlower = nomlower:gsub("tg", "t")
 					nomlower = nomlower:gsub("bp", "b")
 					nomlower = nomlower:gsub("iy", "y")
+					nomlower = nomlower:gsub("yi", "y")
 					nomlower = nomlower:gsub("fh", "f")
 					nomlower = nomlower:gsub("uo", "o")
 					nomlower = nomlower:gsub("vh", "v")
@@ -367,7 +334,7 @@ return
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
 					nomlower = nomlower:gsub("uia", "ia")
-					
+
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
 							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, #nomlower) end
@@ -386,7 +353,7 @@ return
 							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, #nomlower) end
 							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, #nomlower) end
 						end
-						
+
 						if nomlower:sub(#nomlower, #nomlower) == self.consonants[j] then
 							if nomlower:sub(#nomlower-1, #nomlower-1) == "b" then nomlower = nomlower:sub(1, #nomlower-1) end
 							if nomlower:sub(#nomlower-1, #nomlower-1) == "c" then nomlower = nomlower:sub(1, #nomlower-1) end
@@ -407,12 +374,64 @@ return
 							if nomlower:sub(#nomlower-1, #nomlower-1) == "z" then nomlower = nomlower:sub(1, #nomlower-1) end
 						end
 					end
-					
-					if nomlower ~= string.lower(nom) then check = true end
-					
-					nom = string.upper(nomlower:sub(1, 1))
-					nom = nom..nomlower:sub(2, string.len(nomlower))
+
+					if nomlower ~= string.lower(nomin) then check = true end
+
+					nomin = string.upper(nomlower:sub(1, 1))
+					nomin = nomin..nomlower:sub(2, string.len(nomlower))
 				end
+				
+				return nomin
+			end,
+
+			name = function(self, personal, l)
+				nom = ""
+				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
+				
+				taken = {}
+				
+				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
+				table.insert(taken, string.lower(nom))
+				
+				while string.len(nom) < length do
+					ieic = false -- initial ends in consonant
+					mbwc = false -- middle begins with consonant
+					for i=1,#self.consonants do
+						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
+					end
+					
+					mid = self.middlegroups[math.random(1, #self.middlegroups)]
+					istaken = false
+					
+					for i=1,#taken do
+						if taken[i] == mid then istaken = true end
+					end
+					
+					for i=1,#self.consonants do
+						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
+					end
+					
+					if istaken == false then
+						if ieic == true then
+							if mbwc == false then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						else
+							if mbwc == true then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						end
+					end
+				end
+				
+				if personal == false then
+					ending = self.endgroups[math.random(1, #self.endgroups)]	
+					nom = nom..ending
+				end
+				
+				nom = self:namecheck(nom)
 				
 				if string.len(nom) == 1 then
 					nom = nom..string.lower(self.vowels[math.random(1, #self.vowels)])
@@ -513,6 +532,29 @@ return
 				else fin = ts.."th" end
 				
 				return fin
+			end,
+			
+			generationString = function(self, n, gen)
+				msgout = ""
+				
+				if n > 1 then
+					if n > 2 then
+						if n > 3 then
+							msgout = tostring(n).."-times-great-grand"
+							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+						else
+							msgout = "great-grand"
+							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+						end
+					else
+						msgout = "grand"
+						if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+					end
+				else
+					if gen == "Male" then msgout = "son" else msgout = "daughter" end
+				end
+				
+				return msgout
 			end,
 			
 			RegionTransfer = function(self, c1, c2, r, cont)
@@ -1021,7 +1063,7 @@ return
 				},
 				{
 					name="Revolution",
-					chance=2,
+					chance=4,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -1047,11 +1089,22 @@ return
 								q = #parent.thisWorld.countries + 1
 							end
 						end
+						
 						parent.thisWorld.countries[c]:checkRuler(parent)
 
 						parent.thisWorld.countries[c]:event(parent, "Revolution: "..oldsys.." to "..parent.systems[parent.thisWorld.countries[c].system].name)
 						parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
 						if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+						if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
+							if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
+								rul = 0
+								for i=1,#parent.thisWorld.countries[c].people do if parent.thisWorld.countries[c].people[i].royal == true then rul = i end end
+								if parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor ~= "" then
+									msg = "Enthronement of "..parent.thisWorld.countries[c].people[rul].title.." "..parent.thisWorld.countries[c].people[rul].name.." "..parent:roman(parent.thisWorld.countries[c].people[rul].number).." of "..parent.thisWorld.countries[c].name..", "..parent:generationString(parent.thisWorld.countries[c].people[rul].royalInfo.Gens, parent.thisWorld.countries[c].people[rul].gender).." of "..parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor
+									parent.thisWorld.countries[c]:event(parent, msg)
+								end
+							end
+						end
 						
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability + 10
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
@@ -1071,7 +1124,7 @@ return
 				},
 				{
 					name="Civil War",
-					chance=2,
+					chance=3,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -1139,7 +1192,9 @@ return
 						
 						self.status = self.status + math.ceil(math.random(varistab-15,varistab+15)/2)
 						
-						if self.status <= -100 then return self:endEvent(parent, c) elseif self.status >= 100 then return self:endEvent(parent, c) else return 0 end
+						if self.status <= -100 then return self:endEvent(parent, c) end
+						if self.status >= 100 then return self:endEvent(parent, c) end
+						return 0
 					end,
 					endEvent=function(self, parent, c)
 						if self.status >= 100 then -- Government victory
@@ -1193,10 +1248,30 @@ return
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent:roman(namenum).." of "..parent.thisWorld.countries[c].name)
 								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
 								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+								if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
+									if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
+										rul = 0
+										for i=1,#parent.thisWorld.countries[c].people do if parent.thisWorld.countries[c].people[i].royal == true then rul = i end end
+										if parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor ~= "" then
+											msg = "Enthronement of "..parent.thisWorld.countries[c].people[rul].title.." "..parent.thisWorld.countries[c].people[rul].name.." "..parent:roman(parent.thisWorld.countries[c].people[rul].number).." of "..parent.thisWorld.countries[c].name..", "..parent:generationString(parent.thisWorld.countries[c].people[rul].royalInfo.Gens, parent.thisWorld.countries[c].people[rul].gender).." of "..parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor
+											parent.thisWorld.countries[c]:event(parent, msg)
+										end
+									end
+								end
 							else
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
 								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
 								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+								if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
+									if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
+										rul = 0
+										for i=1,#parent.thisWorld.countries[c].people do if parent.thisWorld.countries[c].people[i].royal == true then rul = i end end
+										if parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor ~= "" then
+											msg = "Enthronement of "..parent.thisWorld.countries[c].people[rul].title.." "..parent.thisWorld.countries[c].people[rul].name.." "..parent:roman(parent.thisWorld.countries[c].people[rul].number).." of "..parent.thisWorld.countries[c].name..", "..parent:generationString(parent.thisWorld.countries[c].people[rul].royalInfo.Gens, parent.thisWorld.countries[c].people[rul].gender).." of "..parent.thisWorld.countries[c].people[rul].royalInfo.LastAncestor
+											parent.thisWorld.countries[c]:event(parent, msg)
+										end
+									end
+								end
 							end
 						end
 
@@ -1284,6 +1359,8 @@ return
 						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
 						
 						if self.status <= -100 then return self:endEvent(parent, c1) end
+						if self.status >= 100 then return self:endEvent(parent, c1) end
+						return 0
 					end,
 					endEvent=function(self, parent, c1)
 						c1strength = parent.thisWorld.countries[c1].strength

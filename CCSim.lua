@@ -51,6 +51,7 @@ function main()
 		if string.lower(datin) == "random" then
 			CCSCommon.thisWorld = World:new()
 		
+			CCSCommon:rseed()
 			CCSCommon.numCountries = math.random(8, 12)
 		
 			print("Defining countries...")

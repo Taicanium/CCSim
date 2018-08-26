@@ -101,7 +101,7 @@ return
 				end
 				
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name.."n"
-				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1).."ian"
+				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1)
 				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "s" then
 					if self.name:sub(#self.name-2, #self.name) == "ius" then self.demonym = self.name:sub(1, #self.name-2).."an"
@@ -128,6 +128,8 @@ return
 					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
 					else self.demonym = self.name.."ian" end
 				end
+				
+				self.demonym = parent:namecheck(self.demonym)
 				
 				self.population = math.random(math.floor(parent.popLimit/5), parent.popLimit)
 			end,
@@ -360,6 +362,15 @@ return
 					self.hasruler = 0
 					
 					if parent.systems[self.system].dynastic == true then
+						self.people[newRuler].royalInfo = {
+							Gens=self.people[newRuler].royalGenerations,
+							LastAncestor=self.people[newRuler].lastRoyalAncestor
+						}
+						self.people[newRuler].royal = true
+						self.people[newRuler].royalGenerations = 0
+						self.people[newRuler].maternalLineTimes = 0
+						self.people[newRuler].royalSystem = parent.systems[self.system].name
+						self.people[newRuler].number = namenum
 						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
@@ -377,47 +388,46 @@ return
 					
 					if #self.people > 1 then			
 						while self.hasruler == -1 do
-							chil = false
-							male = false
-							chils = {}
-							
-							if parent.systems[self.system].dynastic == true then
-								for e=1,#self.people do
-									if self.people[e].level == #parent.systems[self.system].ranks - 1 then
-										if self.people[e].age < self.averageAge + 20 then
-											chil = true
-											table.insert(chils, e)
-											if self.people[e].gender == "Male" then male = true end
-										end
+							possibles = {}
+							closest = -1
+							closestGens = 10000000
+							closestMats = 10000000
+							closestAge = -1
+							sys = parent.systems[self.system]
+							if sys.dynastic == true then
+								for i=1,#self.people do
+									if self.people[i].royalSystem == sys.name then
+										table.insert(possibles, i)
 									end
 								end
-							end
-							
-							if chil == false then
-								z = math.random(1, #self.people)
-								g = 0
-								if parent.systems[self.system].dynastic == true then
-									g = math.random(1, math.floor(5000/(math.pow(self.people[z].level, 2))))
-								else
-									g = math.random(1, 2500)
-								end
-								if g == 2 then
-									if self.people[z].age < self.averageAge + 20 then
-										self:setRuler(parent, z)
-									end
-								end
-							else
-								if male == false then
-									self:setRuler(parent, chils[1])
-								else
-									for q=1,#chils do
-										if self.people[chils[q]].gender == "Male" and self.people[chils[q]].age < self.averageAge + 20 then
-											if self.hasruler == -1 then
-												self:setRuler(parent, chils[q])
-												q = #chils + 1
+								
+								for i=1,#possibles do
+									if self.people[possibles[i]].royalGenerations <= closestGens then
+										if self.people[possibles[i]].maternalLineTimes <= closestMats then
+											if self.people[possibles[i]].age >= closestAge then
+												closest = possibles[i]
+												closestGens = self.people[possibles[i]].royalGenerations
+												closestMats = self.people[possibles[i]].maternalLineTimes
+												closestAge = self.people[possibles[i]].age
 											end
 										end
 									end
+								end
+								
+								if closest == -1 then
+									for i=#self.people,1,-1 do
+										chance = math.random(1, 1000)
+										if chance == 25 then self:setRuler(parent, i) end
+										i = 0
+									end
+								else
+									self:setRuler(parent, closest)
+								end
+							else
+								for i=#self.people,1,-1 do
+									chance = math.random(1, 1000)
+									if chance == 25 then self:setRuler(parent, i) end
+									i = 0
 								end
 							end
 						end
@@ -647,8 +657,8 @@ return
 			end,
 
 			eventloop = function(self, parent, ind)
-				v = math.floor(math.random(500, 900) * self.stability)
-				vi = math.floor(math.random(500, 900) * (100 - self.stability))
+				v = math.floor(math.random(600, 1000) * self.stability)
+				vi = math.floor(math.random(600, 1000) * (100 - self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 				
