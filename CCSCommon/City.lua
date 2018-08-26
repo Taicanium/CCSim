@@ -2,7 +2,7 @@ return
 	function()
 		City = {
 			new = function(self)
-				c = {}
+				local c = {}
 				setmetatable(c, self)
 				
 				c.name = ""
@@ -10,6 +10,7 @@ return
 				c.x = nil
 				c.y = nil
 				c.z = nil
+				c.mtName = "Party"
 				
 				return c
 			end,

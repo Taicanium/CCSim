@@ -2,20 +2,21 @@ return
 	function()
 		Region = {
 			new = function(self)
-				r = {}
+				local r = {}
 				setmetatable(r, self)
 				
 				r.name = ""
 				r.cities = {}
 				r.population = 0
 				r.nodes = {}
+				r.mtName = "Region"
 				
 				return r
 			end,
 			
 			makename = function(self, country, parent)
 				self.name = parent:name(false, 7)
-				dup = true
+				local dup = true
 				while dup == true do
 					dup = false
 					for i, j in pairs(country.regions) do
@@ -26,7 +27,7 @@ return
 					end
 				end
 				
-				cCount = math.random(3, 6)
+				local cCount = math.random(3, 6)
 				
 				for i=1,cCount do
 					c = City:new()

@@ -133,17 +133,16 @@ return
 			deepcopy = function(self, obj)
 				local res = nil
 				local t = type(obj)
-				local exceptions = {"spouse", "metatables", "__index", "autoload", "savetable", "loadtable", "getfunctionvalues", "loadfunction", "savefunction"}
+				local exceptions = {"spouse", "__index"}
 				
 				if t == "table" then
-					local nobj = {}
+					res = {}
 					for i, j in pairs(obj) do
 						local isexception = false
 						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
-						if isexception == false then nobj[self:deepcopy(i)] = self:deepcopy(j) end
+						if isexception == false then res[i] = self:deepcopy(j) end
 					end
-					if getmetatable(obj) ~= nil then setmetatable(nobj, self:deepcopy(getmetatable(obj))) end
-					res = nobj
+					if getmetatable(obj) ~= nil then setmetatable(res, self:deepcopy(getmetatable(obj))) end
 				elseif t == "function" then
 					local fn = self:fncopy(obj)
 					res = fn
@@ -155,8 +154,8 @@ return
 			end,
 			
 			namecheck = function(self, nom)
-				nomin = nom
-				check = true
+				local nomin = nom
+				local check = true
 				while check == true do
 					check = false
 					
@@ -164,7 +163,7 @@ return
 						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
 							check = true
 
-							newnom = ""
+							local newnom = ""
 
 							for j=1,i do
 								newnom = newnom..nomin:sub(j, j)
@@ -181,7 +180,7 @@ return
 						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
 						check = true
 
-						newnom = ""
+						local newnom = ""
 
 						for j=1,i+1 do
 							newnom = newnom..nomin:sub(j, j)
@@ -196,7 +195,7 @@ return
 					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
 						check = true
 
-						newnom = ""
+						local newnom = ""
 
 						for j=1,i+1 do
 							newnom = newnom..nomin:sub(j, j)
@@ -217,7 +216,7 @@ return
 						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
 							check = true
 
-							newnom = ""
+							local newnom = ""
 
 							for j=1,i+2 do
 								newnom = newnom..nomin:sub(j, j)
@@ -232,7 +231,7 @@ return
 					end
 					
 					for i=1,string.len(nomin)-2 do
-						hasvowel = false
+						local hasvowel = false
 						
 						for j=i,i+2 do
 							for k=1,#self.vowels do
@@ -253,7 +252,7 @@ return
 						if hasvowel == false then
 							check = true
 
-							newnom = ""
+							local newnom = ""
 
 							for j=1,i+1 do
 								newnom = newnom..nomin:sub(j, j)
@@ -269,7 +268,7 @@ return
 						end
 					end
 
-					nomlower = string.lower(nomin)
+					local nomlower = string.lower(nomin)
 
 					nomlower = nomlower:gsub("aa", "a")
 					nomlower = nomlower:gsub("ee", "i")
@@ -385,23 +384,23 @@ return
 			end,
 
 			name = function(self, personal, l)
-				nom = ""
+				local nom = ""
 				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
 				
-				taken = {}
+				local taken = {}
 				
 				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
 				table.insert(taken, string.lower(nom))
 				
 				while string.len(nom) < length do
-					ieic = false -- initial ends in consonant
-					mbwc = false -- middle begins with consonant
+					local ieic = false -- initial ends in consonant
+					local mbwc = false -- middle begins with consonant
 					for i=1,#self.consonants do
 						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
 					end
 					
-					mid = self.middlegroups[math.random(1, #self.middlegroups)]
-					istaken = false
+					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
+					local istaken = false
 					
 					for i=1,#taken do
 						if taken[i] == mid then istaken = true end
@@ -427,7 +426,7 @@ return
 				end
 				
 				if personal == false then
-					ending = self.endgroups[math.random(1, #self.endgroups)]	
+					local ending = self.endgroups[math.random(1, #self.endgroups)]	
 					nom = nom..ending
 				end
 				
@@ -441,9 +440,9 @@ return
 			end,
 
 			roman = function(self, n)
-				tmp = tonumber(n)
+				local tmp = tonumber(n)
 				if tmp == nil then return n end
-				fin = ""
+				local fin = ""
 
 				while tmp - 1000 > -1 do
 					fin = fin.."M"
@@ -515,11 +514,11 @@ return
 			end,
 			
 			ordinal = function(self, n)
-				tmp = tonumber(n)
+				local tmp = tonumber(n)
 				if tmp == nil then return n end
-				fin = ""
+				local fin = ""
 				
-				ts = tostring(n)
+				local ts = tostring(n)
 				if ts:sub(#ts, #ts) == "1" then
 					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
 					else fin = ts.."st" end
@@ -636,19 +635,19 @@ return
 
 			fromFile = function(self, datin)
 				print("Opening data file...")
-				f = assert(io.open(datin, "r"))
+				local f = assert(io.open(datin, "r"))
 				done = false
 				self.thisWorld = World:new()
 
 				print("Reading data...")
 				
 				while done == false do
-					l = f:read()
+					local l = f:read()
 					if l == nil then done = true
 					else
-						fc = 0
-						fr = 0
-						mat = {}
+						local fc = 0
+						local fr = 0
+						local mat = {}
 						for q in string.gmatch(l, "%S+") do
 							table.insert(mat, tostring(q))
 						end
@@ -772,8 +771,8 @@ return
 
 			loop = function(self)
 				_running = true
-				oldmsg = ""
-				msg = ""
+				local oldmsg = ""
+				local msg = ""
 				
 				print("\nBegin Simulation!")
 				
@@ -784,18 +783,16 @@ return
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					for i=1,#self.thisWorld.countries do
-						isfinal = true
-						for j=1,#self.final do
-							if self.final[j].name == self.thisWorld.countries[i].name then isfinal = false end
+						for j=#self.final,1,-1 do
+							if self.final[j].name == self.thisWorld.countries[i].name then table.remove(self.final, j) end
 						end
-						if isfinal == true then
-							table.insert(self.final, self.thisWorld.countries[i])
-						end
+						
+						table.insert(self.final, self.thisWorld.countries[i])
 					end
 					
 					if self.showinfo == 1 then
-						wars = {}
-						alliances = {}
+						local wars = {}
+						local alliances = {}
 						
 						for i=1,#self.thisWorld.countries do
 							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
@@ -1481,12 +1478,12 @@ return
 					doStep=function(self, parent, c1)
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] < 40 then
-								doEnd = math.random(1, 50)
+								local doEnd = math.random(1, 50)
 								if doEnd < 5 then return self:endEvent(parent, c1) end
 							end
 						end
 
-						doEnd = math.random(1, 500)
+						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
 						
 						return 0
