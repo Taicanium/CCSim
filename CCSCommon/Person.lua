@@ -59,7 +59,7 @@ return
 				self.pbelief = nil
 				self.ebelief = nil
 				self.cbelief = nil
-				self.number = -1
+				self.number = nil
 				self = nil
 			end,
 
