@@ -33,101 +33,8 @@ return
 					if self.countries[nz] ~= nil then
 						p = table.remove(self.countries, nz)
 						if p ~= nil then
-							local f = io.open("output.txt", "a")
-
-							local newc = false
-							local fr = 1
-							local pr = 1
-							f:write(string.format("Country: "..p.name.."\nFounded: "..p.founded..", survived for "..p.age.." years\n\n"))
-
-							for k=1,#p.events do
-								if p.events[k].Event:sub(1, 12) == "Independence" then
-									newc = true
-									pr = tonumber(p.events[k].Year)
-								end
-							end
-
-							if newc == true then
-								f:write(string.format("1. "..p.rulers[1].Title.." "..p.rulers[1].name.." "..parent:roman(p.rulers[1].Number).." of "..p.rulers[1].Country.." ("..tostring(p.rulers[1].From).." - "..tostring(p.rulers[1].To)..")").."\n...\n")
-								for k=1,#p.rulers do
-									if p.rulers[k].To ~= "Current" then
-										if tonumber(p.rulers[k].To) >= pr then
-											if tonumber(p.rulers[k].From) < pr then
-												f:write(string.format(k..". "..parent:getRulerString(p.rulers[k]).."\n"))
-												fr = k + 1
-												k = #p.rulers + 1
-											end
-										end
-									end
-								end
-							end
-
-							for j=pr,parent.maxyears do
-								for k=1,#p.events do
-									if tonumber(p.events[k].Year) == j then
-										if p.events[k].Event:sub(1, 10) == "Revolution" then
-											f:write(string.format(p.events[k].Year..": "..p.events[k].Event.."\n"))
-										end
-									end
-								end
-
-								for k=fr,#p.rulers do
-									if tonumber(p.rulers[k].From) == j then
-										f:write(string.format(k..". "..parent:getRulerString(p.rulers[k]).."\n"))
-									end
-								end
-
-								for k=1,#p.events do
-									if tonumber(p.events[k].Year) == j then
-										if p.events[k].Event:sub(1, 10) ~= "Revolution" then
-											f:write(string.format(p.events[k].Year..": "..p.events[k].Event.."\n"))
-										end
-									end
-								end
-							end
-
-							f:write("\n\n\n")
-							f:flush()
-							f:close()
-							f = nil
-						
-							for i=#self.countries,1,-1 do
-								if self.countries[i] ~= nil then
-									for j=#self.countries[i].ongoing,1,-1 do
-										if self.countries[i].ongoing[j] ~= nil then
-											if self.countries[i].ongoing[j].target ~= nil then
-												if self.countries[i].ongoing[j].target == nz then
-													table.remove(self.countries[i].ongoing, j)
-												elseif self.countries[i].ongoing[j].target > nz then
-													self.countries[i].ongoing[j].target = self.countries[i].ongoing[j].target - 1
-												end
-											end
-										end
-									end
-									for j=#self.countries[i].allyOngoing,1,-1 do
-										if self.countries[i].allyOngoing[j] ~= nil then
-											if self.countries[i].allyOngoing[j]:find(p.name) then
-												table.remove(self.countries[i].allyOngoing, j)
-											end
-										end
-									end
-									for j=#self.countries[i].alliances,1,-1 do
-										if self.countries[i].alliances[j] ~= nil then
-											if self.countries[i].alliances[j] == p.name then
-												table.remove(self.countries[i].alliances, j)
-											end
-										end
-									end
-								end
-							end
-							
 							self.cColors[p.name] = nil
 							self.cTriplets[p.name] = nil
-							
-							for i=#parent.final,1,-1 do if parent.final[i].name == p.name then
-								local frem = table.remove(parent.final, i)
-								frem = nil
-							end end
 							
 							p:destroy()
 							p = nil
@@ -320,19 +227,6 @@ return
 					self:savetable(parent, self.cTriplets, f)
 				else f:write("0") end
 				
-				local of = io.open("output.txt", "r")
-				if of ~= nil then
-					local odata = of:read("*all")
-					f:write(tostring(string.len(tostring(string.len(tostring(string.len(odata)))))))
-					f:write(tostring(string.len(tostring(string.len(odata)))))
-					f:write(tostring(string.len(odata)))
-					f:write(odata)
-					
-					of:close()
-				else
-					f:write("111\n")
-				end
-				
 				f:flush()
 				f:close()
 				f = nil
@@ -380,17 +274,6 @@ return
 					self.cColors = self:loadtable(parent, f)
 					self.cTriplets = self:loadtable(parent, f)
 				end
-				
-				datin = f:read(1)
-				datin = f:read(tonumber(datin))
-				datin = f:read(tonumber(datin))
-				local odata = f:read(tonumber(datin))
-				
-				local of = io.open("output.txt", "w+")
-				of:write(odata)
-				of:flush()
-				of:close()
-				of = nil
 				
 				f:close()
 				f = nil
