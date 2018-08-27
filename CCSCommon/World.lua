@@ -320,6 +320,19 @@ return
 					self:savetable(parent, self.cTriplets, f)
 				else f:write("0") end
 				
+				local of = io.open("output.txt", "r")
+				if of ~= nil then
+					local odata = of:read("*all")
+					f:write(tostring(string.len(tostring(string.len(tostring(string.len(odata)))))))
+					f:write(tostring(string.len(tostring(string.len(odata)))))
+					f:write(tostring(string.len(odata)))
+					f:write(odata)
+					
+					of:close()
+				else
+					f:write("111\n")
+				end
+				
 				f:flush()
 				f:close()
 				f = nil
@@ -367,6 +380,17 @@ return
 					self.cColors = self:loadtable(parent, f)
 					self.cTriplets = self:loadtable(parent, f)
 				end
+				
+				datin = f:read(1)
+				datin = f:read(tonumber(datin))
+				datin = f:read(tonumber(datin))
+				local odata = f:read(tonumber(datin))
+				
+				local of = io.open("output.txt", "w+")
+				of:write(odata)
+				of:flush()
+				of:close()
+				of = nil
 				
 				f:close()
 				f = nil
