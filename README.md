@@ -3,11 +3,9 @@ Compact Country Simulator; A teensy tiny, highly experimental Lua script that si
 
 Long and short: Run the script, answer the prompts, and in response to "Data > " you may type "random" or give the name of a text file with country data in it. See 'File Format' for a description of the required format.
 
-If the player sets it as such, upon generating a random world, the script will output a file called "initial.r" in the root directory, which is written in the R programming language. This script file can be executed to produce an interactive 3D model view of the world's initial state, including coloring to indicate the territory of each country. CCSim will also generate a "final.r" upon the simulation's completion. A warning should be given that when the CCSim R scripts are executed, they will initially allocate a lot of memory (anywhere from 2 to 4 GB), but this will be cleared once the data is finished loading.
+If the player sets it as such, upon generating a random world, the script will output a file called "initial.r" in the root directory, which is written in the R programming language. This script file can be executed to produce an interactive 3D model view of the world's initial state, including coloring to indicate the territory of each country. CCSim will also generate a "final.r" upon the simulation's completion. A warning should be given that when the CCSim R scripts are executed, they will initially allocate a lot of memory (anywhere from 2 to 4 GB), but this will be freed up once the data is finished loading.
 
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
-
-Initially, the simulation may run very slow; this is because it auto-adjusts the maximum population of each country to account for available computing power. After a few simulated years, it should speed up as the population decreases.
 
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 

@@ -29,7 +29,7 @@ return
 				nl.strength = 50
 				nl.population = 0
 				nl.birthrate = 5
-				nl.deathrate = 2662
+				nl.deathrate = 121
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -131,8 +131,6 @@ return
 				end
 				
 				self.demonym = parent:namecheck(self.demonym)
-				
-				self.population = math.random(math.floor(parent.popLimit/5), parent.popLimit)
 			end,
 			
 			setTerritory = function(self, parent)
@@ -290,12 +288,17 @@ return
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				self.population = math.random(math.floor(parent.popLimit/5), parent.popLimit)
+				self.population = math.random(500, 1000)
 				self:makename(parent)
 				
 				for i=1,self.population do
 					local n = Person:new()
 					n:makename(parent, self)
+					n.age = math.random(1, 20)
+					n.birth = parent.years - n.age
+					if n.birth < 1 then n.birth = n.birth - 1 end
+					n.level = 2
+					n.title = "Citizen"
 					self:add(n)
 				end
 				
@@ -450,7 +453,6 @@ return
 				for i=1,self.population do
 					local n = Person:new()
 					n:makename(parent, self)
-					n.age = math.random(1, 30)
 					n.level = 2
 					n.title = "Citizen"
 					self:add(n)
@@ -565,9 +567,9 @@ return
 				self.population = #self.people
 				
 				if self.population > parent.popLimit then
-					self.birthrate = 15000
+					self.deathrate = 20
 				else
-					self.birthrate = 5
+					self.deathrate = 135
 				end
 				
 				if self.capitalregion == nil or self.regions[self.capitalregion] == nil then
@@ -624,15 +626,15 @@ return
 						self.averageAge = self.averageAge + self.people[i].age
 						
 						age = self.people[i].age
-						if age > 121 then
+						if age > 120 then
 							if self.people[i].isruler == true then
 								self.hasruler = -1
 							end
 							
 							self:delete(i)
 						else
-							d = math.random(1, math.ceil(self.deathrate - (self.people[i].age * math.sqrt(self.people[i].age))))
-							if d < 5 then
+							d = math.random(1, self.deathrate)
+							if d == 3 then
 								if self.people[i].isruler == true then
 									self.hasruler = -1
 								end

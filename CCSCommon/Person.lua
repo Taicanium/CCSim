@@ -217,9 +217,15 @@ return
 				end
 				
 				if self.spouse ~= nil then
-					local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
-					if tmp == 1 then
-						self:dobirth(parent, nl)
+					if self.gender == "Female" then
+						if self.age < 60 then
+							if self.age > 12 then
+								local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
+								if tmp == 1 then
+									self:dobirth(parent, nl)
+								end
+							end
+						end
 					end
 				end
 				
