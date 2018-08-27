@@ -911,7 +911,7 @@ return
 			
 				print("\nPrinting result...")
 
-				local f = io.open("output.txt", "w")
+				local f = io.open("output.txt", "a")
 
 				for i=1,#self.final do
 					local newc = false

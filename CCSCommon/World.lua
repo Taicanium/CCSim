@@ -33,7 +33,7 @@ return
 					if self.countries[nz] ~= nil then
 						p = table.remove(self.countries, nz)
 						if p ~= nil then
-							local f = io.open("output.txt", "w")
+							local f = io.open("output.txt", "a")
 
 							local newc = false
 							local fr = 1
