@@ -27,210 +27,6 @@ return
 			add = function(self, nd)
 				table.insert(self.countries, nd)
 			end,
-
-			delete = function(self, parent, nz)
-				if nz > 0 and nz <= #self.countries then
-					if self.countries[nz] ~= nil then
-						p = table.remove(self.countries, nz)
-						if p ~= nil then
-							self.cColors[p.name] = nil
-							self.cTriplets[p.name] = nil
-							
-							p:destroy()
-							p = nil
-						end
-					end
-				end
-			end,
-
-			savetable = function(self, parent, t, f)
-				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
-				local exceptions = {"spouse", "__index"}
-				
-				if t.mtName == nil then f:write("5nilmt") else
-					f:write(string.len(t.mtName))
-					f:write(t.mtName)
-				end
-				
-				local iCount = 0
-				for i, j in pairs(t) do
-					found = false
-					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if found == false then iCount = iCount + 1 end
-				end
-				
-				f:write(string.len(tostring(iCount)))
-				f:write(tostring(iCount))
-				
-				for i, j in pairs(t) do
-					local found = false
-					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if found == false then 
-						local itype = types[type(i)]
-						f:write(tostring(itype))
-						
-						f:write(string.len(tostring(string.len(i))))
-						f:write(string.len(tostring(i)))
-						f:write(tostring(i))
-						
-						local jtype = type(j)
-						f:write(tostring(types[jtype]))
-						
-						if jtype == "table" then
-							self:savetable(parent, j, f)
-						elseif jtype == "function" then
-							fndata = string.dump(j)
-							f:write(string.len(tostring(string.len(fndata))))
-							f:write(string.len(fndata))
-							f:write(fndata)
-						elseif jtype == "boolean" then
-							if j == false then f:write("0") else f:write("1") end
-						else
-							f:write(string.len(tostring(string.len(tostring(j)))))
-							f:write(string.len(tostring(j)))
-							f:write(tostring(j))
-						end
-					end
-				end
-			end,
-			
-			loadtable = function(self, parent, f)
-				local tableout = {}
-				local types = {"string", "number", "boolean", "table", "function"}
-				
-				local slen = f:read(1)
-				local mt = f:read(tonumber(slen))
-				
-				if mt ~= "nilmt" then
-					if mt == "World" then
-						setmetatable(tableout, World)
-					elseif mt == "Country" then
-						setmetatable(tableout, Country)
-					elseif mt == "Region" then
-						setmetatable(tableout, Region)
-					elseif mt == "City" then
-						setmetatable(tableout, City)
-					elseif mt == "Person" then
-						setmetatable(tableout, Person)
-					elseif mt == "Party" then
-						setmetatable(tableout, Party)
-					end
-				end
-				
-				slen = f:read(1)
-				local iCount = f:read(tonumber(slen))
-
-				for i=1,iCount do
-					local itype = types[tonumber(f:read(1))]
-					
-					slen = f:read(1)
-					slen = f:read(tonumber(slen))
-					local idata = f:read(tonumber(slen))
-					
-					if itype == "number" then idata = tonumber(idata) end
-					
-					local jtype = types[tonumber(f:read(1))]
-					
-					if jtype == "table" then
-						tableout[idata] = self:loadtable(parent, f)
-					elseif jtype == "function" then
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						local fndata = f:read(tonumber(slen))
-						tableout[idata] = self:loadfunction(parent, idata, fndata)
-					elseif jtype == "boolean" then
-						local booldata = tonumber(f:read(1))
-						if booldata == 0 then tableout[idata] = false else tableout[idata] = true end
-					elseif jtype == "number" then
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						tableout[idata] = tonumber(f:read(tonumber(slen)))
-					else
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						tableout[idata] = f:read(tonumber(slen))
-					end
-				end
-				
-				return tableout
-			end,
-			
-			getfunctionvalues = function(self, fnname, fn, t)
-				local found = false
-				local exceptions = {"__index"}
-			
-				for i, j in pairs(t) do
-					if type(j) == "function" then
-						if string.dump(fn) == string.dump(j) then
-							local q = 1
-							while true do
-								local name = debug.getupvalue(j, q)
-								if not name then
-									break
-								end
-								debug.upvaluejoin(fn, q, j, q)
-								q = q + 1
-							end
-						end
-					elseif type(j) == "table" then
-						local isexception = false
-						for q=1,#exceptions do if exceptions[q] == i then isexception = true end end
-						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
-					end
-				end
-			end,
-			
-			loadfunction = function(self, parent, fnname, fndata)
-				local fn = loadstring(fndata)
-				
-				self:getfunctionvalues(fnname, fn, self)
-				
-				return fn
-			end,
-			
-			autosave = function(self, parent)
-				local f = io.open("in_progress.dat", "w+b")
-			
-				f:write(string.len(tostring(parent.autosaveDur)))
-				f:write(parent.autosaveDur)
-				
-				f:write(string.len(tostring(parent.numCountries)))
-				f:write(parent.numCountries)
-				
-				f:write(string.len(tostring(parent.popLimit)))
-				f:write(parent.popLimit)
-				
-				f:write(string.len(tostring(parent.showinfo)))
-				f:write(parent.showinfo)
-				
-				f:write(string.len(tostring(parent.startyear)))
-				f:write(parent.startyear)
-				
-				f:write(string.len(tostring(parent.maxyears)))
-				f:write(parent.maxyears)
-				
-				f:write(string.len(tostring(parent.years)))
-				f:write(parent.years)
-				
-				f:write(string.len(tostring(parent.yearstorun)))
-				f:write(parent.yearstorun)
-				
-				self:savetable(parent, parent.final, f)
-				
-				self:savetable(parent, self.countries, f)
-				if self.fromFile == true then f:write("1") else f:write("0") end
-				if parent.doR == true then
-					f:write("1")
-					self:savetable(parent, self.planet, f)
-					self:savetable(parent, self.planetdefined, f)
-					self:savetable(parent, self.cColors, f)
-					self:savetable(parent, self.cTriplets, f)
-				else f:write("0") end
-				
-				f:flush()
-				f:close()
-				f = nil
-			end,
 			
 			autoload = function(self, parent)
 				print("Opening data file...")
@@ -281,6 +77,50 @@ return
 				print("File closed.")
 			end,
 			
+			autosave = function(self, parent)
+				local f = io.open("in_progress.dat", "w+b")
+			
+				f:write(string.len(tostring(parent.autosaveDur)))
+				f:write(parent.autosaveDur)
+				
+				f:write(string.len(tostring(parent.numCountries)))
+				f:write(parent.numCountries)
+				
+				f:write(string.len(tostring(parent.popLimit)))
+				f:write(parent.popLimit)
+				
+				f:write(string.len(tostring(parent.showinfo)))
+				f:write(parent.showinfo)
+				
+				f:write(string.len(tostring(parent.startyear)))
+				f:write(parent.startyear)
+				
+				f:write(string.len(tostring(parent.maxyears)))
+				f:write(parent.maxyears)
+				
+				f:write(string.len(tostring(parent.years)))
+				f:write(parent.years)
+				
+				f:write(string.len(tostring(parent.yearstorun)))
+				f:write(parent.yearstorun)
+				
+				self:savetable(parent, parent.final, f)
+				
+				self:savetable(parent, self.countries, f)
+				if self.fromFile == true then f:write("1") else f:write("0") end
+				if parent.doR == true then
+					f:write("1")
+					self:savetable(parent, self.planet, f)
+					self:savetable(parent, self.planetdefined, f)
+					self:savetable(parent, self.cColors, f)
+					self:savetable(parent, self.cTriplets, f)
+				else f:write("0") end
+				
+				f:flush()
+				f:close()
+				f = nil
+			end,
+
 			constructVoxelPlanet = function(self, parent)
 				print("Constructing voxel planet...")
 				
@@ -395,6 +235,115 @@ return
 				end
 				
 				self:rOutput(parent, "initial.r")
+			end,
+			
+			delete = function(self, parent, nz)
+				if nz > 0 and nz <= #self.countries then
+					if self.countries[nz] ~= nil then
+						p = table.remove(self.countries, nz)
+						if p ~= nil then
+							self.cColors[p.name] = nil
+							self.cTriplets[p.name] = nil
+							
+							p:destroy()
+							p = nil
+						end
+					end
+				end
+			end,
+
+			getfunctionvalues = function(self, fnname, fn, t)
+				local found = false
+				local exceptions = {"__index"}
+			
+				for i, j in pairs(t) do
+					if type(j) == "function" then
+						if string.dump(fn) == string.dump(j) then
+							local q = 1
+							while true do
+								local name = debug.getupvalue(j, q)
+								if not name then
+									break
+								end
+								debug.upvaluejoin(fn, q, j, q)
+								q = q + 1
+							end
+						end
+					elseif type(j) == "table" then
+						local isexception = false
+						for q=1,#exceptions do if exceptions[q] == i then isexception = true end end
+						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
+					end
+				end
+			end,
+			
+			loadfunction = function(self, parent, fnname, fndata)
+				local fn = loadstring(fndata)
+				
+				self:getfunctionvalues(fnname, fn, self)
+				
+				return fn
+			end,
+			
+			loadtable = function(self, parent, f)
+				local tableout = {}
+				local types = {"string", "number", "boolean", "table", "function"}
+				
+				local slen = f:read(1)
+				local mt = f:read(tonumber(slen))
+				
+				if mt ~= "nilmt" then
+					if mt == "World" then
+						setmetatable(tableout, World)
+					elseif mt == "Country" then
+						setmetatable(tableout, Country)
+					elseif mt == "Region" then
+						setmetatable(tableout, Region)
+					elseif mt == "City" then
+						setmetatable(tableout, City)
+					elseif mt == "Person" then
+						setmetatable(tableout, Person)
+					elseif mt == "Party" then
+						setmetatable(tableout, Party)
+					end
+				end
+				
+				slen = f:read(1)
+				local iCount = f:read(tonumber(slen))
+
+				for i=1,iCount do
+					local itype = types[tonumber(f:read(1))]
+					
+					slen = f:read(1)
+					slen = f:read(tonumber(slen))
+					local idata = f:read(tonumber(slen))
+					
+					if itype == "number" then idata = tonumber(idata) end
+					
+					local jtype = types[tonumber(f:read(1))]
+					
+					if jtype == "table" then
+						tableout[idata] = self:loadtable(parent, f)
+					elseif jtype == "function" then
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						local fndata = f:read(tonumber(slen))
+						tableout[idata] = self:loadfunction(parent, idata, fndata)
+					elseif jtype == "boolean" then
+						local booldata = tonumber(f:read(1))
+						if booldata == 0 then tableout[idata] = false else tableout[idata] = true end
+					elseif jtype == "number" then
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						tableout[idata] = tonumber(f:read(tonumber(slen)))
+					else
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						tableout[idata] = f:read(tonumber(slen))
+					end
+				end
+				
+				return tableout
 			end,
 			
 			rOutput = function(self, parent, label)
@@ -572,6 +521,57 @@ return
 				f = nil
 			end,
 			
+			savetable = function(self, parent, t, f)
+				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
+				local exceptions = {"spouse", "__index"}
+				
+				if t.mtName == nil then f:write("5nilmt") else
+					f:write(string.len(t.mtName))
+					f:write(t.mtName)
+				end
+				
+				local iCount = 0
+				for i, j in pairs(t) do
+					found = false
+					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
+					if found == false then iCount = iCount + 1 end
+				end
+				
+				f:write(string.len(tostring(iCount)))
+				f:write(tostring(iCount))
+				
+				for i, j in pairs(t) do
+					local found = false
+					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
+					if found == false then 
+						local itype = types[type(i)]
+						f:write(tostring(itype))
+						
+						f:write(string.len(tostring(string.len(i))))
+						f:write(string.len(tostring(i)))
+						f:write(tostring(i))
+						
+						local jtype = type(j)
+						f:write(tostring(types[jtype]))
+						
+						if jtype == "table" then
+							self:savetable(parent, j, f)
+						elseif jtype == "function" then
+							fndata = string.dump(j)
+							f:write(string.len(tostring(string.len(fndata))))
+							f:write(string.len(fndata))
+							f:write(fndata)
+						elseif jtype == "boolean" then
+							if j == false then f:write("0") else f:write("1") end
+						else
+							f:write(string.len(tostring(string.len(tostring(j)))))
+							f:write(string.len(tostring(j)))
+							f:write(tostring(j))
+						end
+					end
+				end
+			end,
+			
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 				
@@ -610,7 +610,6 @@ return
 						self:autosave(parent)
 					end
 				end
-				
 			end
 		}
 		

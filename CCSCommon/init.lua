@@ -10,1029 +10,7 @@ World = require("CCSCommon.World")()
 return
 	function()
 		CCSCommon = {
-			metatables = {{World, "World"}, {Country, "Country"}, {Region, "Region"}, {City, "City"}, {Person, "Person"}, {Party, "Party"}},
-			
 			autosaveDur = 100,
-			doR = false,
-		
-			numCountries = 0,
-			popLimit = 10000,
-
-			clrcmd = "",
-			showinfo = 0,
-
-			startyear = 1,
-			maxyears = 1,
-			years = 1,
-			yearstorun = 0,
-
-			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The"},
-			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "dos"},
-			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "ric"},
-			
-			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
-			vowels = {"a", "e", "i", "o", "u"},
-			
-			systems = {
-				{
-					name="Monarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
-					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Dominion"},
-					dynastic=true
-				},
-				{
-					name="Republic",
-					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
-					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation"},
-					dynastic=false
-				},
-				{
-					name="Democracy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
-					formalities={"Union", "Democratic Republic", "Free State", "Realm"},
-					dynastic=false
-				},
-				{
-					name="Oligarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
-					formalities={"People's Republic", "Premiership", "Patriciate"},
-					dynastic=false
-				},
-				{
-					name="Empire",
-					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
-					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
-					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
-					dynastic=true
-				}
-			},
-			
-			partynames = {
-				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New"},
-				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist"},
-				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
-			},
-
-			final = {},
-			thisWorld = nil,
-
-			sleep = function(self, t)
-				n = socket.gettime()
-				while socket.gettime() < n + t do end
-			end,
-
-			rseed = function(self)
-				self:sleep(0.001)
-				tc = socket.gettime()
-				n = tonumber(tostring(tc):reverse())
-				while n < 1000000 do n = n * 10 end
-				while n > 100000000 do n = n / 10 end
-				n = math.ceil(n)
-				math.randomseed(n)
-				math.random(1, 100)
-				x = math.random(4, 6)
-				for i=3,x do
-					math.randomseed(math.random(n, i*n))
-					math.random(1, 100)
-				end
-				math.random(1, 100)
-			end,
-
-			getRulerString = function(self, data)
-				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
-			end,
-
-			fncopy = function(self, fn)
-				dumped = string.dump(fn)
-				cloned = loadstring(dumped)
-				i = 1
-				while true do
-					name = debug.getupvalue(fn, i)
-					if not name then
-						break
-					end
-					debug.upvaluejoin(cloned, i, fn, i)
-					i = i + 1
-				end
-				return cloned
-			end,
-
-			deepnil = function(self, dat)
-				final_type = type(dat)
-				if final_type == "table" then
-					for final_key, final_value in pairs(dat) do
-						self:deepnil(dat[final_key])
-					end
-					dat = nil
-				else dat = nil end
-			end,
-			
-			deepcopy = function(self, obj)
-				local res = nil
-				local t = type(obj)
-				local exceptions = {"spouse", "__index"}
-				
-				if t == "table" then
-					res = {}
-					for i, j in pairs(obj) do
-						local isexception = false
-						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
-						if isexception == false then res[i] = self:deepcopy(j) end
-					end
-					if getmetatable(obj) ~= nil then setmetatable(res, self:deepcopy(getmetatable(obj))) end
-				elseif t == "function" then
-					local fn = self:fncopy(obj)
-					res = fn
-				else
-					res = obj
-				end
-				
-				return res
-			end,
-			
-			namecheck = function(self, nom)
-				local nomin = nom
-				local check = true
-				while check == true do
-					check = false
-					
-					for i=1,string.len(nomin)-1 do
-						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
-							check = true
-
-							local newnom = ""
-
-							for j=1,i do
-								newnom = newnom..nomin:sub(j, j)
-							end
-							for j=i+2,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
-							end
-
-							nomin = newnom
-						end
-					end
-					
-					for i=1,string.len(nomin)-3 do
-						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
-						check = true
-
-						local newnom = ""
-
-						for j=1,i+1 do
-							newnom = newnom..nomin:sub(j, j)
-						end
-						for j=i+4,string.len(nomin) do
-							newnom = newnom..nomin:sub(j, j)
-						end
-
-						nomin = newnom
-					end
-					
-					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
-						check = true
-
-						local newnom = ""
-
-						for j=1,i+1 do
-							newnom = newnom..nomin:sub(j, j)
-						end
-						
-						newnom = newnom..self.consonants[math.random(1, #self.consonants)]
-						
-						for j=i+3,string.len(nomin) do
-							newnom = newnom..nomin:sub(j, j)
-						end
-
-						nomin = newnom
-						
-						end
-					end
-					
-					for i=1,string.len(nomin)-5 do
-						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
-							check = true
-
-							local newnom = ""
-
-							for j=1,i+2 do
-								newnom = newnom..nomin:sub(j, j)
-							end
-							
-							for j=i+6,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
-							end
-
-							nomin = newnom
-						end
-					end
-					
-					for i=1,string.len(nomin)-2 do
-						local hasvowel = false
-						
-						for j=i,i+2 do
-							for k=1,#self.vowels do
-								if string.lower(nomin:sub(j, j)) == self.vowels[k] then
-									hasvowel = true
-								end
-							end
-
-							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nomin:sub(j-1, j-1)) == 't' then
-									if string.lower(nomin:sub(j, j)) == 'h' then
-										hasvowel = true
-									end
-								end
-							end
-						end
-
-						if hasvowel == false then
-							check = true
-
-							local newnom = ""
-
-							for j=1,i+1 do
-								newnom = newnom..nomin:sub(j, j)
-							end
-							
-							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
-							
-							for j=i+3,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
-							end
-
-							nomin = newnom
-						end
-					end
-
-					local nomlower = string.lower(nomin)
-
-					nomlower = nomlower:gsub("aa", "a")
-					nomlower = nomlower:gsub("ee", "i")
-					nomlower = nomlower:gsub("ii", "i")
-					nomlower = nomlower:gsub("oo", "u")
-					nomlower = nomlower:gsub("uu", "u")
-					nomlower = nomlower:gsub("ou", "o")
-					nomlower = nomlower:gsub("kg", "g")
-					nomlower = nomlower:gsub("gk", "g")
-					nomlower = nomlower:gsub("sz", "s")
-					nomlower = nomlower:gsub("ue", "e")
-					nomlower = nomlower:gsub("zs", "z")
-					nomlower = nomlower:gsub("rz", "z")
-					nomlower = nomlower:gsub("dl", "l")
-					nomlower = nomlower:gsub("tl", "l")
-					nomlower = nomlower:gsub("cg", "c")
-					nomlower = nomlower:gsub("gc", "g")
-					nomlower = nomlower:gsub("tp", "t")
-					nomlower = nomlower:gsub("dt", "t")
-					nomlower = nomlower:gsub("td", "t")
-					nomlower = nomlower:gsub("ct", "t")
-					nomlower = nomlower:gsub("tc", "t")
-					nomlower = nomlower:gsub("hc", "c")
-					nomlower = nomlower:gsub("fd", "d")
-					nomlower = nomlower:gsub("df", "d")
-					nomlower = nomlower:gsub("ae", "a")
-					nomlower = nomlower:gsub("gl", "l")
-					nomlower = nomlower:gsub("bt", "b")
-					nomlower = nomlower:gsub("tb", "t")
-					nomlower = nomlower:gsub("ua", "a")
-					nomlower = nomlower:gsub("oe", "e")
-					nomlower = nomlower:gsub("pg", "g")
-					nomlower = nomlower:gsub("ui", "i")
-					nomlower = nomlower:gsub("mt", "m")
-					nomlower = nomlower:gsub("lt", "l")
-					nomlower = nomlower:gsub("gj", "g")
-					nomlower = nomlower:gsub("tn", "t")
-					nomlower = nomlower:gsub("jz", "j")
-					nomlower = nomlower:gsub("zt", "t")
-					nomlower = nomlower:gsub("gd", "d")
-					nomlower = nomlower:gsub("dg", "g")
-					nomlower = nomlower:gsub("jg", "j")
-					nomlower = nomlower:gsub("jc", "j")
-					nomlower = nomlower:gsub("hg", "g")
-					nomlower = nomlower:gsub("tm", "t")
-					nomlower = nomlower:gsub("oa", "a")
-					nomlower = nomlower:gsub("cp", "c")
-					nomlower = nomlower:gsub("pb", "b")
-					nomlower = nomlower:gsub("tg", "t")
-					nomlower = nomlower:gsub("bp", "b")
-					nomlower = nomlower:gsub("iy", "y")
-					nomlower = nomlower:gsub("yi", "y")
-					nomlower = nomlower:gsub("fh", "f")
-					nomlower = nomlower:gsub("uo", "o")
-					nomlower = nomlower:gsub("vh", "v")
-					nomlower = nomlower:gsub("vd", "v")
-					nomlower = nomlower:gsub("ki", "ci")
-					nomlower = nomlower:gsub("fv", "v")
-					nomlower = nomlower:gsub("vf", "f")
-					nomlower = nomlower:gsub("vt", "t")
-					nomlower = nomlower:gsub("aia", "ia")
-					nomlower = nomlower:gsub("eia", "ia")
-					nomlower = nomlower:gsub("oia", "ia")
-					nomlower = nomlower:gsub("uia", "ia")
-
-					for j=1,#self.consonants do
-						if nomlower:sub(1, 1) == self.consonants[j] then
-							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, #nomlower) end
-						end
-
-						if nomlower:sub(#nomlower, #nomlower) == self.consonants[j] then
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "b" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "c" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "d" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "f" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "g" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "h" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "j" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "k" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "m" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "n" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "p" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "r" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "s" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "t" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "v" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "w" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "z" then nomlower = nomlower:sub(1, #nomlower-1) end
-						end
-					end
-
-					if nomlower ~= string.lower(nomin) then check = true end
-
-					nomin = string.upper(nomlower:sub(1, 1))
-					nomin = nomin..nomlower:sub(2, string.len(nomlower))
-				end
-				
-				return nomin
-			end,
-
-			name = function(self, personal, l)
-				local nom = ""
-				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
-				
-				local taken = {}
-				
-				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
-				table.insert(taken, string.lower(nom))
-				
-				while string.len(nom) < length do
-					local ieic = false -- initial ends in consonant
-					local mbwc = false -- middle begins with consonant
-					for i=1,#self.consonants do
-						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
-					end
-					
-					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
-					local istaken = false
-					
-					for i=1,#taken do
-						if taken[i] == mid then istaken = true end
-					end
-					
-					for i=1,#self.consonants do
-						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
-					end
-					
-					if istaken == false then
-						if ieic == true then
-							if mbwc == false then
-								nom = nom..mid
-								table.insert(taken, mid)
-							end
-						else
-							if mbwc == true then
-								nom = nom..mid
-								table.insert(taken, mid)
-							end
-						end
-					end
-				end
-				
-				if personal == false then
-					local ending = self.endgroups[math.random(1, #self.endgroups)]	
-					nom = nom..ending
-				end
-				
-				nom = self:namecheck(nom)
-				
-				if string.len(nom) == 1 then
-					nom = nom..string.lower(self.vowels[math.random(1, #self.vowels)])
-				end
-				
-				return nom
-			end,
-
-			roman = function(self, n)
-				local tmp = tonumber(n)
-				if tmp == nil then return n end
-				local fin = ""
-
-				while tmp - 1000 > -1 do
-					fin = fin.."M"
-					tmp = tmp - 1000
-				end
-
-				while tmp - 900 > -1 do
-					fin = fin.."CM"
-					tmp = tmp - 900
-				end
-
-				while tmp - 500 > -1 do
-					fin = fin.."D"
-					tmp = tmp - 500
-				end
-
-				while tmp - 400 > -1 do
-					fin = fin.."CD"
-					tmp = tmp - 400
-				end
-
-				while tmp - 100 > -1 do
-					fin = fin.."C"
-					tmp = tmp - 100
-				end
-
-				while tmp - 90 > -1 do
-					fin = fin.."XC"
-					tmp = tmp - 90
-				end
-
-				while tmp - 50 > -1 do
-					fin = fin.."L"
-					tmp = tmp - 50
-				end
-
-				while tmp - 40 > -1 do
-					fin = fin.."XL"
-					tmp = tmp - 40
-				end
-
-				while tmp - 10 > -1 do
-					fin = fin.."X"
-					tmp = tmp - 10
-				end
-
-				while tmp - 9 > -1 do
-					fin = fin.."IX"
-					tmp = tmp - 9
-				end
-
-				while tmp - 5 > -1 do
-					fin = fin.."V"
-					tmp = tmp - 5
-				end
-
-				while tmp - 4 > -1 do
-					fin = fin.."IV"
-					tmp = tmp - 4
-				end
-
-				while tmp - 1 > -1 do
-					fin = fin.."I"
-					tmp = tmp - 1
-				end
-
-				
-				return fin
-			end,
-			
-			ordinal = function(self, n)
-				local tmp = tonumber(n)
-				if tmp == nil then return n end
-				local fin = ""
-				
-				local ts = tostring(n)
-				if ts:sub(#ts, #ts) == "1" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
-					else fin = ts.."st" end
-				elseif ts:sub(#ts, #ts) == "2" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
-					else fin = ts.."nd" end
-				elseif ts:sub(#ts, #ts) == "3" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
-					else fin = ts.."rd" end
-				else fin = ts.."th" end
-				
-				return fin
-			end,
-			
-			generationString = function(self, n, gen)
-				local msgout = ""
-				
-				if n > 1 then
-					if n > 2 then
-						if n > 3 then
-							if n > 4 then
-								msgout = tostring(n - 2).."-times-great-grand"
-								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-							else
-								msgout = "great-great-grand"
-								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-							end
-						else
-							msgout = "great-grand"
-							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-						end
-					else
-						msgout = "grand"
-						if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-					end
-				else
-					if gen == "Male" then msgout = "son" else msgout = "daughter" end
-				end
-				
-				return msgout
-			end,
-			
-			RegionTransfer = function(self, c1, c2, r, cont)
-				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
-					local rCount = 0
-					for i, j in pairs(self.thisWorld.countries[c2].regions) do
-						rCount = rCount + 1
-					end
-					
-					local lim = 1
-					if cont == false then lim = 0 end
-					
-					if rCount > lim then
-						local rm = self.thisWorld.countries[c2].regions[r]
-						
-						if rm ~= nil then
-							local rn = Region:new()
-							
-							rn.name = rm.name
-							rn.population = rm.population
-							for i=1,#rm.nodes do
-								table.insert(rn.nodes, self:deepcopy(rm.nodes[i]))
-								self:deepnil(rm.nodes[i])
-								rm.nodes[i] = nil
-							end
-							
-							rm.nodes = nil
-							
-							for i, j in pairs(rm.cities) do
-								table.insert(rn.cities, self:deepcopy(j))
-							end
-							
-							self:deepnil(rm.cities)
-							rm.cities = nil
-							
-							for i=1,#self.thisWorld.countries[c2].people do
-								if self.thisWorld.countries[c2].people[i] ~= nil then
-									if self.thisWorld.countries[c2].people[i].region == rn.name then
-										local p = table.remove(self.thisWorld.countries[c2].people, i)
-										table.insert(self.thisWorld.countries[c1].people, p)
-									end
-								end
-							end
-							
-							self:deepnil(self.thisWorld.countries[c2].regions[rn.name])
-							self.thisWorld.countries[c2].regions[rn.name] = nil
-							
-							if cont == true then
-								if self.thisWorld.countries[c2].capitalregion == rn.name then
-									local msg = "Capital moved from "..self.thisWorld.countries[c2].capitalcity.." to "
-								
-									self.thisWorld.countries[c2].capitalregion = nil
-									self.thisWorld.countries[c2].capitalcity = nil
-								
-									while self.thisWorld.countries[c2].capitalregion == nil do
-										for i, j in pairs(self.thisWorld.countries[c2].regions) do
-											local chance = math.random(1, 10)
-											if chance == 5 then self.thisWorld.countries[c2].capitalregion = j.name end
-										end
-									end
-									
-									while self.thisWorld.countries[c2].capitalcity == nil do
-										for i, j in pairs(self.thisWorld.countries[c2].regions[self.thisWorld.countries[c2].capitalregion].cities) do
-											local chance = math.random(1, 25)
-											if chance == 12 then self.thisWorld.countries[c2].capitalcity = j.name end
-										end
-									end
-									
-									msg = msg..self.thisWorld.countries[c2].capitalcity
-									self.thisWorld.countries[c2]:event(self, msg)
-								end
-							end
-							
-							self.thisWorld.countries[c1].regions[rn.name] = rn
-						end
-					end
-				end
-			end,
-
-			fromFile = function(self, datin)
-				print("Opening data file...")
-				local f = assert(io.open(datin, "r"))
-				local done = false
-				self.thisWorld = World:new()
-
-				print("Reading data...")
-				
-				while done == false do
-					local l = f:read()
-					if l == nil then done = true
-					else
-						local fc = 0
-						local fr = 0
-						local mat = {}
-						for q in string.gmatch(l, "%S+") do
-							table.insert(mat, tostring(q))
-						end
-						if mat[1] == "Year" then
-							self.startyear = tonumber(mat[2])
-							self.years = tonumber(mat[2])
-							self.maxyears = self.maxyears + self.startyear
-						elseif mat[1] == "C" then
-							local nl = Country:new()
-							nl.name = mat[2]
-							for q=3,#mat do
-								nl.name = nl.name.." "..mat[q]
-							end
-							self.thisWorld:add(nl)
-							fc = #self.thisWorld.countries
-						elseif mat[1] == "R" then
-							local r = Region:new()
-							r.name = mat[2]
-							for q=3,#mat do
-								r.name = r.name.." "..mat[q]
-							end
-							self.thisWorld.countries[fc].regions[r.name] = r
-							fr = r.name
-						elseif mat[1] == "S" then
-							local s = City:new()
-							s.name = mat[2]
-							for q=3,#mat do
-								s.name = s.name.." "..mat[q]
-							end
-							self.thisWorld.countries[fc].regions[fr].cities[s.name] = s
-						elseif mat[1] == "P" then
-							local s = City:new()
-							s.name = mat[2]
-							for q=3,#mat do
-								s.name = s.name.." "..mat[q]
-							end
-							self.thisWorld.countries[fc].capitalregion = fr
-							self.thisWorld.countries[fc].capitalcity = s.name
-							self.thisWorld.countries[fc].regions[fr].cities[s.name] = s
-						else
-							local dynastic = false
-							local number = 1
-							local gend = "Male"
-							local to = self.years
-							if #self.thisWorld.countries[fc].rulers > 0 then
-								for i=1,#self.thisWorld.countries[fc].rulers do
-									if self.thisWorld.countries[fc].rulers[i].name == mat[2] then
-										if self.thisWorld.countries[fc].rulers[i].Title == mat[1] then
-											number = number + 1
-										end
-									end
-								end
-							end
-							if mat[1] == "King" then dynastic = true end
-							if mat[1] == "Emperor" then dynastic = true end
-							if mat[1] == "Queen" then dynastic = true end
-							if mat[1] == "Empress" then dynastic = true end
-							if dynastic == true then
-								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=tostring(number), Country=self.thisWorld.countries[fc].name, From=mat[3], To=mat[4]})
-								if mat[5] == "F" then gend = "Female" end
-							else
-								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=mat[3], Country=self.thisWorld.countries[fc].name, From=mat[4], To=mat[5]})
-								if mat[6] == "F" then gend = "Female" end
-							end
-							if mat[1] == "King" then self.thisWorld.countries[fc].system = 1 end
-							if mat[1] == "President" then self.thisWorld.countries[fc].system = 2 end
-							if mat[1] == "Speaker" then self.thisWorld.countries[fc].system = 3 end
-							if mat[1] == "Premier" then self.thisWorld.countries[fc].system = 4 end
-							if mat[1] == "Emperor" then self.thisWorld.countries[fc].system = 5 end
-							if mat[1] == "Queen" then
-								self.thisWorld.countries[fc].system = 1
-								gend = "Female"
-							end
-							if mat[1] == "Empress" then
-								self.thisWorld.countries[fc].system = 5
-								gend = "Female"
-							end
-							local found = false
-							for i=1,#self.thisWorld.countries[fc].rulernames do
-								if self.thisWorld.countries[fc].rulernames[i] == mat[2] then found = true end
-							end
-							for i=1,#self.thisWorld.countries[fc].frulernames do
-								if self.thisWorld.countries[fc].frulernames[i] == mat[2] then found = true end
-							end
-							if gend == "Female" then
-								if found == false then
-									table.insert(self.thisWorld.countries[fc].frulernames, mat[2])
-								end
-							else
-								if found == false then
-									table.insert(self.thisWorld.countries[fc].rulernames, mat[2])
-								end
-							end
-						end
-					end
-				end
-
-				print("Constructing initial populations...")
-				
-				for i=1,#self.thisWorld.countries do
-					if math.fmod(i, 5) == 0 then print(tostring(math.ceil(i/#self.thisWorld.countries*100)).."% done") end 
-					if self.thisWorld.countries[i] ~= nil then
-						if #self.thisWorld.countries[i].rulers > 0 then
-							self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
-							self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
-						else
-							self.thisWorld.countries[i].founded = self.years
-							self.thisWorld.countries[i].age = 0
-							self.thisWorld.countries[i].system = math.random(1, #self.systems)
-						end
-						
-						self.thisWorld.countries[i]:makename(self)
-						self.thisWorld.countries[i]:setPop(self, self.popLimit)
-						
-						table.insert(self.final, self.thisWorld.countries[i])
-					end
-				end
-				
-				self.thisWorld.fromFile = true
-			end,
-
-			loop = function(self)
-				local _running = true
-				local oldmsg = ""
-				local msg = ""
-				
-				print("\nBegin Simulation!")
-				
-				while _running do
-					self.thisWorld:update(self)
-					
-					os.execute(self.clrcmd)
-					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
-
-					for i=1,#self.thisWorld.countries do
-						for j=#self.final,1,-1 do
-							if self.final[j].name == self.thisWorld.countries[i].name then table.remove(self.final, j) end
-						end
-						
-						table.insert(self.final, self.thisWorld.countries[i])
-					end
-					
-					if self.showinfo == 1 then
-						local wars = {}
-						local alliances = {}
-						
-						for i=1,#self.thisWorld.countries do
-							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
-							else msg = msg..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name].." of "..self.thisWorld.countries[i].name end
-							msg = msg.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
-							if self.thisWorld.countries[i].capitalregion ~= nil then
-								if self.thisWorld.countries[i].capitalcity ~= nil then
-									if self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion] ~= nil then
-										if self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion].cities[self.thisWorld.countries[i].capitalcity] ~= nil then
-											msg = msg.."\nCapital: "..self.thisWorld.countries[i].capitalcity.." (pop. "..self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion].cities[self.thisWorld.countries[i].capitalcity].population..")"
-										else msg = msg.."\nCapital: None" end
-									else msg = msg.."\nCapital: None" end
-								else msg = msg.."\nCapital: None" end
-							else msg = msg.."\nCapital: None" end
-							if self.thisWorld.countries[i].rulers ~= nil then
-								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
-									msg = msg.."\nCurrent ruler: "
-									if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].To == "Current" then
-										msg = msg..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
-										for m=1,#self.thisWorld.countries[i].parties do
-											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
-												msg = msg..", of the "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
-												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
-											end
-										end
-									else
-										msg = msg.."None"
-									end
-									
-									for m=1,#self.thisWorld.countries[i].parties do
-										if self.thisWorld.countries[i].parties[m].leading == true then
-											msg = msg.."\nRuling party: "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
-											if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
-										end
-									end
-								end
-							end
-							msg = msg.."\n\n"
-						end
-
-						msg = msg.."\nWars:"
-						local count = 0
-						
-						for i=1,#self.thisWorld.countries do
-							for j=1,#self.thisWorld.countries[i].ongoing do
-								if self.thisWorld.countries[i].ongoing[j].name == "War" then
-									if self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target] ~= nil then
-										found = false
-										for k=1,#wars do
-											if wars[k] == self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target].name.."-"..self.thisWorld.countries[i].name then found = true end
-										end
-										if found == false then
-											table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target].name)
-											if count > 0 then msg = msg.."," end
-											msg = msg.." "..wars[#wars]
-											count = count + 1
-										end
-									end
-								end
-								
-								if self.thisWorld.countries[i].ongoing[j].name == "Civil War" then
-									table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
-									if count > 0 then msg = msg.."," end
-									msg = msg.." "..wars[#wars]
-									count = count + 1
-								end
-							end
-						end
-
-						msg = msg.."\n\nAlliances:"
-						count = 0
-
-						for i=1,#self.thisWorld.countries do
-							for j=1,#self.thisWorld.countries[i].alliances do
-								found = false
-								for k=1,#alliances do
-									if alliances[k] == self.thisWorld.countries[i].alliances[j].."-"..self.thisWorld.countries[i].name.." " then found = true end
-								end
-								if found == false then
-									table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
-									if count > 0 then msg = msg.."," end
-									msg = msg.." "..alliances[#alliances]:sub(1, #alliances[#alliances] - 1)
-									count = count + 1
-								end
-							end
-						end
-					end
-					
-					print(msg)
-					oldmsg = msg
-
-					if self.years >= self.maxyears then
-						_running = false
-						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
-					end
-					
-					if #self.thisWorld.countries == 0 then
-						_running = false
-					end
-					
-					self.years = self.years + 1
-				end
-				
-				self:finish()
-				
-				print("\nEnd Simulation!")
-			end,
-
-			finish = function(self)
-				os.remove("in_progress.dat")
-			
-				print("\nPrinting result...")
-
-				local f = io.open("output.txt", "w+")
-
-				for i=1,#self.final do
-					local newc = false
-					local fr = 1
-					local pr = 1
-					f:write(string.format("Country: "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
-
-					for k=1,#self.final[i].events do
-						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
-							newc = true
-							pr = tonumber(self.final[i].events[k].Year)
-						end
-					end
-
-					if newc == true then
-						f:write(string.format("1. "..self.final[i].rulers[1].Title.." "..self.final[i].rulers[1].name.." "..self:roman(self.final[i].rulers[1].Number).." of "..self.final[i].rulers[1].Country.." ("..tostring(self.final[i].rulers[1].From).." - "..tostring(self.final[i].rulers[1].To)..")").."\n...\n")
-						for k=1,#self.final[i].rulers do
-							if self.final[i].rulers[k].To ~= "Current" then
-								if tonumber(self.final[i].rulers[k].To) >= pr then
-									if tonumber(self.final[i].rulers[k].From) < pr then
-										f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
-										fr = k + 1
-										k = #self.final[i].rulers + 1
-									end
-								end
-							end
-						end
-					end
-
-					for j=pr,self.maxyears do
-						for k=1,#self.final[i].events do
-							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) == "Revolution" then
-									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
-								end
-							end
-						end
-
-						for k=fr,#self.final[i].rulers do
-							if tonumber(self.final[i].rulers[k].From) == j then
-								f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
-							end
-						end
-
-						for k=1,#self.final[i].events do
-							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) ~= "Revolution" then
-									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
-								end
-							end
-						end
-					end
-
-					f:write("\n\n\n")
-				end
-
-				f:flush()
-				f:close()
-				f = nil
-			end,
-			
-			getAllyOngoing = function(self, country, target, event)
-				local acOut = {}
-			
-				local ac = #self.thisWorld.countries[country].alliances
-				for i=1,ac do
-					local c3 = nil
-					for j=1,#self.thisWorld.countries do
-						if self.thisWorld.countries[j].name == self.thisWorld.countries[country].alliances[i] then c3 = j end
-					end
-
-					if c3 ~= nil then
-						for j=#self.thisWorld.countries[c3].allyOngoing,1,-1 do
-							if self.thisWorld.countries[c3].allyOngoing[j] == event.."?"..self.thisWorld.countries[country].name..":"..self.thisWorld.countries[target].name then
-								table.insert(acOut, c3)
-							end
-						end
-					end
-				end
-				
-				return acOut
-			end,
-			
-			removeAllyOngoing = function(self, country, target, event)
-				local ac = #self.thisWorld.countries[country].alliances
-				for i=1,ac do
-					local c3 = nil
-					for j=1,#self.thisWorld.countries do
-						if self.thisWorld.countries[j].name == self.thisWorld.countries[country].alliances[i] then c3 = j end
-					end
-
-					if c3 ~= nil then
-						for j=#self.thisWorld.countries[c3].allyOngoing,1,-1 do
-							if self.thisWorld.countries[c3].allyOngoing[j] == event.."?"..self.thisWorld.countries[country].name..":"..self.thisWorld.countries[target].name then
-								table.remove(self.thisWorld.countries[c3].allyOngoing, j)
-							end
-						end
-					end
-				end
-			end,
-			
-			checkAutoload = function(self)
-				local f = io.open("in_progress.dat", "r")
-				if f ~= nil then
-					f:close()
-					f = nil
-					
-					self.thisWorld = World:new()
-				
-					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
-					local res = io.read()
-					
-					if res == "y" then
-						self.thisWorld:autoload(self)
-						return true
-					end
-				end
-				
-				return false
-			end,
-
 			c_events = {
 				{
 					name="Coup d'Etat",
@@ -1727,7 +705,1019 @@ return
 						return -1
 					end
 				}
-			}
+			},
+			clrcmd = "",
+			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
+			doR = false,
+			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "ric"},
+			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The"},
+			maxyears = 1,
+			metatables = {{World, "World"}, {Country, "Country"}, {Region, "Region"}, {City, "City"}, {Person, "Person"}, {Party, "Party"}},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "dos"},
+			numCountries = 0,
+			partynames = {
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New"},
+				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist"},
+				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
+			},
+			popLimit = 10000,
+			showinfo = 0,
+			startyear = 1,
+			systems = {
+				{
+					name="Monarchy",
+					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
+					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion"},
+					dynastic=true
+				},
+				{
+					name="Republic",
+					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
+					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation"},
+					dynastic=false
+				},
+				{
+					name="Democracy",
+					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
+					formalities={"Union", "Democratic Republic", "Free State", "Realm"},
+					dynastic=false
+				},
+				{
+					name="Oligarchy",
+					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
+					formalities={"People's Republic", "Premiership", "Patriciate"},
+					dynastic=false
+				},
+				{
+					name="Empire",
+					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
+					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
+					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
+					dynastic=true
+				}
+			},
+			vowels = {"a", "e", "i", "o", "u"},
+			years = 1,
+			yearstorun = 0,
+			final = {},
+			thisWorld = nil,
+			
+			checkAutoload = function(self)
+				local f = io.open("in_progress.dat", "r")
+				if f ~= nil then
+					f:close()
+					f = nil
+					
+					self.thisWorld = World:new()
+				
+					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
+					local res = io.read()
+					
+					if res == "y" then
+						self.thisWorld:autoload(self)
+						return true
+					end
+				end
+				
+				return false
+			end,
+			
+			deepcopy = function(self, obj)
+				local res = nil
+				local t = type(obj)
+				local exceptions = {"spouse", "__index"}
+				
+				if t == "table" then
+					res = {}
+					for i, j in pairs(obj) do
+						local isexception = false
+						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
+						if isexception == false then res[i] = self:deepcopy(j) end
+					end
+					if getmetatable(obj) ~= nil then setmetatable(res, self:deepcopy(getmetatable(obj))) end
+				elseif t == "function" then
+					local fn = self:fncopy(obj)
+					res = fn
+				else
+					res = obj
+				end
+				
+				return res
+			end,
+			
+			deepnil = function(self, dat)
+				final_type = type(dat)
+				if final_type == "table" then
+					for final_key, final_value in pairs(dat) do
+						self:deepnil(dat[final_key])
+					end
+					dat = nil
+				else dat = nil end
+			end,
+			
+			finish = function(self)
+				os.remove("in_progress.dat")
+			
+				print("\nPrinting result...")
+
+				local f = io.open("output.txt", "w+")
+
+				for i=1,#self.final do
+					local newc = false
+					local fr = 1
+					local pr = 1
+					f:write(string.format("Country: "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
+
+					for k=1,#self.final[i].events do
+						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+							newc = true
+							pr = tonumber(self.final[i].events[k].Year)
+						end
+					end
+
+					if newc == true then
+						f:write(string.format("1. "..self.final[i].rulers[1].Title.." "..self.final[i].rulers[1].name.." "..self:roman(self.final[i].rulers[1].Number).." of "..self.final[i].rulers[1].Country.." ("..tostring(self.final[i].rulers[1].From).." - "..tostring(self.final[i].rulers[1].To)..")").."\n...\n")
+						for k=1,#self.final[i].rulers do
+							if self.final[i].rulers[k].To ~= "Current" then
+								if tonumber(self.final[i].rulers[k].To) >= pr then
+									if tonumber(self.final[i].rulers[k].From) < pr then
+										f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
+										fr = k + 1
+										k = #self.final[i].rulers + 1
+									end
+								end
+							end
+						end
+					end
+
+					for j=pr,self.maxyears do
+						for k=1,#self.final[i].events do
+							if tonumber(self.final[i].events[k].Year) == j then
+								if self.final[i].events[k].Event:sub(1, 10) == "Revolution" then
+									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
+								end
+							end
+						end
+
+						for k=fr,#self.final[i].rulers do
+							if tonumber(self.final[i].rulers[k].From) == j then
+								f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
+							end
+						end
+
+						for k=1,#self.final[i].events do
+							if tonumber(self.final[i].events[k].Year) == j then
+								if self.final[i].events[k].Event:sub(1, 10) ~= "Revolution" then
+									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
+								end
+							end
+						end
+					end
+
+					f:write("\n\n\n")
+				end
+
+				f:flush()
+				f:close()
+				f = nil
+			end,
+			
+			fncopy = function(self, fn)
+				dumped = string.dump(fn)
+				cloned = loadstring(dumped)
+				i = 1
+				while true do
+					name = debug.getupvalue(fn, i)
+					if not name then
+						break
+					end
+					debug.upvaluejoin(cloned, i, fn, i)
+					i = i + 1
+				end
+				return cloned
+			end,
+
+			fromFile = function(self, datin)
+				print("Opening data file...")
+				local f = assert(io.open(datin, "r"))
+				local done = false
+				self.thisWorld = World:new()
+
+				print("Reading data...")
+				
+				while done == false do
+					local l = f:read()
+					if l == nil then done = true
+					else
+						local fc = 0
+						local fr = 0
+						local mat = {}
+						for q in string.gmatch(l, "%S+") do
+							table.insert(mat, tostring(q))
+						end
+						if mat[1] == "Year" then
+							self.startyear = tonumber(mat[2])
+							self.years = tonumber(mat[2])
+							self.maxyears = self.maxyears + self.startyear
+						elseif mat[1] == "C" then
+							local nl = Country:new()
+							nl.name = mat[2]
+							for q=3,#mat do
+								nl.name = nl.name.." "..mat[q]
+							end
+							self.thisWorld:add(nl)
+							fc = #self.thisWorld.countries
+						elseif mat[1] == "R" then
+							local r = Region:new()
+							r.name = mat[2]
+							for q=3,#mat do
+								r.name = r.name.." "..mat[q]
+							end
+							self.thisWorld.countries[fc].regions[r.name] = r
+							fr = r.name
+						elseif mat[1] == "S" then
+							local s = City:new()
+							s.name = mat[2]
+							for q=3,#mat do
+								s.name = s.name.." "..mat[q]
+							end
+							self.thisWorld.countries[fc].regions[fr].cities[s.name] = s
+						elseif mat[1] == "P" then
+							local s = City:new()
+							s.name = mat[2]
+							for q=3,#mat do
+								s.name = s.name.." "..mat[q]
+							end
+							self.thisWorld.countries[fc].capitalregion = fr
+							self.thisWorld.countries[fc].capitalcity = s.name
+							self.thisWorld.countries[fc].regions[fr].cities[s.name] = s
+						else
+							local dynastic = false
+							local number = 1
+							local gend = "Male"
+							local to = self.years
+							if #self.thisWorld.countries[fc].rulers > 0 then
+								for i=1,#self.thisWorld.countries[fc].rulers do
+									if self.thisWorld.countries[fc].rulers[i].name == mat[2] then
+										if self.thisWorld.countries[fc].rulers[i].Title == mat[1] then
+											number = number + 1
+										end
+									end
+								end
+							end
+							if mat[1] == "King" then dynastic = true end
+							if mat[1] == "Emperor" then dynastic = true end
+							if mat[1] == "Queen" then dynastic = true end
+							if mat[1] == "Empress" then dynastic = true end
+							if dynastic == true then
+								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=tostring(number), Country=self.thisWorld.countries[fc].name, From=mat[3], To=mat[4]})
+								if mat[5] == "F" then gend = "Female" end
+							else
+								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=mat[3], Country=self.thisWorld.countries[fc].name, From=mat[4], To=mat[5]})
+								if mat[6] == "F" then gend = "Female" end
+							end
+							if mat[1] == "King" then self.thisWorld.countries[fc].system = 1 end
+							if mat[1] == "President" then self.thisWorld.countries[fc].system = 2 end
+							if mat[1] == "Speaker" then self.thisWorld.countries[fc].system = 3 end
+							if mat[1] == "Premier" then self.thisWorld.countries[fc].system = 4 end
+							if mat[1] == "Emperor" then self.thisWorld.countries[fc].system = 5 end
+							if mat[1] == "Queen" then
+								self.thisWorld.countries[fc].system = 1
+								gend = "Female"
+							end
+							if mat[1] == "Empress" then
+								self.thisWorld.countries[fc].system = 5
+								gend = "Female"
+							end
+							local found = false
+							for i=1,#self.thisWorld.countries[fc].rulernames do
+								if self.thisWorld.countries[fc].rulernames[i] == mat[2] then found = true end
+							end
+							for i=1,#self.thisWorld.countries[fc].frulernames do
+								if self.thisWorld.countries[fc].frulernames[i] == mat[2] then found = true end
+							end
+							if gend == "Female" then
+								if found == false then
+									table.insert(self.thisWorld.countries[fc].frulernames, mat[2])
+								end
+							else
+								if found == false then
+									table.insert(self.thisWorld.countries[fc].rulernames, mat[2])
+								end
+							end
+						end
+					end
+				end
+
+				print("Constructing initial populations...")
+				
+				for i=1,#self.thisWorld.countries do
+					if math.fmod(i, 5) == 0 then print(tostring(math.ceil(i/#self.thisWorld.countries*100)).."% done") end 
+					if self.thisWorld.countries[i] ~= nil then
+						if #self.thisWorld.countries[i].rulers > 0 then
+							self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
+							self.thisWorld.countries[i].age = self.years - self.thisWorld.countries[i].founded
+						else
+							self.thisWorld.countries[i].founded = self.years
+							self.thisWorld.countries[i].age = 0
+							self.thisWorld.countries[i].system = math.random(1, #self.systems)
+						end
+						
+						self.thisWorld.countries[i]:makename(self)
+						self.thisWorld.countries[i]:setPop(self, self.popLimit)
+						
+						table.insert(self.final, self.thisWorld.countries[i])
+					end
+				end
+				
+				self.thisWorld.fromFile = true
+			end,
+			
+			generationString = function(self, n, gen)
+				local msgout = ""
+				
+				if n > 1 then
+					if n > 2 then
+						if n > 3 then
+							if n > 4 then
+								msgout = tostring(n - 2).."-times-great-grand"
+								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+							else
+								msgout = "great-great-grand"
+								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+							end
+						else
+							msgout = "great-grand"
+							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+						end
+					else
+						msgout = "grand"
+						if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+					end
+				else
+					if gen == "Male" then msgout = "son" else msgout = "daughter" end
+				end
+				
+				return msgout
+			end,
+			
+			getAllyOngoing = function(self, country, target, event)
+				local acOut = {}
+			
+				local ac = #self.thisWorld.countries[country].alliances
+				for i=1,ac do
+					local c3 = nil
+					for j=1,#self.thisWorld.countries do
+						if self.thisWorld.countries[j].name == self.thisWorld.countries[country].alliances[i] then c3 = j end
+					end
+
+					if c3 ~= nil then
+						for j=#self.thisWorld.countries[c3].allyOngoing,1,-1 do
+							if self.thisWorld.countries[c3].allyOngoing[j] == event.."?"..self.thisWorld.countries[country].name..":"..self.thisWorld.countries[target].name then
+								table.insert(acOut, c3)
+							end
+						end
+					end
+				end
+				
+				return acOut
+			end,
+
+			getRulerString = function(self, data)
+				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
+			end,
+			
+			loop = function(self)
+				local _running = true
+				local oldmsg = ""
+				local msg = ""
+				
+				print("\nBegin Simulation!")
+				
+				while _running do
+					self.thisWorld:update(self)
+					
+					os.execute(self.clrcmd)
+					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
+
+					for i=1,#self.thisWorld.countries do
+						for j=#self.final,1,-1 do
+							if self.final[j].name == self.thisWorld.countries[i].name then table.remove(self.final, j) end
+						end
+						
+						table.insert(self.final, self.thisWorld.countries[i])
+					end
+					
+					if self.showinfo == 1 then
+						local wars = {}
+						local alliances = {}
+						
+						for i=1,#self.thisWorld.countries do
+							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
+							else msg = msg..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name].." of "..self.thisWorld.countries[i].name end
+							msg = msg.." - Population: "..self.thisWorld.countries[i].population.." (average age: "..math.ceil(self.thisWorld.countries[i].averageAge)..")"
+							if self.thisWorld.countries[i].capitalregion ~= nil then
+								if self.thisWorld.countries[i].capitalcity ~= nil then
+									if self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion] ~= nil then
+										if self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion].cities[self.thisWorld.countries[i].capitalcity] ~= nil then
+											msg = msg.."\nCapital: "..self.thisWorld.countries[i].capitalcity.." (pop. "..self.thisWorld.countries[i].regions[self.thisWorld.countries[i].capitalregion].cities[self.thisWorld.countries[i].capitalcity].population..")"
+										else msg = msg.."\nCapital: None" end
+									else msg = msg.."\nCapital: None" end
+								else msg = msg.."\nCapital: None" end
+							else msg = msg.."\nCapital: None" end
+							if self.thisWorld.countries[i].rulers ~= nil then
+								if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers] ~= nil then
+									msg = msg.."\nCurrent ruler: "
+									if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].To == "Current" then
+										msg = msg..self:getRulerString(self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers])..", age "..self.thisWorld.countries[i].rulerage
+										for m=1,#self.thisWorld.countries[i].parties do
+											if self.thisWorld.countries[i].rulers[#self.thisWorld.countries[i].rulers].Party == self.thisWorld.countries[i].parties[m].name then
+												msg = msg..", of the "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
+												if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
+											end
+										end
+									else
+										msg = msg.."None"
+									end
+									
+									for m=1,#self.thisWorld.countries[i].parties do
+										if self.thisWorld.countries[i].parties[m].leading == true then
+											msg = msg.."\nRuling party: "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
+											if self.thisWorld.countries[i].parties[m].radical == true then msg = msg.." (radical)" end
+										end
+									end
+								end
+							end
+							msg = msg.."\n\n"
+						end
+
+						msg = msg.."\nWars:"
+						local count = 0
+						
+						for i=1,#self.thisWorld.countries do
+							for j=1,#self.thisWorld.countries[i].ongoing do
+								if self.thisWorld.countries[i].ongoing[j].name == "War" then
+									if self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target] ~= nil then
+										found = false
+										for k=1,#wars do
+											if wars[k] == self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target].name.."-"..self.thisWorld.countries[i].name then found = true end
+										end
+										if found == false then
+											table.insert(wars, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[self.thisWorld.countries[i].ongoing[j].target].name)
+											if count > 0 then msg = msg.."," end
+											msg = msg.." "..wars[#wars]
+											count = count + 1
+										end
+									end
+								end
+								
+								if self.thisWorld.countries[i].ongoing[j].name == "Civil War" then
+									table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
+									if count > 0 then msg = msg.."," end
+									msg = msg.." "..wars[#wars]
+									count = count + 1
+								end
+							end
+						end
+
+						msg = msg.."\n\nAlliances:"
+						count = 0
+
+						for i=1,#self.thisWorld.countries do
+							for j=1,#self.thisWorld.countries[i].alliances do
+								found = false
+								for k=1,#alliances do
+									if alliances[k] == self.thisWorld.countries[i].alliances[j].."-"..self.thisWorld.countries[i].name.." " then found = true end
+								end
+								if found == false then
+									table.insert(alliances, self.thisWorld.countries[i].name.."-"..self.thisWorld.countries[i].alliances[j].." ")
+									if count > 0 then msg = msg.."," end
+									msg = msg.." "..alliances[#alliances]:sub(1, #alliances[#alliances] - 1)
+									count = count + 1
+								end
+							end
+						end
+					end
+					
+					print(msg)
+					oldmsg = msg
+
+					if self.years >= self.maxyears then
+						_running = false
+						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
+					end
+					
+					if #self.thisWorld.countries == 0 then
+						_running = false
+					end
+					
+					self.years = self.years + 1
+				end
+				
+				self:finish()
+				
+				print("\nEnd Simulation!")
+			end,
+			
+			name = function(self, personal, l)
+				local nom = ""
+				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
+				
+				local taken = {}
+				
+				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
+				table.insert(taken, string.lower(nom))
+				
+				while string.len(nom) < length do
+					local ieic = false -- initial ends in consonant
+					local mbwc = false -- middle begins with consonant
+					for i=1,#self.consonants do
+						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
+					end
+					
+					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
+					local istaken = false
+					
+					for i=1,#taken do
+						if taken[i] == mid then istaken = true end
+					end
+					
+					for i=1,#self.consonants do
+						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
+					end
+					
+					if istaken == false then
+						if ieic == true then
+							if mbwc == false then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						else
+							if mbwc == true then
+								nom = nom..mid
+								table.insert(taken, mid)
+							end
+						end
+					end
+				end
+				
+				if personal == false then
+					local ending = self.endgroups[math.random(1, #self.endgroups)]	
+					nom = nom..ending
+				end
+				
+				nom = self:namecheck(nom)
+				
+				if string.len(nom) == 1 then
+					nom = nom..string.lower(self.vowels[math.random(1, #self.vowels)])
+				end
+				
+				return nom
+			end,
+			
+			namecheck = function(self, nom)
+				local nomin = nom
+				local check = true
+				while check == true do
+					check = false
+					
+					for i=1,string.len(nomin)-1 do
+						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
+							check = true
+
+							local newnom = ""
+
+							for j=1,i do
+								newnom = newnom..nomin:sub(j, j)
+							end
+							for j=i+2,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
+							end
+
+							nomin = newnom
+						end
+					end
+					
+					for i=1,string.len(nomin)-3 do
+						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
+						check = true
+
+						local newnom = ""
+
+						for j=1,i+1 do
+							newnom = newnom..nomin:sub(j, j)
+						end
+						for j=i+4,string.len(nomin) do
+							newnom = newnom..nomin:sub(j, j)
+						end
+
+						nomin = newnom
+					end
+					
+					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
+						check = true
+
+						local newnom = ""
+
+						for j=1,i+1 do
+							newnom = newnom..nomin:sub(j, j)
+						end
+						
+						newnom = newnom..self.consonants[math.random(1, #self.consonants)]
+						
+						for j=i+3,string.len(nomin) do
+							newnom = newnom..nomin:sub(j, j)
+						end
+
+						nomin = newnom
+						
+						end
+					end
+					
+					for i=1,string.len(nomin)-5 do
+						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
+							check = true
+
+							local newnom = ""
+
+							for j=1,i+2 do
+								newnom = newnom..nomin:sub(j, j)
+							end
+							
+							for j=i+6,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
+							end
+
+							nomin = newnom
+						end
+					end
+					
+					for i=1,string.len(nomin)-2 do
+						local hasvowel = false
+						
+						for j=i,i+2 do
+							for k=1,#self.vowels do
+								if string.lower(nomin:sub(j, j)) == self.vowels[k] then
+									hasvowel = true
+								end
+							end
+
+							if j > i then -- Make an exception for the 'th' group.
+								if string.lower(nomin:sub(j-1, j-1)) == 't' then
+									if string.lower(nomin:sub(j, j)) == 'h' then
+										hasvowel = true
+									end
+								end
+							end
+						end
+
+						if hasvowel == false then
+							check = true
+
+							local newnom = ""
+
+							for j=1,i+1 do
+								newnom = newnom..nomin:sub(j, j)
+							end
+							
+							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
+							
+							for j=i+3,string.len(nomin) do
+								newnom = newnom..nomin:sub(j, j)
+							end
+
+							nomin = newnom
+						end
+					end
+
+					local nomlower = string.lower(nomin)
+
+					nomlower = nomlower:gsub("aa", "a")
+					nomlower = nomlower:gsub("ee", "i")
+					nomlower = nomlower:gsub("ii", "i")
+					nomlower = nomlower:gsub("oo", "u")
+					nomlower = nomlower:gsub("uu", "u")
+					nomlower = nomlower:gsub("ou", "o")
+					nomlower = nomlower:gsub("kg", "g")
+					nomlower = nomlower:gsub("gk", "g")
+					nomlower = nomlower:gsub("sz", "s")
+					nomlower = nomlower:gsub("ue", "e")
+					nomlower = nomlower:gsub("zs", "z")
+					nomlower = nomlower:gsub("rz", "z")
+					nomlower = nomlower:gsub("dl", "l")
+					nomlower = nomlower:gsub("tl", "l")
+					nomlower = nomlower:gsub("cg", "c")
+					nomlower = nomlower:gsub("gc", "g")
+					nomlower = nomlower:gsub("tp", "t")
+					nomlower = nomlower:gsub("dt", "t")
+					nomlower = nomlower:gsub("td", "t")
+					nomlower = nomlower:gsub("ct", "t")
+					nomlower = nomlower:gsub("tc", "t")
+					nomlower = nomlower:gsub("hc", "c")
+					nomlower = nomlower:gsub("fd", "d")
+					nomlower = nomlower:gsub("df", "d")
+					nomlower = nomlower:gsub("ae", "a")
+					nomlower = nomlower:gsub("gl", "l")
+					nomlower = nomlower:gsub("bt", "b")
+					nomlower = nomlower:gsub("tb", "t")
+					nomlower = nomlower:gsub("ua", "a")
+					nomlower = nomlower:gsub("oe", "e")
+					nomlower = nomlower:gsub("pg", "g")
+					nomlower = nomlower:gsub("ui", "i")
+					nomlower = nomlower:gsub("mt", "m")
+					nomlower = nomlower:gsub("lt", "l")
+					nomlower = nomlower:gsub("gj", "g")
+					nomlower = nomlower:gsub("tn", "t")
+					nomlower = nomlower:gsub("jz", "j")
+					nomlower = nomlower:gsub("zt", "t")
+					nomlower = nomlower:gsub("gd", "d")
+					nomlower = nomlower:gsub("dg", "g")
+					nomlower = nomlower:gsub("jg", "j")
+					nomlower = nomlower:gsub("jc", "j")
+					nomlower = nomlower:gsub("hg", "g")
+					nomlower = nomlower:gsub("tm", "t")
+					nomlower = nomlower:gsub("oa", "a")
+					nomlower = nomlower:gsub("cp", "c")
+					nomlower = nomlower:gsub("pb", "b")
+					nomlower = nomlower:gsub("tg", "t")
+					nomlower = nomlower:gsub("bp", "b")
+					nomlower = nomlower:gsub("iy", "y")
+					nomlower = nomlower:gsub("yi", "y")
+					nomlower = nomlower:gsub("fh", "f")
+					nomlower = nomlower:gsub("uo", "o")
+					nomlower = nomlower:gsub("vh", "v")
+					nomlower = nomlower:gsub("vd", "v")
+					nomlower = nomlower:gsub("ki", "ci")
+					nomlower = nomlower:gsub("fv", "v")
+					nomlower = nomlower:gsub("vf", "f")
+					nomlower = nomlower:gsub("vt", "t")
+					nomlower = nomlower:gsub("aia", "ia")
+					nomlower = nomlower:gsub("eia", "ia")
+					nomlower = nomlower:gsub("oia", "ia")
+					nomlower = nomlower:gsub("uia", "ia")
+
+					for j=1,#self.consonants do
+						if nomlower:sub(1, 1) == self.consonants[j] then
+							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, #nomlower) end
+						end
+
+						if nomlower:sub(#nomlower, #nomlower) == self.consonants[j] then
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "b" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "c" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "d" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "f" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "g" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "h" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "j" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "k" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "m" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "n" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "p" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "r" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "s" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "t" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "v" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "w" then nomlower = nomlower:sub(1, #nomlower-1) end
+							if nomlower:sub(#nomlower-1, #nomlower-1) == "z" then nomlower = nomlower:sub(1, #nomlower-1) end
+						end
+					end
+
+					if nomlower ~= string.lower(nomin) then check = true end
+
+					nomin = string.upper(nomlower:sub(1, 1))
+					nomin = nomin..nomlower:sub(2, string.len(nomlower))
+				end
+				
+				return nomin
+			end,
+			
+			ordinal = function(self, n)
+				local tmp = tonumber(n)
+				if tmp == nil then return n end
+				local fin = ""
+				
+				local ts = tostring(n)
+				if ts:sub(#ts, #ts) == "1" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."st" end
+				elseif ts:sub(#ts, #ts) == "2" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."nd" end
+				elseif ts:sub(#ts, #ts) == "3" then
+					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+					else fin = ts.."rd" end
+				else fin = ts.."th" end
+				
+				return fin
+			end,
+			
+			RegionTransfer = function(self, c1, c2, r, cont)
+				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
+					local rCount = 0
+					for i, j in pairs(self.thisWorld.countries[c2].regions) do
+						rCount = rCount + 1
+					end
+					
+					local lim = 1
+					if cont == false then lim = 0 end
+					
+					if rCount > lim then
+						local rm = self.thisWorld.countries[c2].regions[r]
+						
+						if rm ~= nil then
+							local rn = Region:new()
+							
+							rn.name = rm.name
+							rn.population = rm.population
+							for i=1,#rm.nodes do
+								table.insert(rn.nodes, self:deepcopy(rm.nodes[i]))
+								self:deepnil(rm.nodes[i])
+								rm.nodes[i] = nil
+							end
+							
+							rm.nodes = nil
+							
+							for i, j in pairs(rm.cities) do
+								table.insert(rn.cities, self:deepcopy(j))
+							end
+							
+							self:deepnil(rm.cities)
+							rm.cities = nil
+							
+							for i=1,#self.thisWorld.countries[c2].people do
+								if self.thisWorld.countries[c2].people[i] ~= nil then
+									if self.thisWorld.countries[c2].people[i].region == rn.name then
+										local p = table.remove(self.thisWorld.countries[c2].people, i)
+										table.insert(self.thisWorld.countries[c1].people, p)
+									end
+								end
+							end
+							
+							self:deepnil(self.thisWorld.countries[c2].regions[rn.name])
+							self.thisWorld.countries[c2].regions[rn.name] = nil
+							
+							if cont == true then
+								if self.thisWorld.countries[c2].capitalregion == rn.name then
+									local msg = "Capital moved from "..self.thisWorld.countries[c2].capitalcity.." to "
+								
+									self.thisWorld.countries[c2].capitalregion = nil
+									self.thisWorld.countries[c2].capitalcity = nil
+								
+									while self.thisWorld.countries[c2].capitalregion == nil do
+										for i, j in pairs(self.thisWorld.countries[c2].regions) do
+											local chance = math.random(1, 10)
+											if chance == 5 then self.thisWorld.countries[c2].capitalregion = j.name end
+										end
+									end
+									
+									while self.thisWorld.countries[c2].capitalcity == nil do
+										for i, j in pairs(self.thisWorld.countries[c2].regions[self.thisWorld.countries[c2].capitalregion].cities) do
+											local chance = math.random(1, 25)
+											if chance == 12 then self.thisWorld.countries[c2].capitalcity = j.name end
+										end
+									end
+									
+									msg = msg..self.thisWorld.countries[c2].capitalcity
+									self.thisWorld.countries[c2]:event(self, msg)
+								end
+							end
+							
+							self.thisWorld.countries[c1].regions[rn.name] = rn
+						end
+					end
+				end
+			end,
+			
+			removeAllyOngoing = function(self, country, target, event)
+				local ac = #self.thisWorld.countries[country].alliances
+				for i=1,ac do
+					local c3 = nil
+					for j=1,#self.thisWorld.countries do
+						if self.thisWorld.countries[j].name == self.thisWorld.countries[country].alliances[i] then c3 = j end
+					end
+
+					if c3 ~= nil then
+						for j=#self.thisWorld.countries[c3].allyOngoing,1,-1 do
+							if self.thisWorld.countries[c3].allyOngoing[j] == event.."?"..self.thisWorld.countries[country].name..":"..self.thisWorld.countries[target].name then
+								table.remove(self.thisWorld.countries[c3].allyOngoing, j)
+							end
+						end
+					end
+				end
+			end,
+			
+			roman = function(self, n)
+				local tmp = tonumber(n)
+				if tmp == nil then return n end
+				local fin = ""
+
+				while tmp - 1000 > -1 do
+					fin = fin.."M"
+					tmp = tmp - 1000
+				end
+
+				while tmp - 900 > -1 do
+					fin = fin.."CM"
+					tmp = tmp - 900
+				end
+
+				while tmp - 500 > -1 do
+					fin = fin.."D"
+					tmp = tmp - 500
+				end
+
+				while tmp - 400 > -1 do
+					fin = fin.."CD"
+					tmp = tmp - 400
+				end
+
+				while tmp - 100 > -1 do
+					fin = fin.."C"
+					tmp = tmp - 100
+				end
+
+				while tmp - 90 > -1 do
+					fin = fin.."XC"
+					tmp = tmp - 90
+				end
+
+				while tmp - 50 > -1 do
+					fin = fin.."L"
+					tmp = tmp - 50
+				end
+
+				while tmp - 40 > -1 do
+					fin = fin.."XL"
+					tmp = tmp - 40
+				end
+
+				while tmp - 10 > -1 do
+					fin = fin.."X"
+					tmp = tmp - 10
+				end
+
+				while tmp - 9 > -1 do
+					fin = fin.."IX"
+					tmp = tmp - 9
+				end
+
+				while tmp - 5 > -1 do
+					fin = fin.."V"
+					tmp = tmp - 5
+				end
+
+				while tmp - 4 > -1 do
+					fin = fin.."IV"
+					tmp = tmp - 4
+				end
+
+				while tmp - 1 > -1 do
+					fin = fin.."I"
+					tmp = tmp - 1
+				end
+
+				
+				return fin
+			end,
+			
+			rseed = function(self)
+				self:sleep(0.001)
+				tc = socket.gettime()
+				n = tonumber(tostring(tc):reverse())
+				while n < 1000000 do n = n * 10 end
+				while n > 100000000 do n = n / 10 end
+				n = math.ceil(n)
+				math.randomseed(n)
+				math.random(1, 100)
+				x = math.random(4, 6)
+				for i=3,x do
+					math.randomseed(math.random(n, i*n))
+					math.random(1, 100)
+				end
+				math.random(1, 100)
+			end,
+			
+			sleep = function(self, t)
+				n = socket.gettime()
+				while socket.gettime() < n + t do end
+			end
 		}
 
 		return CCSCommon

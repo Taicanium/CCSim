@@ -59,6 +59,61 @@ return
 			add = function(self, n)
 				table.insert(self.people, n)
 			end,
+			
+			checkRuler = function(self, parent)
+				if self.hasruler == -1 then
+					if #self.rulers > 0 then
+						self.rulers[#self.rulers].To = parent.years
+					end
+					
+					if #self.people > 1 then			
+						while self.hasruler == -1 do
+							local possibles = {}
+							local closest = -1
+							local closestGens = 10000000
+							local closestMats = 10000000
+							local closestAge = -1
+							local sys = parent.systems[self.system]
+							if sys.dynastic == true then
+								for i=1,#self.people do
+									if self.people[i].royalSystem == sys.name then
+										table.insert(possibles, i)
+									end
+								end
+								
+								for i=1,#possibles do
+									if self.people[possibles[i]].royalGenerations <= closestGens then
+										if self.people[possibles[i]].maternalLineTimes <= closestMats then
+											if self.people[possibles[i]].age >= closestAge then
+												closest = possibles[i]
+												closestGens = self.people[possibles[i]].royalGenerations
+												closestMats = self.people[possibles[i]].maternalLineTimes
+												closestAge = self.people[possibles[i]].age
+											end
+										end
+									end
+								end
+								
+								if closest == -1 then
+									for i=#self.people,1,-1 do
+										local chance = math.random(1, 1000)
+										if chance == 25 then self:setRuler(parent, i) end
+										i = 0
+									end
+								else
+									self:setRuler(parent, closest)
+								end
+							else
+								for i=#self.people,1,-1 do
+									local chance = math.random(1, 1000)
+									if chance == 25 then self:setRuler(parent, i) end
+									i = 0
+								end
+							end
+						end
+					end
+				end
+			end,
 
 			delete = function(self, y)
 				local b = #self.people
@@ -69,6 +124,104 @@ return
 						if w ~= nil then
 							w:destroy()
 							w = nil
+						end
+					end
+				end
+			end,
+			
+			event = function(self, parent, e)
+				table.insert(self.events, {Event=e, Year=parent.years})
+			end,
+
+			eventloop = function(self, parent, ind)
+				local v = math.floor(math.random(600, 1000) * self.stability)
+				local vi = math.floor(math.random(600, 1000) * (100 - self.stability))
+				if v < 1 then v = 1 end
+				if vi < 1 then vi = 1 end
+				
+				if self.ongoing == nil then self.ongoing = {} end
+				if self.relations == nil then self.relations = {} end
+				
+				for i=#self.ongoing,1,-1 do
+					if self.ongoing[i] ~= nil then
+						if self.ongoing[i].doStep ~= nil then
+							local r = self.ongoing[i]:doStep(parent, ind)
+							if r == -1 then
+								local ro = table.remove(self.ongoing, i)
+								ro = nil
+							end
+						else
+							local ro = table.remove(self.ongoing, i)
+							ro = nil
+						end
+					end
+				end
+				
+				for i=1,#parent.c_events do
+					if parent.c_events[i].inverse == false then
+						local chance = math.floor(math.random(1, v))
+						if chance <= parent.c_events[i].chance then
+							if parent.c_events[i].args == 1 then
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing].performEvent ~= nil then
+									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
+									end
+								else table.remove(self.ongoing, #self.ongoing) end
+							elseif parent.c_events[i].args == 2 then
+								local other = math.random(1, #parent.thisWorld.countries)
+								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing].performEvent ~= nil then
+									if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
+									end
+								else table.remove(self.ongoing, #self.ongoing) end
+							end
+						end
+					else
+						local chance = math.floor(math.random(1, vi))
+						if chance <= parent.c_events[i].chance then
+							if parent.c_events[i].args == 1 then
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing].performEvent ~= nil then
+									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
+									end
+								else table.remove(self.ongoing, #self.ongoing) end
+							elseif parent.c_events[i].args == 2 then
+								if #parent.thisWorld.countries > 1 then
+									local other = math.random(1, #parent.thisWorld.countries)
+									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+									if self.ongoing[#self.ongoing].performEvent ~= nil then
+										if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+										else
+											self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
+										end
+									else table.remove(self.ongoing, #self.ongoing) end
+								end
+							end
+						end
+					end
+				end
+				
+				local revCount = 0
+				
+				for i=1,#self.events do
+					if self.events[i].Year > parent.years - 50 then
+						if self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end
+					end
+				end
+				
+				if revCount > 8 then
+					self:event(parent, "Collapsed")
+					for i=#parent.thisWorld.countries,1,-1 do
+						if parent.thisWorld.countries[i].name == self.name then
+							parent.thisWorld:delete(parent, i)
 						end
 					end
 				end
@@ -131,6 +284,126 @@ return
 				end
 				
 				self.demonym = parent:namecheck(self.demonym)
+			end,
+			
+			set = function(self, parent)
+				parent:rseed()
+
+				self.system = math.random(1, #parent.systems)
+				self.population = math.random(500, 1000)
+				self:makename(parent)
+				
+				for i=1,self.population do
+					local n = Person:new()
+					n:makename(parent, self)
+					n.age = math.random(1, 20)
+					n.birth = parent.years - n.age
+					if n.birth < 1 then n.birth = n.birth - 1 end
+					n.level = 2
+					n.title = "Citizen"
+					self:add(n)
+				end
+				
+				local rcount = math.random(3, 8)
+				for i=1,rcount do
+					local r = Region:new()
+					r:makename(self, parent)
+					self.regions[r.name] = r
+				end
+				
+				while self.capitalregion == nil do
+					for i, j in pairs(self.regions) do
+						local chance = math.random(1, 30)
+						if chance == 15 then self.capitalregion = j.name end
+					end
+				end
+				
+				while self.capitalcity == nil do
+					for i, j in pairs(self.regions[self.capitalregion].cities) do
+						local chance = math.random(1, 30)
+						if chance == 15 then self.capitalcity = j.name end
+					end
+				end
+				
+				self.founded = parent.years
+				
+				self.snt[parent.systems[self.system].name] = 1
+				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
+			end,
+			
+			setPop = function(self, parent, u)
+				self.population = u
+				
+				if #self.people > 1 then
+					local r = math.random(1, #self.people)
+					while self.people[r].isruler == true do
+						r = math.random(1, #self.people)
+					end
+					self:delete(r)
+				end
+				
+				for i=1,self.population do
+					local n = Person:new()
+					n:makename(parent, self)
+					n.level = 2
+					n.title = "Citizen"
+					self:add(n)
+				end
+			end,
+
+			setRuler = function(self, parent, newRuler)
+				if self.hasruler == -1 then
+					self.people[newRuler].prevName = self.people[newRuler].name
+					self.people[newRuler].prevTitle = self.people[newRuler].title
+				
+					self.people[newRuler].level = #parent.systems[self.system].ranks
+					self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
+					
+					parent:rseed()
+
+					if self.people[newRuler].gender == "Female" then
+						self.people[newRuler].name = self.frulernames[math.floor(math.random(1, #self.frulernames))]
+						
+						if parent.systems[self.system].franks ~= nil then
+							self.people[newRuler].level = #parent.systems[self.system].franks
+							self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
+						end
+					else
+						self.people[newRuler].name = self.rulernames[math.floor(math.random(1, #self.rulernames))]
+					end
+					
+					local namenum = 1
+					
+					for i=1,#self.rulers do
+						if tonumber(self.rulers[i].From) >= self.founded then
+							if self.rulers[i].name == self.people[newRuler].name then
+								if self.rulers[i].Title == self.people[newRuler].title then
+									namenum = namenum + 1
+								end
+							end
+						end
+					end
+					
+					self.people[newRuler].isruler = true
+					self.hasruler = 0
+					
+					if parent.systems[self.system].dynastic == true then
+						self.people[newRuler].royalInfo = {
+							Gens=self.people[newRuler].royalGenerations,
+							LastAncestor=self.people[newRuler].lastRoyalAncestor
+						}
+						self.people[newRuler].royal = true
+						self.people[newRuler].royalGenerations = 0
+						self.people[newRuler].maternalLineTimes = 0
+						self.people[newRuler].royalSystem = parent.systems[self.system].name
+						self.people[newRuler].number = namenum
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					else
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					end
+					
+					self.rulerage = self.people[newRuler].age
+				end
 			end,
 			
 			setTerritory = function(self, parent)
@@ -281,181 +554,6 @@ return
 						
 						parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
 					end
-				end
-			end,
-
-			set = function(self, parent)
-				parent:rseed()
-
-				self.system = math.random(1, #parent.systems)
-				self.population = math.random(500, 1000)
-				self:makename(parent)
-				
-				for i=1,self.population do
-					local n = Person:new()
-					n:makename(parent, self)
-					n.age = math.random(1, 20)
-					n.birth = parent.years - n.age
-					if n.birth < 1 then n.birth = n.birth - 1 end
-					n.level = 2
-					n.title = "Citizen"
-					self:add(n)
-				end
-				
-				local rcount = math.random(3, 8)
-				for i=1,rcount do
-					local r = Region:new()
-					r:makename(self, parent)
-					self.regions[r.name] = r
-				end
-				
-				while self.capitalregion == nil do
-					for i, j in pairs(self.regions) do
-						local chance = math.random(1, 30)
-						if chance == 15 then self.capitalregion = j.name end
-					end
-				end
-				
-				while self.capitalcity == nil do
-					for i, j in pairs(self.regions[self.capitalregion].cities) do
-						local chance = math.random(1, 30)
-						if chance == 15 then self.capitalcity = j.name end
-					end
-				end
-				
-				self.founded = parent.years
-				
-				self.snt[parent.systems[self.system].name] = 1
-				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
-			end,
-
-			setRuler = function(self, parent, newRuler)
-				if self.hasruler == -1 then
-					self.people[newRuler].prevName = self.people[newRuler].name
-					self.people[newRuler].prevTitle = self.people[newRuler].title
-				
-					self.people[newRuler].level = #parent.systems[self.system].ranks
-					self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
-					
-					parent:rseed()
-
-					if self.people[newRuler].gender == "Female" then
-						self.people[newRuler].name = self.frulernames[math.floor(math.random(1, #self.frulernames))]
-						
-						if parent.systems[self.system].franks ~= nil then
-							self.people[newRuler].level = #parent.systems[self.system].franks
-							self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
-						end
-					else
-						self.people[newRuler].name = self.rulernames[math.floor(math.random(1, #self.rulernames))]
-					end
-					
-					local namenum = 1
-					
-					for i=1,#self.rulers do
-						if tonumber(self.rulers[i].From) >= self.founded then
-							if self.rulers[i].name == self.people[newRuler].name then
-								if self.rulers[i].Title == self.people[newRuler].title then
-									namenum = namenum + 1
-								end
-							end
-						end
-					end
-					
-					self.people[newRuler].isruler = true
-					self.hasruler = 0
-					
-					if parent.systems[self.system].dynastic == true then
-						self.people[newRuler].royalInfo = {
-							Gens=self.people[newRuler].royalGenerations,
-							LastAncestor=self.people[newRuler].lastRoyalAncestor
-						}
-						self.people[newRuler].royal = true
-						self.people[newRuler].royalGenerations = 0
-						self.people[newRuler].maternalLineTimes = 0
-						self.people[newRuler].royalSystem = parent.systems[self.system].name
-						self.people[newRuler].number = namenum
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					else
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					end
-					
-					self.rulerage = self.people[newRuler].age
-				end
-			end,
-
-			checkRuler = function(self, parent)
-				if self.hasruler == -1 then
-					if #self.rulers > 0 then
-						self.rulers[#self.rulers].To = parent.years
-					end
-					
-					if #self.people > 1 then			
-						while self.hasruler == -1 do
-							local possibles = {}
-							local closest = -1
-							local closestGens = 10000000
-							local closestMats = 10000000
-							local closestAge = -1
-							local sys = parent.systems[self.system]
-							if sys.dynastic == true then
-								for i=1,#self.people do
-									if self.people[i].royalSystem == sys.name then
-										table.insert(possibles, i)
-									end
-								end
-								
-								for i=1,#possibles do
-									if self.people[possibles[i]].royalGenerations <= closestGens then
-										if self.people[possibles[i]].maternalLineTimes <= closestMats then
-											if self.people[possibles[i]].age >= closestAge then
-												closest = possibles[i]
-												closestGens = self.people[possibles[i]].royalGenerations
-												closestMats = self.people[possibles[i]].maternalLineTimes
-												closestAge = self.people[possibles[i]].age
-											end
-										end
-									end
-								end
-								
-								if closest == -1 then
-									for i=#self.people,1,-1 do
-										local chance = math.random(1, 1000)
-										if chance == 25 then self:setRuler(parent, i) end
-										i = 0
-									end
-								else
-									self:setRuler(parent, closest)
-								end
-							else
-								for i=#self.people,1,-1 do
-									local chance = math.random(1, 1000)
-									if chance == 25 then self:setRuler(parent, i) end
-									i = 0
-								end
-							end
-						end
-					end
-				end
-			end,
-
-			setPop = function(self, parent, u)
-				self.population = u
-				
-				if #self.people > 1 then
-					local r = math.random(1, #self.people)
-					while self.people[r].isruler == true do
-						r = math.random(1, #self.people)
-					end
-					self:delete(r)
-				end
-				
-				for i=1,self.population do
-					local n = Person:new()
-					n:makename(parent, self)
-					n.level = 2
-					n.title = "Citizen"
-					self:add(n)
 				end
 			end,
 
@@ -655,105 +753,6 @@ return
 				
 				self:checkRuler(parent)
 				self:eventloop(parent, ind)
-			end,
-
-			event = function(self, parent, e)
-				table.insert(self.events, {Event=e, Year=parent.years})
-			end,
-
-			eventloop = function(self, parent, ind)
-				local v = math.floor(math.random(600, 1000) * self.stability)
-				local vi = math.floor(math.random(600, 1000) * (100 - self.stability))
-				if v < 1 then v = 1 end
-				if vi < 1 then vi = 1 end
-				
-				if self.ongoing == nil then self.ongoing = {} end
-				if self.relations == nil then self.relations = {} end
-				
-				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].doStep ~= nil then
-							local r = self.ongoing[i]:doStep(parent, ind)
-							if r == -1 then
-								local ro = table.remove(self.ongoing, i)
-								ro = nil
-							end
-						else
-							local ro = table.remove(self.ongoing, i)
-							ro = nil
-						end
-					end
-				end
-				
-				for i=1,#parent.c_events do
-					if parent.c_events[i].inverse == false then
-						local chance = math.floor(math.random(1, v))
-						if chance <= parent.c_events[i].chance then
-							if parent.c_events[i].args == 1 then
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							elseif parent.c_events[i].args == 2 then
-								local other = math.random(1, #parent.thisWorld.countries)
-								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							end
-						end
-					else
-						local chance = math.floor(math.random(1, vi))
-						if chance <= parent.c_events[i].chance then
-							if parent.c_events[i].args == 1 then
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							elseif parent.c_events[i].args == 2 then
-								if #parent.thisWorld.countries > 1 then
-									local other = math.random(1, #parent.thisWorld.countries)
-									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-									if self.ongoing[#self.ongoing].performEvent ~= nil then
-										if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-										else
-											self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
-										end
-									else table.remove(self.ongoing, #self.ongoing) end
-								end
-							end
-						end
-					end
-				end
-				
-				local revCount = 0
-				
-				for i=1,#self.events do
-					if self.events[i].Year > parent.years - 50 then
-						if self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end
-					end
-				end
-				
-				if revCount > 8 then
-					self:event(parent, "Collapsed")
-					for i=#parent.thisWorld.countries,1,-1 do
-						if parent.thisWorld.countries[i].name == self.name then
-							parent.thisWorld:delete(parent, i)
-						end
-					end
-				end
-				
 			end
 		}
 		

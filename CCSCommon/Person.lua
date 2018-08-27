@@ -63,25 +63,6 @@ return
 				self.number = nil
 				self = nil
 			end,
-
-			makename = function(self, parent, nl)
-				self.name = parent:name(true, 6)
-				self.surname = parent:name(true, 6)
-				
-				local r = math.random(1, 1000)
-				if r < 501 then self.gender = "Male" else self.gender = "Female" end
-				
-				self.pbelief = math.random(-100, 100)
-				self.ebelief = math.random(-100, 100)
-				self.cbelief = math.random(-100, 100)
-				
-				self.birth = parent.years
-				self.age = math.random(1, 30)
-				if self.title == "" then
-					self.level = 2
-					self.title = "Citizen"
-				end
-			end,
 			
 			dobirth = function(self, parent, nl)
 				local nn = Person:new()
@@ -136,6 +117,25 @@ return
 				parent.thisWorld.countries[nl]:add(nn)
 			end,
 
+			makename = function(self, parent, nl)
+				self.name = parent:name(true, 6)
+				self.surname = parent:name(true, 6)
+				
+				local r = math.random(1, 1000)
+				if r < 501 then self.gender = "Male" else self.gender = "Female" end
+				
+				self.pbelief = math.random(-100, 100)
+				self.ebelief = math.random(-100, 100)
+				self.cbelief = math.random(-100, 100)
+				
+				self.birth = parent.years
+				self.age = math.random(1, 30)
+				if self.title == "" then
+					self.level = 2
+					self.title = "Citizen"
+				end
+			end,
+			
 			update = function(self, parent, nl)
 				self.age = self.age + 1
 				
