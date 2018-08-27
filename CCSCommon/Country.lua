@@ -747,7 +747,7 @@ return
 					self:event(parent, "Collapsed")
 					for i=#parent.thisWorld.countries,1,-1 do
 						if parent.thisWorld.countries[i].name == self.name then
-							parent.thisWorld:delete(i)
+							parent.thisWorld:delete(parent, i)
 						end
 					end
 				end

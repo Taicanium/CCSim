@@ -908,17 +908,16 @@ return
 
 			finish = function(self)
 				os.remove("in_progress.dat")
-				os.remove("in_progress.r")
 			
 				print("\nPrinting result...")
 
-				local f = io.open("output.txt", "w+")
+				local f = io.open("output.txt", "w")
 
 				for i=1,#self.final do
 					local newc = false
 					local fr = 1
 					local pr = 1
-					f:write(string.format("Country "..i..": "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
+					f:write(string.format("Country: "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
 
 					for k=1,#self.final[i].events do
 						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
@@ -1680,7 +1679,7 @@ return
 									parent:RegionTransfer(c1, c2, j.name, false)
 								end
 								
-								parent.thisWorld:delete(c2)
+								parent.thisWorld:delete(parent, c2)
 							end
 						end
 

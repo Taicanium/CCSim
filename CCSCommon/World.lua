@@ -28,11 +28,69 @@ return
 				table.insert(self.countries, nd)
 			end,
 
-			delete = function(self, nz)
+			delete = function(self, parent, nz)
 				if nz > 0 and nz <= #self.countries then
 					if self.countries[nz] ~= nil then
 						p = table.remove(self.countries, nz)
 						if p ~= nil then
+							local f = io.open("output.txt", "w")
+
+							local newc = false
+							local fr = 1
+							local pr = 1
+							f:write(string.format("Country: "..p.name.."\nFounded: "..p.founded..", survived for "..p.age.." years\n\n"))
+
+							for k=1,#p.events do
+								if p.events[k].Event:sub(1, 12) == "Independence" then
+									newc = true
+									pr = tonumber(p.events[k].Year)
+								end
+							end
+
+							if newc == true then
+								f:write(string.format("1. "..p.rulers[1].Title.." "..p.rulers[1].name.." "..self:roman(p.rulers[1].Number).." of "..p.rulers[1].Country.." ("..tostring(p.rulers[1].From).." - "..tostring(p.rulers[1].To)..")").."\n...\n")
+								for k=1,#p.rulers do
+									if p.rulers[k].To ~= "Current" then
+										if tonumber(p.rulers[k].To) >= pr then
+											if tonumber(p.rulers[k].From) < pr then
+												f:write(string.format(k..". "..self:getRulerString(p.rulers[k]).."\n"))
+												fr = k + 1
+												k = #p.rulers + 1
+											end
+										end
+									end
+								end
+							end
+
+							for j=pr,self.maxyears do
+								for k=1,#p.events do
+									if tonumber(p.events[k].Year) == j then
+										if p.events[k].Event:sub(1, 10) == "Revolution" then
+											f:write(string.format(p.events[k].Year..": "..p.events[k].Event.."\n"))
+										end
+									end
+								end
+
+								for k=fr,#p.rulers do
+									if tonumber(p.rulers[k].From) == j then
+										f:write(string.format(k..". "..self:getRulerString(p.rulers[k]).."\n"))
+									end
+								end
+
+								for k=1,#p.events do
+									if tonumber(p.events[k].Year) == j then
+										if p.events[k].Event:sub(1, 10) ~= "Revolution" then
+											f:write(string.format(p.events[k].Year..": "..p.events[k].Event.."\n"))
+										end
+									end
+								end
+							end
+
+							f:write("\n\n\n")
+							f:flush()
+							f:close()
+							f = nil
+						
 							for i=#self.countries,1,-1 do
 								if self.countries[i] ~= nil then
 									for j=#self.countries[i].ongoing,1,-1 do
@@ -65,6 +123,11 @@ return
 							
 							self.cColors[p.name] = nil
 							self.cTriplets[p.name] = nil
+							
+							for i=#parent.final,1,-1 do if parent.final[i].name == p.name then
+								local frem = table.remove(parent.final, i)
+								frem = nil
+							end end
 							
 							p:destroy()
 							p = nil
@@ -615,7 +678,7 @@ return
 							if self.countries[i].population < 10 then
 								if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
 								self.countries[i]:event(parent, "Disappeared")
-								self:delete(i)
+								self:delete(parent, i)
 							end
 						end
 					end
