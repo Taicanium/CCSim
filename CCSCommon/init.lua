@@ -1533,56 +1533,60 @@ return
 				},
 				{
 					name="Independence",
-					chance=2,
+					chance=3,
 					target=nil,
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
 					
-						local values = {}
+						local chance = math.random(1, 100)
 						
-						for i, j in pairs(parent.thisWorld.countries[c].regions) do
-							table.insert(values, j.name)
-						end
-						
-						if #values > 1 then
-							local v = values[math.random(1, #values)]
-						
-							local newl = Country:new()
-							local nc = parent.thisWorld.countries[c].regions[v]
+						if chance > 50 then
+							local values = {}
 							
-							newl.name = nc.name
-							
-							parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
-							newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
-							
-							newl:set(parent)
-							for i=1,#nc.nodes do
-								local x = nc.nodes[i][1]
-								local y = nc.nodes[i][2]
-								local z = nc.nodes[i][3]
-								
-								parent.thisWorld.planet[x][y][z].country = newl.name
-								parent.thisWorld.planet[x][y][z].region = ""
-								parent.thisWorld.planet[x][y][z].city = ""
+							for i, j in pairs(parent.thisWorld.countries[c].regions) do
+								table.insert(values, j.name)
 							end
 							
-							if parent.doR == true then newl:setTerritory(parent) end
+							if #values > 1 then
+								local v = values[math.random(1, #values)]
 							
-							newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
-							newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
-							
-							parent.thisWorld:add(newl)
+								local newl = Country:new()
+								local nc = parent.thisWorld.countries[c].regions[v]
+								
+								newl.name = nc.name
+								
+								parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
+								newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
+								
+								newl:set(parent)
+								for i=1,#nc.nodes do
+									local x = nc.nodes[i][1]
+									local y = nc.nodes[i][2]
+									local z = nc.nodes[i][3]
+									
+									parent.thisWorld.planet[x][y][z].country = newl.name
+									parent.thisWorld.planet[x][y][z].region = ""
+									parent.thisWorld.planet[x][y][z].city = ""
+								end
+								
+								if parent.doR == true then newl:setTerritory(parent) end
+								
+								newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
+								newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
+								
+								parent.thisWorld:add(newl)
 
-							parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 10)
-							if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
+								parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 10)
+								if parent.thisWorld.countries[c].strength < 1 then parent.thisWorld.countries[c].strength = 1 end
 
-							parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
-							if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
-							
-							parent:deepnil(parent.thisWorld.countries[c].regions[v])
-							parent.thisWorld.countries[c].regions[v] = nil
+								parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
+								if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
+								
+								parent:deepnil(parent.thisWorld.countries[c].regions[v])
+								parent.thisWorld.countries[c].regions[v] = nil
+							end
 						end
 
 						return -1

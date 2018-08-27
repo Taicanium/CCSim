@@ -505,18 +505,20 @@ return
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].target ~= nil then
-							local found = false
-							local er = parent.thisWorld.countries[self.ongoing[i].target].name
-							
-							for j=1,#parent.thisWorld.countries do
-								local nr = parent.thisWorld.countries[j].name
-								if nr == er then found = true end
-							end
-							
-							if found == false then
-								local ro = table.remove(self.ongoing, i)
-								ro = nil
-							end
+							if parent.thisWorld.countries[self.ongoing[i].target] ~= nil then
+								local found = false
+								local er = parent.thisWorld.countries[self.ongoing[i].target].name
+								
+								for j=1,#parent.thisWorld.countries do
+									local nr = parent.thisWorld.countries[j].name
+									if nr == er then found = true end
+								end
+								
+								if found == false then
+									local ro = table.remove(self.ongoing, i)
+									ro = nil
+								end
+							else table.remove(self.ongoing, i) end
 						end
 					end
 				end
