@@ -48,12 +48,12 @@ return
 							end
 
 							if newc == true then
-								f:write(string.format("1. "..p.rulers[1].Title.." "..p.rulers[1].name.." "..self:roman(p.rulers[1].Number).." of "..p.rulers[1].Country.." ("..tostring(p.rulers[1].From).." - "..tostring(p.rulers[1].To)..")").."\n...\n")
+								f:write(string.format("1. "..p.rulers[1].Title.." "..p.rulers[1].name.." "..parent:roman(p.rulers[1].Number).." of "..p.rulers[1].Country.." ("..tostring(p.rulers[1].From).." - "..tostring(p.rulers[1].To)..")").."\n...\n")
 								for k=1,#p.rulers do
 									if p.rulers[k].To ~= "Current" then
 										if tonumber(p.rulers[k].To) >= pr then
 											if tonumber(p.rulers[k].From) < pr then
-												f:write(string.format(k..". "..self:getRulerString(p.rulers[k]).."\n"))
+												f:write(string.format(k..". "..parent:getRulerString(p.rulers[k]).."\n"))
 												fr = k + 1
 												k = #p.rulers + 1
 											end
@@ -62,7 +62,7 @@ return
 								end
 							end
 
-							for j=pr,self.maxyears do
+							for j=pr,parent.maxyears do
 								for k=1,#p.events do
 									if tonumber(p.events[k].Year) == j then
 										if p.events[k].Event:sub(1, 10) == "Revolution" then
@@ -73,7 +73,7 @@ return
 
 								for k=fr,#p.rulers do
 									if tonumber(p.rulers[k].From) == j then
-										f:write(string.format(k..". "..self:getRulerString(p.rulers[k]).."\n"))
+										f:write(string.format(k..". "..parent:getRulerString(p.rulers[k]).."\n"))
 									end
 								end
 
