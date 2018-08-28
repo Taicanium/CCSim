@@ -356,6 +356,7 @@ return
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 							
 							for i=1,#ao do
+								c1strength = c1strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Victory with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.target].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength + 10
 							end
@@ -363,6 +364,7 @@ return
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
+								c2strength = c2strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Defeat with "..parent.thisWorld.countries[self.target].name.." in war with "..parent.thisWorld.countries[c1].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength - 10
 							end
@@ -390,6 +392,7 @@ return
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 							
 							for i=1,#ao do
+								c1strength = c1strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Defeat with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.target].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength - 10
 							end
@@ -397,6 +400,7 @@ return
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
+								c2strength = c2strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Victory with "..parent.thisWorld.countries[self.target].name.." in war with "..parent.thisWorld.countries[c1].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength + 10
 							end
