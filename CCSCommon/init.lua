@@ -931,6 +931,7 @@ return
 							getLocalAscendants(getLocalAscendants, self.final[i], royals, self.final[i].ascendants[j])
 						end
 						
+						print("Sorting individuals...")
 						local limit = #royals
 						local j = 1
 						while j <= limit do
@@ -960,6 +961,7 @@ return
 									end
 								end
 							end
+							if math.fmod(j, math.floor(limit / 100)) == 0 then print(tostring(limit / j).."% done") end
 							j = j + 1
 						end
 						
@@ -967,6 +969,8 @@ return
 							if royals[j].father > #royals then royals[j].father = 0 end
 							if royals[j].mother > #royals then royals[j].mother = 0 end
 						end
+						
+						print("Sorting families...")
 						
 						local fams = {}
 					
@@ -991,6 +995,8 @@ return
 							else
 								table.insert(fams[found].chil, j)
 							end
+							
+							if math.fmod(j, math.floor(#royals / 100)) == 0 then print(tostring(#royals / j).."% done") end
 						end
 						
 						for j=1,#royals do
@@ -998,7 +1004,9 @@ return
 							if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
 							msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
 							if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
-							msgout = msgout.."1 BIRT\n2 DATE "..royals[j].birth.."\n2 PLAC "..royals[j].birthplace.."\n"
+							msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth)
+							if royals[j].birth < 0 then msgout = msgout.." B.C." end
+							msgout = msgout.."\n2 PLAC "..royals[j].birthplace.."\n"
 							
 							for k=1,#self.final[i].rulers do
 								if self.final[i].rulers[k].name == royals[j].name then
@@ -1051,7 +1059,7 @@ return
 						gFams = gFams + #fams
 					end
 				end
-
+				
 				f:flush()
 				f:close()
 				f = nil

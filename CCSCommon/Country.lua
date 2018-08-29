@@ -29,7 +29,7 @@ return
 				nl.stability = 50
 				nl.strength = 50
 				nl.population = 0
-				nl.birthrate = 5
+				nl.birthrate = 6
 				nl.deathrate = 121
 				nl.regions = {}
 				nl.parties = {}
@@ -46,10 +46,8 @@ return
 				if self.people ~= nil then
 					for i=1,#self.people do
 						if self.people[i].useParents == true then
-							if self.people[i].royalGenerations < 3 then
-								if self.people[i].royalGenerations ~= 0 then
-									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.name, Father=self.people[i].father, Mother=self.people[i].mother})
-								end
+							if self.people[i].royalGenerations ~= 0 then
+								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.name, Father=self.people[i].father, Mother=self.people[i].mother})
 							end
 						end
 						self.people[i]:destroy()
@@ -123,10 +121,8 @@ return
 				if b > 0 then
 					if self.people[y] ~= nil then
 						if self.people[y].useParents == true then
-							if self.people[y].royalGenerations < 3 then
-								if self.people[y].royalGenerations ~= 0 then
-									table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother})
-								end
+							if self.people[y].royalGenerations ~= 0 then
+								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother})
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end

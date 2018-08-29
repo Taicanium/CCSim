@@ -81,7 +81,6 @@ function main()
 	f:flush()
 	f:close()
 	f = nil
-	os.remove("output.txt")
 	
 	CCSCommon:loop()
 	CCSCommon.thisWorld = nil

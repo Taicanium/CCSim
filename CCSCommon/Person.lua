@@ -89,8 +89,8 @@ return
 					nn.royalSystem = self.royalSystem
 					nn.lastRoyalAncestor = self.lastRoyalAncestor
 					if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
-					if self.gender == "Female" then nn:SetFamily(self.spouse, self)
-					else nn:SetFamily(self, self.spouse) end
+					if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
+					else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
 					nn.useParents = true
 				end
 				
@@ -241,7 +241,7 @@ return
 						if self.age < 60 then
 							if self.age > 12 then
 								local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
-								if tmp == 1 then
+								if tmp == 2 then
 									self:dobirth(parent, nl)
 								end
 							end
