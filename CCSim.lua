@@ -45,6 +45,14 @@ function main()
 		
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 		
+		io.write(string.format("\nDo you want to produce a GEDCOM file for royal lines? > "))
+		datin = io.read()
+		datin = string.lower(datin)
+		
+		CCSCommon.ged = false
+		
+		if string.lower(datin) == "y" then CCSCommon.ged = true end
+		
 		io.write(string.format("\nData > "))
 		datin = io.read()
 		
@@ -58,7 +66,7 @@ function main()
 		
 			for j=1,CCSCommon.numCountries do
 				nl = Country:new()
-				nl:set(CCSCommon)
+				nl:set(CCSCommon, j)
 				CCSCommon.thisWorld:add(nl)
 			end
 			

@@ -7,6 +7,8 @@ If the player sets it as such, upon generating a random world, the script will o
 
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
 
+The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries.
+
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 
 # File Format

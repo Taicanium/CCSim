@@ -7,7 +7,7 @@ return
 				
 				n.name = ""
 				n.surname = ""
-				n.birth = ""
+				n.birth = 0
 				n.age = 0
 				n.gender = ""
 				n.level = 2
@@ -18,18 +18,22 @@ return
 				n.region = ""
 				n.city = ""
 				n.spouse = nil
+				n.father = nil
+				n.mother = nil
+				n.useParents = false
 				n.isruler = false
 				n.parentRuler = false
 				n.royal = false
 				n.royalSystem = ""
 				n.royalGenerations = -1
+				n.birthplace = ""
 				n.maternalLineTimes = -1
 				n.lastRoyalAncestor = ""
 				n.royalInfo = {Gens=-1, LastAncestor=""}
 				n.pbelief = 0
 				n.ebelief = 0
 				n.cbelief = 0
-				n.number = -1
+				n.number = 0
 				n.mtName = "Person"
 				
 				return n
@@ -61,42 +65,47 @@ return
 				self.ebelief = nil
 				self.cbelief = nil
 				self.number = nil
-				self = nil
+				self.mtName = nil
 			end,
 			
 			dobirth = function(self, parent, nl)
 				local nn = Person:new()
+			
+				nn:makename(parent, nl)
 			
 				if self.gender == "Male" then
 					nn.surname = self.surname
 				else
 					nn.surname = self.spouse.surname
 				end
-			
-				nn:makename(parent, nl)
 				
 				local sys = parent.systems[parent.thisWorld.countries[nl].system]
 				
+				nn.birthplace = parent.thisWorld.countries[nl].name
 				nn.age = 0
 				
 				if self.royalGenerations ~= -1 then
-					if self.royalGenerations ~= -1 then nn.royalGenerations = self.royalGenerations + 1 end
+					nn.royalGenerations = self.royalGenerations + 1
 					nn.royalSystem = self.royalSystem
 					nn.lastRoyalAncestor = self.lastRoyalAncestor
 					if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
-					if self.royal == true then
-						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
-					end
-					if self.spouse.royal == true then
-						nn.maternalLineTimes = 0
-						nn.royalSystem = self.spouse.royalSystem
-						nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
-					end
-					nn.royalInfo = {
-						Gens=nn.royalGenerations,
-						LastAncestor=nn.lastRoyalAncestor
-					}
+					if self.gender == "Female" then nn:SetFamily(self.spouse, self)
+					else nn:SetFamily(self, self.spouse) end
+					nn.useParents = true
 				end
+				
+				if self.royal == true then
+					nn.maternalLineTimes = 0
+					nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
+					nn.royalInfo.Gens=nn.royalGenerations
+					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
+				else if self.spouse.royal == true then
+					if self.gender == "Female" then nn.maternalLineTimes = 0 end
+					nn.royalSystem = self.spouse.royalSystem
+					nn.lastRoyalAncestor = string.format(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Title.." "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].name.." "..parent:roman(parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Number).." of "..parent.thisWorld.countries[nl].rulers[#parent.thisWorld.countries[nl].rulers].Country)
+					nn.royalInfo.Gens=nn.royalGenerations
+					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
+				end end
 				
 				if self.title == sys.ranks[#sys.ranks] then
 					nn.level = self.level - 1
@@ -136,8 +145,15 @@ return
 				end
 			end,
 			
+			SetFamily = function(self, father, mother)
+				self.father = {Name=father.name, Surname=father.surname, Gender="M", Number=father.number, Birth=father.birth, BirthPlace=father.birthplace, Father=father.father, Mother=father.mother}
+				self.mother = {Name=mother.name, Surname=mother.surname, Gender="F", Number=mother.number, Birth=mother.birth, BirthPlace=mother.birthplace, Father=mother.father, Mother=mother.mother}
+			end,
+			
 			update = function(self, parent, nl)
 				self.age = self.age + 1
+				
+				if self.birthplace == "" then self.birthplace = parent.thisWorld.countries[nl].name end
 				
 				if self.surname == nil then self.surname = parent:name(true, 6) end
 				
@@ -195,20 +211,24 @@ return
 					end
 				end
 				
+				if self.spouse ~= nil then
+					if self.spouse.name == nil then self.spouse = nil end
+				end
+				
 				if self.spouse == nil then
 					if self.age > 15 then
-						local c = math.random(1, 6)
+						local c = math.random(1, 8)
 						if c == 2 then
 							m = math.random(1, #parent.thisWorld.countries[nl].people)
 							if parent.thisWorld.countries[nl].people[m].spouse == nil then
 								if self.gender ~= parent.thisWorld.countries[nl].people[m].gender then
 									self.spouse = parent.thisWorld.countries[nl].people[m]
-									parent.thisWorld.countries[nl].people[m].spouse = self
+									self.spouse.spouse = self
 									
 									if self.level >= parent.thisWorld.countries[nl].people[m].level then
-										parent.thisWorld.countries[nl].people[m].surname = self.surname
+										self.spouse.surname = self.surname
 									else
-										self.surname = parent.thisWorld.countries[nl].people[m].surname
+										self.surname = self.spouse.surname
 									end
 								end
 							end
@@ -262,7 +282,7 @@ return
 					
 					if self.party == "" then
 						local pr = math.random(1, #parent.thisWorld.countries[nl].parties)
-						partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
+						local partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
 						if math.abs(belieftotal - partytotal) < 125 then
 							self.party = parent.thisWorld.countries[nl].parties[pr].name
 							parent.thisWorld.countries[nl].parties[pr].membership = parent.thisWorld.countries[nl].parties[pr].membership + 1
@@ -279,7 +299,7 @@ return
 								parent.thisWorld.countries[nl].parties[pi].membership = parent.thisWorld.countries[nl].parties[pi].membership - 1
 							
 								local pr = math.random(1, #parent.thisWorld.countries[nl].parties)
-								partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
+								local partytotal = parent.thisWorld.countries[nl].parties[pr].pfreedom + parent.thisWorld.countries[nl].parties[pr].efreedom + parent.thisWorld.countries[nl].parties[pr].cfreedom
 								if math.abs(belieftotal - partytotal) < 125 then
 									self.party = parent.thisWorld.countries[nl].parties[pr].name
 									parent.thisWorld.countries[nl].parties[pr].membership = parent.thisWorld.countries[nl].parties[pr].membership + 1
@@ -305,17 +325,6 @@ return
 					newp.membership = 1
 					
 					table.insert(parent.thisWorld.countries[nl].parties, newp)
-				end
-				
-				if self.isruler == true then
-					if self.age > 80 then
-						local retirechance = math.random(1, 10)
-						if retirechance == 3 then
-							parent.thisWorld.countries[nl].hasruler = -1
-							self.isruler = false
-							self.level = #parent.systems[parent.thisWorld.countries[nl].system].ranks - 2
-						end
-					end
 				end
 				
 				local movechance = math.random(1, 25)

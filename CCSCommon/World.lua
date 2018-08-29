@@ -245,7 +245,7 @@ return
 							self.cColors[p.name] = nil
 							self.cTriplets[p.name] = nil
 							
-							p:destroy()
+							p:destroy(parent)
 							p = nil
 						end
 					end

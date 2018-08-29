@@ -714,6 +714,7 @@ return
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
 			doR = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "ric"},
+			ged = false,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The"},
 			maxyears = 1,
 			metatables = {{World, "World"}, {Country, "Country"}, {Region, "Region"}, {City, "City"}, {Person, "Person"}, {Party, "Party"}},
@@ -825,11 +826,21 @@ return
 			finish = function(self)
 				os.remove("in_progress.dat")
 			
+				os.execute(self.clrcmd)
 				print("\nPrinting result...")
 
 				local f = io.open("output.txt", "w+")
+				
+				local ged = nil
+				local gRoyals = 0
+				local gFams = 0
+				
+				if self.ged == true then
+					ged = io.open(tostring(os.time())..".ged", "w+")
+					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
+				end
 
-				for i=1,#self.final do
+				for i=1,#self.final do					
 					local newc = false
 					local fr = 1
 					local pr = 1
@@ -882,11 +893,174 @@ return
 					end
 
 					f:write("\n\n\n")
+					
+					if self.ged == true then
+						self.final[i]:destroy()
+					
+						print("Saving royal lines for country "..tostring(i).."/"..tostring(#self.final).."...")
+					
+						local royals = {}
+						
+						for j=1,#self.final[i].ascendants do
+							getLocalAscendants = function(self, final, royals, person)
+								table.insert(royals, {
+									name=person.Name,
+									surname=person.Surname,
+									birth=person.Birth,
+									number=person.Number,
+									gender=person.Gender,
+									birthplace=person.BirthPlace,
+									deathplace=final.name,
+									father=0,
+									mother=0
+								})
+								
+								local ind = #royals
+								
+								if person.Father ~= nil then
+									royals[ind].father = #royals + 1
+									self(self, final, royals, person.Father)
+								end
+								
+								if person.Mother ~= nil then
+									royals[ind].mother = #royals + 1
+									self(self, final, royals, person.Mother)
+								end
+							end
+							
+							getLocalAscendants(getLocalAscendants, self.final[i], royals, self.final[i].ascendants[j])
+						end
+						
+						local limit = #royals
+						local j = 1
+						while j <= limit do
+							local royal = royals[j]
+							for k=#royals,1,-1 do
+								if j ~= k then
+									if j <= limit then
+										if royals[k].name == royal.name then
+											if royals[k].surname == royal.surname then
+												if royals[k].gender == royal.gender then
+													if royals[k].birth == royal.birth then
+														if royals[k].number == royal.number then
+															for l=1,#royals do
+																if royals[l].father == k then royals[l].father = j
+																elseif royals[l].father > k then royals[l].father = royals[l].father - 1 end
+																if royals[l].mother == k then royals[l].mother = j
+																elseif royals[l].mother > k then royals[l].mother = royals[l].mother - 1 end
+															end
+															table.remove(royals, k)
+															limit = limit - 1
+															if k <= j then j = j - 1 end
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+							j = j + 1
+						end
+						
+						for j=1,#royals do
+							if royals[j].father > #royals then royals[j].father = 0 end
+							if royals[j].mother > #royals then royals[j].mother = 0 end
+						end
+						
+						local fams = {}
+					
+						for j=1,#royals do
+							local found = nil
+							for k=1,#fams do
+								if royals[j].father ~= 0 then
+									if fams[k].husb == royals[j].father then found = k end
+								else if royals[j].mother ~= 0 then
+									if fams[k].wife == royals[j].mother then found = k end
+								end end
+							end
+							
+							if found == nil then
+								local doFam = false
+								if royals[j].father ~= 0 then
+									if royals[j].mother ~= 0 then
+										doFam = true
+									end
+								end
+								if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
+							else
+								table.insert(fams[found].chil, j)
+							end
+						end
+						
+						for j=1,#royals do
+							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
+							if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
+							msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
+							if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
+							msgout = msgout.."1 BIRT\n2 DATE "..royals[j].birth.."\n2 PLAC "..royals[j].birthplace.."\n"
+							
+							for k=1,#self.final[i].rulers do
+								if self.final[i].rulers[k].name == royals[j].name then
+									if self.final[i].rulers[k].Number == royals[j].number then
+										if tostring(self.final[i].rulers[k].To) ~= "Current" then msgout = msgout.."1 DEAT\n2 DATE "..tostring(self.final[i].rulers[k].To).."\n2 PLAC "..royals[j].deathplace.."\n" end
+									end
+								end
+							end
+							
+							for k=1,#fams do
+								if fams[k].husb == j then
+									msgout = msgout.."1 FAMS @F"..tostring(k+gFams).."@\n"
+								elseif fams[k].wife == j then
+									msgout = msgout.."1 FAMS @F"..tostring(k+gFams).."@\n"
+								else
+									for l=1,#fams[k].chil do
+										if fams[k].chil[l] == j then
+											msgout = msgout.."1 FAMC @F"..tostring(k+gFams).."@\n"
+										end
+									end
+								end
+							end
+							
+							ged:write(msgout)
+						end
+						
+						for j=1,#fams do
+							local msgout = "0 @F"..tostring(j+gFams).."@ FAM\n"
+							
+							if fams[j].husb ~= 0 then
+								msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb+gRoyals).."@\n"
+							end
+							
+							if fams[j].wife ~= 0 then
+								msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife+gRoyals).."@\n"
+							end
+							
+							for k=1,#fams[j].chil do
+								if fams[j].chil[k] ~= fams[j].husb then
+									if fams[j].chil[k] ~= fams[j].wife then
+										msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k]+gRoyals).."@\n"
+									end
+								end
+							end
+							
+							ged:write(msgout)
+						end
+						
+						gRoyals = gRoyals + #royals
+						gFams = gFams + #fams
+					end
 				end
 
 				f:flush()
 				f:close()
 				f = nil
+				
+				if self.ged == true then
+					ged:flush()
+					ged:close()
+					ged = nil
+				end
 			end,
 			
 			fncopy = function(self, fn)
@@ -912,12 +1086,13 @@ return
 
 				print("Reading data...")
 				
+				local fc = 0
+				local fr = 0
+				
 				while done == false do
 					local l = f:read()
 					if l == nil then done = true
 					else
-						local fc = 0
-						local fr = 0
 						local mat = {}
 						for q in string.gmatch(l, "%S+") do
 							table.insert(mat, tostring(q))
@@ -1031,7 +1206,7 @@ return
 						end
 						
 						self.thisWorld.countries[i]:makename(self)
-						self.thisWorld.countries[i]:setPop(self, self.popLimit)
+						self.thisWorld.countries[i]:setPop(self, 500)
 						
 						table.insert(self.final, self.thisWorld.countries[i])
 					end

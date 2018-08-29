@@ -17,6 +17,7 @@ return
 				nl.rulers = {}
 				nl.rulernames = {}
 				nl.frulernames = {}
+				nl.ascendants = {}
 				nl.ongoing = {}
 				nl.allyOngoing = {}
 				nl.alliances = {}
@@ -41,19 +42,21 @@ return
 				return nl
 			end,
 
-			destroy = function(self)
-				for i=1,#self.people do
-					self.people[i]:destroy()
-					self.people[i] = nil
+			destroy = function(self, parent)
+				if self.people ~= nil then
+					for i=1,#self.people do
+						if self.people[i].useParents == true then
+							if self.people[i].royalGenerations < 3 then
+								if self.people[i].royalGenerations ~= 0 then
+									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.name, Father=self.people[i].father, Mother=self.people[i].mother})
+								end
+							end
+						end
+						self.people[i]:destroy()
+						self.people[i] = nil
+					end
+					self.people = nil
 				end
-				for i=1,#self.nodes do
-					self.nodes[i][1] = nil
-					self.nodes[i][2] = nil
-					self.nodes[i][3] = nil
-					self.nodes[i] = nil
-				end
-				self.people = nil
-				self.nodes = nil
 			end,
 
 			add = function(self, n)
@@ -119,6 +122,13 @@ return
 				local b = #self.people
 				if b > 0 then
 					if self.people[y] ~= nil then
+						if self.people[y].useParents == true then
+							if self.people[y].royalGenerations < 3 then
+								if self.people[y].royalGenerations ~= 0 then
+									table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother})
+								end
+							end
+						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
 						if w ~= nil then
@@ -388,11 +398,10 @@ return
 					self.hasruler = 0
 					
 					if parent.systems[self.system].dynastic == true then
-						self.people[newRuler].royalInfo = {
-							Gens=self.people[newRuler].royalGenerations,
-							LastAncestor=self.people[newRuler].lastRoyalAncestor
-						}
+						self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
+						self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
 						self.people[newRuler].royal = true
+						self.people[newRuler].useParents = true
 						self.people[newRuler].royalGenerations = 0
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
