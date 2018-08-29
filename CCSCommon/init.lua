@@ -1002,7 +1002,7 @@ return
 							
 							for k=1,#self.final[i].rulers do
 								if self.final[i].rulers[k].name == royals[j].name then
-									if self.final[i].rulers[k].Number == royals[j].number then
+									if tostring(self.final[i].rulers[k].Number) == tostring(royals[j].number) then
 										if tostring(self.final[i].rulers[k].To) ~= "Current" then msgout = msgout.."1 DEAT\n2 DATE "..tostring(self.final[i].rulers[k].To).."\n2 PLAC "..royals[j].deathplace.."\n" end
 									end
 								end
