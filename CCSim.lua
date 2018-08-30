@@ -45,7 +45,7 @@ function main()
 		
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 		
-		io.write(string.format("\nDo you want to produce a GEDCOM file for royal lines? > "))
+		io.write(string.format("\nDo you want to produce a GEDCOM file for royal lines (y/n)? > "))
 		datin = io.read()
 		datin = string.lower(datin)
 		

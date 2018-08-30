@@ -652,6 +652,10 @@ return
 									table.insert(parent.thisWorld.countries[c1].nodes, {x, y, z})
 								end
 								
+								for i=1,#parent.thisWorld.countries[c2].ascendants do
+									table.insert(parent.thisWorld.countries[c1].ascendants, parent.thisWorld.countries[c2].ascendants[i])
+								end
+								
 								parent.thisWorld.countries[c1].strength = parent.thisWorld.countries[c1].strength - parent.thisWorld.countries[c2].strength
 								if parent.thisWorld.countries[c1].strength < 1 then parent.thisWorld.countries[c1].strength = 1 end
 								parent.thisWorld.countries[c1].stability = parent.thisWorld.countries[c1].stability - 5
@@ -893,6 +897,7 @@ return
 					end
 
 					f:write("\n\n\n")
+					f:flush()
 					
 					if self.ged == true then
 						self.final[i]:destroy()
@@ -900,76 +905,103 @@ return
 						local royals = {}
 						
 						for j=1,#self.final[i].ascendants do
-							getLocalAscendants = function(self, final, royals, person)
-								table.insert(royals, {
-									name=person.Name,
-									surname=person.Surname,
-									birth=person.Birth,
-									number=person.Number,
-									gender=person.Gender,
-									birthplace=person.BirthPlace,
-									deathplace=final.name,
-									father=0,
-									mother=0,
-									title=person.Title
-								})
-								
-								local ind = #royals
-								
-								if person.Father ~= nil then
-									royals[ind].father = #royals + 1
-									self(self, final, royals, person.Father)
+							os.execute(self.clrcmd)
+							print("Listing individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+							print(tostring((j / #self.final[i].ascendants) * 100).."% done")
+							print(tostring(#royals).." people")
+						
+							getLocalAscendants = function(self, parent, final, royals, person)
+								local found = false
+								local fInd = 0
+								for k=1,#royals do
+									if royals[k].birth == person.Birth then
+										if royals[k].name == person.Name then
+											if royals[k].gender == person.Gender then
+												if royals[k].surname == person.Surname then
+													if royals[k].number == person.Number then
+														if royals[k].title == person.Title then
+															if royals[k].birthplace == person.BirthPlace then
+																found = true
+																fInd = k
+															end
+														end
+													end
+												end
+											end
+										end
+									end
 								end
 								
-								if person.Mother ~= nil then
-									royals[ind].mother = #royals + 1
-									self(self, final, royals, person.Mother)
+								if found == false then
+									table.insert(royals, {
+										name=person.Name,
+										surname=person.Surname,
+										birth=person.Birth,
+										number=person.Number,
+										gender=person.Gender,
+										birthplace=person.BirthPlace,
+										deathplace=final.name,
+										father=0,
+										mother=0,
+										title=person.Title
+									})
+									
+									fInd = #royals
+									
+									local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
+									for k=1,#parent.systems do
+										if parent.systems[k].name == "Monarchy" then
+											for l=1,#parent.systems[k].ranks do
+												if parent.systems[k].ranks[l] == royals[fInd].title then MorE = 0 end
+											end
+											for l=1,#parent.systems[k].franks do
+												if parent.systems[k].franks[l] == royals[fInd].title then MorE = 1 end
+											end
+										elseif parent.systems[k].name == "Empire" then
+											for l=1,#parent.systems[k].ranks do
+												if parent.systems[k].ranks[l] == royals[fInd].title then MorE = 2 end
+											end
+											for l=1,#parent.systems[k].franks do
+												if parent.systems[k].franks[l] == royals[fInd].title then MorE = 3 end
+											end
+										end
+									end
+									if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
+									
+									if person.Father ~= nil then
+										royals[fInd].father = self(self, parent, final, royals, person.Father)
+									end
+									
+									if person.Mother ~= nil then
+										royals[fInd].mother = self(self, parent, final, royals, person.Mother)
+									end
 								end
+								
+								return fInd
 							end
 							
-							getLocalAscendants(getLocalAscendants, self.final[i], royals, self.final[i].ascendants[j])
+							getLocalAscendants(getLocalAscendants, self, self.final[i], royals, self.final[i].ascendants[j])
 						end
 						
 						local limit = #royals
 						local j = 1
+						local adjusts = {}
 						while j <= limit do
 							local royal = royals[j]
-							local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
-							for k=1,#self.systems do
-								if self.systems[k].name == "Monarchy" then
-									for l=1,#self.systems[k].ranks do
-										if self.systems[k].ranks[l] == royal.title then MorE = 0 end
-									end
-									for l=1,#self.systems[k].franks do
-										if self.systems[k].franks[l] == royal.title then MorE = 1 end
-									end
-								elseif self.systems[k].name == "Empire" then
-									for l=1,#self.systems[k].ranks do
-										if self.systems[k].ranks[l] == royal.title then MorE = 2 end
-									end
-									for l=1,#self.systems[k].franks do
-										if self.systems[k].franks[l] == royal.title then MorE = 3 end
-									end
-								end
-							end
-							if MorE == 0 then royal.title = "King" elseif MorE == 1 then royal.title = "Queen" elseif MorE == 2 then royal.title = "Emperor" else royal.title = "Empress" end
 							for k=#royals,1,-1 do
 								if j ~= k then
 									if j <= limit then
-										if royals[k].name == royal.name then
-											if royals[k].surname == royal.surname then
-												if royals[k].gender == royal.gender then
-													if royals[k].birth == royal.birth then
+										if royals[k].birth == royal.birth then
+											if royals[k].name == royal.name then
+												if royals[k].surname == royal.surname then
+													if royals[k].gender == royal.gender then
 														if royals[k].number == royal.number then
-															for l=1,#royals do
-																if royals[l].father == k then royals[l].father = j
-																elseif royals[l].father > k then royals[l].father = royals[l].father - 1 end
-																if royals[l].mother == k then royals[l].mother = j
-																elseif royals[l].mother > k then royals[l].mother = royals[l].mother - 1 end
+															if royals[k].title == royal.title then
+																table.insert(adjusts, {k, j})
+																table.remove(royals, k)
+																limit = limit - 1
+																if k <= j then j = j - 1 end
 															end
-															table.remove(royals, k)
-															limit = limit - 1
-															if k <= j then j = j - 1 end
 														end
 													end
 												end
@@ -978,17 +1010,28 @@ return
 									end
 								end
 							end
-							if math.fmod(j, 100) == 0 then
-								os.execute(self.clrcmd)
-								print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-								print(tostring((j / limit) * 100).."% done")
-							end
+							
+							os.execute(self.clrcmd)
+							print("Removing duplicate individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+							print(tostring((j / limit) * 100).."% done")
+							
 							j = j + 1
 						end
 						
 						for j=1,#royals do
+							for k=1,#adjusts do
+								if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
+								if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
+								if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
+								if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+							end
+							
 							if royals[j].father > #royals then royals[j].father = 0 end
 							if royals[j].mother > #royals then royals[j].mother = 0 end
+							
+							os.execute(self.clrcmd)
+							print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+							print(tostring((j / #royals) * 100).."% done")
 						end
 						
 						local fams = {}
@@ -1015,11 +1058,9 @@ return
 								table.insert(fams[found].chil, j)
 							end
 							
-							if math.fmod(j, 100) == 0 then
-								os.execute(self.clrcmd)
-								print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
-								print(tostring((j / #royals) * 100).."% done")
-							end
+							os.execute(self.clrcmd)
+							print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
+							print(tostring((j / #royals) * 100).."% done")
 						end
 						
 						for j=1,#royals do
@@ -1057,6 +1098,7 @@ return
 							end
 							
 							ged:write(msgout)
+							ged:flush()
 						end
 						
 						for j=1,#fams do
@@ -1079,6 +1121,7 @@ return
 							end
 							
 							ged:write(msgout)
+							ged:flush()
 						end
 						
 						gRoyals = gRoyals + #royals
@@ -1778,8 +1821,8 @@ return
 							for i=1,#self.thisWorld.countries[c2].people do
 								if self.thisWorld.countries[c2].people[i] ~= nil then
 									if self.thisWorld.countries[c2].people[i].region == rn.name then
-										local p = table.remove(self.thisWorld.countries[c2].people, i)
-										table.insert(self.thisWorld.countries[c1].people, p)
+										self.thisWorld.countries[c2].people[i].region = ""
+										self.thisWorld.countries[c2].people[i].city = ""
 									end
 								end
 							end

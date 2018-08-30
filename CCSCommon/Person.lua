@@ -177,7 +177,7 @@ return
 				
 				if self.birthplace == "" then self.birthplace = parent.thisWorld.countries[nl].name end
 				
-				if self.surname == nil then self.surname = parent:name(true, 6) end
+				if self.surname == nil or self.surname == "" then self.surname = parent:name(true, 6) end
 				
 				local sys = parent.systems[parent.thisWorld.countries[nl].system]
 				
@@ -246,12 +246,6 @@ return
 								if self.gender ~= parent.thisWorld.countries[nl].people[m].gender then
 									self.spouse = parent.thisWorld.countries[nl].people[m]
 									self.spouse.spouse = self
-									
-									if self.level >= parent.thisWorld.countries[nl].people[m].level then
-										self.spouse.surname = self.surname
-									else
-										self.surname = self.spouse.surname
-									end
 								end
 							end
 						end
