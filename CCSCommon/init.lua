@@ -1341,7 +1341,7 @@ return
 				end
 				
 				return fInd
-			end
+			end,
 
 			getRulerString = function(self, data)
 				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
