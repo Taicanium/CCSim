@@ -759,7 +759,7 @@ return
 				{
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
-					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
+					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governess", "Vicereine", "Princess", "Empress"},
 					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
 					dynastic=true
 				}
@@ -934,6 +934,25 @@ return
 						local j = 1
 						while j <= limit do
 							local royal = royals[j]
+							local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
+							for k=1,#self.systems do
+								if self.systems[k].name == "Monarchy" then
+									for l=1,#self.systems[k].ranks do
+										if self.systems[k].ranks[l] == royal.title then MorE = 0 end
+									end
+									for l=1,#self.systems[k].franks do
+										if self.systems[k].franks[l] == royal.title then MorE = 1 end
+									end
+								elseif self.systems[k].name == "Empire" then
+									for l=1,#self.systems[k].ranks do
+										if self.systems[k].ranks[l] == royal.title then MorE = 2 end
+									end
+									for l=1,#self.systems[k].franks do
+										if self.systems[k].franks[l] == royal.title then MorE = 3 end
+									end
+								end
+							end
+							if MorE == 0 then royal.title = "King" elseif MorE == 1 then royal.title = "Queen" elseif MorE == 2 then royal.title = "Emperor" else royal.title = "Empress" end
 							for k=#royals,1,-1 do
 								if j ~= k then
 									if j <= limit then
@@ -1004,9 +1023,7 @@ return
 						end
 						
 						for j=1,#royals do
-							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "
-							if royals[j].number ~= 0 then msgout = msgout..royals[j].title.." " end
-							msgout = msgout..royals[j].name.." /"..royals[j].surname.."/"
+							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
 							if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
 							if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
 							msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
@@ -1415,6 +1432,7 @@ return
 				
 				self:finish()
 				
+				os.execute(self.clrcmd)
 				print("\nEnd Simulation!")
 			end,
 			

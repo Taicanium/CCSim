@@ -34,6 +34,7 @@ return
 				n.ebelief = 0
 				n.cbelief = 0
 				n.number = 0
+				n.recentbirth = false
 				n.mtName = "Person"
 				
 				return n
@@ -65,6 +66,7 @@ return
 				self.ebelief = nil
 				self.cbelief = nil
 				self.number = nil
+				self.recentbirth = nil
 				self.mtName = nil
 			end,
 			
@@ -85,13 +87,33 @@ return
 				nn.age = 0
 				
 				if self.royalGenerations ~= -1 then
-					nn.royalGenerations = self.royalGenerations + 1
-					nn.royalSystem = self.royalSystem
-					nn.lastRoyalAncestor = self.lastRoyalAncestor
-					if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
-					if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
-					else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
-					nn.useParents = true
+					if self.spouse.royalGenerations ~= -1 then
+						if self.spouse.royalGenerations < self.royalGenerations then
+							nn.royalGenerations = self.spouse.royalGenerations + 1
+							nn.royalSystem = self.spouse.royalSystem
+							nn.lastRoyalAncestor = self.spouse.lastRoyalAncestor
+							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes + 1 end
+							if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
+							else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
+							nn.useParents = true
+						else
+							nn.royalGenerations = self.royalGenerations + 1
+							nn.royalSystem = self.royalSystem
+							nn.lastRoyalAncestor = self.lastRoyalAncestor
+							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
+							if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
+							else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
+							nn.useParents = true
+						end
+					else
+						nn.royalGenerations = self.royalGenerations + 1
+						nn.royalSystem = self.royalSystem
+						nn.lastRoyalAncestor = self.lastRoyalAncestor
+						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
+						if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
+						else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
+						nn.useParents = true
+					end
 				end
 				
 				if self.royal == true then
@@ -236,18 +258,41 @@ return
 					end
 				end
 				
-				if self.spouse ~= nil then
-					if self.gender == "Female" then
-						if self.age < 60 then
-							if self.age > 12 then
-								local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
-								if tmp == 2 then
-									self:dobirth(parent, nl)
+				if self.recentbirth == false then
+					if self.spouse ~= nil then
+						if self.gender == "Female" then
+							if self.age < 60 then
+								if self.age > 12 then
+									if self.spouse.age < 75 then
+										if self.spouse.age > 12 then
+											local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
+											if tmp == 2 then
+												self:dobirth(parent, nl)
+												self.spouse.recentbirth = true
+											end
+										end
+									end
+								end
+							end
+						else
+							if self.age < 75 then
+								if self.age > 12 then
+									if self.spouse.age < 60 then
+										if self.spouse.age > 12 then
+											local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
+											if tmp == 2 then
+												self:dobirth(parent, nl)
+												self.spouse.recentbirth = true
+											end
+										end
+									end
 								end
 							end
 						end
 					end
 				end
+				
+				self.recentbirth = false
 				
 				local belieftotal = self.pbelief + self.ebelief + self.cbelief
 				
