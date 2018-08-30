@@ -24,6 +24,7 @@ return
 						for q=1,#parent.thisWorld.countries[c].people do
 							if parent.thisWorld.countries[c].people[q] ~= nil then
 								if parent.thisWorld.countries[c].people[q].isruler == true then
+									parent.thisWorld.countries[c].people[q].death = parent.years
 									parent.thisWorld.countries[c]:delete(q)
 								end
 							end
@@ -48,6 +49,7 @@ return
 						for q=1,#parent.thisWorld.countries[c].people do
 							if parent.thisWorld.countries[c].people[q] ~= nil then
 								if parent.thisWorld.countries[c].people[q].isruler == true then
+									parent.thisWorld.countries[c].people[q].death = parent.years
 									parent.thisWorld.countries[c]:delete(q)
 								end
 							end
@@ -89,6 +91,7 @@ return
 						if math.floor(#parent.thisWorld.countries[c].people / 10) > 1 then
 							for d=1,math.random(1, math.floor(#parent.thisWorld.countries[c].people / 10)) do
 								local z = math.random(1, #parent.thisWorld.countries[c].people)
+								parent.thisWorld.countries[c].death = parent.years
 								parent.thisWorld.countries[c]:delete(z)
 							end
 						end
@@ -180,6 +183,7 @@ return
 							for q=1,#parent.thisWorld.countries[c].people do
 								if parent.thisWorld.countries[c].people[q] ~= nil then
 									if parent.thisWorld.countries[c].people[q].isruler == true then
+										parent.thisWorld.countries[c].people[q].death = parent.years
 										parent.thisWorld.countries[c]:delete(q)
 									end
 								end
@@ -732,6 +736,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
 			},
 			popLimit = 10000,
+			resort = false,
 			showinfo = 0,
 			startyear = 1,
 			systems = {
@@ -836,13 +841,9 @@ return
 				local f = io.open("output.txt", "w+")
 				
 				local ged = nil
-				local gRoyals = 0
-				local gFams = 0
-				
-				if self.ged == true then
-					ged = io.open(tostring(os.time())..".ged", "w+")
-					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
-				end
+				self.resort = false
+				local royals = {}
+				local fams = {}
 
 				for i=1,#self.final do					
 					local newc = false
@@ -900,9 +901,8 @@ return
 					f:flush()
 					
 					if self.ged == true then
+						self.resort = false
 						self.final[i]:destroy()
-					
-						local royals = {}
 						
 						for j=1,#self.final[i].ascendants do
 							os.execute(self.clrcmd)
@@ -919,11 +919,11 @@ return
 											if royals[k].gender == person.Gender then
 												if royals[k].surname == person.Surname then
 													if royals[k].number == person.Number then
-														if royals[k].title == person.Title then
-															if royals[k].birthplace == person.BirthPlace then
-																found = true
-																fInd = k
-															end
+														if royals[k].birthplace == person.BirthPlace then
+															found = true
+															fInd = k
+															if person.Death ~= 0 then royals[k].death = person.Death end
+															if person.DeathPlace ~= "" then royals[k].deathplace = person.DeathPlace end
 														end
 													end
 												end
@@ -933,14 +933,17 @@ return
 								end
 								
 								if found == false then
+									parent.resort = true
+								
 									table.insert(royals, {
 										name=person.Name,
 										surname=person.Surname,
 										birth=person.Birth,
+										death=person.Death,
 										number=person.Number,
 										gender=person.Gender,
 										birthplace=person.BirthPlace,
-										deathplace=final.name,
+										deathplace=person.DeathPlace,
 										father=0,
 										mother=0,
 										title=person.Title
@@ -983,21 +986,23 @@ return
 							getLocalAscendants(getLocalAscendants, self, self.final[i], royals, self.final[i].ascendants[j])
 						end
 						
-						local limit = #royals
-						local j = 1
-						local adjusts = {}
-						while j <= limit do
-							local royal = royals[j]
-							for k=#royals,1,-1 do
-								if j ~= k then
-									if j <= limit then
-										if royals[k].birth == royal.birth then
-											if royals[k].name == royal.name then
-												if royals[k].surname == royal.surname then
-													if royals[k].gender == royal.gender then
-														if royals[k].number == royal.number then
-															if royals[k].title == royal.title then
+						if self.resort == true then
+							local limit = #royals
+							local j = 1
+							local adjusts = {}
+							while j <= limit do
+								local royal = royals[j]
+								for k=#royals,1,-1 do
+									if j ~= k then
+										if j <= limit then
+											if royals[k].birth == royal.birth then
+												if royals[k].name == royal.name then
+													if royals[k].surname == royal.surname then
+														if royals[k].gender == royal.gender then
+															if royals[k].number == royal.number then
 																table.insert(adjusts, {k, j})
+																if royals[k].death ~= 0 then royal.death = royals[k].death end
+																if royals[k].deathplace ~= "" then royal.deathplace = royals[k].deathplace end
 																table.remove(royals, k)
 																limit = limit - 1
 																if k <= j then j = j - 1 end
@@ -1009,123 +1014,63 @@ return
 										end
 									end
 								end
+								
+								os.execute(self.clrcmd)
+								print("Removing duplicate individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+								print(tostring((j / limit) * 100).."% done")
+								print(tostring(#royals).." people")
+								
+								j = j + 1
 							end
 							
-							os.execute(self.clrcmd)
-							print("Removing duplicate individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-							print(tostring((j / limit) * 100).."% done")
-							
-							j = j + 1
-						end
-						
-						for j=1,#royals do
-							for k=1,#adjusts do
-								if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
-								if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
-								if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
-								if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+							for j=1,#royals do
+								for k=1,#adjusts do
+									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
+									if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
+									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
+									if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+								end
+								
+								if royals[j].father > #royals then royals[j].father = 0 end
+								if royals[j].mother > #royals then royals[j].mother = 0 end
+								
+								os.execute(self.clrcmd)
+								print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+								print(tostring((j / #royals) * 100).."% done")
 							end
 							
-							if royals[j].father > #royals then royals[j].father = 0 end
-							if royals[j].mother > #royals then royals[j].mother = 0 end
-							
-							os.execute(self.clrcmd)
-							print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-							print(tostring((j / #royals) * 100).."% done")
-						end
-						
-						local fams = {}
-					
-						for j=1,#royals do
-							local found = nil
-							for k=1,#fams do
-								if royals[j].father ~= 0 then
-									if fams[k].husb == royals[j].father then found = k end
-								else if royals[j].mother ~= 0 then
-									if fams[k].wife == royals[j].mother then found = k end
-								end end
-							end
-							
-							if found == nil then
-								local doFam = false
-								if royals[j].father ~= 0 then
+							for j=1,#royals do
+								local found = nil
+								local chil = false
+								for k=1,#fams do
+									if royals[j].father ~= 0 then
+										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
+									end
+									
 									if royals[j].mother ~= 0 then
-										doFam = true
+										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
 									end
+									
+									for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
 								end
-								if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
-							else
-								table.insert(fams[found].chil, j)
-							end
-							
-							os.execute(self.clrcmd)
-							print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
-							print(tostring((j / #royals) * 100).."% done")
-						end
-						
-						for j=1,#royals do
-							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
-							if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
-							if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
-							msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
-							if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
-							msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth)
-							if royals[j].birth < 0 then msgout = msgout.." B.C." end
-							msgout = msgout.."\n2 PLAC "..royals[j].birthplace.."\n"
-							
-							for k=1,#self.final[i].rulers do
-								if self.final[i].rulers[k].name == royals[j].name then
-									if tostring(self.final[i].rulers[k].Number) == tostring(royals[j].number) then
-										if tostring(self.final[i].rulers[k].Title) == tostring(royals[j].title) then
-											if tostring(self.final[i].rulers[k].To) ~= "Current" then msgout = msgout.."1 DEAT\n2 DATE "..tostring(self.final[i].rulers[k].To).."\n2 PLAC "..royals[j].deathplace.."\n" end
+								
+								if found == nil then
+									local doFam = false
+									if royals[j].father ~= 0 then
+										if royals[j].mother ~= 0 then
+											doFam = true
 										end
 									end
-								end
-							end
-							
-							for k=1,#fams do
-								if fams[k].husb == j then
-									msgout = msgout.."1 FAMS @F"..tostring(k+gFams).."@\n"
-								elseif fams[k].wife == j then
-									msgout = msgout.."1 FAMS @F"..tostring(k+gFams).."@\n"
+									if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
 								else
-									for l=1,#fams[k].chil do
-										if fams[k].chil[l] == j then
-											msgout = msgout.."1 FAMC @F"..tostring(k+gFams).."@\n"
-										end
-									end
+									if chil == false then table.insert(fams[found].chil, j) end
 								end
+								
+								os.execute(self.clrcmd)
+								print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
+								print(tostring((j / #royals) * 100).."% done")
 							end
-							
-							ged:write(msgout)
-							ged:flush()
 						end
-						
-						for j=1,#fams do
-							local msgout = "0 @F"..tostring(j+gFams).."@ FAM\n"
-							
-							if fams[j].husb ~= 0 then
-								msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb+gRoyals).."@\n"
-							end
-							
-							if fams[j].wife ~= 0 then
-								msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife+gRoyals).."@\n"
-							end
-							
-							for k=1,#fams[j].chil do
-								if fams[j].chil[k] ~= fams[j].husb then
-									if fams[j].chil[k] ~= fams[j].wife then
-										msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k]+gRoyals).."@\n"
-									end
-								end
-							end
-							
-							ged:write(msgout)
-							ged:flush()
-						end
-						
-						gRoyals = gRoyals + #royals
-						gFams = gFams + #fams
 					end
 				end
 				
@@ -1134,6 +1079,62 @@ return
 				f = nil
 				
 				if self.ged == true then
+					ged = io.open(tostring(os.time())..".ged", "w+")
+					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
+				
+					for j=1,#royals do
+						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
+						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
+						if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
+						msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
+						if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
+						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth).."\n2 PLAC "..royals[j].birthplace
+						if royals[j].birth < 0 then msgout = msgout.." B.C." end
+						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace.."\n" end
+						
+						for k=1,#fams do
+							if fams[k].husb == j then
+								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
+							elseif fams[k].wife == j then
+								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
+							else
+								for l=1,#fams[k].chil do
+									if fams[k].chil[l] == j then
+										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
+									end
+								end
+							end
+						end
+						
+						msgout = msgout.."\n"
+						
+						ged:write(msgout)
+						ged:flush()
+					end
+					
+					for j=1,#fams do
+						local msgout = "0 @F"..tostring(j).."@ FAM\n"
+						
+						if fams[j].husb ~= 0 then
+							msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb).."@\n"
+						end
+						
+						if fams[j].wife ~= 0 then
+							msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife).."@\n"
+						end
+						
+						for k=1,#fams[j].chil do
+							if fams[j].chil[k] ~= fams[j].husb then
+								if fams[j].chil[k] ~= fams[j].wife then
+									msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k]).."@\n"
+								end
+							end
+						end
+						
+						ged:write(msgout)
+						ged:flush()
+					end
+				
 					ged:flush()
 					ged:close()
 					ged = nil

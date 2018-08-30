@@ -47,7 +47,7 @@ return
 					for i=1,#self.people do
 						if self.people[i].useParents == true then
 							if self.people[i].royalGenerations ~= 0 then
-								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.name, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
+								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
 							end
 						end
 						self.people[i]:destroy()
@@ -122,7 +122,7 @@ return
 					if self.people[y] ~= nil then
 						if self.people[y].useParents == true then
 							if self.people[y].royalGenerations ~= 0 then
-								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
@@ -136,7 +136,7 @@ return
 			end,
 			
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e, Year=parent.years})
+				table.insert(self.events, {Event=e:gsub(" of ,", ","):gsub(" of the ,", ","), Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)
@@ -345,6 +345,7 @@ return
 					while self.people[r].isruler == true do
 						r = math.random(1, #self.people)
 					end
+					self.people[r].death = parent.years
 					self:delete(r)
 				end
 				
@@ -731,11 +732,12 @@ return
 						self.averageAge = self.averageAge + self.people[i].age
 						
 						age = self.people[i].age
-						if age > 120 then
+						if age > 125 then
 							if self.people[i].isruler == true then
 								self.hasruler = -1
 							end
 							
+							self.people[i].death = parent.years
 							self:delete(i)
 						else
 							d = math.random(1, self.deathrate)
@@ -744,6 +746,7 @@ return
 									self.hasruler = -1
 								end
 								
+								self.people[i].death = parent.years
 								self:delete(i)
 							end
 						end
