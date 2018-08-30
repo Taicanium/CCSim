@@ -1014,9 +1014,10 @@ return
 						if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
 						msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
 						if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
-						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth).."\n2 PLAC "..royals[j].birthplace
+						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth)
 						if royals[j].birth < 0 then msgout = msgout.." B.C." end
-						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace.."\n" end
+						msgout = msgout.."\n2 PLAC "..royals[j].birthplace
+						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace end
 						
 						for k=1,#fams do
 							if fams[k].husb == j then
