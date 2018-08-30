@@ -1858,6 +1858,9 @@ return
 							end
 							
 							self.thisWorld.countries[c1].regions[rn.name] = rn
+							
+							self.thisWorld.countries[c1]:event(self, "Gained the "..rn.name.." region from "..self.thisWorld.countries[c2].name)
+							self.thisWorld.countries[c2]:event(self, "Loss of the "..rn.name.." region to "..self.thisWorld.countries[c1].name)
 						end
 					end
 				end
