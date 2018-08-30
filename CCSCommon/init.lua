@@ -832,7 +832,7 @@ return
 				else dat = nil end
 			end,
 			
-			finish = function(self)
+			finish = function(self, parent)
 				os.remove("in_progress.dat")
 			
 				os.execute(self.clrcmd)
@@ -899,8 +899,13 @@ return
 
 					f:write("\n\n\n")
 					f:flush()
-					
-					if self.ged == true then
+				end
+				
+				f:close()
+				f = nil
+				
+				if self.ged == true then
+					for i=1,#self.final do
 						self.resort = false
 						self.final[i]:destroy()
 						
@@ -908,82 +913,8 @@ return
 							os.execute(self.clrcmd)
 							print("Listing individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
 							print(tostring((j / #self.final[i].ascendants) * 100).."% done")
-							print(tostring(#royals).." people")
-						
-							getLocalAscendants = function(self, parent, final, royals, person)
-								local found = false
-								local fInd = 0
-								for k=1,#royals do
-									if royals[k].birth == person.Birth then
-										if royals[k].name == person.Name then
-											if royals[k].gender == person.Gender then
-												if royals[k].surname == person.Surname then
-													if royals[k].number == person.Number then
-														if royals[k].birthplace == person.BirthPlace then
-															found = true
-															fInd = k
-															if person.Death ~= 0 then royals[k].death = person.Death end
-															if person.DeathPlace ~= "" then royals[k].deathplace = person.DeathPlace end
-														end
-													end
-												end
-											end
-										end
-									end
-								end
-								
-								if found == false then
-									parent.resort = true
-								
-									table.insert(royals, {
-										name=person.Name,
-										surname=person.Surname,
-										birth=person.Birth,
-										death=person.Death,
-										number=person.Number,
-										gender=person.Gender,
-										birthplace=person.BirthPlace,
-										deathplace=person.DeathPlace,
-										father=0,
-										mother=0,
-										title=person.Title
-									})
-									
-									fInd = #royals
-									
-									local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
-									for k=1,#parent.systems do
-										if parent.systems[k].name == "Monarchy" then
-											for l=1,#parent.systems[k].ranks do
-												if parent.systems[k].ranks[l] == royals[fInd].title then MorE = 0 end
-											end
-											for l=1,#parent.systems[k].franks do
-												if parent.systems[k].franks[l] == royals[fInd].title then MorE = 1 end
-											end
-										elseif parent.systems[k].name == "Empire" then
-											for l=1,#parent.systems[k].ranks do
-												if parent.systems[k].ranks[l] == royals[fInd].title then MorE = 2 end
-											end
-											for l=1,#parent.systems[k].franks do
-												if parent.systems[k].franks[l] == royals[fInd].title then MorE = 3 end
-											end
-										end
-									end
-									if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
-									
-									if person.Father ~= nil then
-										royals[fInd].father = self(self, parent, final, royals, person.Father)
-									end
-									
-									if person.Mother ~= nil then
-										royals[fInd].mother = self(self, parent, final, royals, person.Mother)
-									end
-								end
-								
-								return fInd
-							end
 							
-							getLocalAscendants(getLocalAscendants, self, self.final[i], royals, self.final[i].ascendants[j])
+							self:getAscendants(self.final[i], royals, self.final[i].ascendants[j])
 						end
 						
 						if self.resort == true then
@@ -1000,12 +931,14 @@ return
 													if royals[k].surname == royal.surname then
 														if royals[k].gender == royal.gender then
 															if royals[k].number == royal.number then
-																table.insert(adjusts, {k, j})
-																if royals[k].death ~= 0 then royal.death = royals[k].death end
-																if royals[k].deathplace ~= "" then royal.deathplace = royals[k].deathplace end
-																table.remove(royals, k)
-																limit = limit - 1
-																if k <= j then j = j - 1 end
+																if royals[k].title == royal.title then
+																	table.insert(adjusts, {k, j})
+																	if royals[k].death ~= 0 then royal.death = royals[k].death end
+																	if royals[k].deathplace ~= "" then royal.deathplace = royals[k].deathplace end
+																	table.remove(royals, k)
+																	limit = limit - 1
+																	if k <= j then j = j - 1 end
+																end
 															end
 														end
 													end
@@ -1018,7 +951,6 @@ return
 								os.execute(self.clrcmd)
 								print("Removing duplicate individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
 								print(tostring((j / limit) * 100).."% done")
-								print(tostring(#royals).." people")
 								
 								j = j + 1
 							end
@@ -1072,13 +1004,7 @@ return
 							end
 						end
 					end
-				end
 				
-				f:flush()
-				f:close()
-				f = nil
-				
-				if self.ged == true then
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 				
@@ -1342,6 +1268,79 @@ return
 				
 				return acOut
 			end,
+			
+			getAscendants = function(self, final, royals, person)
+				local found = false
+				local fInd = 0
+				for k=1,#royals do
+					if royals[k].birth == person.Birth then
+						if royals[k].name == person.Name then
+							if royals[k].gender == person.Gender then
+								if royals[k].surname == person.Surname then
+									if royals[k].number == person.Number then
+										if royals[k].birthplace == person.BirthPlace then
+											found = true
+											fInd = k
+											if person.Death ~= 0 then royals[k].death = person.Death end
+											if person.DeathPlace ~= "" then royals[k].deathplace = person.DeathPlace end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+				
+				if found == false then
+					self.resort = true
+				
+					table.insert(royals, {
+						name=person.Name,
+						surname=person.Surname,
+						birth=person.Birth,
+						death=person.Death,
+						number=person.Number,
+						gender=person.Gender,
+						birthplace=person.BirthPlace,
+						deathplace=person.DeathPlace,
+						father=0,
+						mother=0,
+						title=person.Title
+					})
+					
+					fInd = #royals
+					
+					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
+					for k=1,#self.systems do
+						if self.systems[k].name == "Monarchy" then
+							for l=1,#self.systems[k].ranks do
+								if self.systems[k].ranks[l] == royals[fInd].title then MorE = 0 end
+							end
+							for l=1,#self.systems[k].franks do
+								if self.systems[k].franks[l] == royals[fInd].title then MorE = 1 end
+							end
+						elseif self.systems[k].name == "Empire" then
+							for l=1,#self.systems[k].ranks do
+								if self.systems[k].ranks[l] == royals[fInd].title then MorE = 2 end
+							end
+							for l=1,#self.systems[k].franks do
+								if self.systems[k].franks[l] == royals[fInd].title then MorE = 3 end
+							end
+						end
+					end
+					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
+					
+					if person.Father ~= nil then
+						royals[fInd].father = self:getAscendants(final, royals, person.Father)
+					end
+					
+					if person.Mother ~= nil then
+						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
+					end
+				end
+				
+				return fInd
+			end
 
 			getRulerString = function(self, data)
 				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
