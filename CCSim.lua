@@ -4,7 +4,7 @@ function main()
 	_running = true
 	
 	clrarr = os.execute("clear")
-	if clrarr == nil then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	if clrarr == nil or clrarr == 1 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\tCCSIM : Compact Country Simulator\n\n"))

@@ -146,8 +146,8 @@ return
 			end,
 			
 			SetFamily = function(self, father, mother)
-				self.father = {Name=father.name, Surname=father.surname, Gender="M", Number=father.number, Birth=father.birth, BirthPlace=father.birthplace, Father=father.father, Mother=father.mother}
-				self.mother = {Name=mother.name, Surname=mother.surname, Gender="F", Number=mother.number, Birth=mother.birth, BirthPlace=mother.birthplace, Father=mother.father, Mother=mother.mother}
+				self.father = {Name=father.name, Surname=father.surname, Gender="M", Number=father.number, Birth=father.birth, BirthPlace=father.birthplace, Father=father.father, Mother=father.mother, Title=father.title}
+				self.mother = {Name=mother.name, Surname=mother.surname, Gender="F", Number=mother.number, Birth=mother.birth, BirthPlace=mother.birthplace, Father=mother.father, Mother=mother.mother, Title=mother.title}
 			end,
 			
 			update = function(self, parent, nl)

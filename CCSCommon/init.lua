@@ -897,8 +897,6 @@ return
 					if self.ged == true then
 						self.final[i]:destroy()
 					
-						print("Saving royal lines for country "..tostring(i).."/"..tostring(#self.final).."...")
-					
 						local royals = {}
 						
 						for j=1,#self.final[i].ascendants do
@@ -912,7 +910,8 @@ return
 									birthplace=person.BirthPlace,
 									deathplace=final.name,
 									father=0,
-									mother=0
+									mother=0,
+									title=person.Title
 								})
 								
 								local ind = #royals
@@ -931,7 +930,6 @@ return
 							getLocalAscendants(getLocalAscendants, self.final[i], royals, self.final[i].ascendants[j])
 						end
 						
-						print("Sorting individuals...")
 						local limit = #royals
 						local j = 1
 						while j <= limit do
@@ -961,7 +959,11 @@ return
 									end
 								end
 							end
-							if math.fmod(j, math.floor(limit / 100)) == 0 then print(tostring(limit / j).."% done") end
+							if math.fmod(j, 100) == 0 then
+								os.execute(self.clrcmd)
+								print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+								print(tostring((j / limit) * 100).."% done")
+							end
 							j = j + 1
 						end
 						
@@ -969,8 +971,6 @@ return
 							if royals[j].father > #royals then royals[j].father = 0 end
 							if royals[j].mother > #royals then royals[j].mother = 0 end
 						end
-						
-						print("Sorting families...")
 						
 						local fams = {}
 					
@@ -996,12 +996,19 @@ return
 								table.insert(fams[found].chil, j)
 							end
 							
-							if math.fmod(j, math.floor(#royals / 100)) == 0 then print(tostring(#royals / j).."% done") end
+							if math.fmod(j, 100) == 0 then
+								os.execute(self.clrcmd)
+								print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
+								print(tostring((j / #royals) * 100).."% done")
+							end
 						end
 						
 						for j=1,#royals do
-							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
+							local msgout = "0 @I"..tostring(j+gRoyals).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "
+							if royals[j].number ~= 0 then msgout = msgout..royals[j].title.." " end
+							msgout = msgout..royals[j].name.." /"..royals[j].surname.."/"
 							if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
+							if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
 							msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
 							if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
 							msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth)
@@ -1011,7 +1018,9 @@ return
 							for k=1,#self.final[i].rulers do
 								if self.final[i].rulers[k].name == royals[j].name then
 									if tostring(self.final[i].rulers[k].Number) == tostring(royals[j].number) then
-										if tostring(self.final[i].rulers[k].To) ~= "Current" then msgout = msgout.."1 DEAT\n2 DATE "..tostring(self.final[i].rulers[k].To).."\n2 PLAC "..royals[j].deathplace.."\n" end
+										if tostring(self.final[i].rulers[k].Title) == tostring(royals[j].title) then
+											if tostring(self.final[i].rulers[k].To) ~= "Current" then msgout = msgout.."1 DEAT\n2 DATE "..tostring(self.final[i].rulers[k].To).."\n2 PLAC "..royals[j].deathplace.."\n" end
+										end
 									end
 								end
 							end
