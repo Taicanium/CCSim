@@ -67,7 +67,7 @@ return
 								q = #parent.thisWorld.countries + 1
 							end
 						end
-						
+
 						parent.thisWorld.countries[c]:checkRuler(parent)
 
 						parent.thisWorld.countries[c]:event(parent, "Revolution: "..oldsys.." to "..parent.systems[parent.thisWorld.countries[c].system].name)
@@ -83,7 +83,7 @@ return
 								end
 							end
 						end
-						
+
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability + 10
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 
@@ -142,34 +142,34 @@ return
 								end
 							end
 						end
-						
+
 						local varistab = parent.thisWorld.countries[c].stability - 50
 						varistab = varistab + parent.thisWorld.countries[c].strength - 50
-						
+
 						for i=1,#self.opIntervened do
 							for j=#parent.thisWorld.countries,1,-1 do
 								if parent.thisWorld.countries[j].name == self.opIntervened[i] then
 									varistab = varistab - (parent.thisWorld.countries[j].stability - 50)
 									varistab = varistab - (parent.thisWorld.countries[j].strength - 50)
-									
+
 									j = 1
 								end
 							end
 						end
-						
+
 						for i=1,#self.govIntervened do
 							for j=#parent.thisWorld.countries,1,-1 do
 								if parent.thisWorld.countries[j].name == self.govIntervened[i] then
 									varistab = varistab + (parent.thisWorld.countries[j].stability - 50)
 									varistab = varistab + (parent.thisWorld.countries[j].strength - 50)
-									
+
 									j = 1
 								end
 							end
 						end
-						
+
 						self.status = self.status + math.ceil(math.random(varistab-15,varistab+15)/2)
-						
+
 						if self.status <= -100 then return self:endEvent(parent, c) end
 						if self.status >= 100 then return self:endEvent(parent, c) end
 						return 0
@@ -198,7 +198,7 @@ return
 									q = #parent.thisWorld.countries + 1
 								end
 							end
-							
+
 							parent.thisWorld.countries[c]:checkRuler(parent)
 
 							local newRuler = nil
@@ -281,7 +281,7 @@ return
 					doStep=function(self, parent, c1)
 						local ao = parent:getAllyOngoing(c1, self.target, self.name)
 						local ac = parent.thisWorld.countries[c1].alliances
-						
+
 						for i=1,#ac do
 							local c3 = 1
 							for j=1,#parent.thisWorld.countries do if parent.thisWorld.countries[j].name == ac[i] then c3 = j end end
@@ -301,7 +301,7 @@ return
 
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
 						ac = parent.thisWorld.countries[self.target].alliances
-						
+
 						for i=1,#ac do
 							local c3 = 1
 							for j=1,#parent.thisWorld.countries do if parent.thisWorld.countries[j].name == ac[i] then c3 = j end end
@@ -318,26 +318,26 @@ return
 								end
 							end
 						end
-						
+
 						local varistab = parent.thisWorld.countries[c1].stability - 50
 						varistab = varistab + parent.thisWorld.countries[c1].strength - 50
-						
+
 						ao = parent:getAllyOngoing(c1, self.target, self.name)
-						
+
 						for i=1,#ao do
 							varistab = varistab + parent.thisWorld.countries[ao[i]].stability - 50
 							varistab = varistab + parent.thisWorld.countries[ao[i]].strength - 50
 						end
-						
+
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 						for i=1,#ao do
 							varistab = varistab - parent.thisWorld.countries[ao[i]].stability - 50
 							varistab = varistab - parent.thisWorld.countries[ao[i]].strength - 50
 						end
-						
+
 						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
-						
+
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
 						return 0
@@ -345,7 +345,7 @@ return
 					endEvent=function(self, parent, c1)
 						local c1strength = parent.thisWorld.countries[c1].strength
 						local c2strength = parent.thisWorld.countries[self.target].strength
-						
+
 						if self.status >= 100 then
 							parent.thisWorld.countries[c1]:event(parent, "Victory in war with "..parent.thisWorld.countries[self.target].name)
 							parent.thisWorld.countries[self.target]:event(parent, "Defeat in war with "..parent.thisWorld.countries[c1].name)
@@ -356,13 +356,13 @@ return
 							parent.thisWorld.countries[self.target].stability = parent.thisWorld.countries[self.target].stability - 10
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
-							
+
 							for i=1,#ao do
 								c1strength = c1strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Victory with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.target].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength + 10
 							end
-							
+
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
@@ -370,10 +370,10 @@ return
 								parent.thisWorld.countries[ao[i]]:event(parent, "Defeat with "..parent.thisWorld.countries[self.target].name.." in war with "..parent.thisWorld.countries[c1].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength - 10
 							end
-							
+
 							parent:removeAllyOngoing(c1, self.target, self.name)
 							parent:removeAllyOngoing(self.target, c1, self.name)
-							
+
 							if c1strength > c2strength + 10 then
 								local rname = ""
 								while rname == nil do
@@ -392,13 +392,13 @@ return
 							parent.thisWorld.countries[self.target].strength = parent.thisWorld.countries[self.target].strength + 25
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
-							
+
 							for i=1,#ao do
 								c1strength = c1strength + parent.thisWorld.countries[ao[i]].strength
 								parent.thisWorld.countries[ao[i]]:event(parent, "Defeat with "..parent.thisWorld.countries[c1].name.." in war with "..parent.thisWorld.countries[self.target].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength - 10
 							end
-							
+
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
@@ -406,10 +406,10 @@ return
 								parent.thisWorld.countries[ao[i]]:event(parent, "Victory with "..parent.thisWorld.countries[self.target].name.." in war with "..parent.thisWorld.countries[c1].name)
 								parent.thisWorld.countries[ao[i]].strength = parent.thisWorld.countries[ao[i]].strength + 10
 							end
-							
+
 							parent:removeAllyOngoing(c1, self.target, self.name)
 							parent:removeAllyOngoing(self.target, c1, self.name)
-							
+
 							if c2strength > c1strength + 10 then
 								local rname = ""
 								while rname == nil do
@@ -421,7 +421,7 @@ return
 								parent:RegionTransfer(self.target, c1, rname, true)
 							end
 						end
-						
+
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
@@ -440,7 +440,7 @@ return
 						for i=1,#parent.thisWorld.countries[c2].ongoing - 1 do
 							if parent.thisWorld.countries[c2].ongoing[i].name == self.name and parent.thisWorld.countries[c2].ongoing[i].target == c1 then return -1 end
 						end
-						
+
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 								self.target = c2
@@ -471,7 +471,7 @@ return
 
 						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
-						
+
 						return 0
 					end,
 					endEvent=function(self, parent, c1)
@@ -522,43 +522,43 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
-					
+
 						local chance = math.random(1, 100)
-						
+
 						if chance > 50 then
 							local values = {}
-							
+
 							for i, j in pairs(parent.thisWorld.countries[c].regions) do
 								table.insert(values, j.name)
 							end
-							
+
 							if #values > 1 then
 								local v = values[math.random(1, #values)]
-							
+
 								local newl = Country:new()
 								local nc = parent.thisWorld.countries[c].regions[v]
-								
+
 								newl.name = nc.name
-								
+
 								parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 								newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
-								
+
 								newl:set(parent)
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
 									local y = nc.nodes[i][2]
 									local z = nc.nodes[i][3]
-									
+
 									parent.thisWorld.planet[x][y][z].country = newl.name
 									parent.thisWorld.planet[x][y][z].region = ""
 									parent.thisWorld.planet[x][y][z].city = ""
 								end
-								
+
 								if parent.doR == true then newl:setTerritory(parent) end
-								
+
 								newl.rulers = parent:deepcopy(parent.thisWorld.countries[c].rulers)
 								newl.rulernames = parent:deepcopy(parent.thisWorld.countries[c].rulernames)
-								
+
 								parent.thisWorld:add(newl)
 
 								parent.thisWorld.countries[c].strength = parent.thisWorld.countries[c].strength - math.random(5, 10)
@@ -566,7 +566,7 @@ return
 
 								parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
 								if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
-								
+
 								parent:deepnil(parent.thisWorld.countries[c].regions[v])
 								parent.thisWorld.countries[c].regions[v] = nil
 							end
@@ -594,7 +594,7 @@ return
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 11 then
 								parent.thisWorld.countries[c1]:event(parent, "Invaded "..parent.thisWorld.countries[c2].name)
 								parent.thisWorld.countries[c2]:event(parent, "Invaded by "..parent.thisWorld.countries[c1].name)
-								
+
 								parent.thisWorld.countries[c1].strength = parent.thisWorld.countries[c1].strength - 10
 								if parent.thisWorld.countries[c1].strength < 1 then parent.thisWorld.countries[c1].strength = 1 end
 								parent.thisWorld.countries[c1].stability = parent.thisWorld.countries[c1].stability - 5
@@ -605,7 +605,7 @@ return
 								if parent.thisWorld.countries[c2].stability < 1 then parent.thisWorld.countries[c2].stability = 1 end
 								parent.thisWorld.countries[c1]:setPop(parent, math.floor(parent.thisWorld.countries[c1].population / 1.25))
 								parent.thisWorld.countries[c2]:setPop(parent, math.floor(parent.thisWorld.countries[c2].population / 1.75))
-								
+
 								local rchance = math.random(1, 30)
 								if rchance < 5 then
 									local rname = ""
@@ -647,15 +647,15 @@ return
 									local x = parent.thisWorld.countries[c2].nodes[i][1]
 									local y = parent.thisWorld.countries[c2].nodes[i][2]
 									local z = parent.thisWorld.countries[c2].nodes[i][3]
-									
+
 									parent.thisWorld.planet[x][y][z].country = parent.thisWorld.countries[c1].name
 									table.insert(parent.thisWorld.countries[c1].nodes, {x, y, z})
 								end
-								
+
 								for i=1,#parent.thisWorld.countries[c2].ascendants do
 									table.insert(parent.thisWorld.countries[c1].ascendants, parent.thisWorld.countries[c2].ascendants[i])
 								end
-								
+
 								parent.thisWorld.countries[c1].strength = parent.thisWorld.countries[c1].strength - parent.thisWorld.countries[c2].strength
 								if parent.thisWorld.countries[c1].strength < 1 then parent.thisWorld.countries[c1].strength = 1 end
 								parent.thisWorld.countries[c1].stability = parent.thisWorld.countries[c1].stability - 5
@@ -664,11 +664,11 @@ return
 								if #parent.thisWorld.countries[c2].rulers > 0 then
 									parent.thisWorld.countries[c2].rulers[#parent.thisWorld.countries[c2].rulers].To = parent.years
 								end
-								
+
 								for i, j in pairs(parent.thisWorld.countries[c2].regions) do
 									parent:RegionTransfer(c1, c2, j.name, false)
 								end
-								
+
 								parent.thisWorld:delete(parent, c2)
 							end
 						end
@@ -687,7 +687,7 @@ return
 						if oldcap == nil then oldcap = "" end
 						parent.thisWorld.countries[c].capitalregion = nil
 						parent.thisWorld.countries[c].capitalcity = nil
-						
+
 						while parent.thisWorld.countries[c].capitalcity == nil do
 							for i, j in pairs(parent.thisWorld.countries[c].regions) do
 								for k, l in pairs(j.cities) do
@@ -697,11 +697,11 @@ return
 											if chance == 35 then
 												parent.thisWorld.countries[c].capitalregion = j.name
 												parent.thisWorld.countries[c].capitalcity = l.name
-												
+
 												local msg = "Capital moved"
 												if oldcap ~= "" then msg = msg.." from "..oldcap end
 												msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
-												
+
 												parent.thisWorld.countries[c]:event(parent, msg)
 											end
 										end
@@ -709,7 +709,7 @@ return
 								end
 							end
 						end
-						
+
 						return -1
 					end
 				}
@@ -717,12 +717,12 @@ return
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
 			doR = false,
-			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "ric"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
 			ged = false,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The"},
 			maxyears = 1,
 			metatables = {{World, "World"}, {Country, "Country"}, {Region, "Region"}, {City, "City"}, {Person, "Person"}, {Party, "Party"}},
-			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "dos"},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos"},
 			numCountries = 0,
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New"},
@@ -740,31 +740,31 @@ return
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
 					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Dominion"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "Monarchy"},
 					dynastic=true
 				},
 				{
 					name="Republic",
 					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
-					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation"},
+					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation", "Federal Republic"},
 					dynastic=false
 				},
 				{
 					name="Democracy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"},
+					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Speaker", "Prime Minister"},
 					formalities={"Union", "Democratic Republic", "Free State", "Realm"},
 					dynastic=false
 				},
 				{
 					name="Oligarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
-					formalities={"People's Republic", "Premiership", "Patriciate"},
+					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy"},
 					dynastic=false
 				},
 				{
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
-					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governess", "Vicereine", "Princess", "Empress"},
+					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
 					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
 					dynastic=true
 				}
@@ -774,32 +774,32 @@ return
 			yearstorun = 0,
 			final = {},
 			thisWorld = nil,
-			
+
 			checkAutoload = function(self)
 				local f = io.open("in_progress.dat", "r")
 				if f ~= nil then
 					f:close()
 					f = nil
-					
+
 					self.thisWorld = World:new()
-				
+
 					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
 					local res = io.read()
-					
+
 					if res == "y" then
 						self.thisWorld:autoload(self)
 						return true
 					end
 				end
-				
+
 				return false
 			end,
-			
+
 			deepcopy = function(self, obj)
 				local res = nil
 				local t = type(obj)
 				local exceptions = {"spouse", "__index"}
-				
+
 				if t == "table" then
 					res = {}
 					for i, j in pairs(obj) do
@@ -814,10 +814,10 @@ return
 				else
 					res = obj
 				end
-				
+
 				return res
 			end,
-			
+
 			deepnil = function(self, dat)
 				final_type = type(dat)
 				if final_type == "table" then
@@ -827,15 +827,13 @@ return
 					dat = nil
 				else dat = nil end
 			end,
-			
+
 			finish = function(self, parent)
-				os.remove("in_progress.dat")
-			
 				os.execute(self.clrcmd)
 				print("\nPrinting result...")
 
 				local f = io.open("output.txt", "w+")
-				
+
 				local ged = nil
 				self.resort = false
 				local royals = {}
@@ -896,32 +894,33 @@ return
 					f:write("\n\n\n")
 					f:flush()
 				end
-				
+
 				f:close()
 				f = nil
-				
+
 				if self.ged == true then
 					for i=1,#self.final do
+						os.execute(self.clrcmd)
 						self.resort = false
 						self.final[i]:destroy()
-						
+
 						local formerTotal = #royals
-						
+
 						for j=1,#self.final[i].ascendants do
-							os.execute(self.clrcmd)
-							print("Listing individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-							print(tostring((j / #self.final[i].ascendants) * 100).."% done")
-							
+							io.write("\rListing people for country "..tostring(i).."/"..tostring(#self.final).."..."..tostring((j / #self.final[i].ascendants) * 100).."% done")
+
 							self:getAscendants(self.final[i], royals, self.final[i].ascendants[j])
 						end
-						
+
 						if self.resort == true then
+							print("")
+						
 							local limit = #royals
 							local j = 1
 							local adjusts = {}
 							while j <= limit do
 								local royal = royals[j]
-								for k=#royals,1,-1 do
+								for k=#royals,formerTotal+1,-1 do
 									if j ~= k then
 										if j <= limit then
 											if royals[k].birth == royal.birth then
@@ -945,15 +944,15 @@ return
 										end
 									end
 								end
-								
-								os.execute(self.clrcmd)
-								print("Removing duplicate individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-								print(tostring((j / limit) * 100).."% done")
-								
+
+								io.write("\rRemoving duplicate people for country "..tostring(i).."/"..tostring(#self.final).."..."..tostring((j / limit) * 100).."% done")
+
 								j = j + 1
 							end
-							
+
 							if formerTotal ~= #royals then
+								print("")
+								
 								for j=1,#royals do
 									for k=1,#adjusts do
 										if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
@@ -961,30 +960,30 @@ return
 										if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
 										if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
 									end
-									
+
 									if royals[j].father > #royals then royals[j].father = 0 end
 									if royals[j].mother > #royals then royals[j].mother = 0 end
-									
-									os.execute(self.clrcmd)
-									print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-									print(tostring((j / #royals) * 100).."% done")
+
+									io.write("\rSorting people for country "..tostring(i).."/"..tostring(#self.final).."..."..tostring((j / #royals) * 100).."% done")
 								end
-								
-								for j=1,#royals do
+
+								print("")
+
+								for j=formerTotal+1,#royals do
 									local found = nil
 									local chil = false
 									for k=1,#fams do
 										if royals[j].father ~= 0 then
 											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
 										end
-										
+
 										if royals[j].mother ~= 0 then
 											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
 										end
-										
+
 										for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
 									end
-									
+
 									if found == nil then
 										local doFam = false
 										if royals[j].father ~= 0 then
@@ -996,18 +995,18 @@ return
 									else
 										if chil == false then table.insert(fams[found].chil, j) end
 									end
-									
-									os.execute(self.clrcmd)
-									print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
-									print(tostring((j / #royals) * 100).."% done")
+
+									io.write("\rSorting families for country "..tostring(i).."/"..tostring(#self.final).."..."..tostring((j / #royals) * 100).."% done")
 								end
 							end
 						end
 					end
-				
+
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
-				
+
+					os.execute(self.clrcmd)
+
 					for j=1,#royals do
 						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
 						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
@@ -1018,41 +1017,48 @@ return
 						if royals[j].birth < 0 then msgout = msgout.." B.C." end
 						msgout = msgout.."\n2 PLAC "..royals[j].birthplace
 						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace end
-						
+
+						local writePerson = false
 						for k=1,#fams do
 							if fams[k].husb == j then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
+								writePerson = true
 							elseif fams[k].wife == j then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
+								writePerson = true
 							else
 								for l=1,#fams[k].chil do
 									if fams[k].chil[l] == j then
 										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
+										writePerson = true
 									end
 								end
 							end
 						end
-						
+
 						msgout = msgout.."\n"
-						
-						ged:write(msgout)
-						ged:flush()
-						
-						print("Writing individuals...")
-						print(tostring((j / #royals) * 100).."% done"
+
+						if writePerson == true then
+							ged:write(msgout)
+							ged:flush()
+						end
+
+						io.write("\rWriting individuals..."..tostring((j / #royals) * 100).."% done")
 					end
-					
+
+					print("")
+
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
-						
+
 						if fams[j].husb ~= 0 then
 							msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb).."@\n"
 						end
-						
+
 						if fams[j].wife ~= 0 then
 							msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife).."@\n"
 						end
-						
+
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k] ~= fams[j].husb then
 								if fams[j].chil[k] ~= fams[j].wife then
@@ -1060,20 +1066,19 @@ return
 								end
 							end
 						end
-						
+
 						ged:write(msgout)
 						ged:flush()
-						
-						print("Writing families...")
-						print(tostring((j / #fams) * 100).."% done"
+
+						io.write("\rWriting families..."..tostring((j / #fams) * 100).."% done")
 					end
-				
+
 					ged:flush()
 					ged:close()
 					ged = nil
 				end
 			end,
-			
+
 			fncopy = function(self, fn)
 				dumped = string.dump(fn)
 				cloned = loadstring(dumped)
@@ -1096,10 +1101,10 @@ return
 				self.thisWorld = World:new()
 
 				print("Reading data...")
-				
+
 				local fc = 0
 				local fr = 0
-				
+
 				while done == false do
 					local l = f:read()
 					if l == nil then done = true
@@ -1203,7 +1208,7 @@ return
 				end
 
 				print("Constructing initial populations...")
-				
+
 				for i=1,#self.thisWorld.countries do
 					if math.fmod(i, 5) == 0 then print(tostring(math.ceil(i/#self.thisWorld.countries*100)).."% done") end 
 					if self.thisWorld.countries[i] ~= nil then
@@ -1215,20 +1220,20 @@ return
 							self.thisWorld.countries[i].age = 0
 							self.thisWorld.countries[i].system = math.random(1, #self.systems)
 						end
-						
+
 						self.thisWorld.countries[i]:makename(self)
 						self.thisWorld.countries[i]:setPop(self, 500)
-						
+
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
 				end
-				
+
 				self.thisWorld.fromFile = true
 			end,
-			
+
 			generationString = function(self, n, gen)
 				local msgout = ""
-				
+
 				if n > 1 then
 					if n > 2 then
 						if n > 3 then
@@ -1250,13 +1255,13 @@ return
 				else
 					if gen == "Male" then msgout = "son" else msgout = "daughter" end
 				end
-				
+
 				return msgout
 			end,
-			
+
 			getAllyOngoing = function(self, country, target, event)
 				local acOut = {}
-			
+
 				local ac = #self.thisWorld.countries[country].alliances
 				for i=1,ac do
 					local c3 = nil
@@ -1272,10 +1277,10 @@ return
 						end
 					end
 				end
-				
+
 				return acOut
 			end,
-			
+
 			getAscendants = function(self, final, royals, person)
 				local found = false
 				local fInd = 0
@@ -1297,10 +1302,10 @@ return
 						end
 					end
 				end
-				
+
 				if found == false then
 					self.resort = true
-				
+
 					table.insert(royals, {
 						name=person.Name,
 						surname=person.Surname,
@@ -1314,9 +1319,9 @@ return
 						mother=0,
 						title=person.Title
 					})
-					
+
 					fInd = #royals
-					
+
 					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
 						if self.systems[k].name == "Monarchy" then
@@ -1336,33 +1341,33 @@ return
 						end
 					end
 					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
-					
+
 					if person.Father ~= nil then
 						royals[fInd].father = self:getAscendants(final, royals, person.Father)
 					end
-					
+
 					if person.Mother ~= nil then
 						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
 					end
 				end
-				
+
 				return fInd
 			end,
 
 			getRulerString = function(self, data)
 				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
 			end,
-			
+
 			loop = function(self)
 				local _running = true
 				local oldmsg = ""
 				local msg = ""
-				
+
 				print("\nBegin Simulation!")
-				
+
 				while _running do
 					self.thisWorld:update(self)
-					
+
 					os.execute(self.clrcmd)
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
@@ -1370,14 +1375,14 @@ return
 						for j=#self.final,1,-1 do
 							if self.final[j].name == self.thisWorld.countries[i].name then table.remove(self.final, j) end
 						end
-						
+
 						table.insert(self.final, self.thisWorld.countries[i])
 					end
-					
+
 					if self.showinfo == 1 then
 						local wars = {}
 						local alliances = {}
-						
+
 						for i=1,#self.thisWorld.countries do
 							if self.thisWorld.countries[i].dfif[self.systems[self.thisWorld.countries[i].system].name] == true then msg = msg..self.thisWorld.countries[i].demonym.." "..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name]
 							else msg = msg..self.thisWorld.countries[i].formalities[self.systems[self.thisWorld.countries[i].system].name].." of "..self.thisWorld.countries[i].name end
@@ -1405,7 +1410,7 @@ return
 									else
 										msg = msg.."None"
 									end
-									
+
 									for m=1,#self.thisWorld.countries[i].parties do
 										if self.thisWorld.countries[i].parties[m].leading == true then
 											msg = msg.."\nRuling party: "..self.thisWorld.countries[i].parties[m].name.." ("..self.thisWorld.countries[i].parties[m].pfreedom.." P, "..self.thisWorld.countries[i].parties[m].efreedom.." E, "..self.thisWorld.countries[i].parties[m].cfreedom.." C), "..self.thisWorld.countries[i].parties[m].popularity.."% popularity"
@@ -1419,7 +1424,7 @@ return
 
 						msg = msg.."\nWars:"
 						local count = 0
-						
+
 						for i=1,#self.thisWorld.countries do
 							for j=1,#self.thisWorld.countries[i].ongoing do
 								if self.thisWorld.countries[i].ongoing[j].name == "War" then
@@ -1436,7 +1441,7 @@ return
 										end
 									end
 								end
-								
+
 								if self.thisWorld.countries[i].ongoing[j].name == "Civil War" then
 									table.insert(wars, self.thisWorld.countries[i].name.." (civil)")
 									if count > 0 then msg = msg.."," end
@@ -1464,7 +1469,7 @@ return
 							end
 						end
 					end
-					
+
 					print(msg)
 					oldmsg = msg
 
@@ -1472,47 +1477,47 @@ return
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
 					end
-					
+
 					if #self.thisWorld.countries == 0 then
 						_running = false
 					end
-					
+
 					self.years = self.years + 1
 				end
-				
+
 				self:finish()
-				
+
 				os.execute(self.clrcmd)
 				print("\nEnd Simulation!")
 			end,
-			
+
 			name = function(self, personal, l)
 				local nom = ""
 				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
-				
+
 				local taken = {}
-				
+
 				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
 				table.insert(taken, string.lower(nom))
-				
+
 				while string.len(nom) < length do
 					local ieic = false -- initial ends in consonant
 					local mbwc = false -- middle begins with consonant
 					for i=1,#self.consonants do
 						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
 					end
-					
+
 					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
 					local istaken = false
-					
+
 					for i=1,#taken do
 						if taken[i] == mid then istaken = true end
 					end
-					
+
 					for i=1,#self.consonants do
 						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
 					end
-					
+
 					if istaken == false then
 						if ieic == true then
 							if mbwc == false then
@@ -1527,27 +1532,27 @@ return
 						end
 					end
 				end
-				
+
 				if personal == false then
 					local ending = self.endgroups[math.random(1, #self.endgroups)]	
 					nom = nom..ending
 				end
-				
+
 				nom = self:namecheck(nom)
-				
+
 				if string.len(nom) == 1 then
 					nom = nom..string.lower(self.vowels[math.random(1, #self.vowels)])
 				end
-				
+
 				return nom
 			end,
-			
+
 			namecheck = function(self, nom)
 				local nomin = nom
 				local check = true
 				while check == true do
 					check = false
-					
+
 					for i=1,string.len(nomin)-1 do
 						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
 							check = true
@@ -1564,7 +1569,7 @@ return
 							nomin = newnom
 						end
 					end
-					
+
 					for i=1,string.len(nomin)-3 do
 						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
 						check = true
@@ -1580,7 +1585,7 @@ return
 
 						nomin = newnom
 					end
-					
+
 					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
 						check = true
 
@@ -1589,18 +1594,18 @@ return
 						for j=1,i+1 do
 							newnom = newnom..nomin:sub(j, j)
 						end
-						
+
 						newnom = newnom..self.consonants[math.random(1, #self.consonants)]
-						
+
 						for j=i+3,string.len(nomin) do
 							newnom = newnom..nomin:sub(j, j)
 						end
 
 						nomin = newnom
-						
+
 						end
 					end
-					
+
 					for i=1,string.len(nomin)-5 do
 						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
 							check = true
@@ -1610,7 +1615,7 @@ return
 							for j=1,i+2 do
 								newnom = newnom..nomin:sub(j, j)
 							end
-							
+
 							for j=i+6,string.len(nomin) do
 								newnom = newnom..nomin:sub(j, j)
 							end
@@ -1618,10 +1623,10 @@ return
 							nomin = newnom
 						end
 					end
-					
+
 					for i=1,string.len(nomin)-2 do
 						local hasvowel = false
-						
+
 						for j=i,i+2 do
 							for k=1,#self.vowels do
 								if string.lower(nomin:sub(j, j)) == self.vowels[k] then
@@ -1646,9 +1651,9 @@ return
 							for j=1,i+1 do
 								newnom = newnom..nomin:sub(j, j)
 							end
-							
+
 							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
-							
+
 							for j=i+3,string.len(nomin) do
 								newnom = newnom..nomin:sub(j, j)
 							end
@@ -1768,15 +1773,15 @@ return
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, string.len(nomlower))
 				end
-				
+
 				return nomin
 			end,
-			
+
 			ordinal = function(self, n)
 				local tmp = tonumber(n)
 				if tmp == nil then return n end
 				local fin = ""
-				
+
 				local ts = tostring(n)
 				if ts:sub(#ts, #ts) == "1" then
 					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
@@ -1788,26 +1793,26 @@ return
 					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
 					else fin = ts.."rd" end
 				else fin = ts.."th" end
-				
+
 				return fin
 			end,
-			
+
 			RegionTransfer = function(self, c1, c2, r, cont)
 				if self.thisWorld.countries[c1] ~= nil and self.thisWorld.countries[c2] ~= nil then
 					local rCount = 0
 					for i, j in pairs(self.thisWorld.countries[c2].regions) do
 						rCount = rCount + 1
 					end
-					
+
 					local lim = 1
 					if cont == false then lim = 0 end
-					
+
 					if rCount > lim then
 						local rm = self.thisWorld.countries[c2].regions[r]
-						
+
 						if rm ~= nil then
 							local rn = Region:new()
-							
+
 							rn.name = rm.name
 							rn.population = rm.population
 							for i=1,#rm.nodes do
@@ -1815,16 +1820,16 @@ return
 								self:deepnil(rm.nodes[i])
 								rm.nodes[i] = nil
 							end
-							
+
 							rm.nodes = nil
-							
+
 							for i, j in pairs(rm.cities) do
 								table.insert(rn.cities, self:deepcopy(j))
 							end
-							
+
 							self:deepnil(rm.cities)
 							rm.cities = nil
-							
+
 							for i=1,#self.thisWorld.countries[c2].people do
 								if self.thisWorld.countries[c2].people[i] ~= nil then
 									if self.thisWorld.countries[c2].people[i].region == rn.name then
@@ -1833,45 +1838,45 @@ return
 									end
 								end
 							end
-							
+
 							self:deepnil(self.thisWorld.countries[c2].regions[rn.name])
 							self.thisWorld.countries[c2].regions[rn.name] = nil
-							
+
 							if cont == true then
 								if self.thisWorld.countries[c2].capitalregion == rn.name then
 									local msg = "Capital moved from "..self.thisWorld.countries[c2].capitalcity.." to "
-								
+
 									self.thisWorld.countries[c2].capitalregion = nil
 									self.thisWorld.countries[c2].capitalcity = nil
-								
+
 									while self.thisWorld.countries[c2].capitalregion == nil do
 										for i, j in pairs(self.thisWorld.countries[c2].regions) do
 											local chance = math.random(1, 10)
 											if chance == 5 then self.thisWorld.countries[c2].capitalregion = j.name end
 										end
 									end
-									
+
 									while self.thisWorld.countries[c2].capitalcity == nil do
 										for i, j in pairs(self.thisWorld.countries[c2].regions[self.thisWorld.countries[c2].capitalregion].cities) do
 											local chance = math.random(1, 25)
 											if chance == 12 then self.thisWorld.countries[c2].capitalcity = j.name end
 										end
 									end
-									
+
 									msg = msg..self.thisWorld.countries[c2].capitalcity
 									self.thisWorld.countries[c2]:event(self, msg)
 								end
 							end
-							
+
 							self.thisWorld.countries[c1].regions[rn.name] = rn
-							
+
 							self.thisWorld.countries[c1]:event(self, "Gained the "..rn.name.." region from "..self.thisWorld.countries[c2].name)
 							self.thisWorld.countries[c2]:event(self, "Loss of the "..rn.name.." region to "..self.thisWorld.countries[c1].name)
 						end
 					end
 				end
 			end,
-			
+
 			removeAllyOngoing = function(self, country, target, event)
 				local ac = #self.thisWorld.countries[country].alliances
 				for i=1,ac do
@@ -1889,7 +1894,7 @@ return
 					end
 				end
 			end,
-			
+
 			roman = function(self, n)
 				local tmp = tonumber(n)
 				if tmp == nil then return n end
@@ -1962,7 +1967,7 @@ return
 
 				return fin
 			end,
-			
+
 			rseed = function(self)
 				self:sleep(0.001)
 				tc = socket.gettime()
@@ -1979,7 +1984,7 @@ return
 				end
 				math.random(1, 100)
 			end,
-			
+
 			sleep = function(self, t)
 				n = socket.gettime()
 				while socket.gettime() < n + t do end
