@@ -35,7 +35,6 @@ return
 						parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - 5
 						if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
 
-						
 						return -1
 					end
 				},
@@ -98,7 +97,6 @@ return
 
 						parent:rseed()
 
-						
 						return -1
 					end
 				},
@@ -449,7 +447,6 @@ return
 								return 0
 							end
 						end
-						
 
 						return -1
 					end
@@ -622,7 +619,6 @@ return
 								end
 							end
 						end
-						
 
 						return -1
 					end
@@ -909,6 +905,8 @@ return
 						self.resort = false
 						self.final[i]:destroy()
 						
+						local formerTotal = #royals
+						
 						for j=1,#self.final[i].ascendants do
 							os.execute(self.clrcmd)
 							print("Listing individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
@@ -955,52 +953,54 @@ return
 								j = j + 1
 							end
 							
-							for j=1,#royals do
-								for k=1,#adjusts do
-									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
-									if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
-									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
-									if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
-								end
-								
-								if royals[j].father > #royals then royals[j].father = 0 end
-								if royals[j].mother > #royals then royals[j].mother = 0 end
-								
-								os.execute(self.clrcmd)
-								print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
-								print(tostring((j / #royals) * 100).."% done")
-							end
-							
-							for j=1,#royals do
-								local found = nil
-								local chil = false
-								for k=1,#fams do
-									if royals[j].father ~= 0 then
-										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
+							if formerTotal ~= #royals then
+								for j=1,#royals do
+									for k=1,#adjusts do
+										if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
+										if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
+										if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
+										if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
 									end
 									
-									if royals[j].mother ~= 0 then
-										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
-									end
+									if royals[j].father > #royals then royals[j].father = 0 end
+									if royals[j].mother > #royals then royals[j].mother = 0 end
 									
-									for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
+									os.execute(self.clrcmd)
+									print("Sorting individuals for country "..tostring(i).."/"..tostring(#self.final).."...")
+									print(tostring((j / #royals) * 100).."% done")
 								end
 								
-								if found == nil then
-									local doFam = false
-									if royals[j].father ~= 0 then
-										if royals[j].mother ~= 0 then
-											doFam = true
+								for j=1,#royals do
+									local found = nil
+									local chil = false
+									for k=1,#fams do
+										if royals[j].father ~= 0 then
+											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
 										end
+										
+										if royals[j].mother ~= 0 then
+											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
+										end
+										
+										for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
 									end
-									if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
-								else
-									if chil == false then table.insert(fams[found].chil, j) end
+									
+									if found == nil then
+										local doFam = false
+										if royals[j].father ~= 0 then
+											if royals[j].mother ~= 0 then
+												doFam = true
+											end
+										end
+										if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
+									else
+										if chil == false then table.insert(fams[found].chil, j) end
+									end
+									
+									os.execute(self.clrcmd)
+									print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
+									print(tostring((j / #royals) * 100).."% done")
 								end
-								
-								os.execute(self.clrcmd)
-								print("Sorting families for country "..tostring(i).."/"..tostring(#self.final).."...")
-								print(tostring((j / #royals) * 100).."% done")
 							end
 						end
 					end
@@ -1037,6 +1037,9 @@ return
 						
 						ged:write(msgout)
 						ged:flush()
+						
+						print("Writing individuals...")
+						print(tostring((j / #royals) * 100).."% done"
 					end
 					
 					for j=1,#fams do
@@ -1060,6 +1063,9 @@ return
 						
 						ged:write(msgout)
 						ged:flush()
+						
+						print("Writing families...")
+						print(tostring((j / #fams) * 100).."% done"
 					end
 				
 					ged:flush()
@@ -1954,7 +1960,6 @@ return
 					tmp = tmp - 1
 				end
 
-				
 				return fin
 			end,
 			
