@@ -147,6 +147,7 @@ return
 				end
 
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
+				
 				parent.thisWorld.countries[nl]:add(nn)
 			end,
 
@@ -183,16 +184,17 @@ return
 
 				local sys = parent.systems[parent.thisWorld.countries[nl].system]
 
+				local rankLim = 2
+				if sys.dynastic == false then rankLim = 1 end
+				
 				if self.gender == "Male" or sys.dynastic == false then
-					local rankLim = 2
-					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
 							local x = math.random(-100, 100)
-							if x < -75 then
+							if x < -85 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
-							elseif x > 75 then
+							elseif x > 85 then
 								self.prevTitle = self.title
 								self.level = self.level + 1
 							end
@@ -209,15 +211,13 @@ return
 						self.title = "Citizen"
 					end
 				else
-					local rankLim = 2
-					if sys.dynastic == false then rankLim = 1 end
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
 							local x = math.random(-100, 100)
-							if x < -75 then
+							if x < -85 then
 								self.prevTitle = self.title
 								self.level = self.level - 1
-							elseif x > 75 then
+							elseif x > 85 then
 								self.prevTitle = self.title
 								self.level = self.level + 1
 							end

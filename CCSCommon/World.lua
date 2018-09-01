@@ -83,7 +83,7 @@ return
 			end,
 
 			autosave = function(self, parent)
-				io.write("\nAutosaving...")
+				io.write(string.format("\nAutosaving..."))
 			
 				local f = io.open("in_progress.dat", "w+b")
 

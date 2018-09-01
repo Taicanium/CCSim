@@ -21,7 +21,7 @@ return
 				nl.ongoing = {}
 				nl.allyOngoing = {}
 				nl.alliances = {}
-				nl.system = 1
+				nl.system = 0
 				nl.snt = {} -- System, Number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
 				nl.formalities = {}
 				nl.demonym = ""
@@ -46,8 +46,10 @@ return
 				if self.people ~= nil then
 					for i=1,#self.people do
 						if self.people[i].useParents == true then
-							if self.people[i].royalGenerations ~= 0 then
-								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
+							if self.people[i].royalGenerations ~= -1 then
+								if self.people[i].royalGenerations < 4 then
+									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
+								end
 							end
 						end
 						self.people[i]:destroy()
@@ -121,7 +123,9 @@ return
 				if b > 0 then
 					if self.people[y] ~= nil then
 						if self.people[y].royalGenerations ~= -1 then
-							table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+							if self.people[y].royalGenerations < 5 then
+								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
@@ -260,6 +264,7 @@ return
 
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name.."n"
 				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1)
+				elseif self.name:sub(#self.name, #self.name) == "e" then self.demonym = self.name:sub(1, #self.name-1).."ish"
 				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "s" then
 					if self.name:sub(#self.name-2, #self.name) == "ius" then self.demonym = self.name:sub(1, #self.name-2).."an"
@@ -276,14 +281,15 @@ return
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
-					else self.demonym = split.."ian" end
+					else self.demonym = split.."ish" end
 				else
 					if self.name:sub(#self.name-1, #self.name) == "ia" then self.demonym = self.name.."n"
-					elseif self.name:sub(#self.name-1, #self.name) == "an" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-1, #self.name) == "an" then self.demonym = self.name.."ese"
 					elseif self.name:sub(#self.name-1, #self.name) == "en" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					elseif self.name:sub(#self.name-1, #self.name) == "un" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					elseif self.name:sub(#self.name-2, #self.name) == "iar" then self.demonym = self.name:sub(1, #self.name-1).."n"
 					elseif self.name:sub(#self.name-1, #self.name) == "ar" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-2, #self.name) == "ium" then self.demonym = self.name:sub(1, #self.name-2).."an"
 					elseif self.name:sub(#self.name-1, #self.name) == "um" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
 					else self.demonym = self.name.."ian" end
@@ -331,7 +337,7 @@ return
 
 				self.founded = parent.years
 
-				self.snt[parent.systems[self.system].name] = 1
+				if self.snt[parent.systems[self.system].name] == nil or self.snt[parent.systems[self.system].name] == 0 then self.snt[parent.systems[self.system].name] = 1 end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 

@@ -7,7 +7,7 @@ function main()
 	if clrarr == nil or clrarr == 1 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 
 	os.execute(CCSCommon.clrcmd)
-	io.write(string.format("\n\tCCSIM : Compact Country Simulator\n\n"))
+	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
 	if CCSCommon:checkAutoload() == false then
 		io.write(string.format("\nHow many years should the simulation run? > "))

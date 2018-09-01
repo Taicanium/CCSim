@@ -72,7 +72,7 @@ return
 
 						parent.thisWorld.countries[c]:event(parent, "Revolution: "..oldsys.." to "..parent.systems[parent.thisWorld.countries[c].system].name)
 						parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
-						if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+						parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name])
 						if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
 							if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
 								local rul = 0
@@ -227,7 +227,7 @@ return
 
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent:roman(namenum).." of "..parent.thisWorld.countries[c].name)
 								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
-								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+								parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name])
 								if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
 									if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
 										local rul = 0
@@ -241,7 +241,7 @@ return
 							else
 								parent.thisWorld.countries[c]:event(parent, "End of civil war; victory for "..prevTitle..parent.thisWorld.countries[c].people[newRuler].prevName.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of the "..parent.thisWorld.countries[c].people[newRuler].party..", now "..parent.thisWorld.countries[c].people[newRuler].title.." "..parent.thisWorld.countries[c].people[newRuler].name.." "..parent.thisWorld.countries[c].people[newRuler].surname.." of "..parent.thisWorld.countries[c].name)
 								parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] = parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] + 1
-								if parent.thisWorld.fromFile == false then parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name]) end
+								parent.thisWorld.countries[c]:event(parent, "Establishment of the "..parent:ordinal(parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name]).." "..parent.thisWorld.countries[c].demonym.." "..parent.thisWorld.countries[c].formalities[parent.systems[parent.thisWorld.countries[c].system].name])
 								if parent.thisWorld.countries[c].snt[parent.systems[parent.thisWorld.countries[c].system].name] > 1 then
 									if parent.systems[parent.thisWorld.countries[c].system].dynastic == true then
 										local rul = 0
@@ -783,19 +783,19 @@ return
 
 					self.thisWorld = World:new()
 
-					io.write("\nAn in-progress run was detected. Load from last save point? (y/n) > ")
+					io.write(string.format("\nAn in-progress run was detected. Load from last save point? (y/n) > "))
 					local res = io.read()
 
 					if res == "y" then
 						self.thisWorld:autoload(self)
 						
-						io.write("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > ")
+						io.write(string.format("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > "))
 						res = io.read()
 						if res == "y" then
-							io.write("\nYears to add to the current running time ("..tostring(self.maxyears)..") > ")
+							io.write(string.format("\nYears to add to the current running time ("..tostring(self.maxyears)..") > "))
 							res = tonumber(io.read())
 							while res == nil do
-								io.write("\nPlease enter a number. > ")
+								io.write(string.format("\nPlease enter a number. > "))
 								res = tonumber(io.read())
 							end
 							self.maxyears = self.maxyears + res
@@ -909,6 +909,8 @@ return
 
 				f:close()
 				f = nil
+				
+				print("")
 
 				if self.ged == true then
 					local percentage = 0
@@ -1021,8 +1023,6 @@ return
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
-					os.execute(self.clrcmd)
-
 					for j=1,#royals do
 						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
 						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
@@ -1122,6 +1122,7 @@ return
 
 				local fc = 0
 				local fr = 0
+				local sysChange = true
 
 				while done == false do
 					local l = f:read()
@@ -1140,6 +1141,9 @@ return
 							nl.name = mat[2]
 							for q=3,#mat do
 								nl.name = nl.name.." "..mat[q]
+							end
+							for q=1,#self.systems do
+								nl.snt[self.systems[q].name] = 0
 							end
 							self.thisWorld:add(nl)
 							fc = #self.thisWorld.countries
@@ -1187,22 +1191,44 @@ return
 							if mat[1] == "Empress" then dynastic = true end
 							if dynastic == true then
 								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=tostring(number), Country=self.thisWorld.countries[fc].name, From=mat[3], To=mat[4]})
-								if mat[5] == "F" then gend = "Female" end
 							else
 								table.insert(self.thisWorld.countries[fc].rulers, {Title=mat[1], name=mat[2], Number=mat[3], Country=self.thisWorld.countries[fc].name, From=mat[4], To=mat[5]})
-								if mat[6] == "F" then gend = "Female" end
 							end
-							if mat[1] == "King" then self.thisWorld.countries[fc].system = 1 end
-							if mat[1] == "President" then self.thisWorld.countries[fc].system = 2 end
-							if mat[1] == "Speaker" then self.thisWorld.countries[fc].system = 3 end
-							if mat[1] == "Premier" then self.thisWorld.countries[fc].system = 4 end
-							if mat[1] == "Emperor" then self.thisWorld.countries[fc].system = 5 end
-							if mat[1] == "Queen" then
+							if mat[1] == "King" then
+								local oldsystem = self.thisWorld.countries[fc].system
 								self.thisWorld.countries[fc].system = 1
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
+							end
+							if mat[1] == "President" then
+								local oldsystem = self.thisWorld.countries[fc].system
+								self.thisWorld.countries[fc].system = 2
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
+							end
+							if mat[1] == "Speaker" then
+								local oldsystem = self.thisWorld.countries[fc].system
+								self.thisWorld.countries[fc].system = 3
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
+							end
+							if mat[1] == "Premier" then
+								local oldsystem = self.thisWorld.countries[fc].system
+								self.thisWorld.countries[fc].system = 4
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
+							end
+							if mat[1] == "Emperor" then
+								local oldsystem = self.thisWorld.countries[fc].system
+								self.thisWorld.countries[fc].system = 5
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
+							end
+							if mat[1] == "Queen" then
+								local oldsystem = self.thisWorld.countries[fc].system
+								self.thisWorld.countries[fc].system = 1
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
 								gend = "Female"
 							end
 							if mat[1] == "Empress" then
+								local oldsystem = self.thisWorld.countries[fc].system
 								self.thisWorld.countries[fc].system = 5
+								if oldsystem ~= self.thisWorld.countries[fc].system then self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] = self.thisWorld.countries[fc].snt[self.systems[self.thisWorld.countries[fc].system].name] + 1 end
 								gend = "Female"
 							end
 							local found = false
@@ -1212,12 +1238,10 @@ return
 							for i=1,#self.thisWorld.countries[fc].frulernames do
 								if self.thisWorld.countries[fc].frulernames[i] == mat[2] then found = true end
 							end
-							if gend == "Female" then
-								if found == false then
+							if found == false then
+								if gend == "Female" then
 									table.insert(self.thisWorld.countries[fc].frulernames, mat[2])
-								end
-							else
-								if found == false then
+								else
 									table.insert(self.thisWorld.countries[fc].rulernames, mat[2])
 								end
 							end
@@ -1500,7 +1524,7 @@ return
 
 					self.years = self.years + 1
 					
-					if self.autosaveDur ~= 0 then
+					if self.autosaveDur ~= -1 then
 						if math.fmod(self.years, self.autosaveDur) == 0 then self.thisWorld:autosave(self) end
 					end
 				end
@@ -1879,7 +1903,7 @@ return
 							local lossMsg = "Loss of the "..rn.name.." region "
 							
 							local cCount = 0
-							for q=1,#rn.cities do cCount = cCount + 1 end
+							for i, j in pairs(rm.cities) do cCount = cCount + 1 end
 							if cCount > 0 then
 								gainMsg = gainMsg.."(including the "
 								lossMsg = lossMsg.."(including the "
@@ -1887,15 +1911,27 @@ return
 								if cCount > 1 then
 									gainMsg = gainMsg.."cities of "
 									lossMsg = lossMsg.."cities of "
-									for c=1,#rn.cities-1 do
-										gainMsg = gainMsg..rn.cities[c].name..", "
-										lossMsg = lossMsg..rn.cities[c].name..", "
+									local index = 1
+									for i, j in pairs(rm.cities) do
+										if index ~= cCount then
+											gainMsg = gainMsg..j.name..", "
+											lossMsg = lossMsg..j.name..", "
+										end
+										index = index + 1
 									end
-									gainMsg = gainMsg.."and "..rn.cities[#rn.cities].name
-									lossMsg = lossMsg.."and "..rn.cities[#rn.cities].name
+									index = 1
+									for i, j in pairs(rm.cities) do
+										if index == cCount then
+											gainMsg = gainMsg.."and "..j.name
+											lossMsg = lossMsg.."and "..j.name
+										end
+										index = index + 1
+									end
 								else
-									gainMsg = gainMsg.."city of "..rn.cities[#rn.cities].name
-									lossMsg = lossMsg.."city of "..rn.cities[#rn.cities].name
+									for i, j in pairs(rm.cities) do
+										gainMsg = gainMsg.."city of "..j.name
+										lossMsg = lossMsg.."city of "..j.name
+									end
 								end
 								
 								gainMsg = gainMsg..") "
