@@ -77,13 +77,7 @@ function main()
 		end
 	end
 
-	local f = io.open("output.txt", "w+")
-	f:flush()
-	f:close()
-	f = nil
-
 	CCSCommon:loop()
-	CCSCommon.thisWorld = nil
 end
 
 main()
