@@ -400,6 +400,10 @@ P Jerusalem
 C Italy
 R Rome
 P Rome
+R Tuscany
+S Florence
+R Venice
+S Venice
 C Jamaica
 R Kingston
 P Kingston
@@ -871,9 +875,17 @@ S Dubai
 P Abu Dhabi
 C United Kingdom
 R Scotland
+S Glasgow
+S Edinburgh
 R Wales
+S Cardiff
+S Swansea
 R Ireland
+S Dublin
+S Belfast
 R England
+S Manchester
+P London
 King William 1066 1087
 King William 1087 1100
 King Henry 1100 1135
@@ -1057,6 +1069,9 @@ P Tashkent
 C Vanuatu
 R Port Vila
 P Port Vila
+C Holy See
+R Vatican City
+P Vatican City
 C Venezuela
 R Greater Caracas
 P Caracas

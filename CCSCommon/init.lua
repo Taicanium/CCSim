@@ -90,7 +90,7 @@ return
 						if math.floor(#parent.thisWorld.countries[c].people / 10) > 1 then
 							for d=1,math.random(1, math.floor(#parent.thisWorld.countries[c].people / 10)) do
 								local z = math.random(1, #parent.thisWorld.countries[c].people)
-								parent.thisWorld.countries[c].death = parent.years
+								parent.thisWorld.countries[c].people[z].death = parent.years
 								parent.thisWorld.countries[c]:delete(z)
 							end
 						end
@@ -683,26 +683,31 @@ return
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
-						local oldcap = parent.thisWorld.countries[c].capitalcity
-						if oldcap == nil then oldcap = "" end
-						parent.thisWorld.countries[c].capitalregion = nil
-						parent.thisWorld.countries[c].capitalcity = nil
+						local cCount = 0
+						for i, j in pairs(parent.thisWorld.countries[c].regions) do for k, l in pairs(j.cities) do cCount = cCount + 1 end end
+					
+						if cCount > 1 then
+							local oldcap = parent.thisWorld.countries[c].capitalcity
+							if oldcap == nil then oldcap = "" end
+							parent.thisWorld.countries[c].capitalregion = nil
+							parent.thisWorld.countries[c].capitalcity = nil
 
-						while parent.thisWorld.countries[c].capitalcity == nil do
-							for i, j in pairs(parent.thisWorld.countries[c].regions) do
-								for k, l in pairs(j.cities) do
-									if l.name ~= oldcap then
-										if parent.thisWorld.countries[c].capitalcity == nil then
-											local chance = math.random(1, 100)
-											if chance == 35 then
-												parent.thisWorld.countries[c].capitalregion = j.name
-												parent.thisWorld.countries[c].capitalcity = l.name
+							while parent.thisWorld.countries[c].capitalcity == nil do
+								for i, j in pairs(parent.thisWorld.countries[c].regions) do
+									for k, l in pairs(j.cities) do
+										if l.name ~= oldcap then
+											if parent.thisWorld.countries[c].capitalcity == nil then
+												local chance = math.random(1, 100)
+												if chance == 35 then
+													parent.thisWorld.countries[c].capitalregion = j.name
+													parent.thisWorld.countries[c].capitalcity = l.name
 
-												local msg = "Capital moved"
-												if oldcap ~= "" then msg = msg.." from "..oldcap end
-												msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
+													local msg = "Capital moved"
+													if oldcap ~= "" then msg = msg.." from "..oldcap end
+													msg = msg.." to "..parent.thisWorld.countries[c].capitalcity
 
-												parent.thisWorld.countries[c]:event(parent, msg)
+													parent.thisWorld.countries[c]:event(parent, msg)
+												end
 											end
 										end
 									end
@@ -916,6 +921,8 @@ return
 					local percentage = 0
 					
 					for i=1,#self.final do
+						print("")
+					
 						self.resort = false
 						self.final[i]:destroy()
 
@@ -1023,6 +1030,8 @@ return
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
+					print("")
+					
 					for j=1,#royals do
 						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
 						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
@@ -1249,10 +1258,10 @@ return
 					end
 				end
 
-				print("Constructing initial populations...")
-
+				print("Constructing initial populations...\n")
+				
 				for i=1,#self.thisWorld.countries do
-					if math.fmod(i, 5) == 0 then print(tostring(math.ceil(i/#self.thisWorld.countries*100)).."% done") end 
+					io.write("\r"..tostring(math.ceil(i/#self.thisWorld.countries*100)).."\t% done") 
 					if self.thisWorld.countries[i] ~= nil then
 						if #self.thisWorld.countries[i].rulers > 0 then
 							self.thisWorld.countries[i].founded = tonumber(self.thisWorld.countries[i].rulers[1].From)
@@ -1513,16 +1522,16 @@ return
 
 					print(msg)
 
+					self.years = self.years + 1
+					
+					if #self.thisWorld.countries == 0 then
+						_running = false
+					end
+					
 					if self.years >= self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
 					end
-
-					if #self.thisWorld.countries == 0 then
-						_running = false
-					end
-
-					self.years = self.years + 1
 					
 					if self.autosaveDur ~= -1 then
 						if math.fmod(self.years, self.autosaveDur) == 0 then self.thisWorld:autosave(self) end
@@ -1678,9 +1687,15 @@ return
 								end
 							end
 
-							if j > i then -- Make an exception for the 'th' group.
+							if j > i then -- Make exceptions for the 'th' and 'nd' groups.
 								if string.lower(nomin:sub(j-1, j-1)) == 't' then
 									if string.lower(nomin:sub(j, j)) == 'h' then
+										hasvowel = true
+									end
+								end
+								
+								if string.lower(nomin:sub(j-1, j-1)) == 'n' then
+									if string.lower(nomin:sub(j, j)) == 'd' then
 										hasvowel = true
 									end
 								end
@@ -1909,23 +1924,52 @@ return
 								lossMsg = lossMsg.."(including the "
 								
 								if cCount > 1 then
-									gainMsg = gainMsg.."cities of "
-									lossMsg = lossMsg.."cities of "
-									local index = 1
-									for i, j in pairs(rm.cities) do
-										if index ~= cCount then
-											gainMsg = gainMsg..j.name..", "
-											lossMsg = lossMsg..j.name..", "
+									if cCount == 2 then
+										gainMsg = gainMsg.."cities of "
+										lossMsg = lossMsg.."cities of "
+										local index = 1
+										for i, j in pairs(rm.cities) do
+											if index ~= cCount then
+												gainMsg = gainMsg..j.name..", "
+												lossMsg = lossMsg..j.name..", "
+											end
+											index = index + 1
 										end
-										index = index + 1
-									end
-									index = 1
-									for i, j in pairs(rm.cities) do
-										if index == cCount then
-											gainMsg = gainMsg.."and "..j.name
-											lossMsg = lossMsg.."and "..j.name
+										index = 1
+										for i, j in pairs(rm.cities) do
+											if index == cCount then
+												gainMsg = gainMsg.."and "..j.name
+												lossMsg = lossMsg.."and "..j.name
+											end
+											index = index + 1
 										end
-										index = index + 1
+									else
+										gainMsg = gainMsg.."cities of "
+										lossMsg = lossMsg.."cities of "
+										local index = 1
+										for i, j in pairs(rm.cities) do
+											if index < cCount - 1 then
+												gainMsg = gainMsg..j.name..", "
+												lossMsg = lossMsg..j.name..", "
+											end
+											index = index + 1
+										end
+										index = 1
+										for i, j in pairs(rm.cities) do
+											if index == cCount - 1 then
+												gainMsg = gainMsg..j.name.." "
+												lossMsg = lossMsg..j.name.." "
+											end
+											index = index + 1
+										end
+										index = 1
+										for i, j in pairs(rm.cities) do
+											if index == cCount then
+												gainMsg = gainMsg.."and "..j.name
+												lossMsg = lossMsg.."and "..j.name
+											end
+											index = index + 1
+										end
 									end
 								else
 									for i, j in pairs(rm.cities) do

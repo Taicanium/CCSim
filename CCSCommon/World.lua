@@ -191,6 +191,8 @@ return
 				local allDefined = false
 				local defined = 0
 				local passes = 0
+				
+				print("")
 
 				while allDefined == false do
 					allDefined = true
@@ -235,7 +237,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					if math.fmod(passes, 10) == 0 then print(tostring(math.floor(defined/#self.planetdefined*100)).."% done") end
+					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*100)).."\t% done")
 				end
 
 				print("Defining regional boundaries...")
@@ -591,6 +593,8 @@ return
 				for i=1,#self.countries do
 					if self.countries[i] ~= nil then
 						self.countries[i]:update(parent, i)
+						
+						if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
 
 						if self.countries[i] ~= nil then
 							if self.countries[i].population < 10 then
