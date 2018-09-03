@@ -60,7 +60,7 @@ function main()
 			CCSCommon.thisWorld = World:new()
 
 			CCSCommon:rseed()
-			CCSCommon.numCountries = math.random(8, 12)
+			CCSCommon.numCountries = math.random(7, 10)
 
 			print("Defining countries...")
 

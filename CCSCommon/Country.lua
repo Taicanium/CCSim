@@ -294,6 +294,9 @@ return
 					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
 					else self.demonym = self.name.."ian" end
 				end
+				
+				self.demonym = self.demonym:gsub("ii", "i")
+				self.demonym = self.demonym:gsub("aa", "a")
 			end,
 
 			set = function(self, parent)

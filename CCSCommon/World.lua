@@ -240,7 +240,7 @@ return
 					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*100)).."\t% done")
 				end
 
-				print("Defining regional boundaries...")
+				print("\nDefining regional boundaries...")
 
 				for i=1,#self.countries do
 					print("Country "..tostring(i).."/"..tostring(#self.countries))
@@ -527,7 +527,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(3)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8)\nSys.sleep(3)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(3)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)\nSys.sleep(3)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
