@@ -1,6 +1,6 @@
 return
 	function()
-		World = {
+		local World = {
 			new = function(self)
 				local nm = {}
 				setmetatable(nm, self)
@@ -83,6 +83,8 @@ return
 			end,
 
 			autosave = function(self, parent)
+				parent:sortAscendants(self)
+			
 				io.write(string.format("\nAutosaving..."))
 			
 				local f = io.open("in_progress.dat", "w+b")
@@ -590,13 +592,13 @@ return
 
 				local f0 = socket.gettime()
 
-				for i=1,#self.countries do
+				for i=#self.countries,1,-1 do
 					if self.countries[i] ~= nil then
 						self.countries[i]:update(parent, i)
-						
-						if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
 
 						if self.countries[i] ~= nil then
+							if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
+						
 							if self.countries[i].population < 10 then
 								if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
 								self.countries[i]:event(parent, "Disappeared")

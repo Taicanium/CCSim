@@ -1,6 +1,6 @@
 return
 	function()
-		City = {
+		local City = {
 			new = function(self)
 				local c = {}
 				setmetatable(c, self)

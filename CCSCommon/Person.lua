@@ -1,6 +1,6 @@
 return
 	function()
-		Person = {
+		local Person = {
 			new = function(self)
 				local n = {}
 				setmetatable(n, self)
@@ -258,9 +258,9 @@ return
 					if self.spouse ~= nil then
 						if self.gender == "Female" then
 							if self.age < 60 then
-								if self.age > 12 then
+								if self.age > 14 then
 									if self.spouse.age < 75 then
-										if self.spouse.age > 12 then
+										if self.spouse.age > 14 then
 											local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
 											if tmp == 2 then
 												self:dobirth(parent, nl)
@@ -272,9 +272,9 @@ return
 							end
 						else
 							if self.age < 75 then
-								if self.age > 12 then
+								if self.age > 14 then
 									if self.spouse.age < 60 then
-										if self.spouse.age > 12 then
+										if self.spouse.age > 14 then
 											local tmp = math.random(1, parent.thisWorld.countries[nl].birthrate)
 											if tmp == 2 then
 												self:dobirth(parent, nl)

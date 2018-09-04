@@ -1,6 +1,6 @@
 return
 	function()
-		Party = {
+		local Party = {
 			new = function(self)
 				local p = {}
 				setmetatable(p, self)

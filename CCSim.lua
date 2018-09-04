@@ -1,17 +1,15 @@
 CCSCommon = require("CCSCommon")()
 
 function main()
-	_running = true
-
-	clrarr = os.execute("clear")
-	if clrarr == nil or clrarr == 1 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	local clrarr = os.execute("clear")
+	if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
 	if CCSCommon:checkAutoload() == false then
 		io.write(string.format("\nHow many years should the simulation run? > "))
-		datin = io.read()
+		local datin = io.read()
 
 		CCSCommon.maxyears = tonumber(datin)
 		while CCSCommon.maxyears == nil do
@@ -65,7 +63,7 @@ function main()
 			print("Defining countries...")
 
 			for j=1,CCSCommon.numCountries do
-				nl = Country:new()
+				local nl = Country:new()
 				nl:set(CCSCommon, j)
 				CCSCommon.thisWorld:add(nl)
 			end

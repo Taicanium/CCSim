@@ -9,7 +9,7 @@ World = require("CCSCommon.World")()
 
 return
 	function()
-		CCSCommon = {
+		local CCSCommon = {
 			autosaveDur = 100,
 			c_events = {
 				{
@@ -515,6 +515,7 @@ return
 					end
 				},
 				{
+					-- TODO: Add capital change clause
 					name="Independence",
 					chance=3,
 					target=nil,
@@ -537,13 +538,14 @@ return
 
 								local newl = Country:new()
 								local nc = parent.thisWorld.countries[c].regions[v]
-
+								
 								newl.name = nc.name
 
 								parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 								newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
-
+								
 								newl:set(parent)
+								
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
 									local y = nc.nodes[i][2]
@@ -566,7 +568,7 @@ return
 
 								parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
 								if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
-
+								
 								parent:deepnil(parent.thisWorld.countries[c].regions[v])
 								parent.thisWorld.countries[c].regions[v] = nil
 							end
@@ -916,116 +918,13 @@ return
 				f = nil
 				
 				print("")
+				
+				for i=1,#self.final do self.final[i]:destroy() end
 
 				if self.ged == true then
-					local percentage = 0
-					
-					for i=1,#self.final do
-						print("")
-					
-						self.resort = false
-						self.final[i]:destroy()
-
-						local formerTotal = #royals
-
-						for j=1,#self.final[i].ascendants do
-							percentage = tostring(((j / #self.final[i].ascendants) * 100) - math.fmod((j / #self.final[i].ascendants) * 100, 0.01))
-							io.write("\rListing people for country "..tostring(i).."/"..tostring(#self.final).."...\t"..percentage.."\t% done")
-
-							self:getAscendants(self.final[i], royals, self.final[i].ascendants[j])
-						end
-
-						if self.resort == true then
-							print("")
-						
-							local limit = #royals
-							local j = 1
-							local adjusts = {}
-							while j <= limit do
-								for k=#royals,formerTotal+1,-1 do
-									if j ~= k then
-										if j <= limit then
-											if royals[k].birth == royals[j].birth then
-												if royals[k].name == royals[j].name then
-													if royals[k].surname == royals[j].surname then
-														if royals[k].gender == royals[j].gender then
-															if royals[k].number == royals[j].number then
-																if royals[k].title == royals[j].title then
-																	table.insert(adjusts, {k, j})
-																	if royals[k].death ~= 0 then royals[j].death = royals[k].death end
-																	if royals[k].deathplace ~= "" then royals[j].deathplace = royals[k].deathplace end
-																	table.remove(royals, k)
-																	limit = limit - 1
-																	if k <= j then j = j - 1 end
-																end
-															end
-														end
-													end
-												end
-											end
-										end
-									end
-								end
-
-								percentage = tostring(((j / limit) * 100) - math.fmod((j / limit) * 100, 0.01))
-								io.write("\rRemoving duplicate people for country "..tostring(i).."/"..tostring(#self.final).."...\t"..percentage.."\t% done")
-
-								j = j + 1
-							end
-
-							if formerTotal ~= #royals then
-								print("")
-								
-								for j=formerTotal+1,#royals do
-									for k=1,#adjusts do
-										if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
-										if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
-										if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
-										if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
-									end
-
-									if royals[j].father > #royals then royals[j].father = 0 end
-									if royals[j].mother > #royals then royals[j].mother = 0 end
-									
-									percentage = tostring((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
-									io.write("\rSorting people for country "..tostring(i).."/"..tostring(#self.final).."...\t"..percentage.."\t% done")
-								end
-
-								print("")
-
-								for j=formerTotal+1,#royals do
-									local found = nil
-									local chil = false
-									for k=1,#fams do
-										if royals[j].father ~= 0 then
-											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
-										end
-
-										if royals[j].mother ~= 0 then
-											if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
-										end
-
-										for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
-									end
-
-									if found == nil then
-										local doFam = false
-										if royals[j].father ~= 0 then
-											if royals[j].mother ~= 0 then
-												doFam = true
-											end
-										end
-										if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
-									else
-										if chil == false then table.insert(fams[found].chil, j) end
-									end
-									
-									percentage = tostring((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
-									io.write("\rSorting families for country "..tostring(i).."/"..tostring(#self.final).."...\t"..percentage.."\t% done")
-								end
-							end
-						end
-					end
+					local dat = self:sortAscendants(self.final)
+					royals = dat[1]
+					fams = dat[2]
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
@@ -1068,8 +967,8 @@ return
 							ged:flush()
 						end
 
-						percentage = tostring(((j / #royals) * 100) - math.fmod((j / #royals) * 100, 0.01))
-						io.write("\rWriting individuals...\t"..percentage.."\t% done")
+						percentage = (((j / #royals) * 100) - math.fmod((j / #royals) * 100, 0.01))
+						io.write("\rWriting individuals...\t"..tostring(percentage).."\t% done")
 					end
 
 					print("")
@@ -1096,8 +995,8 @@ return
 						ged:write(msgout)
 						ged:flush()
 
-						percentage = tostring(((j / #fams) * 100) - math.fmod((j / #fams) * 100, 0.01))
-						io.write("\rWriting families...\t"..percentage.."\t% done")
+						percentage = (((j / #fams) * 100) - math.fmod((j / #fams) * 100, 0.01))
+						io.write("\rWriting families...\t"..tostring(percentage).."\t% done")
 					end
 
 					ged:flush()
@@ -1400,6 +1299,8 @@ return
 					if person.Mother ~= nil then
 						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
 					end
+					
+					table.insert(final.ascendants, self:deepcopy(person))
 				end
 
 				return fInd
@@ -1687,15 +1588,9 @@ return
 								end
 							end
 
-							if j > i then -- Make exceptions for the 'th' and 'nd' groups.
+							if j > i then -- Make an exception for the 'th' group.
 								if string.lower(nomin:sub(j-1, j-1)) == 't' then
 									if string.lower(nomin:sub(j, j)) == 'h' then
-										hasvowel = true
-									end
-								end
-								
-								if string.lower(nomin:sub(j-1, j-1)) == 'n' then
-									if string.lower(nomin:sub(j, j)) == 'd' then
 										hasvowel = true
 									end
 								end
@@ -1789,41 +1684,41 @@ return
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
-							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, #nomlower) end
-							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, #nomlower) end
+							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, string.len(nomlower)) end
 						end
 
-						if nomlower:sub(#nomlower, #nomlower) == self.consonants[j] then
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "b" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "c" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "d" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "f" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "g" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "h" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "j" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "k" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "m" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "n" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "p" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "r" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "s" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "t" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "v" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "w" then nomlower = nomlower:sub(1, #nomlower-1) end
-							if nomlower:sub(#nomlower-1, #nomlower-1) == "z" then nomlower = nomlower:sub(1, #nomlower-1) end
+						if nomlower:sub(string.len(nomlower), string.len(nomlower)) == self.consonants[j] then
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "b" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "c" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "d" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "f" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "g" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "h" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "j" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "k" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "m" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "n" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "p" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "r" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "s" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "t" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "v" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "w" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "z" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
 						end
 					end
 
@@ -1832,6 +1727,8 @@ return
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, string.len(nomlower))
 				end
+				
+				if nomin:sub(string.len(nomin)-2, string.len(nomin)) == "lan" then nomin = nomin.."d" end
 
 				return nomin
 			end,
@@ -1930,8 +1827,8 @@ return
 										local index = 1
 										for i, j in pairs(rm.cities) do
 											if index ~= cCount then
-												gainMsg = gainMsg..j.name..", "
-												lossMsg = lossMsg..j.name..", "
+												gainMsg = gainMsg..j.name.." "
+												lossMsg = lossMsg..j.name.." "
 											end
 											index = index + 1
 										end
@@ -2106,6 +2003,126 @@ return
 			sleep = function(self, t)
 				n = socket.gettime()
 				while socket.gettime() < n + t do end
+			end,
+			
+			sortAscendants = function(self, data)
+				local percentage = 0
+				local royals = {}
+				local fams = {}
+					
+				for i=1,#data do
+					print("")
+				
+					self.resort = false
+
+					local formerTotal = #royals
+
+					local ascCount = #data[i].ascendants
+					
+					for j=1,ascCount do
+						percentage = (((j / ascCount) * 100) - math.fmod((j / ascCount) * 100, 0.01))
+						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
+						
+						self:getAscendants(data[i], royals, data[i].ascendants[j])
+					end
+					
+					for k=ascCount,1,-1 do
+						table.remove(data[i].ascendants, k)
+					end
+
+					if self.resort == true then
+						print("")
+					
+						local limit = #royals
+						local j = 1
+						local adjusts = {}
+						while j <= limit do
+							for k=#royals,formerTotal+1,-1 do
+								if j ~= k then
+									if j <= limit then
+										if royals[k].birth == royals[j].birth then
+											if royals[k].name == royals[j].name then
+												if royals[k].surname == royals[j].surname then
+													if royals[k].gender == royals[j].gender then
+														if royals[k].number == royals[j].number then
+															if royals[k].title == royals[j].title then
+																table.insert(adjusts, {k, j})
+																if royals[k].death ~= 0 then royals[j].death = royals[k].death end
+																if royals[k].deathplace ~= "" then royals[j].deathplace = royals[k].deathplace end
+																table.remove(royals, k)
+																limit = limit - 1
+																if k <= j then j = j - 1 end
+															end
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+
+							percentage = (((j / limit) * 100) - math.fmod((j / limit) * 100, 0.01))
+							io.write("\rRemoving duplicate people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
+
+							j = j + 1
+						end
+
+						if formerTotal ~= #royals then
+							print("")
+							
+							for j=formerTotal+1,#royals do
+								for k=1,#adjusts do
+									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
+									if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
+									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
+									if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+								end
+
+								if royals[j].father > #royals then royals[j].father = 0 end
+								if royals[j].mother > #royals then royals[j].mother = 0 end
+								
+								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
+								io.write("\rSorting people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
+							end
+
+							print("")
+
+							for j=formerTotal+1,#royals do
+								local found = nil
+								local chil = false
+								for k=1,#fams do
+									if royals[j].father ~= 0 then
+										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
+									end
+
+									if royals[j].mother ~= 0 then
+										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
+									end
+
+									for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
+								end
+
+								if found == nil then
+									local doFam = false
+									if royals[j].father ~= 0 then
+										if royals[j].mother ~= 0 then
+											doFam = true
+										end
+									end
+									if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
+								else
+									if chil == false then table.insert(fams[found].chil, j) end
+								end
+								
+								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
+								io.write("\rSorting families for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
+							end
+						end
+					end
+				end
+				
+				return {royals, fams}
 			end
 		}
 

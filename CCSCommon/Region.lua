@@ -1,6 +1,6 @@
 return
 	function()
-		Region = {
+		local Region = {
 			new = function(self)
 				local r = {}
 				setmetatable(r, self)

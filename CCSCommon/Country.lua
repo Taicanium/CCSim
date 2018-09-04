@@ -1,6 +1,6 @@
 return
 	function()
-		Country = {
+		local Country = {
 			new = function(self)
 				local nl = {}
 				setmetatable(nl, self)
@@ -35,8 +35,8 @@ return
 				nl.parties = {}
 				nl.nodes = {}
 				nl.civilWars = 0
-				nl.capitalregion = nil
-				nl.capitalcity = nil
+				nl.capitalregion = ""
+				nl.capitalcity = ""
 				nl.mtName = "Country"
 
 				return nl
@@ -47,9 +47,7 @@ return
 					for i=1,#self.people do
 						if self.people[i].useParents == true then
 							if self.people[i].royalGenerations ~= -1 then
-								if self.people[i].royalGenerations < 4 then
-									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
-								end
+								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
 							end
 						end
 						self.people[i]:destroy()
@@ -123,9 +121,7 @@ return
 				if b > 0 then
 					if self.people[y] ~= nil then
 						if self.people[y].royalGenerations ~= -1 then
-							if self.people[y].royalGenerations < 5 then
-								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
-							end
+							table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
@@ -324,14 +320,14 @@ return
 					self.regions[r.name] = r
 				end
 
-				while self.capitalregion == nil do
+				while self.capitalregion == "" do
 					for i, j in pairs(self.regions) do
 						local chance = math.random(1, 30)
 						if chance == 15 then self.capitalregion = j.name end
 					end
 				end
 
-				while self.capitalcity == nil do
+				while self.capitalcity == "" do
 					for i, j in pairs(self.regions[self.capitalregion].cities) do
 						local chance = math.random(1, 30)
 						if chance == 15 then self.capitalcity = j.name end
@@ -685,19 +681,20 @@ return
 					self.deathrate = 135
 				end
 
-				if self.capitalregion == nil or self.regions[self.capitalregion] == nil then
-					self.capitalregion = nil
+				local oldcap = self.capitalcity
+				
+				if self.regions[self.capitalregion] == nil then
 					local values = {}
 					for i, j in pairs(self.regions) do table.insert(values, j.name) end
 					self.capitalregion = values[math.random(1, #values)]
 					self.capitalcity = nil
 				end
 
-				if self.capitalcity == nil or self.regions[self.capitalregion].cities[self.capitalcity] == nil then
-					self.capitalcity = nil
+				if self.regions[self.capitalregion].cities[self.capitalcity] == nil then
 					local values = {}
 					for i, j in pairs(self.regions[self.capitalregion].cities) do table.insert(values, j.name) end
 					self.capitalcity = values[math.random(1, #values)]
+					if oldcap ~= nil then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
 				end
 
 				for i, j in pairs(self.regions) do
