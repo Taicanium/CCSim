@@ -192,14 +192,9 @@ return
 
 				local allDefined = false
 				local defined = 0
-				local passes = 0
-
-				print("")
 
 				while allDefined == false do
 					allDefined = true
-					defined = 0
-					passes = passes + 1
 
 					for i=1,#self.planetdefined do
 						local x = self.planetdefined[i][1]
@@ -207,7 +202,6 @@ return
 						local z = self.planetdefined[i][3]
 
 						if self.planet[x][y][z].country ~= "" then
-							defined = defined + 1
 							if self.planet[x][y][z].countryset == false then
 								for dx=-1,1 do
 									for dy=-1,1 do
@@ -218,7 +212,6 @@ return
 														if self.planet[dx+x][dy+y][dz+z].country == "" then
 															self.planet[dx+x][dy+y][dz+z].country = self.planet[x][y][z].country
 															self.planet[dx+x][dy+y][dz+z].countryset = true
-															defined = defined + 1
 															allDefined = false
 														end
 													end
@@ -231,15 +224,19 @@ return
 						end
 					end
 
+					defined = 0
+
 					for i=1,#self.planetdefined do
 						local x = self.planetdefined[i][1]
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
+						if self.planet[x][y][z].country ~= "" then defined = defined + 1 end
+
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*100)).."\t% done")
+					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."\t% done")
 				end
 
 				print("\nDefining regional boundaries...")

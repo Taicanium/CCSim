@@ -961,7 +961,7 @@ return
 						ged:write(msgout)
 						ged:flush()
 
-						percentage = (((j / #royals) * 100) - math.fmod((j / #royals) * 100, 0.01))
+						percentage = math.floor(j / #royals * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."\t% done")
 					end
 
@@ -989,7 +989,7 @@ return
 						ged:write(msgout)
 						ged:flush()
 
-						percentage = (((j / #fams) * 100) - math.fmod((j / #fams) * 100, 0.01))
+						percentage = math.floor(j / #fams * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."\t% done")
 					end
 
@@ -2014,7 +2014,7 @@ return
 					local ascCount = #data[i].ascendants
 
 					for j=1,ascCount do
-						percentage = (((j / ascCount) * 100) - math.fmod((j / ascCount) * 100, 0.01))
+						percentage = math.floor(j / ascCount * 10000)/100
 						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 
 						self:getAscendants(data[i], royals, data[i].ascendants[j])
@@ -2056,7 +2056,7 @@ return
 								end
 							end
 
-							percentage = (((j / limit) * 100) - math.fmod((j / limit) * 100, 0.01))
+							percentage = math.floor(j / limit * 10000)/100
 							io.write("\rRemoving duplicate people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 
 							j = j + 1
@@ -2076,7 +2076,7 @@ return
 								if royals[j].father > #royals then royals[j].father = 0 end
 								if royals[j].mother > #royals then royals[j].mother = 0 end
 
-								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
+								percentage = math.floor((j-formerTotal) / (#royals-formerTotal) * 10000)/100
 								io.write("\rSorting people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 							end
 
@@ -2109,7 +2109,7 @@ return
 									if chil == false then table.insert(fams[found].chil, j) end
 								end
 
-								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
+								percentage = math.floor((j-formerTotal) / (#royals-formerTotal) * 10000)/100
 								io.write("\rSorting families for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 							end
 						end
