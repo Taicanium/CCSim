@@ -258,7 +258,7 @@ return
 					if math.floor(tf/2) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
 
-				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name.."n"
+				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name:sub(1, #self.name-1).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1)
 				elseif self.name:sub(#self.name, #self.name) == "e" then self.demonym = self.name:sub(1, #self.name-1).."ish"
 				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
@@ -271,7 +271,7 @@ return
 				elseif self.name:sub(#self.name-3, #self.name) == "land" then
 					split = self.name:sub(1, #self.name-4)
 					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1).."ian"
+					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
 					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-2).."ian"
 					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-2).."ian"
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
@@ -290,7 +290,7 @@ return
 					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
 					else self.demonym = self.name.."ian" end
 				end
-				
+
 				self.demonym = self.demonym:gsub("ii", "i")
 				self.demonym = self.demonym:gsub("aa", "a")
 			end,
@@ -682,7 +682,7 @@ return
 				end
 
 				local oldcap = self.capitalcity
-				
+
 				if self.regions[self.capitalregion] == nil then
 					local values = {}
 					for i, j in pairs(self.regions) do table.insert(values, j.name) end

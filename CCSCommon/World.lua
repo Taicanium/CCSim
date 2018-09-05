@@ -84,9 +84,9 @@ return
 
 			autosave = function(self, parent)
 				parent:sortAscendants(self)
-			
+
 				io.write(string.format("\nAutosaving..."))
-			
+
 				local f = io.open("in_progress.dat", "w+b")
 
 				f:write(string.len(tostring(parent.autosaveDur)))
@@ -193,7 +193,7 @@ return
 				local allDefined = false
 				local defined = 0
 				local passes = 0
-				
+
 				print("")
 
 				while allDefined == false do
@@ -598,7 +598,7 @@ return
 
 						if self.countries[i] ~= nil then
 							if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
-						
+
 							if self.countries[i].population < 10 then
 								if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
 								self.countries[i]:event(parent, "Disappeared")

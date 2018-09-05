@@ -147,7 +147,7 @@ return
 				end
 
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
-				
+
 				parent.thisWorld.countries[nl]:add(nn)
 			end,
 
@@ -186,7 +186,7 @@ return
 
 				local rankLim = 2
 				if sys.dynastic == false then rankLim = 1 end
-				
+
 				if self.gender == "Male" or sys.dynastic == false then
 					if self.title ~= nil and self.level ~= nil then
 						if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then

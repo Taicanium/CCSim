@@ -538,14 +538,14 @@ return
 
 								local newl = Country:new()
 								local nc = parent.thisWorld.countries[c].regions[v]
-								
+
 								newl.name = nc.name
 
 								parent.thisWorld.countries[c]:event(parent, "Granted independence to "..newl.name)
 								newl:event(parent, "Independence from "..parent.thisWorld.countries[c].name)
-								
+
 								newl:set(parent)
-								
+
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
 									local y = nc.nodes[i][2]
@@ -568,7 +568,7 @@ return
 
 								parent.thisWorld.countries[c].stability = parent.thisWorld.countries[c].stability - math.random(5, 10)
 								if parent.thisWorld.countries[c].stability < 1 then parent.thisWorld.countries[c].stability = 1 end
-								
+
 								parent:deepnil(parent.thisWorld.countries[c].regions[v])
 								parent.thisWorld.countries[c].regions[v] = nil
 							end
@@ -687,7 +687,7 @@ return
 					performEvent=function(self, parent, c)
 						local cCount = 0
 						for i, j in pairs(parent.thisWorld.countries[c].regions) do for k, l in pairs(j.cities) do cCount = cCount + 1 end end
-					
+
 						if cCount > 1 then
 							local oldcap = parent.thisWorld.countries[c].capitalcity
 							if oldcap == nil then oldcap = "" end
@@ -795,7 +795,7 @@ return
 
 					if res == "y" then
 						self.thisWorld:autoload(self)
-						
+
 						io.write(string.format("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > "))
 						res = io.read()
 						if res == "y" then
@@ -807,7 +807,7 @@ return
 							end
 							self.maxyears = self.maxyears + res
 						end
-						
+
 						return true
 					end
 				end
@@ -916,9 +916,9 @@ return
 
 				f:close()
 				f = nil
-				
+
 				print("")
-				
+
 				for i=1,#self.final do self.final[i]:destroy() end
 
 				if self.ged == true then
@@ -930,7 +930,7 @@ return
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
 					print("")
-					
+
 					for j=1,#royals do
 						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
 						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
@@ -942,19 +942,15 @@ return
 						msgout = msgout.."\n2 PLAC "..royals[j].birthplace
 						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace end
 
-						local writePerson = false
 						for k=1,#fams do
 							if fams[k].husb == j then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-								writePerson = true
 							elseif fams[k].wife == j then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-								writePerson = true
 							else
 								for l=1,#fams[k].chil do
 									if fams[k].chil[l] == j then
 										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
-										writePerson = true
 									end
 								end
 							end
@@ -962,10 +958,8 @@ return
 
 						msgout = msgout.."\n"
 
-						if writePerson == true then
-							ged:write(msgout)
-							ged:flush()
-						end
+						ged:write(msgout)
+						ged:flush()
 
 						percentage = (((j / #royals) * 100) - math.fmod((j / #royals) * 100, 0.01))
 						io.write("\rWriting individuals...\t"..tostring(percentage).."\t% done")
@@ -1158,7 +1152,7 @@ return
 				end
 
 				print("Constructing initial populations...\n")
-				
+
 				for i=1,#self.thisWorld.countries do
 					io.write("\r"..tostring(math.ceil(i/#self.thisWorld.countries*100)).."\t% done") 
 					if self.thisWorld.countries[i] ~= nil then
@@ -1299,7 +1293,7 @@ return
 					if person.Mother ~= nil then
 						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
 					end
-					
+
 					table.insert(final.ascendants, self:deepcopy(person))
 				end
 
@@ -1424,16 +1418,16 @@ return
 					print(msg)
 
 					self.years = self.years + 1
-					
+
 					if #self.thisWorld.countries == 0 then
 						_running = false
 					end
-					
+
 					if self.years >= self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
 					end
-					
+
 					if self.autosaveDur ~= -1 then
 						if math.fmod(self.years, self.autosaveDur) == 0 then self.thisWorld:autosave(self) end
 					end
@@ -1727,7 +1721,7 @@ return
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, string.len(nomlower))
 				end
-				
+
 				if nomin:sub(string.len(nomin)-2, string.len(nomin)) == "lan" then nomin = nomin.."d" end
 
 				return nomin
@@ -1810,16 +1804,16 @@ return
 							end
 
 							self.thisWorld.countries[c1].regions[rn.name] = rn
-							
+
 							local gainMsg = "Gained the "..rn.name.." region "
 							local lossMsg = "Loss of the "..rn.name.." region "
-							
+
 							local cCount = 0
 							for i, j in pairs(rm.cities) do cCount = cCount + 1 end
 							if cCount > 0 then
 								gainMsg = gainMsg.."(including the "
 								lossMsg = lossMsg.."(including the "
-								
+
 								if cCount > 1 then
 									if cCount == 2 then
 										gainMsg = gainMsg.."cities of "
@@ -1874,17 +1868,17 @@ return
 										lossMsg = lossMsg.."city of "..j.name
 									end
 								end
-								
+
 								gainMsg = gainMsg..") "
 								lossMsg = lossMsg..") "
 							end
-							
+
 							gainMsg = gainMsg.."from "..self.thisWorld.countries[c2].name
 							lossMsg = lossMsg.."to "..self.thisWorld.countries[c1].name
 
 							self.thisWorld.countries[c1]:event(self, gainMsg)
 							self.thisWorld.countries[c2]:event(self, lossMsg)
-							
+
 							self:deepnil(self.thisWorld.countries[c2].regions[rn.name])
 							self.thisWorld.countries[c2].regions[rn.name] = nil
 						end
@@ -2004,35 +1998,35 @@ return
 				n = socket.gettime()
 				while socket.gettime() < n + t do end
 			end,
-			
+
 			sortAscendants = function(self, data)
 				local percentage = 0
 				local royals = {}
 				local fams = {}
-					
+
 				for i=1,#data do
 					print("")
-				
+
 					self.resort = false
 
 					local formerTotal = #royals
 
 					local ascCount = #data[i].ascendants
-					
+
 					for j=1,ascCount do
 						percentage = (((j / ascCount) * 100) - math.fmod((j / ascCount) * 100, 0.01))
 						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
-						
+
 						self:getAscendants(data[i], royals, data[i].ascendants[j])
 					end
-					
+
 					for k=ascCount,1,-1 do
 						table.remove(data[i].ascendants, k)
 					end
 
 					if self.resort == true then
 						print("")
-					
+
 						local limit = #royals
 						local j = 1
 						local adjusts = {}
@@ -2070,7 +2064,7 @@ return
 
 						if formerTotal ~= #royals then
 							print("")
-							
+
 							for j=formerTotal+1,#royals do
 								for k=1,#adjusts do
 									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
@@ -2081,7 +2075,7 @@ return
 
 								if royals[j].father > #royals then royals[j].father = 0 end
 								if royals[j].mother > #royals then royals[j].mother = 0 end
-								
+
 								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
 								io.write("\rSorting people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 							end
@@ -2114,14 +2108,14 @@ return
 								else
 									if chil == false then table.insert(fams[found].chil, j) end
 								end
-								
+
 								percentage = ((((j-formerTotal) / (#royals-formerTotal)) * 100) - math.fmod(((j-formerTotal) / (#royals-formerTotal)) * 100, 0.01))
 								io.write("\rSorting families for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."\t% done")
 							end
 						end
 					end
 				end
-				
+
 				return {royals, fams}
 			end
 		}
