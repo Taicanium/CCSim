@@ -146,7 +146,7 @@ return
 						self.planet[x][y] = {}
 						for z=-r,r do
 							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
-							if fsqrt > r-0.5 and fsqrt < r+0.5 then
+							if fsqrt < r+0.5 and fsqrt > r-0.5 then
 								self.planet[x][y][z] = {}
 								self.planet[x][y][z].x = x
 								self.planet[x][y][z].y = y
@@ -236,7 +236,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."\t% done")
+					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."  \t% done")
 				end
 
 				print("\nDefining regional boundaries...")
@@ -405,7 +405,7 @@ return
 
 						local unique = false
 						while unique == false do
-							found = false
+							unique = true
 							for k, j in pairs(self.cTriplets) do
 								if j[1] > r-30 and j[1] < r+30 then
 									if j[2] > g-30 and j[2] < g+30 then
@@ -414,12 +414,11 @@ return
 											g = math.random(0, 255)
 											b = math.random(0, 255)
 
-											found = true
+											unique = false
 										end
 									end
 								end
 							end
-							if found == false then unique = true end
 
 							if r > 225 and g > 225 and b > 225 then
 								unique = false
@@ -428,7 +427,15 @@ return
 								g = math.random(0, 255)
 								b = math.random(0, 255)
 							end
-						end	
+
+							if r < 30 and g > 30 and b > 30 then
+								unique = false
+
+								r = math.random(0, 255)
+								g = math.random(0, 255)
+								b = math.random(0, 255)
+							end
+						end
 
 						local rh = string.format("%x", r)
 						if string.len(rh) == 1 then rh = "0"..rh end
@@ -492,8 +499,16 @@ return
 
 				for i=1,#cCoords do
 					local x = cCoords[i][1]
-					if x < 0 then x = x - 3 end
-					if x > 0 then x = x + 3 end
+					local y = cCoords[i][2]
+					local z = cCoords[i][3]
+					
+					x = x + (math.atan(x / self.planetR) * 8)
+					y = y + (math.atan(y / self.planetR) * 8)
+					z = z + (math.atan(z / self.planetR) * 8)
+					
+					cCoords[i][1] = x
+					cCoords[i][2] = y
+					cCoords[i][3] = z
 					f:write(x)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -501,9 +516,9 @@ return
 				f:write(")\ncityy <- c(")
 
 				for i=1,#cCoords do
+					local x = cCoords[i][1]
 					local y = cCoords[i][2]
-					if y < 0 then y = y - 3 end
-					if y > 0 then y = y + 3 end
+					local z = cCoords[i][3]
 					f:write(y)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -511,9 +526,9 @@ return
 				f:write(")\ncityz <- c(")
 
 				for i=1,#cCoords do
+					local x = cCoords[i][1]
+					local y = cCoords[i][2]
 					local z = cCoords[i][3]
-					if z < 0 then z = z - 3 end
-					if z > 0 then z = z + 3 end
 					f:write(z)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -525,8 +540,67 @@ return
 					f:write("\""..txt.."\"")
 					if i < #cTexts then f:write(", ") end
 				end
-
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(3)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)\nSys.sleep(3)\nlegend3d(\"topright\", legend=csd, pch=19, col=cse, cex=2, inset=c(0.02))\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(3)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)")
+				
+				for i=1,#self.countries do
+					local avgX = 0
+					local avgY = 0
+					local avgZ = 0
+					
+					for j=1,#self.countries[i].nodes do
+						avgX = avgX + self.countries[i].nodes[j][1]
+					end
+					
+					for j=1,#self.countries[i].nodes do
+						avgY = avgY + self.countries[i].nodes[j][2]
+					end
+				
+					for j=1,#self.countries[i].nodes do
+						avgZ = avgZ + self.countries[i].nodes[j][3]
+					end
+					
+					avgX = math.floor(avgX / #self.countries[i].nodes)
+					avgY = math.floor(avgY / #self.countries[i].nodes)
+					avgZ = math.floor(avgZ / #self.countries[i].nodes)
+					
+					local xChange = avgX - math.pi
+					local yChange = avgY - math.pi
+					local zChange = avgZ - math.pi
+					
+					if avgX < 0 then xChange = xChange + math.pi * 2 end
+					if avgY < 0 then yChange = yChange + math.pi * 2 end
+					if avgZ < 0 then zChange = zChange + math.pi * 2 end
+					
+					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+					
+					while ratio < self.planetR-0.1 and ratio > self.planetR+0.1 do
+						xChange = xChange + math.atan(avgX / self.planetR) / 16
+						yChange = yChange + math.atan(avgY / self.planetR) / 16
+						zChange = zChange + math.atan(avgZ / self.planetR) / 16
+						
+						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+					end
+					
+					xChange = xChange + (math.atan(avgX / self.planetR) * 32)
+					yChange = yChange + (math.atan(avgY / self.planetR) * 32)
+					zChange = zChange + (math.atan(avgZ / self.planetR) * 32)
+					
+					local r = 255 - self.cTriplets[self.countries[i].name][1]
+					local g = 255 - self.cTriplets[self.countries[i].name][2]
+					local b = 255 - self.cTriplets[self.countries[i].name][3]
+				
+					local rh = string.format("%x", r)
+					if string.len(rh) == 1 then rh = "0"..rh end
+					local gh = string.format("%x", g)
+					if string.len(gh) == 1 then gh = "0"..gh end
+					local bh = string.format("%x", b)
+					if string.len(bh) == 1 then bh = "0"..bh end
+				
+					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..self.countries[i].name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
+				end
+				
+				f:write("\nSys.sleep(3)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
