@@ -502,9 +502,9 @@ return
 					local y = cCoords[i][2]
 					local z = cCoords[i][3]
 					
-					x = x + (math.atan(x / self.planetR) * 8)
-					y = y + (math.atan(y / self.planetR) * 8)
-					z = z + (math.atan(z / self.planetR) * 8)
+					x = x + (math.atan(x / self.planetR) * 12)
+					y = y + (math.atan(y / self.planetR) * 12)
+					z = z + (math.atan(z / self.planetR) * 12)
 					
 					cCoords[i][1] = x
 					cCoords[i][2] = y
@@ -541,7 +541,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 				
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\nSys.sleep(3)\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)")
 				
 				for i=1,#self.countries do
 					local avgX = 0
@@ -582,9 +582,9 @@ return
 						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 					end
 					
-					xChange = xChange + (math.atan(avgX / self.planetR) * 32)
-					yChange = yChange + (math.atan(avgY / self.planetR) * 32)
-					zChange = zChange + (math.atan(avgZ / self.planetR) * 32)
+					xChange = xChange + (math.atan(avgX / self.planetR) * 36)
+					yChange = yChange + (math.atan(avgY / self.planetR) * 36)
+					zChange = zChange + (math.atan(avgZ / self.planetR) * 36)
 					
 					local r = 255 - self.cTriplets[self.countries[i].name][1]
 					local g = 255 - self.cTriplets[self.countries[i].name][2]
@@ -600,7 +600,7 @@ return
 					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..self.countries[i].name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
 				end
 				
-				f:write("\nSys.sleep(3)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()

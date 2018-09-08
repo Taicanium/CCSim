@@ -759,7 +759,7 @@ return
 				{
 					name="Democracy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Speaker", "Prime Minister"},
-					formalities={"Union", "Democratic Republic", "Free State", "Realm"},
+					formalities={"Union", "Democratic Republic", "Free State", "Realm", "Electorate"},
 					dynastic=false
 				},
 				{
