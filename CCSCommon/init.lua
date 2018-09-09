@@ -279,6 +279,8 @@ return
 						self.status = self.status + (parent.thisWorld.countries[c1].strength - 50)
 					end,
 					doStep=function(self, parent, c1)
+						if parent.thisWorld.countries[self.target] == nil then return -1 end
+					
 						local ao = parent:getAllyOngoing(c1, self.target, self.name)
 						local ac = parent.thisWorld.countries[c1].alliances
 
@@ -425,22 +427,6 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#parent.thisWorld.countries[c1].alliances do
-							if parent.thisWorld.countries[c1].alliances[i] == parent.thisWorld.countries[c2].name then return -1 end
-						end
-
-						for i=1,#parent.thisWorld.countries[c2].alliances do
-							if parent.thisWorld.countries[c2].alliances[i] == parent.thisWorld.countries[c1].name then return -1 end
-						end
-
-						local already = false
-						for i=1,#parent.thisWorld.countries[c1].ongoing - 1 do
-							if parent.thisWorld.countries[c1].ongoing[i].name == self.name and parent.thisWorld.countries[c1].ongoing[i].target == c2 then return -1 end
-						end
-						for i=1,#parent.thisWorld.countries[c2].ongoing - 1 do
-							if parent.thisWorld.countries[c2].ongoing[i].name == self.name and parent.thisWorld.countries[c2].ongoing[i].target == c1 then return -1 end
-						end
-
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 								self.target = c2
@@ -462,6 +448,8 @@ return
 						parent.thisWorld.countries[self.target]:event(parent, "Entered military alliance with "..parent.thisWorld.countries[c1].name)
 					end,
 					doStep=function(self, parent, c1)
+						if parent.thisWorld.countries[self.target] == nil then return -1 end
+					
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[self.target].name] < 40 then
 								local doEnd = math.random(1, 50)

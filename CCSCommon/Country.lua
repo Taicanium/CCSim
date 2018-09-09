@@ -447,8 +447,6 @@ return
 					self.regions[r] = nil
 					rCount = 0
 					for l, m in pairs(self.regions) do rCount = rCount + 1 end
-					print(#self.nodes)
-					print(rCount)
 				end
 
 				for i, j in pairs(self.regions) do

@@ -202,14 +202,14 @@ return
 					
 					local stop = false
 					local oceanNodes = {{x, y, z}}
-					local maxsize = math.random(math.floor(#self.planetdefined / 8), math.floor(#self.planetdefined / 5.75))
+					local maxsize = math.random(math.floor(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 6.25))
 					while stop == false do
 						for j=1,#oceanNodes do
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
 							local chance = math.random(1, 500)
-							if chance < 50 then
+							if chance < 25 then
 								local neighbors = {}
 								for dx=-1,1 do
 									if self.planet[ox-dx] ~= nil then
