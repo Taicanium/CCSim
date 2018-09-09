@@ -1,4 +1,4 @@
-socket = require("socket")
+socketstatus, socket = pcall(require, "socket")
 
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()

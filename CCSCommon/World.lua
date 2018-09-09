@@ -1,3 +1,8 @@
+threadsstatus, threads = pcall(require, "threads")
+threadpool = nil
+
+torchstatus, torch = pcall(require, "torch")
+
 return
 	function()
 		local World = {
@@ -13,6 +18,7 @@ return
 				nm.planetR = 0
 				nm.fromFile = false
 				nm.mtName = "World"
+				nm.threadsDone = {}
 
 				return nm
 			end,
@@ -661,25 +667,66 @@ return
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 
-				local f0 = socket.gettime()
+				local f0 = 0
+				if socketstatus then f0 = socket.gettime() else f0 = os.clock() end
 
-				for i=#self.countries,1,-1 do
-					if self.countries[i] ~= nil then
-						self.countries[i]:update(parent, i)
-
+				if threadsstatus then
+					if threadpool == nil then
+						if torchstatus then threadpool = threads.Threads(torch.getnumthreads()) else threadpool = threads.Threads(4) end
+					end
+					
+					for i=1,#self.countries do
+						self.threadsDone[i] = 1
+					end
+					
+					for i=#self.countries,1,-1 do
 						if self.countries[i] ~= nil then
-							if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
-
-							if self.countries[i].population < 10 then
-								if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
-								self.countries[i]:event(parent, "Disappeared")
-								self:delete(parent, i)
+							if self.countries[i].update ~= nil then
+								threadpool:addjob(
+									function() end,
+									
+									function()
+										parent.thisWorld.countries[i]:update(parent, i)
+										
+										parent.thisWorld.threadsDone[i] = 1
+									end
+								)
+								self.threadsDone[i] = 0
 							end
+						end
+					end
+					
+					threadpool:synchronize()
+					
+					local allfinished = false
+					while allfinished == false do
+						allfinished = true
+						for i=1,#self.threadsDone do if self.threadsDone[i] == 0 then allfinished = false end end
+					end
+				else
+					for i=#self.countries,1,-1 do
+						if self.countries[i] ~= nil then
+							self.countries[i]:update(parent, i)
 						end
 					end
 				end
 
-				local f1 = socket.gettime() - f0
+				for i=#self.countries,1,-1 do
+					if self.countries[i] ~= nil then
+						self.countries[i]:eventloop(parent, i)
+					
+						if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
+
+						if self.countries[i].population < 10 then
+							if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
+							self.countries[i]:event(parent, "Disappeared")
+							self:delete(parent, i)
+						end
+					end
+				end
+							
+				local f1 = f0
+				if socketstatus then f1 = socket.gettime() - f0 else f1 = os.clock() - f0 end
 
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.25 then

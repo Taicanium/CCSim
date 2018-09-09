@@ -769,7 +769,6 @@ return
 				end
 
 				self:checkRuler(parent)
-				self:eventloop(parent, ind)
 			end
 		}
 
