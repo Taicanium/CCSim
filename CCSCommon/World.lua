@@ -813,7 +813,9 @@ return
 				for i=#self.countries,1,-1 do
 					if self.countries[i] ~= nil then
 						self.countries[i]:eventloop(parent, i)
+					end
 					
+					if self.countries[i] ~= nil then
 						if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
 
 						if self.countries[i].population < 10 then

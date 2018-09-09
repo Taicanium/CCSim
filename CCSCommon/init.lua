@@ -266,7 +266,7 @@ return
 				},
 				{
 					name="War",
-					chance=10,
+					chance=8,
 					target=nil,
 					args=2,
 					status = 0,
@@ -427,6 +427,10 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
+						for i=1,#parent.thisWorld.countries[c1].ongoing - 1 do
+							if parent.thisWorld.countries[c1].ongoing[i].name == self.name and parent.thisWorld.countries[c1].ongoing[i].target == c2 then return -1 end
+						end
+					
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
 							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
 								self.target = c2
@@ -514,7 +518,7 @@ return
 
 						local chance = math.random(1, 100)
 
-						if chance > 50 then
+						if chance > 45 then
 							local values = {}
 
 							for i, j in pairs(parent.thisWorld.countries[c].regions) do

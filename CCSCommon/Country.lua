@@ -134,7 +134,7 @@ return
 			end,
 
 			event = function(self, parent, e)
-				table.insert(self.events, {Event=e:gsub(" of ,", ","):gsub(" of the ,", ","), Year=parent.years})
+				table.insert(self.events, {Event=e:gsub(" of ,", ","):gsub(" of the ,", ","):gsub("  ", " "), Year=parent.years})
 			end,
 
 			eventloop = function(self, parent, ind)
@@ -162,53 +162,27 @@ return
 				end
 
 				for i=1,#parent.c_events do
-					if parent.c_events[i].inverse == false then
-						local chance = math.floor(math.random(1, v))
-						if chance <= parent.c_events[i].chance then
-							if parent.c_events[i].args == 1 then
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							elseif parent.c_events[i].args == 2 then
-								local other = math.random(1, #parent.thisWorld.countries)
-								while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							end
-						end
-					else
-						local chance = math.floor(math.random(1, vi))
-						if chance <= parent.c_events[i].chance then
-							if parent.c_events[i].args == 1 then
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, ind)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							elseif parent.c_events[i].args == 2 then
-								if #parent.thisWorld.countries > 1 then
-									local other = math.random(1, #parent.thisWorld.countries)
-									while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
-									table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-									if self.ongoing[#self.ongoing].performEvent ~= nil then
-										if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-										else
-											self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
-										end
-									else table.remove(self.ongoing, #self.ongoing) end
+					local chance = math.floor(math.random(1, v))
+					if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
+					if chance <= parent.c_events[i].chance then
+						if parent.c_events[i].args == 1 then
+							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+							if self.ongoing[#self.ongoing].performEvent ~= nil then
+								if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									self.ongoing[#self.ongoing]:beginEvent(parent, ind)
 								end
-							end
+							else table.remove(self.ongoing, #self.ongoing) end
+						elseif parent.c_events[i].args == 2 then
+							local other = math.random(1, #parent.thisWorld.countries)
+							while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+							if self.ongoing[#self.ongoing].performEvent ~= nil then
+								if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+								else
+									self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
+								end
+							else table.remove(self.ongoing, #self.ongoing) end
 						end
 					end
 				end
@@ -683,9 +657,9 @@ return
 				self.population = #self.people
 
 				if self.population > parent.popLimit then
-					self.deathrate = 20
+					self.deathrate = 5
 				else
-					self.deathrate = 135
+					self.deathrate = 130
 				end
 
 				local oldcap = self.capitalcity
