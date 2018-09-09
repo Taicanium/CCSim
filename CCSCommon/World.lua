@@ -141,18 +141,20 @@ return
 			end,
 
 			constructVoxelPlanet = function(self, parent)
+				parent:rseed()
+			
 				print("Constructing voxel planet...")
 
 				local r = math.random(65, 80)
 				self.planetR = r
 
 				for x=-r,r do
-					self.planet[x] = {}
 					for y=-r,r do
-						self.planet[x][y] = {}
 						for z=-r,r do
 							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
 							if fsqrt < r+0.5 and fsqrt > r-0.5 then
+								if self.planet[x] == nil then self.planet[x] = {} end
+								if self.planet[x][y] == nil then self.planet[x][y] = {} end
 								self.planet[x][y][z] = {}
 								self.planet[x][y][z].x = x
 								self.planet[x][y][z].y = y
@@ -162,14 +164,89 @@ return
 								self.planet[x][y][z].region = ""
 								self.planet[x][y][z].regionset = false
 								self.planet[x][y][z].city = ""
+								self.planet[x][y][z].land = true -- if false, this node is water.
 
 								table.insert(self.planetdefined, {x, y, z})
 							end
 						end
 					end
 				end
+				
+				print("Defining bodies of water...")
+				
+				local oceanCount = math.random(4, 5)
+				
+				for i=1,oceanCount do
+					print("\nOcean "..tostring(i).."/"..tostring(oceanCount))
+				
+					local located = false
 
-				print("Rooting countries...")
+					local rnd = math.random(1, #self.planetdefined)
+
+					local x = self.planetdefined[rnd][1]
+					local y = self.planetdefined[rnd][2]
+					local z = self.planetdefined[rnd][3]
+					
+					while located == false do
+						rnd = math.random(1, #self.planetdefined)
+
+						x = self.planetdefined[rnd][1]
+						y = self.planetdefined[rnd][2]
+						z = self.planetdefined[rnd][3]
+						
+						located = true
+						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
+					end
+					
+					self.planet[x][y][z].land = false
+					
+					local stop = false
+					local oceanNodes = {{x, y, z}}
+					local maxsize = math.random(math.floor(#self.planetdefined / 8), math.floor(#self.planetdefined / 5.75))
+					while stop == false do
+						for j=1,#oceanNodes do
+							local ox = oceanNodes[j][1]
+							local oy = oceanNodes[j][2]
+							local oz = oceanNodes[j][3]
+							local chance = math.random(1, 500)
+							if chance < 50 then
+								local neighbors = {}
+								for dx=-1,1 do
+									if self.planet[ox-dx] ~= nil then
+										for dy=-1,1 do
+											if self.planet[ox-dx][oy-dy] ~= nil then
+												for dz=-1,1 do
+													if self.planet[ox-dx][oy-dy][oz-dz] ~= nil then
+														if self.planet[ox-dx][oy-dy][oz-dz].land == true then
+															table.insert(neighbors, {ox-dx, oy-dy, oz-dz})
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+								
+								if #neighbors > 0 then
+									local nr = math.random(1, #neighbors)
+									table.insert(oceanNodes, neighbors[nr])
+								end
+							end
+						end
+						
+						for j=1,#oceanNodes do
+							local ox = oceanNodes[j][1]
+							local oy = oceanNodes[j][2]
+							local oz = oceanNodes[j][3]
+							self.planet[ox][oy][oz].land = false
+						end
+						
+						if #oceanNodes >= maxsize then stop = true end
+						io.write("\r"..tostring(math.floor(#oceanNodes/maxsize*10000)/100).." \t% done")
+					end
+				end
+
+				print("\nRooting countries...")
 
 				for i=1,#self.countries do
 					local located = false
@@ -181,14 +258,14 @@ return
 					local z = self.planetdefined[rnd][3]
 
 					while located == false do
-						located = true
-						if self.planet[x][y][z].country ~= "" then located = false end
-
 						rnd = math.random(1, #self.planetdefined)
 
 						x = self.planetdefined[rnd][1]
 						y = self.planetdefined[rnd][2]
 						z = self.planetdefined[rnd][3]
+					
+						located = true
+						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
 					end
 
 					self.planet[x][y][z].country = self.countries[i].name
@@ -215,10 +292,12 @@ return
 											if self.planet[dx+x] ~= nil then
 												if self.planet[dx+x][dy+y] ~= nil then
 													if self.planet[dx+x][dy+y][dz+z] ~= nil then
-														if self.planet[dx+x][dy+y][dz+z].country == "" then
-															self.planet[dx+x][dy+y][dz+z].country = self.planet[x][y][z].country
-															self.planet[dx+x][dy+y][dz+z].countryset = true
-															allDefined = false
+														if self.planet[dx+x][dy+y][dz+z].land == true then
+															if self.planet[dx+x][dy+y][dz+z].country == "" then
+																self.planet[dx+x][dy+y][dz+z].country = self.planet[x][y][z].country
+																self.planet[dx+x][dy+y][dz+z].countryset = true
+																allDefined = false
+															end
 														end
 													end
 												end
@@ -237,7 +316,7 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if self.planet[x][y][z].country ~= "" then defined = defined + 1 end
+						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then defined = defined + 1 end
 
 						self.planet[x][y][z].countryset = false
 					end
@@ -370,9 +449,14 @@ return
 				local f = io.open(label, "w+")
 
 				f:write("library(\"rgl\")\nlibrary(\"car\")\nx <- c(")
-
+				
 				for i=1,#self.planetdefined do
 					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					if self.planet[x][y][z].land == false then
+						x = x - (math.atan(self.planetdefined[i][1] / self.planetR) * 1.5)
+					end
 					f:write(x)
 					if i < #self.planetdefined then f:write(", ") end
 				end
@@ -380,7 +464,12 @@ return
 				f:write(")\ny <- c(")
 
 				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					if self.planet[x][y][z].land == false then
+						y = y - (math.atan(self.planetdefined[i][2] / self.planetR) * 1.5)
+					end
 					f:write(y)
 					if i < #self.planetdefined then f:write(", ") end
 				end
@@ -388,7 +477,12 @@ return
 				f:write(")\nz <- c(")
 
 				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
+					if self.planet[x][y][z].land == false then
+						z = z - (math.atan(self.planetdefined[i][3] / self.planetR) * 1.5)
+					end
 					f:write(z)
 					if i < #self.planetdefined then f:write(", ") end
 				end
@@ -413,9 +507,9 @@ return
 						while unique == false do
 							unique = true
 							for k, j in pairs(self.cTriplets) do
-								if j[1] > r-30 and j[1] < r+30 then
-									if j[2] > g-30 and j[2] < g+30 then
-										if j[3] > b-30 and j[3] < b+30 then
+								if j[1] > r-25 and j[1] < r+25 then
+									if j[2] > g-25 and j[2] < g+25 then
+										if j[3] > b-25 and j[3] < b+25 then
 											r = math.random(0, 255)
 											g = math.random(0, 255)
 											b = math.random(0, 255)
@@ -434,7 +528,7 @@ return
 								b = math.random(0, 255)
 							end
 
-							if r < 30 and g > 30 and b > 30 then
+							if r < 25 and g < 25 and b < 25 then
 								unique = false
 
 								r = math.random(0, 255)
@@ -483,7 +577,12 @@ return
 							end
 						end
 					end
-					if isCity == true then f:write("\"#888888\"") else f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") end
+					if isCity == true then f:write("\"#888888\"") else
+						if self.planet[x][y][z].land == true then
+							if self.planet[x][y][z].country ~= "" then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"")
+							else f:write("\"#1616AA\"") end
+						else f:write("\"#1616AA\"") end
+					end
 					if i < #self.planetdefined then f:write(", ") end
 				end
 
@@ -547,7 +646,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 				
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.8, font=2)")
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=2)")
 				
 				for i=1,#self.countries do
 					local avgX = 0

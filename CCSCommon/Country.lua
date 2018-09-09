@@ -438,7 +438,9 @@ return
 				local rCount = 0
 				for i, j in pairs(self.regions) do rCount = rCount + 1 end
 
-				while rCount >= #self.nodes do
+				local maxR = math.ceil(#self.nodes / 50)
+				
+				while rCount > maxR do
 					local r = ""
 					for j, k in pairs(self.regions) do if r == "" then r = k.name end end
 					parent:deepnil(self.regions[r])
@@ -522,7 +524,9 @@ return
 					local cCount = 0
 					for k, l in pairs(j.cities) do cCount = cCount + 1 end
 
-					while cCount >= #j.nodes do
+					local maxC = math.ceil(#j.nodes / 25)
+					
+					while cCount > maxC do
 						local r = ""
 						for k, l in pairs(j.cities) do if r == "" then r = l.name end end
 						local x = j.cities[r].x
