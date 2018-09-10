@@ -367,6 +367,9 @@ return
 									end
 									local nr = table.remove(parent.thisWorld.countries[c1].nodes, nc)
 									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
+									for r=1,#parent.thisWorld.countries[c1].regions[oldRegion].nodes do
+										if parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][1] == nr[1] and parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][2] == nr[2] and parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][3] == nr[3] then table.remove(parent.thisWorld.countries[c1].regions[oldRegion].nodes, r) end
+									end
 									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
 									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
 										parent.thisWorld.countries[c2]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c1].name)
@@ -400,6 +403,9 @@ return
 									end
 									local nr = table.remove(parent.thisWorld.countries[c2].nodes, nc)
 									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
+									for r=1,#parent.thisWorld.countries[c2].regions[oldRegion].nodes do
+										if parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][1] == nr[1] and parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][2] == nr[2] and parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][3] == nr[3] then table.remove(parent.thisWorld.countries[c2].regions[oldRegion].nodes, r) end
+									end
 									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
 									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
 										parent.thisWorld.countries[c1]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c2].name)
