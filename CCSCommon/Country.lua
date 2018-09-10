@@ -450,24 +450,12 @@ return
 						local z = self.nodes[i][3]
 
 						if parent.thisWorld.planet[x][y][z].region == "" then
-							for dx=-1,1 do
-								if parent.thisWorld.planet[dx+x] ~= nil then
-									for dy=-1,1 do
-										if parent.thisWorld.planet[dx+x][dy+y] ~= nil then
-											for dz=-1,1 do
-												if parent.thisWorld.planet[dx+x][dy+y][dz+z] ~= nil then
-													if parent.thisWorld.planet[dx+x][dy+y][dz+z].country == self.name then
-														if parent.thisWorld.planet[dx+x][dy+y][dz+z].region ~= "" then
-															if parent.thisWorld.planet[dx+x][dy+y][dz+z].regionset == false then
-																parent.thisWorld.planet[x][y][z].region = parent.thisWorld.planet[dx+x][dy+y][dz+z].region
-																parent.thisWorld.planet[x][y][z].regionset = true
-																allDefined = false
-															end
-														end
-													end
-												end
-											end
-										end
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+								if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region ~= "" then
+									if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].regionset == false then
+										parent.thisWorld.planet[x][y][z].region = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
+										parent.thisWorld.planet[x][y][z].regionset = true
 									end
 								end
 							end

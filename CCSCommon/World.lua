@@ -165,8 +165,31 @@ return
 								self.planet[x][y][z].regionset = false
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = true -- if false, this node is water.
+								self.planet[x][y][z].neighbors = {}
 
 								table.insert(self.planetdefined, {x, y, z})
+							end
+						end
+					end
+				end
+				
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					
+					for dx=-1,1 do
+						if self.planet[x-dx] ~= nil then
+							for dy=-1,1 do
+								if self.planet[x-dx][y-dy] ~= nil then
+									for dz=-1,1 do
+										if self.planet[x-dx][y-dy][z-dz] ~= nil then
+											if x ~= dx or y ~= dy or z ~= dz then
+												table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz})
+											end
+										end
+									end
+								end
 							end
 						end
 					end
@@ -202,7 +225,7 @@ return
 					
 					local stop = false
 					local oceanNodes = {{x, y, z}}
-					local maxsize = math.random(math.floor(#self.planetdefined / 9.25), math.floor(#self.planetdefined / 6.5))
+					local maxsize = math.random(math.ceil(#self.planetdefined / 8), math.floor(#self.planetdefined / 6.5))
 					while stop == false do
 						for j=1,#oceanNodes do
 							local ox = oceanNodes[j][1]
@@ -210,30 +233,15 @@ return
 							local oz = oceanNodes[j][3]
 							local chance = math.random(math.random(1, 10), math.random(11, 1500))
 							if chance > 1000 then
-								local neighbors = {}
-								for dx=-1,1 do
-									if self.planet[ox-dx] ~= nil then
-										for dy=-1,1 do
-											if self.planet[ox-dx][oy-dy] ~= nil then
-												for dz=-1,1 do
-													if self.planet[ox-dx][oy-dy][oz-dz] ~= nil then
-														if self.planet[ox-dx][oy-dy][oz-dz].land == true then
-															table.insert(neighbors, {ox-dx, oy-dy, oz-dz})
-														end
-													end
-												end
-											end
-										end
-									end
-								end
+								local neighbors = self.planet[ox][oy][oz].neighbors
 								
 								if #neighbors > 0 then
 									local nr = math.random(1, #neighbors)
-									local ox = neighbors[nr][1]
-									local oy = neighbors[nr][2]
-									local oz = neighbors[nr][3]
-									self.planet[ox][oy][oz].land = false
-									table.insert(oceanNodes, neighbors[nr])
+									local nx = neighbors[nr][1]
+									local ny = neighbors[nr][2]
+									local nz = neighbors[nr][3]
+									if self.planet[nx][ny][nz].land == true then table.insert(oceanNodes, neighbors[nr]) end
+									self.planet[nx][ny][nz].land = false
 								end
 							end
 						end
@@ -283,22 +291,13 @@ return
 
 						if self.planet[x][y][z].country ~= "" then
 							if self.planet[x][y][z].countryset == false then
-								for dx=-1,1 do
-									for dy=-1,1 do
-										for dz=-1,1 do
-											if self.planet[dx+x] ~= nil then
-												if self.planet[dx+x][dy+y] ~= nil then
-													if self.planet[dx+x][dy+y][dz+z] ~= nil then
-														if self.planet[dx+x][dy+y][dz+z].land == true then
-															if self.planet[dx+x][dy+y][dz+z].country == "" then
-																self.planet[dx+x][dy+y][dz+z].country = self.planet[x][y][z].country
-																self.planet[dx+x][dy+y][dz+z].countryset = true
-																allDefined = false
-															end
-														end
-													end
-												end
-											end
+								for j=1,#self.planet[x][y][z].neighbors do
+									local neighbor = self.planet[x][y][z].neighbors[j]
+									if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == "" then
+										if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset == false then
+											self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country = self.planet[x][y][z].country
+											self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset = true
+											allDefined = false
 										end
 									end
 								end
@@ -319,6 +318,14 @@ return
 					end
 
 					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."  \t% done")
+				end
+				
+				for i=1,#self.planetdefined do
+					local x = self.planetdefined[i][1]
+					local y = self.planetdefined[i][2]
+					local z = self.planetdefined[i][3]
+					
+					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
 				print("\nDefining regional boundaries...")

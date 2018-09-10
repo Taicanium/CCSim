@@ -341,7 +341,80 @@ return
 							varistab = varistab - parent.thisWorld.countries[ao[i]].strength - 50
 						end
 
-						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
+						local tmpStatus = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
+						
+						if parent.doR == true then
+							local diff = tmpStatus - self.Status
+							if diff < 0 then
+								local changedHands = diff * math.ceil(#parent.thisWorld.countries[c1].nodes / 150)
+								for i=1,changedHands do
+									local nc = 0
+									local border = false
+									local neighborRegion = ""
+									while border == false do
+										nc = math.random(1, #parent.thisWorld.countries[c1].nodes)
+										for j=1,#parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors do
+											local neighbor = parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors[j]
+											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == false then
+												border = true
+												water = true
+											end
+											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == parent.thisWorld.countries[c2].name then
+												border = true
+												neighborRegion = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
+											end
+										end
+									end
+									local nr = table.remove(parent.thisWorld.countries[c1].nodes, nc)
+									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
+									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
+									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
+										parent.thisWorld.countries[c2]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c1].name)
+										parent.thisWorld.countries[c1]:event(parent, "Lost the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." to "..parent.thisWorld.countries[c2].name)
+										local newcity = parent:deepcopy(parent.thisWorld.countries[c1].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city])
+										parent.thisWorld.countries[c2].regions[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = newcity
+										parent.thisWorld.countries[c1].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = nil
+									end
+									parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].country = parent.thisWorld.countries[c2].name
+									table.insert(parent.thisWorld.countries[c2].nodes, nr)
+								end
+							elseif diff > 0 then
+								local changedHands = diff * math.ceil(#parent.thisWorld.countries[c2].nodes / 150)
+								for i=1,changedHands do
+									local nc = 0
+									local border = false
+									local neighborRegion = ""
+									while border == false do
+										nc = math.random(1, #parent.thisWorld.countries[c2].nodes)
+										for j=1,#parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors do
+											local neighbor = parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors[j]
+											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == false then
+												border = true
+												water = true
+											end
+											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == parent.thisWorld.countries[c1].name then
+												border = true
+												neighborRegion = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
+											end
+										end
+									end
+									local nr = table.remove(parent.thisWorld.countries[c2].nodes, nc)
+									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
+									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
+									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
+										parent.thisWorld.countries[c1]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c2].name)
+										parent.thisWorld.countries[c2]:event(parent, "Lost the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." to "..parent.thisWorld.countries[c1].name)
+										local newcity = parent:deepcopy(parent.thisWorld.countries[c2].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city])
+										parent.thisWorld.countries[c1].regions[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = newcity
+										parent.thisWorld.countries[c2].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = nil
+									end
+									parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].country = parent.thisWorld.countries[c1].name
+									table.insert(parent.thisWorld.countries[c1].nodes, nr)
+								end
+							end
+						end
+						
+						self.Status = tmpStatus
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
@@ -432,6 +505,38 @@ return
 					performEvent=function(self, parent, c1, c2)
 						for i=1,#parent.thisWorld.countries[c1].ongoing - 1 do
 							if parent.thisWorld.countries[c1].ongoing[i].name == self.name and parent.thisWorld.countries[c1].ongoing[i].target == c2 then return -1 end
+						end
+						
+						if parent.doR == true then
+							local border = false
+							local water = false
+							for i=1,#parent.thisWorld.countries[c1].nodes do
+								local x = parent.thisWorld.countries[c1].nodes[i][1]
+								local y = parent.thisWorld.countries[c1].nodes[i][2]
+								local z = parent.thisWorld.countries[c1].nodes[i][3]
+								
+								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+									if neighbor.country == parent.thisWorld.countries[c2].name then border = true end
+									if neighbor.land == false then water = true end
+								end
+							end
+							
+							if water == true then
+								water = false
+								for i=1,#parent.thisWorld.countries[c2].nodes do
+									local x = parent.thisWorld.countries[c2].nodes[i][1]
+									local y = parent.thisWorld.countries[c2].nodes[i][2]
+									local z = parent.thisWorld.countries[c2].nodes[i][3]
+									
+									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+										if neighbor.land == false then water = true end
+									end
+								end
+							end
+							
+							if border == false and water == false then return -1 end
 						end
 					
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
@@ -1991,7 +2096,7 @@ return
 
 			sleep = function(self, t)
 				local n = _time()
-				while socket.gettime() < n + t do end
+				while _time() < n + t do end
 			end,
 
 			sortAscendants = function(self, data)
