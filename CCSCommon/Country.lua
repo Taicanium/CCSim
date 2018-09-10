@@ -500,7 +500,9 @@ return
 					
 					while cCount > maxC do
 						local r = ""
-						for k, l in pairs(j.cities) do if r == "" then r = l.name end end
+						local poss = {}
+						for k, l in pairs(j.cities) do table.insert(poss, l.name) end
+						r = poss[math.random(1, #poss)]
 						local x = j.cities[r].x
 						local y = j.cities[r].y
 						local z = j.cities[r].z
@@ -509,16 +511,6 @@ return
 						j.cities[r] = nil
 						cCount = 0
 						for m, n in pairs(j.cities) do cCount = cCount + 1 end
-					end
-				end
-
-				for i, j in pairs(self.regions) do
-					for k=1,#j.nodes do
-						local x = j.nodes[k][1]
-						local y = j.nodes[k][2]
-						local z = j.nodes[k][3]
-
-						parent.thisWorld.planet[x][y][z].city = ""
 					end
 				end
 

@@ -174,7 +174,7 @@ return
 				
 				print("Defining bodies of water...")
 				
-				local oceanCount = math.random(4, 5)
+				local oceanCount = math.random(4, 6)
 				
 				for i=1,oceanCount do
 					print("\nOcean "..tostring(i).."/"..tostring(oceanCount))
@@ -202,14 +202,14 @@ return
 					
 					local stop = false
 					local oceanNodes = {{x, y, z}}
-					local maxsize = math.random(math.floor(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 6.25))
+					local maxsize = math.random(math.floor(#self.planetdefined / 9.25), math.floor(#self.planetdefined / 6.5))
 					while stop == false do
 						for j=1,#oceanNodes do
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
-							local chance = math.random(1, 500)
-							if chance < 25 then
+							local chance = math.random(math.random(1, 10), math.random(11, 1500))
+							if chance > 1000 then
 								local neighbors = {}
 								for dx=-1,1 do
 									if self.planet[ox-dx] ~= nil then
@@ -229,16 +229,13 @@ return
 								
 								if #neighbors > 0 then
 									local nr = math.random(1, #neighbors)
+									local ox = neighbors[nr][1]
+									local oy = neighbors[nr][2]
+									local oz = neighbors[nr][3]
+									self.planet[ox][oy][oz].land = false
 									table.insert(oceanNodes, neighbors[nr])
 								end
 							end
-						end
-						
-						for j=1,#oceanNodes do
-							local ox = oceanNodes[j][1]
-							local oy = oceanNodes[j][2]
-							local oz = oceanNodes[j][3]
-							self.planet[ox][oy][oz].land = false
 						end
 						
 						if #oceanNodes >= maxsize then stop = true end
@@ -766,8 +763,7 @@ return
 			update = function(self, parent)
 				parent.numCountries = #self.countries
 
-				local f0 = 0
-				if socketstatus then f0 = socket.gettime() else f0 = os.clock() end
+				local f0 = _time()
 
 				if threadsstatus then
 					if threadpool == nil then
@@ -826,8 +822,7 @@ return
 					end
 				end
 							
-				local f1 = f0
-				if socketstatus then f1 = socket.gettime() - f0 else f1 = os.clock() - f0 end
+				local f1 = _time() - f0
 
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.25 then

@@ -7,6 +7,9 @@ Region = require("CCSCommon.Region")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
 
+_time = os.clock
+if socketstatus then _time = socket.gettime end
+
 return
 	function()
 		local CCSCommon = {
@@ -915,8 +918,8 @@ return
 
 				if self.ged == true then
 					local dat = self:sortAscendants(self.final)
-					royals = dat[1]
-					fams = dat[2]
+					local royals = dat[1]
+					local fams = dat[2]
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
@@ -1970,24 +1973,24 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.001)
-				tc = socket.gettime()
-				n = tonumber(tostring(tc):reverse())
-				while n < 1000000 do n = n * 10 end
-				while n > 100000000 do n = n / 10 end
-				n = math.ceil(n)
-				math.randomseed(n)
-				math.random(1, 100)
-				x = math.random(4, 6)
+				self:sleep(0.002)
+				local tc = _time()
+				local n = tonumber(tostring(tc):reverse())
+				while n < 100000 do n = n * math.floor(math.random(8, 12)) end
+				while n > 100000000 do n = n / math.floor(math.random(8, 12)) end
+				math.randomseed(math.ceil(n))
+				local x = math.random(3, 5)
+				local s = math.random(2, 4)
+				for i=3,s do math.random(100, 1000) end
 				for i=3,x do
 					math.randomseed(math.random(n, i*n))
-					math.random(1, 100)
+					for j=3,s do math.random(100, 1000) end
 				end
-				math.random(1, 100)
+				for i=3,s do math.random(100, 1000) end
 			end,
 
 			sleep = function(self, t)
-				n = socket.gettime()
+				local n = _time()
 				while socket.gettime() < n + t do end
 			end,
 
@@ -2002,18 +2005,14 @@ return
 					self.resort = false
 
 					local formerTotal = #royals
-
 					local ascCount = #data[i].ascendants
 
-					for j=1,ascCount do
+					for j=ascCount,1,-1 do
 						percentage = math.floor(j / ascCount * 10000)/100
 						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
 
 						self:getAscendants(data[i], royals, data[i].ascendants[j])
-					end
-
-					for k=ascCount,1,-1 do
-						table.remove(data[i].ascendants, k)
+						table.remove(data[i].ascendants, j)
 					end
 
 					if self.resort == true then
