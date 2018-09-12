@@ -460,7 +460,7 @@ return
 
 							if c1strength > c2strength + 10 then
 								local rname = ""
-								while rname == nil do
+								while rname == "" do
 									for q, b in pairs(parent.thisWorld.countries[c2].regions) do
 										local chance = math.random(1, 25)
 										if chance == 12 then rname = b.name end
@@ -496,7 +496,7 @@ return
 
 							if c2strength > c1strength + 10 then
 								local rname = ""
-								while rname == nil do
+								while rname == "" do
 									for q, b in pairs(parent.thisWorld.countries[c1].regions) do
 										local chance = math.random(1, 25)
 										if chance == 12 then rname = b.name end
@@ -717,10 +717,10 @@ return
 								local rchance = math.random(1, 30)
 								if rchance < 5 then
 									local rname = ""
-									while rname == nil do
+									while rname == "" do
 										for q, b in pairs(parent.thisWorld.countries[c2].regions) do
-											local chance = math.random(1, 25)
-											if chance == 12 then rname = b.name end
+											local schance = math.random(1, 25)
+											if schance == 12 then rname = b.name end
 										end
 									end
 									parent:RegionTransfer(c1, c2, rname, true)
