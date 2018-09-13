@@ -225,7 +225,7 @@ return
 					
 					local stop = false
 					local oceanNodes = {{x, y, z}}
-					local maxsize = math.random(math.ceil(#self.planetdefined / 8), math.floor(#self.planetdefined / 6.5))
+					local maxsize = math.random(math.ceil(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 6.25))
 					while stop == false do
 						for j=1,#oceanNodes do
 							local ox = oceanNodes[j][1]
@@ -247,7 +247,9 @@ return
 						end
 						
 						if #oceanNodes >= maxsize then stop = true end
-						io.write("\r"..tostring(math.floor(#oceanNodes/maxsize*10000)/100).." \t% done")
+						local percent = tostring(math.floor(#oceanNodes/maxsize*10000)/100)
+						if string.len(percent) > 5 then percent = percent.."  % done" else percent = percent.."  \t% done" end
+						io.write("\r"..percent)
 					end
 				end
 
@@ -289,15 +291,19 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if self.planet[x][y][z].country ~= "" then
-							if self.planet[x][y][z].countryset == false then
-								for j=1,#self.planet[x][y][z].neighbors do
-									local neighbor = self.planet[x][y][z].neighbors[j]
-									if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == "" then
-										if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset == false then
-											self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country = self.planet[x][y][z].country
-											self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset = true
-											allDefined = false
+						if self.planet[x][y][z].land == true then
+							if self.planet[x][y][z].country ~= "" then
+								if self.planet[x][y][z].countryset == false then
+									for j=1,#self.planet[x][y][z].neighbors do
+										local neighbor = self.planet[x][y][z].neighbors[j]
+										if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == true then
+											if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == "" then
+												if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset == false then
+													self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country = self.planet[x][y][z].country
+													self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset = true
+													allDefined = false
+												end
+											end
 										end
 									end
 								end

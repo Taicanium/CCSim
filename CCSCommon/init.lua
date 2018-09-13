@@ -109,7 +109,7 @@ return
 					target=nil,
 					args=1,
 					inverse=false,
-					status = 0,
+					status=0,
 					opIntervened = {},
 					govIntervened = {},
 					beginEvent=function(self, parent, c)
@@ -269,10 +269,10 @@ return
 				},
 				{
 					name="War",
-					chance=8,
+					chance=12,
 					target=nil,
 					args=2,
-					status = 0,
+					status=0,
 					inverse=true,
 					beginEvent=function(self, parent, c1)
 						parent.thisWorld.countries[c1]:event(parent, "Declared war on "..parent.thisWorld.countries[self.target].name)
@@ -515,7 +515,7 @@ return
 						
 						if parent.doR == true then
 							local border = false
-							local water = false
+							local water = -1
 							for i=1,#parent.thisWorld.countries[c1].nodes do
 								local x = parent.thisWorld.countries[c1].nodes[i][1]
 								local y = parent.thisWorld.countries[c1].nodes[i][2]
@@ -524,29 +524,30 @@ return
 								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 									if neighbor.country == parent.thisWorld.countries[c2].name then border = true end
-									if neighbor.land == false then water = true end
+									if neighbor.land == false then water = 0 end
 								end
 							end
 							
-							if water == true then
-								water = false
-								for i=1,#parent.thisWorld.countries[c2].nodes do
-									local x = parent.thisWorld.countries[c2].nodes[i][1]
-									local y = parent.thisWorld.countries[c2].nodes[i][2]
-									local z = parent.thisWorld.countries[c2].nodes[i][3]
-									
-									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-										if neighbor.land == false then water = true end
+							for i=1,#parent.thisWorld.countries[c2].nodes do
+								local x = parent.thisWorld.countries[c2].nodes[i][1]
+								local y = parent.thisWorld.countries[c2].nodes[i][2]
+								local z = parent.thisWorld.countries[c2].nodes[i][3]
+								
+								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+									if neighbor.country == parent.thisWorld.countries[c1].name then border = true end
+									if neighbor.land == false then
+										if water == -1 then water = 1
+										elseif water == 0 then water = 2 end
 									end
 								end
 							end
 							
-							if border == false and water == false then return -1 end
+							if border == false and water ~= 2 then return -1 end
 						end
 					
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 20 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 30 then
 								self.target = c2
 								return 0
 							end
@@ -845,7 +846,6 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
 			},
 			popLimit = 10000,
-			resort = false,
 			showinfo = 0,
 			startyear = 1,
 			systems = {
@@ -960,7 +960,6 @@ return
 				local f = io.open("output.txt", "w+")
 
 				local ged = nil
-				self.resort = false
 				local royals = {}
 				local fams = {}
 
@@ -1354,8 +1353,6 @@ return
 				end
 
 				if found == false then
-					self.resort = true
-
 					table.insert(royals, {
 						name=person.Name,
 						surname=person.Surname,
@@ -2111,24 +2108,18 @@ return
 				local fams = {}
 
 				for i=1,#data do
-					print("")
-
-					self.resort = false
-
 					local formerTotal = #royals
 					local ascCount = #data[i].ascendants
 
-					for j=ascCount,1,-1 do
-						percentage = math.floor(j / ascCount * 10000)/100
+					if ascCount > 0 then print("") end
+					
+					for M=ascCount,1,-1 do
+						percentage = math.floor((ascCount-M+1) / ascCount * 10000)/100
 						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
 
-						self:getAscendants(data[i], royals, data[i].ascendants[j])
-						table.remove(data[i].ascendants, j)
-					end
-
-					if self.resort == true then
-						print("")
-
+						self:getAscendants(data[i], royals, data[i].ascendants[M])
+						table.remove(data[i].ascendants, M)
+						
 						local limit = #royals
 						local j = 1
 						local adjusts = {}
@@ -2158,15 +2149,10 @@ return
 								end
 							end
 
-							percentage = math.floor(j / limit * 10000)/100
-							io.write("\rRemoving duplicate people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
-
 							j = j + 1
 						end
 
 						if formerTotal ~= #royals then
-							print("")
-
 							for j=formerTotal+1,#royals do
 								for k=1,#adjusts do
 									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
@@ -2177,12 +2163,7 @@ return
 
 								if royals[j].father > #royals then royals[j].father = 0 end
 								if royals[j].mother > #royals then royals[j].mother = 0 end
-
-								percentage = math.floor((j-formerTotal) / (#royals-formerTotal) * 10000)/100
-								io.write("\rSorting people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
 							end
-
-							print("")
 
 							for j=formerTotal+1,#royals do
 								local found = nil
@@ -2210,9 +2191,6 @@ return
 								else
 									if chil == false then table.insert(fams[found].chil, j) end
 								end
-
-								percentage = math.floor((j-formerTotal) / (#royals-formerTotal) * 10000)/100
-								io.write("\rSorting families for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
 							end
 						end
 					end
