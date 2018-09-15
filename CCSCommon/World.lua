@@ -225,13 +225,13 @@ return
 					
 					local stop = false
 					local oceanNodes = {{x, y, z}}
-					local maxsize = math.random(math.ceil(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 6.25))
+					local maxsize = math.random(math.ceil(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 7.0))
 					while stop == false do
 						for j=1,#oceanNodes do
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
-							local chance = math.random(math.random(1, 10), math.random(11, 1500))
+							local chance = math.random(math.random(1, 10), math.random(11, 1250))
 							if chance > 1000 then
 								local neighbors = self.planet[ox][oy][oz].neighbors
 								
@@ -296,11 +296,14 @@ return
 								if self.planet[x][y][z].countryset == false then
 									for j=1,#self.planet[x][y][z].neighbors do
 										local neighbor = self.planet[x][y][z].neighbors[j]
-										if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == true then
-											if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == "" then
-												if self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset == false then
-													self.planet[neighbor[1]][neighbor[2]][neighbor[3]].country = self.planet[x][y][z].country
-													self.planet[neighbor[1]][neighbor[2]][neighbor[3]].countryset = true
+										local nx = neighbor[1]
+										local ny = neighbor[2]
+										local nz = neighbor[3]
+										if self.planet[nx][ny][nz].land == true then
+											if self.planet[nx][ny][nz].country == "" then
+												if self.planet[nx][ny][nz].countryset == false then
+													self.planet[nx][ny][nz].country = self.planet[x][y][z].country
+													self.planet[nx][ny][nz].countryset = true
 													allDefined = false
 												end
 											end
@@ -838,13 +841,13 @@ return
 				local f1 = _time() - f0
 
 				if parent.years > parent.startyear + 1 then
-					if f1 > 0.25 then
+					if f1 > 0.35 then
 						if parent.popLimit > 1000 then
 							parent.popLimit = math.floor(parent.popLimit - (500 * (f1 / 0.3)))
 						end
 
 						if parent.popLimit < 1000 then parent.popLimit = 1000 end
-					elseif f1 < 0.125 then
+					elseif f1 < 0.2 then
 						if parent.popLimit < 50000 then parent.popLimit = math.floor(parent.popLimit + (500 * (0.08 / f1))) end
 					end
 				end

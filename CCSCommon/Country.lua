@@ -412,11 +412,13 @@ return
 				local rCount = 0
 				for i, j in pairs(self.regions) do rCount = rCount + 1 end
 
-				local maxR = math.ceil(#self.nodes / 50)
+				local maxR = math.ceil(#self.nodes / 35)
 				
 				while rCount > maxR do
 					local r = ""
-					for j, k in pairs(self.regions) do if r == "" then r = k.name end end
+					local poss = {}
+					for k, l in pairs(self.regions) do table.insert(poss, l.name) end
+					r = poss[math.random(1, #poss)]
 					parent:deepnil(self.regions[r])
 					self.regions[r] = nil
 					rCount = 0
@@ -449,13 +451,17 @@ return
 						local y = self.nodes[i][2]
 						local z = self.nodes[i][3]
 
-						if parent.thisWorld.planet[x][y][z].region == "" then
+						if parent.thisWorld.planet[x][y][z].region ~= "" then
 							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-								if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region ~= "" then
-									if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].regionset == false then
-										parent.thisWorld.planet[x][y][z].region = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
-										parent.thisWorld.planet[x][y][z].regionset = true
+								local nx = neighbor[1]
+								local ny = neighbor[2]
+								local nz = neighbor[3]
+								if parent.thisWorld.planet[nx][ny][nz].region == "" then
+									allDefined = false
+									if parent.thisWorld.planet[x][y][z].regionset == false then
+										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
+										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
 								end
 							end
@@ -627,7 +633,7 @@ return
 						if self.relations[l.name] == nil then
 							self.relations[l.name] = 40
 						end
-						local v = math.random(-3, 3)
+						local v = math.random(-4, 4)
 						self.relations[l.name] = self.relations[l.name] + v
 						if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
 						if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
@@ -642,12 +648,15 @@ return
 					self.deathrate = 130
 				end
 
-				local oldcap = self.capitalcity
+				local oldcap = nil
+				local oldreg = nil
 
 				if self.regions[self.capitalregion] == nil then
 					local values = {}
 					for i, j in pairs(self.regions) do table.insert(values, j.name) end
+					oldreg = self.capitalregion
 					self.capitalregion = values[math.random(1, #values)]
+					oldcap = self.capitalcity
 					self.capitalcity = nil
 				end
 
@@ -655,7 +664,11 @@ return
 					local values = {}
 					for i, j in pairs(self.regions[self.capitalregion].cities) do table.insert(values, j.name) end
 					self.capitalcity = values[math.random(1, #values)]
-					if oldcap ~= nil then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
+					if oldcap ~= nil then
+						if self.regions[oldreg] ~= nil then
+							if self.regions[oldreg].cities[oldcap] ~= nil then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
+						end
+					end
 				end
 
 				for i, j in pairs(self.regions) do

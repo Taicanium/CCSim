@@ -36,6 +36,8 @@ return
 				n.ebelief = 0
 				n.cbelief = 0
 				n.number = 0
+				n.military = false
+				n.militaryTraining = 0
 				n.recentbirth = false
 				n.mtName = "Person"
 
@@ -68,6 +70,8 @@ return
 				self.ebelief = nil
 				self.cbelief = nil
 				self.number = nil
+				self.military = nil
+				self.militaryTraining = nil
 				self.recentbirth = nil
 				self.mtName = nil
 			end,
@@ -372,6 +376,12 @@ return
 				if movechance == 12 then
 					self.region = ""
 					self.city = ""
+				end
+				
+				if self.military == true then
+					self.militaryTraining = self.militaryTraining + 1
+				else
+					
 				end
 
 				if self.region == "" or parent.thisWorld.countries[nl].regions[self.region] == nil then

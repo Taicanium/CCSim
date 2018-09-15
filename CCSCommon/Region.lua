@@ -15,7 +15,7 @@ return
 			end,
 
 			makename = function(self, country, parent)
-				self.name = parent:name(false, 6)
+				self.name = parent:name(false, 5)
 				local dup = true
 				while dup == true do
 					dup = false

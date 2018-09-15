@@ -269,7 +269,7 @@ return
 				},
 				{
 					name="War",
-					chance=12,
+					chance=10,
 					target=nil,
 					args=2,
 					status=0,
@@ -341,86 +341,7 @@ return
 							varistab = varistab - parent.thisWorld.countries[ao[i]].strength - 50
 						end
 
-						local tmpStatus = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
-						
-						if parent.doR == true then
-							local diff = tmpStatus - self.Status
-							if diff < 0 then
-								local changedHands = diff * math.ceil(#parent.thisWorld.countries[c1].nodes / 150)
-								for i=1,changedHands do
-									local nc = 0
-									local border = false
-									local neighborRegion = ""
-									while border == false do
-										nc = math.random(1, #parent.thisWorld.countries[c1].nodes)
-										for j=1,#parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors do
-											local neighbor = parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors[j]
-											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == false then
-												border = true
-												water = true
-											end
-											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == parent.thisWorld.countries[c2].name then
-												border = true
-												neighborRegion = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
-											end
-										end
-									end
-									local nr = table.remove(parent.thisWorld.countries[c1].nodes, nc)
-									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
-									for r=1,#parent.thisWorld.countries[c1].regions[oldRegion].nodes do
-										if parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][1] == nr[1] and parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][2] == nr[2] and parent.thisWorld.countries[c1].regions[oldRegion].nodes[r][3] == nr[3] then table.remove(parent.thisWorld.countries[c1].regions[oldRegion].nodes, r) end
-									end
-									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
-									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
-										parent.thisWorld.countries[c2]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c1].name)
-										parent.thisWorld.countries[c1]:event(parent, "Lost the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." to "..parent.thisWorld.countries[c2].name)
-										local newcity = parent:deepcopy(parent.thisWorld.countries[c1].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city])
-										parent.thisWorld.countries[c2].regions[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = newcity
-										parent.thisWorld.countries[c1].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = nil
-									end
-									parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].country = parent.thisWorld.countries[c2].name
-									table.insert(parent.thisWorld.countries[c2].nodes, nr)
-								end
-							elseif diff > 0 then
-								local changedHands = diff * math.ceil(#parent.thisWorld.countries[c2].nodes / 150)
-								for i=1,changedHands do
-									local nc = 0
-									local border = false
-									local neighborRegion = ""
-									while border == false do
-										nc = math.random(1, #parent.thisWorld.countries[c2].nodes)
-										for j=1,#parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors do
-											local neighbor = parent.thisWorld.planet[nc[1]][nc[2]][nc[3]].neighbors[j]
-											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].land == false then
-												border = true
-												water = true
-											end
-											if parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].country == parent.thisWorld.countries[c1].name then
-												border = true
-												neighborRegion = parent.thisWorld.planet[neighbor[1]][neighbor[2]][neighbor[3]].region
-											end
-										end
-									end
-									local nr = table.remove(parent.thisWorld.countries[c2].nodes, nc)
-									local oldRegion = parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region
-									for r=1,#parent.thisWorld.countries[c2].regions[oldRegion].nodes do
-										if parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][1] == nr[1] and parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][2] == nr[2] and parent.thisWorld.countries[c2].regions[oldRegion].nodes[r][3] == nr[3] then table.remove(parent.thisWorld.countries[c2].regions[oldRegion].nodes, r) end
-									end
-									if neighborRegion ~= "" then parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region = neighborRegion end
-									if parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city ~= "" then
-										parent.thisWorld.countries[c1]:event(parent, "Gained the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." from "..parent.thisWorld.countries[c2].name)
-										parent.thisWorld.countries[c2]:event(parent, "Lost the city of "..parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city.." to "..parent.thisWorld.countries[c1].name)
-										local newcity = parent:deepcopy(parent.thisWorld.countries[c2].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city])
-										parent.thisWorld.countries[c1].regions[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].region].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = newcity
-										parent.thisWorld.countries[c2].regions[oldRegion].cities[parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].city] = nil
-									end
-									parent.thisWorld.planet[nr[1]][nr[2]][nr[3]].country = parent.thisWorld.countries[c1].name
-									table.insert(parent.thisWorld.countries[c1].nodes, nr)
-								end
-							end
-						end
-						
-						self.Status = tmpStatus
+						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
@@ -461,7 +382,7 @@ return
 							if c1strength > c2strength + 10 then
 								local rname = ""
 								while rname == "" do
-									for q, b in pairs(parent.thisWorld.countries[c2].regions) do
+									for q, b in pairs(parent.thisWorld.countries[self.target].regions) do
 										local chance = math.random(1, 25)
 										if chance == 12 then rname = b.name end
 									end
@@ -515,7 +436,7 @@ return
 						
 						if parent.doR == true then
 							local border = false
-							local water = -1
+							local water = {}
 							for i=1,#parent.thisWorld.countries[c1].nodes do
 								local x = parent.thisWorld.countries[c1].nodes[i][1]
 								local y = parent.thisWorld.countries[c1].nodes[i][2]
@@ -523,8 +444,12 @@ return
 								
 								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									if neighbor.country == parent.thisWorld.countries[c2].name then border = true end
-									if neighbor.land == false then water = 0 end
+									local nx = neighbor[1]
+									local ny = neighbor[2]
+									local nz = neighbor[3]
+									local nnode = parent.thisWorld.planet[nx][ny][nz]
+									if nnode.country == parent.thisWorld.countries[c2].name then border = true end
+									if nnode.land == false then water[1] = 1 end
 								end
 							end
 							
@@ -535,19 +460,22 @@ return
 								
 								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									if neighbor.country == parent.thisWorld.countries[c1].name then border = true end
-									if neighbor.land == false then
-										if water == -1 then water = 1
-										elseif water == 0 then water = 2 end
-									end
+									local nx = neighbor[1]
+									local ny = neighbor[2]
+									local nz = neighbor[3]
+									local nnode = parent.thisWorld.planet[nx][ny][nz]
+									if nnode.country == parent.thisWorld.countries[c1].name then border = true end
+									if nnode.land == false then water[2] = 1 end
 								end
 							end
 							
-							if border == false and water ~= 2 then return -1 end
+							if border == false then
+								if water[1] == nil or water[2] == nil then return -1 end
+							end
 						end
 					
 						if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] ~= nil then
-							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 30 then
+							if parent.thisWorld.countries[c1].relations[parent.thisWorld.countries[c2].name] < 40 then
 								self.target = c2
 								return 0
 							end
@@ -558,7 +486,7 @@ return
 				},
 				{
 					name="Alliance",
-					chance=8,
+					chance=10,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -633,7 +561,7 @@ return
 
 						local chance = math.random(1, 100)
 
-						if chance > 45 then
+						if chance > 42 then
 							local values = {}
 
 							for i, j in pairs(parent.thisWorld.countries[c].regions) do
