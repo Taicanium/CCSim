@@ -55,6 +55,8 @@ return
 					end
 					self.people = nil
 				end
+				
+				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
 			end,
 
 			add = function(self, n)
