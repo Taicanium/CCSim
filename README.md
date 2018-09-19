@@ -7,7 +7,7 @@ If the player sets it as such, upon generating a random world, the script will o
 
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
 
-The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries.
+The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries. It should be noted that this will substantially increase the program's memory usage.
 
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 
@@ -42,7 +42,7 @@ The script defines various titles for people within each country that may be los
 
 It should be noted that the Monarchy and Empire systems are given a special designation of 'dynastic' within CCSim; at the death of a ruler, if the country has one of these two systems, then the script will check if the last ruler had any children. If they did, it will select the oldest son (or oldest daughter if there are no sons) and make them the new ruler. If they did not, then a new ruler will be selected at random among the populace. If the system is not dynastic, the ruler will be selected at random regardless. A dynastic system also influences several other factors, including the use of specific titles for female rulers (in non-dynastic systems, the same titles are used for male and female rulers).
 
-Notably, when randomly generating countries, CCSim also generates a set of random names for rulers, including separate names for male and female rulers in the case of a dynastic country. If a data file is used, then only the names used for rulers in the file will be used in the simulation (my personal record is Queen Elizabeth CCLXIX of Belgium); if the country is dynastic, but has no female rulers in the file (such as the Salic Law-abiding France), then CCSim will make an exception and generate a set of female-specific names.
+Notably, when randomly generating countries, CCSim also generates a set of random names for rulers, including separate names for male and female rulers in the case of a dynastic country. If a data file is used, then only the names used for rulers in the file will be included in the simulation (my personal record is Queen Elizabeth CCLXIX of Belgium); if the country is dynastic, but has no female rulers in the file (such as the Salic Law-abiding France), then CCSim will make an exception and generate a set of female-specific names.
 
 The titles in each system are as follows:
 
@@ -50,7 +50,7 @@ Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Baron/Baroness", "Visc
 
 Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
 
-Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Chairman"
+Democracy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Senator", "Speaker", "Prime Minister"
 
 Oligarchy: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"
 

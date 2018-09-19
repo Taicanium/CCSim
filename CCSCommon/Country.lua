@@ -27,7 +27,7 @@ return
 				nl.demonym = ""
 				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
 				nl.stability = 50
-				nl.strength = 50
+				nl.strength = 0
 				nl.population = 0
 				nl.birthrate = 6
 				nl.deathrate = 121
@@ -137,7 +137,7 @@ return
 				table.insert(self.events, {Event=e:gsub(" of ,", ","):gsub(" of the ,", ","):gsub("  ", " "), Year=parent.years})
 			end,
 
-			eventloop = function(self, parent, ind)
+			eventloop = function(self, parent)
 				local v = math.floor(math.random(600, 1000) * self.stability)
 				local vi = math.floor(math.random(600, 1000) * (100 - self.stability))
 				if v < 1 then v = 1 end
@@ -149,7 +149,7 @@ return
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].doStep ~= nil then
-							local r = self.ongoing[i]:doStep(parent, ind)
+							local r = self.ongoing[i]:doStep(parent, self)
 							if r == -1 then
 								local ro = table.remove(self.ongoing, i)
 								ro = nil
@@ -168,19 +168,19 @@ return
 						if parent.c_events[i].args == 1 then
 							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 							if self.ongoing[#self.ongoing].performEvent ~= nil then
-								if self.ongoing[#self.ongoing]:performEvent(parent, ind) == -1 then table.remove(self.ongoing, #self.ongoing)
+								if self.ongoing[#self.ongoing]:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									self.ongoing[#self.ongoing]:beginEvent(parent, ind)
+									self.ongoing[#self.ongoing]:beginEvent(parent, self)
 								end
 							else table.remove(self.ongoing, #self.ongoing) end
 						elseif parent.c_events[i].args == 2 then
-							local other = math.random(1, #parent.thisWorld.countries)
-							while parent.thisWorld.countries[other].name == self.name do other = math.random(1, #parent.thisWorld.countries) end
+							local other = parent:randomChoice(parent.thisWorld.countries)
+							while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 							if self.ongoing[#self.ongoing].performEvent ~= nil then
-								if self.ongoing[#self.ongoing]:performEvent(parent, ind, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+								if self.ongoing[#self.ongoing]:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 								else
-									self.ongoing[#self.ongoing]:beginEvent(parent, ind, other)
+									self.ongoing[#self.ongoing]:beginEvent(parent, self, other)
 								end
 							else table.remove(self.ongoing, #self.ongoing) end
 						end
@@ -197,9 +197,9 @@ return
 
 				if revCount > 8 then
 					self:event(parent, "Collapsed")
-					for i=#parent.thisWorld.countries,1,-1 do
-						if parent.thisWorld.countries[i].name == self.name then
-							parent.thisWorld:delete(parent, i)
+					for i, cp in pairs(parent.thisWorld.countries) do
+						if cp.name == self.name then
+							parent.thisWorld:delete(parent, cp)
 						end
 					end
 				end
@@ -284,6 +284,8 @@ return
 					if n.birth < 1 then n.birth = n.birth - 1 end
 					n.level = 2
 					n.title = "Citizen"
+					n.ethnicity = {[self.name]=100}
+					n.nationality = self.name
 					self:add(n)
 				end
 
@@ -331,6 +333,8 @@ return
 					n:makename(parent, self)
 					n.level = 2
 					n.title = "Citizen"
+					n.ethnicity = {[self.name]=100}
+					n.nationality = self.name
 					self:add(n)
 				end
 			end,
@@ -413,7 +417,7 @@ return
 				for i, j in pairs(self.regions) do rCount = rCount + 1 end
 
 				local maxR = math.ceil(#self.nodes / 35)
-				
+
 				while rCount > maxR do
 					local r = ""
 					local poss = {}
@@ -476,7 +480,7 @@ return
 						parent.thisWorld.planet[x][y][z].regionset = false
 					end
 				end
-				
+
 				for i=1,#self.nodes do
 					local x = self.nodes[i][1]
 					local y = self.nodes[i][2]
@@ -491,7 +495,7 @@ return
 					for k, l in pairs(j.cities) do cCount = cCount + 1 end
 
 					local maxC = math.ceil(#j.nodes / 25)
-					
+
 					while cCount > maxC do
 						local r = ""
 						local poss = {}
@@ -533,7 +537,7 @@ return
 				end
 			end,
 
-			update = function(self, parent, ind)
+			update = function(self, parent)
 				parent:rseed()
 
 				for i=1,#parent.systems do
@@ -543,10 +547,6 @@ return
 				self.stability = self.stability + math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
-
-				self.strength = self.strength + math.random(-2, 2)
-				if self.strength > 100 then self.strength = 100 end
-				if self.strength < 1 then self.strength = 1 end
 
 				self.age = self.age + 1
 
@@ -576,33 +576,12 @@ return
 					if largest ~= -1 then self.parties[largest].leading = true end
 				end
 
-				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].target ~= nil then
-							if parent.thisWorld.countries[self.ongoing[i].target] ~= nil then
-								local found = false
-								local er = parent.thisWorld.countries[self.ongoing[i].target].name
-
-								for j=1,#parent.thisWorld.countries do
-									local nr = parent.thisWorld.countries[j].name
-									if nr == er then found = true end
-								end
-
-								if found == false then
-									local ro = table.remove(self.ongoing, i)
-									ro = nil
-								end
-							else table.remove(self.ongoing, i) end
-						end
-					end
-				end
-
 				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
 
-					for j=1,#parent.thisWorld.countries do
-						local nr = parent.thisWorld.countries[j].name
+					for j, cp in pairs(parent.thisWorld.countries) do
+						local nr = cp.name
 						if string.len(ar) >= string.len(nr) then
 							if ar:sub(1, #nr) == nr then
 								found = true
@@ -618,8 +597,8 @@ return
 
 				for i, l in pairs(self.relations) do
 					local found = false
-					for j, k in pairs(parent.thisWorld.countries) do
-						if k.name == i then found = true end
+					for j, cp in pairs(parent.thisWorld.countries) do
+						if cp.name == self.name then found = true end
 					end
 
 					if found == false then
@@ -628,19 +607,20 @@ return
 					end
 				end
 
-				for i, l in pairs(parent.thisWorld.countries) do
-					if l.name ~= self.name then
-						if self.relations[l.name] == nil then
-							self.relations[l.name] = 40
+				for i, cp in pairs(parent.thisWorld.countries) do
+					if cp.name ~= self.name then
+						if self.relations[cp.name] == nil then
+							self.relations[cp.name] = 40
 						end
 						local v = math.random(-4, 4)
-						self.relations[l.name] = self.relations[l.name] + v
-						if self.relations[l.name] < 1 then self.relations[l.name] = 1 end
-						if self.relations[l.name] > 100 then self.relations[l.name] = 100 end
+						self.relations[cp.name] = self.relations[cp.name] + v
+						if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
+						if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 					end
 				end
 
 				self.population = #self.people
+				self.strength = 0
 
 				if self.population > parent.popLimit then
 					self.deathrate = 5
@@ -678,7 +658,9 @@ return
 					end
 				end
 
-				for i=1,#self.people do
+				for i=#self.people,1,-1 do
+					if self.people[i] ~= nil then self.people[i]:update(parent, self) end
+
 					if self.people[i] ~= nil then
 						if self.people[i].isruler == true then
 							self.hasruler = 0
@@ -704,8 +686,6 @@ return
 								end
 							end
 						end
-
-						self.people[i]:update(parent, ind)
 
 						self.averageAge = self.averageAge + self.people[i].age
 

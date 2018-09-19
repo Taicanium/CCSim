@@ -67,13 +67,12 @@ return
 				local v = math.random(1, #parent.partynames[5])
 				self.name = self.name..parent.partynames[5][v]
 
-				for i=1,#parent.thisWorld.countries[n].parties do
-					if self.name == parent.thisWorld.countries[n].parties[i].name then
+				for i, p in pairs(n.parties) do
+					if self.name == p.name then
 						self.name = ""
 						self:makename(parent, n)
 					end
 				end
-
 			end
 		}
 

@@ -24,14 +24,14 @@ return
 			end,
 
 			destroy = function(self)
-				for i=1,#self.countries do
-					self.countries[i]:destroy()
-					self.countries[i] = nil
+				for i, cp in pairs(self.countries) do
+					cp:destroy()
+					cp = nil
 				end
 			end,
 
 			add = function(self, nd)
-				table.insert(self.countries, nd)
+				self.countries[nd.name] = nd
 			end,
 
 			autoload = function(self, parent)
@@ -142,7 +142,7 @@ return
 
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
-			
+
 				print("Constructing voxel planet...")
 
 				local r = math.random(65, 80)
@@ -172,12 +172,12 @@ return
 						end
 					end
 				end
-				
+
 				for i=1,#self.planetdefined do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
-					
+
 					for dx=-1,1 do
 						if self.planet[x-dx] ~= nil then
 							for dy=-1,1 do
@@ -194,14 +194,14 @@ return
 						end
 					end
 				end
-				
+
 				print("Defining bodies of water...")
-				
+
 				local oceanCount = math.random(4, 6)
-				
+
 				for i=1,oceanCount do
 					print("\nOcean "..tostring(i).."/"..tostring(oceanCount))
-				
+
 					local located = false
 
 					local rnd = math.random(1, #self.planetdefined)
@@ -209,20 +209,20 @@ return
 					local x = self.planetdefined[rnd][1]
 					local y = self.planetdefined[rnd][2]
 					local z = self.planetdefined[rnd][3]
-					
+
 					while located == false do
 						rnd = math.random(1, #self.planetdefined)
 
 						x = self.planetdefined[rnd][1]
 						y = self.planetdefined[rnd][2]
 						z = self.planetdefined[rnd][3]
-						
+
 						located = true
 						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
 					end
-					
+
 					self.planet[x][y][z].land = false
-					
+
 					local stop = false
 					local oceanNodes = {{x, y, z}}
 					local maxsize = math.random(math.ceil(#self.planetdefined / 7.75), math.floor(#self.planetdefined / 7.0))
@@ -234,7 +234,7 @@ return
 							local chance = math.random(math.random(1, 10), math.random(11, 1250))
 							if chance > 1000 then
 								local neighbors = self.planet[ox][oy][oz].neighbors
-								
+
 								if #neighbors > 0 then
 									local nr = math.random(1, #neighbors)
 									local nx = neighbors[nr][1]
@@ -245,7 +245,7 @@ return
 								end
 							end
 						end
-						
+
 						if #oceanNodes >= maxsize then stop = true end
 						local percent = tostring(math.floor(#oceanNodes/maxsize*10000)/100)
 						if string.len(percent) > 5 then percent = percent.."  % done" else percent = percent.."  \t% done" end
@@ -255,7 +255,7 @@ return
 
 				print("\nRooting countries...")
 
-				for i=1,#self.countries do
+				for i, cp in pairs(self.countries) do
 					local located = false
 
 					local rnd = math.random(1, #self.planetdefined)
@@ -270,12 +270,12 @@ return
 						x = self.planetdefined[rnd][1]
 						y = self.planetdefined[rnd][2]
 						z = self.planetdefined[rnd][3]
-					
+
 						located = true
 						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
 					end
 
-					self.planet[x][y][z].country = self.countries[i].name
+					self.planet[x][y][z].country = cp.name
 				end
 
 				print("Setting territories...")
@@ -328,37 +328,36 @@ return
 
 					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."  \t% done")
 				end
-				
+
 				for i=1,#self.planetdefined do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
-					
+
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
 				print("\nDefining regional boundaries...")
 
-				for i=1,#self.countries do
-					print("Country "..tostring(i).."/"..tostring(#self.countries))
-					self.countries[i]:setTerritory(parent)
+				local ci = 1
+
+				for i, cp in pairs(self.countries) do
+					print("Country "..tostring(ci).."/"..tostring(parent.numCountries))
+					ci = ci + 1
+					cp:setTerritory(parent)
 				end
 
 				self:rOutput(parent, "initial.r")
 			end,
 
 			delete = function(self, parent, nz)
-				if nz > 0 and nz <= #self.countries then
-					if self.countries[nz] ~= nil then
-						p = table.remove(self.countries, nz)
-						if p ~= nil then
-							self.cColors[p.name] = nil
-							self.cTriplets[p.name] = nil
+				if nz ~= nil then
+					self.cColors[nz.name] = nil
+					self.cTriplets[nz.name] = nil
+					self.countries[nz.name] = nil
 
-							p:destroy(parent)
-							p = nil
-						end
-					end
+					nz:destroy(parent)
+					nz = nil
 				end
 			end,
 
@@ -459,10 +458,12 @@ return
 			rOutput = function(self, parent, label)
 				print("Writing R data...")
 
+				local ci = 1
+
 				local f = io.open(label, "w+")
 
 				f:write("library(\"rgl\")\nlibrary(\"car\")\nx <- c(")
-				
+
 				for i=1,#self.planetdefined do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
@@ -510,8 +511,8 @@ return
 					if i < #self.planetdefined then f:write(", ") end
 				end
 
-				for i=1,#self.countries do
-					if self.cColors[self.countries[i].name] == nil then
+				for i, cp in pairs(self.countries) do
+					if self.cColors[cp.name] == nil then
 						local r = math.random(0, 255)
 						local g = math.random(0, 255)
 						local b = math.random(0, 255)
@@ -557,16 +558,16 @@ return
 						local bh = string.format("%x", b)
 						if string.len(bh) == 1 then bh = "0"..bh end
 
-						self.cColors[self.countries[i].name] = "#"..rh..gh..bh
-						self.cTriplets[self.countries[i].name] = {r, g, b}
+						self.cColors[cp.name] = "#"..rh..gh..bh
+						self.cTriplets[cp.name] = {r, g, b}
 					end
 				end
 
 				local cCoords = {}
 				local cTexts = {}
 
-				for i=1,#self.countries do
-					for j, k in pairs(self.countries[i].regions) do
+				for i, cp in pairs(self.countries) do
+					for j, k in pairs(cp.regions) do
 						for l, m in pairs(k.cities) do
 							table.insert(cCoords, {m.x, m.y, m.z})
 							table.insert(cTexts, m.name)
@@ -601,17 +602,23 @@ return
 
 				f:write(")\ncsd <- c(")
 
-				for i=1,#self.countries do
-					f:write("\""..self.countries[i].name.."\"")
-					if i < #self.countries then f:write(", ") end
+				for i, cp in pairs(self.countries) do
+					f:write("\""..cp.name.."\"")
+					if ci < parent.numCountries then f:write(", ") end
+					ci = ci + 1
 				end
+
+				ci = 0
 
 				f:write(")\ncse <- c(")
 
-				for i=1,#self.countries do
-					f:write("\""..self.cColors[self.countries[i].name].."\"")
-					if i < #self.countries then f:write(", ") end
+				for i, cp in pairs(self.countries) do
+					f:write("\""..self.cColors[cp.name].."\"")
+					if ci < parent.numCountries then f:write(", ") end
+					ci = ci + 1
 				end
+
+				ci = 1
 
 				f:write(")\ncityx <- c(")
 
@@ -619,11 +626,11 @@ return
 					local x = cCoords[i][1]
 					local y = cCoords[i][2]
 					local z = cCoords[i][3]
-					
+
 					x = x + (math.atan(x / self.planetR) * 12)
 					y = y + (math.atan(y / self.planetR) * 12)
 					z = z + (math.atan(z / self.planetR) * 12)
-					
+
 					cCoords[i][1] = x
 					cCoords[i][2] = y
 					cCoords[i][3] = z
@@ -658,66 +665,66 @@ return
 					f:write("\""..txt.."\"")
 					if i < #cTexts then f:write(", ") end
 				end
-				
+
 				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z)\nplot3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=csc, size=0.35, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, type='s')\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=2)")
-				
-				for i=1,#self.countries do
+
+				for i, cp in pairs(self.countries) do
 					local avgX = 0
 					local avgY = 0
 					local avgZ = 0
-					
-					for j=1,#self.countries[i].nodes do
-						avgX = avgX + self.countries[i].nodes[j][1]
+
+					for j=1,#cp.nodes do
+						avgX = avgX + cp.nodes[j][1]
 					end
-					
-					for j=1,#self.countries[i].nodes do
-						avgY = avgY + self.countries[i].nodes[j][2]
+
+					for j=1,#cp.nodes do
+						avgY = avgY + cp.nodes[j][2]
 					end
-				
-					for j=1,#self.countries[i].nodes do
-						avgZ = avgZ + self.countries[i].nodes[j][3]
+
+					for j=1,#cp.nodes do
+						avgZ = avgZ + cp.nodes[j][3]
 					end
-					
-					avgX = math.floor(avgX / #self.countries[i].nodes)
-					avgY = math.floor(avgY / #self.countries[i].nodes)
-					avgZ = math.floor(avgZ / #self.countries[i].nodes)
-					
+
+					avgX = math.floor(avgX / #cp.nodes)
+					avgY = math.floor(avgY / #cp.nodes)
+					avgZ = math.floor(avgZ / #cp.nodes)
+
 					local xChange = avgX - math.pi
 					local yChange = avgY - math.pi
 					local zChange = avgZ - math.pi
-					
+
 					if avgX < 0 then xChange = xChange + math.pi * 2 end
 					if avgY < 0 then yChange = yChange + math.pi * 2 end
 					if avgZ < 0 then zChange = zChange + math.pi * 2 end
-					
+
 					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
-					
+
 					while ratio < self.planetR-0.1 and ratio > self.planetR+0.1 do
 						xChange = xChange + math.atan(avgX / self.planetR) / 16
 						yChange = yChange + math.atan(avgY / self.planetR) / 16
 						zChange = zChange + math.atan(avgZ / self.planetR) / 16
-						
+
 						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 					end
-					
+
 					xChange = xChange + (math.atan(avgX / self.planetR) * 36)
 					yChange = yChange + (math.atan(avgY / self.planetR) * 36)
 					zChange = zChange + (math.atan(avgZ / self.planetR) * 36)
-					
-					local r = 255 - self.cTriplets[self.countries[i].name][1]
-					local g = 255 - self.cTriplets[self.countries[i].name][2]
-					local b = 255 - self.cTriplets[self.countries[i].name][3]
-				
+
+					local r = 255 - self.cTriplets[cp.name][1]
+					local g = 255 - self.cTriplets[cp.name][2]
+					local b = 255 - self.cTriplets[cp.name][3]
+
 					local rh = string.format("%x", r)
 					if string.len(rh) == 1 then rh = "0"..rh end
 					local gh = string.format("%x", g)
 					if string.len(gh) == 1 then gh = "0"..gh end
 					local bh = string.format("%x", b)
 					if string.len(bh) == 1 then bh = "0"..bh end
-				
-					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..self.countries[i].name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
+
+					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
 				end
-				
+
 				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
@@ -777,7 +784,8 @@ return
 			end,
 
 			update = function(self, parent)
-				parent.numCountries = #self.countries
+				parent.numCountries = 0
+				for i, cp in pairs(self.countries) do parent.numCountries = parent.numCountries + 1 end
 
 				local f0 = _time()
 
@@ -785,69 +793,65 @@ return
 					if threadpool == nil then
 						if torchstatus then threadpool = threads.Threads(torch.getnumthreads()) else threadpool = threads.Threads(4) end
 					end
-					
-					for i=1,#self.countries do
+
+					for i, cp in pairs(self.countries) do
 						self.threadsDone[i] = 1
 					end
-					
-					for i=#self.countries,1,-1 do
-						if self.countries[i] ~= nil then
-							if self.countries[i].update ~= nil then
+
+					for i, cp in pairs(self.countries) do
+						if cp ~= nil then
+							if cp.update ~= nil then
 								threadpool:addjob(
-									function() end,
-									
-									function()
-										parent.thisWorld.countries[i]:update(parent, i)
-										
-										parent.thisWorld.threadsDone[i] = 1
-									end
+									function() cp:update(parent, i) end,
+
+									function() parent.thisWorld.threadsDone[i] = 1 end
 								)
 								self.threadsDone[i] = 0
 							end
 						end
 					end
-					
+
 					threadpool:synchronize()
-					
+
 					local allfinished = false
 					while allfinished == false do
 						allfinished = true
 						for i=1,#self.threadsDone do if self.threadsDone[i] == 0 then allfinished = false end end
 					end
 				else
-					for i=#self.countries,1,-1 do
-						if self.countries[i] ~= nil then
-							self.countries[i]:update(parent, i)
+					for i, cp in pairs(self.countries) do
+						if cp ~= nil then
+							cp:update(parent)
 						end
 					end
 				end
 
-				for i=#self.countries,1,-1 do
-					if self.countries[i] ~= nil then
-						self.countries[i]:eventloop(parent, i)
+				for i, cp in pairs(self.countries) do
+					if cp ~= nil then
+						cp:eventloop(parent)
 					end
-					
-					if self.countries[i] ~= nil then
-						if parent.ged == false then parent:deepnil(self.countries[i].ascendants) end
 
-						if self.countries[i].population < 10 then
-							if self.countries[i].rulers[#self.countries[i].rulers].To == "Current" then self.countries[i].rulers[#self.countries[i].rulers].To = parent.years end
-							self.countries[i]:event(parent, "Disappeared")
-							self:delete(parent, i)
+					if cp ~= nil then
+						if parent.ged == false then parent:deepnil(cp.ascendants) end
+
+						if cp.population < 10 then
+							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
+							cp:event(parent, "Disappeared")
+							self:delete(parent, cp)
 						end
 					end
 				end
-							
+
 				local f1 = _time() - f0
 
 				if parent.years > parent.startyear + 1 then
-					if f1 > 0.35 then
+					if f1 > 0.75 then
 						if parent.popLimit > 1000 then
 							parent.popLimit = math.floor(parent.popLimit - (500 * (f1 / 0.3)))
 						end
 
 						if parent.popLimit < 1000 then parent.popLimit = 1000 end
-					elseif f1 < 0.2 then
+					elseif f1 < 0.35 then
 						if parent.popLimit < 50000 then parent.popLimit = math.floor(parent.popLimit + (500 * (0.08 / f1))) end
 					end
 				end
