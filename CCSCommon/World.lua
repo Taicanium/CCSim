@@ -353,7 +353,7 @@ return
 			delete = function(self, parent, nz)
 				if nz ~= nil then
 					for i, cp in pairs(self.countries) do
-						for j=#cp.ongoing,1,-1 do if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end
+						for j=#cp.ongoing,1,-1 do if cp.target ~= nil then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
 					end
 				
 					self.cColors[nz.name] = nil

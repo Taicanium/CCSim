@@ -116,11 +116,11 @@ return
 					end,
 					doStep=function(self, parent, c)
 						for i, cp in pairs(parent.thisWorld.countries) do
-							local already = false
-							for j=1,#self.opIntervened do if self.opIntervened == cp.name then already = true end end
-							for j=1,#self.govIntervened do if self.govIntervened == cp.name then already = true end end
-							if already == false then
-								if cp.name ~= c.name then
+							if cp.name ~= c.name then
+								local interv = false
+								for j=1,#self.opIntervened do if self.opIntervened == cp.name then interv = true end end
+								for j=1,#self.govIntervened do if self.govIntervened == cp.name then interv = true end end
+								if interv == false then
 									if cp.relations[c.name] ~= nil then
 										if cp.relations[c.name] < 50 then
 											local intervene = math.random(1, cp.relations[c.name]*4)
@@ -259,7 +259,7 @@ return
 				},
 				{
 					name="War",
-					chance=12,
+					chance=10,
 					target=nil,
 					args=2,
 					status=0,
@@ -547,7 +547,6 @@ return
 					end
 				},
 				{
-					-- TODO: Add capital change clause
 					name="Independence",
 					chance=3,
 					target=nil,
@@ -597,6 +596,34 @@ return
 
 								c.stability = c.stability - math.random(5, 10)
 								if c.stability < 1 then c.stability = 1 end
+								
+								if c.capitalregion == newl.name then
+									for i, j in pairs(newl.regions) do
+										for k, l in pairs(j.cities) do
+											if l.name == c.capitalcity then
+												local oldcap = c.capitalcity
+												c.capitalcity = nil
+												for m, n in pairs(newl.regions) do
+													for o, p in pairs(n.cities) do
+														if c.capitalcity == nil then
+															local chance = math.random(1, 100)
+															if chance == 35 then
+																c.capitalregion = n.name
+																c.capitalcity = p.name
+
+																local msg = "Capital moved"
+																if oldcap ~= "" then msg = msg.." from "..oldcap end
+																msg = msg.." to "..c.capitalcity
+
+																c:event(parent, msg)
+															end
+														end
+													end
+												end
+											end
+										end
+									end
+								end
 
 								parent:deepnil(c.regions[v])
 								c.regions[v] = nil
@@ -715,9 +742,11 @@ return
 						local cCount = 0
 						for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do cCount = cCount + 1 end end
 
-						if cCount > 1 then
+						if cCount > 2 then
 							local oldcap = c.capitalcity
+							local oldreg = c.capitalregion
 							if oldcap == nil then oldcap = "" end
+							if oldreg == nil then oldreg = "" end
 							c.capitalregion = nil
 							c.capitalcity = nil
 

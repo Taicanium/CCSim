@@ -150,6 +150,20 @@ return
 
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
+						if self.ongoing[i].args > 1 then
+							local found = false
+							if self.ongoing[i].target ~= nil then
+								if self.ongoing[i].target.name ~= nil then
+									for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end
+								end
+							end
+							if found == false then parent:deepnil(table.remove(self.ongoing, i)) end
+						end
+					end
+				end
+				
+				for i=#self.ongoing,1,-1 do
+					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].doStep ~= nil then
 							local r = self.ongoing[i]:doStep(parent, self)
 							if r == -1 then
