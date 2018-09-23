@@ -118,22 +118,22 @@ return
 						for i, cp in pairs(parent.thisWorld.countries) do
 							if cp.name ~= c.name then
 								local interv = false
-								for j=1,#self.opIntervened do if self.opIntervened == cp.name then interv = true end end
-								for j=1,#self.govIntervened do if self.govIntervened == cp.name then interv = true end end
+								for j=1,#self.opIntervened do if self.opIntervened[j] == cp.name then interv = true end end
+								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
 								if interv == false then
 									if cp.relations[c.name] ~= nil then
 										if cp.relations[c.name] < 50 then
 											local intervene = math.random(1, cp.relations[c.name]*4)
 											if intervene == 1 then
 												c:event(parent, "Intervention on the side of the opposition by "..cp.name)
-												cp:event(parent, "Intervention in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
+												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
 												table.insert(self.opIntervened, cp.name)
 											end
 										elseif cp.relations[c.name] > 50 then
 											local intervene = math.random(50, (150-cp.relations[c.name])*4)
 											if intervene == 50 then
 												c:event(parent, "Intervention on the side of the government by "..cp.name)
-												cp:event(parent, "Intervention in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
+												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
 												table.insert(self.govIntervened, cp.name)
 											end
 										end
@@ -688,44 +688,48 @@ return
 					args=2,
 					inverse=true,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#c1.alliances do
-							if c1.alliances[i] == c2.name then return -1 end
-						end
+						local subchance = math.random(1, 100)
+						
+						if subchance < 50 then
+							for i=1,#c1.alliances do
+								if c1.alliances[i] == c2.name then return -1 end
+							end
 
-						for i=1,#c2.alliances do
-							if c2.alliances[i] == c1.name then return -1 end
-						end
+							for i=1,#c2.alliances do
+								if c2.alliances[i] == c1.name then return -1 end
+							end
 
-						if c1.relations[c2.name] ~= nil then
-							if c1.relations[c2.name] < 6 then
-								c1:event(parent, "Conquered "..c2.name)
-								c2:event(parent, "Conquered by "..c1.name)
+							if c1.relations[c2.name] ~= nil then
+								if c1.relations[c2.name] < 6 then
+									c1:event(parent, "Conquered "..c2.name)
+									c2:event(parent, "Conquered by "..c1.name)
 
-								for i=#c2.nodes,1,-1 do
-									local x = c2.nodes[i][1]
-									local y = c2.nodes[i][2]
-									local z = c2.nodes[i][3]
+									for i=#c2.nodes,1,-1 do
+										local x = c2.nodes[i][1]
+										local y = c2.nodes[i][2]
+										local z = c2.nodes[i][3]
 
-									parent.thisWorld.planet[x][y][z].country = c1.name
-									table.insert(c1.nodes, {x, y, z})
+										parent.thisWorld.planet[x][y][z].country = c1.name
+										table.insert(c1.nodes, {x, y, z})
+									end
+
+									for i=1,#c2.ascendants do
+										table.insert(c1.ascendants, c2.ascendants[i])
+									end
+
+									c1.stability = c1.stability - 5
+									if c1.stability < 1 then c1.stability = 1 end
+									c1:setPop(parent, c1.population + c2.population)
+									if #c2.rulers > 0 then
+										c2.rulers[#c2.rulers].To = parent.years
+									end
+
+									for i, j in pairs(c2.regions) do
+										parent:RegionTransfer(c1, c2, j.name, false)
+									end
+
+									parent.thisWorld:delete(parent, c2)
 								end
-
-								for i=1,#c2.ascendants do
-									table.insert(c1.ascendants, c2.ascendants[i])
-								end
-
-								c1.stability = c1.stability - 5
-								if c1.stability < 1 then c1.stability = 1 end
-								c1:setPop(parent, c1.population + c2.population)
-								if #c2.rulers > 0 then
-									c2.rulers[#c2.rulers].To = parent.years
-								end
-
-								for i, j in pairs(c2.regions) do
-									parent:RegionTransfer(c1, c2, j.name, false)
-								end
-
-								parent.thisWorld:delete(parent, c2)
 							end
 						end
 
@@ -1345,7 +1349,7 @@ return
 						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
 					end
 
-					table.insert(final.ascendants, self:deepcopy(person))
+					table.insert(final.ascendants, person)
 				end
 
 				return fInd
