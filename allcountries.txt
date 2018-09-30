@@ -121,7 +121,7 @@ R Beijing
 P Beijing
 S Shanghai
 R Nanjing
-P Nanjing
+S Nanjing
 S Nanking
 R Tibet
 S Lhasa

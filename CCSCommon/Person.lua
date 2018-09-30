@@ -165,13 +165,6 @@ return
 
 				for i, j in pairs(nn.ethnicity) do nn[i] = nn[i] / 2 end
 
-				local largest = ""
-				local largestN = -1
-				for i, j in pairs(nn.ethnicity) do if nn[i] > largestN then
-					largest = i
-					largestN = nn[i]
-				end end
-
 				nl:add(nn)
 			end,
 
@@ -437,6 +430,11 @@ return
 				end
 
 				if self.age > 65 then self.military = false end
+				
+				for i, j in pairs(self.ethnicity) do
+					if nl.ethnicities[i] == nil then nl.ethnicities[i] = 0 end
+					if self.ethnicity[i] >= 50 then nl.ethnicities[i] = nl.ethnicities[i] + 1 end
+				end
 
 				if self.region == "" or nl.regions[self.region] == nil then
 					local values = {}

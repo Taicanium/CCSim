@@ -29,6 +29,8 @@ return
 				nl.stability = 50
 				nl.strength = 0
 				nl.population = 0
+				nl.ethnicities = {}
+				nl.majority = ""
 				nl.birthrate = 6
 				nl.deathrate = 121
 				nl.regions = {}
@@ -300,8 +302,8 @@ return
 					if n.birth < 1 then n.birth = n.birth - 1 end
 					n.level = 2
 					n.title = "Citizen"
-					n.ethnicity = {[self.name]=100}
-					n.nationality = self.name
+					n.ethnicity = {[self.demonym]=100}
+					n.nationality = self.demonym
 					self:add(n)
 				end
 
@@ -673,6 +675,8 @@ return
 						l.population = 0
 					end
 				end
+				
+				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
 				for i=#self.people,1,-1 do
 					if self.people[i] ~= nil then self.people[i]:update(parent, self) end
@@ -728,6 +732,13 @@ return
 				end
 
 				self.averageAge = self.averageAge / #self.people
+				
+				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i] / #self.people) * 100 end
+				
+				local largest = ""
+				local largestN = 0
+				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
+				self.majority = largest
 
 				for i=#self.parties,1,-1 do
 					self.parties[i].popularity = math.ceil(self.parties[i].popularity)

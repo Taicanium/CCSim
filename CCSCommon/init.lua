@@ -70,11 +70,13 @@ return
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 						if c.snt[parent.systems[c.system].name] > 1 then
 							if parent.systems[c.system].dynastic == true then
-								local rul = 0
+								local rul = nil
 								for i=1,#c.people do if c.people[i].royal == true then rul = i end end
-								if c.people[rul].royalInfo.LastAncestor ~= "" then
-									msg = "Enthronement of "..c.people[rul].title.." "..c.people[rul].name.." "..parent:roman(c.people[rul].number).." of "..c.name..", "..parent:generationString(c.people[rul].royalInfo.Gens, c.people[rul].gender).." of "..c.people[rul].royalInfo.LastAncestor
-									c:event(parent, msg)
+								if rul ~= nil then
+									if c.people[rul].royalInfo.LastAncestor ~= "" then
+										msg = "Enthronement of "..c.people[rul].title.." "..c.people[rul].name.." "..parent:roman(c.people[rul].number).." of "..c.name..", "..parent:generationString(c.people[rul].royalInfo.Gens, c.people[rul].gender).." of "..c.people[rul].royalInfo.LastAncestor
+										c:event(parent, msg)
+									end
 								end
 							end
 						end
@@ -548,7 +550,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=3,
+					chance=4,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -557,7 +559,7 @@ return
 
 						local chance = math.random(1, 100)
 
-						if chance > 42 then
+						if chance > 48 then
 							local values = {}
 
 							for i, j in pairs(c.regions) do
@@ -719,7 +721,6 @@ return
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
-									c1:setPop(parent, c1.population + c2.population)
 									if #c2.rulers > 0 then
 										c2.rulers[#c2.rulers].To = parent.years
 									end
@@ -773,6 +774,54 @@ return
 											end
 										end
 									end
+								end
+							end
+						end
+
+						return -1
+					end
+				},
+				{
+					name="Annexation",
+					chance=3,
+					target=nil,
+					args=2,
+					inverse=false,
+					performEvent=function(self, parent, c1, c2)
+						local ethmatch = false
+						
+						if c1.majority == c2.majority then ethmatch = true end
+						
+						if ethmatch == true then
+							if c1.relations[c2.name] ~= nil then
+								if c1.relations[c2.name] > 30 then
+									c1:event(parent, "Annexed "..c2.name)
+									c2:event(parent, "Annexed by "..c1.name)
+
+									for i=#c2.nodes,1,-1 do
+										local x = c2.nodes[i][1]
+										local y = c2.nodes[i][2]
+										local z = c2.nodes[i][3]
+
+										parent.thisWorld.planet[x][y][z].country = c1.name
+										table.insert(c1.nodes, {x, y, z})
+									end
+
+									for i=1,#c2.ascendants do
+										table.insert(c1.ascendants, c2.ascendants[i])
+									end
+
+									c1.stability = c1.stability - 5
+									if c1.stability < 1 then c1.stability = 1 end
+									if #c2.rulers > 0 then
+										c2.rulers[#c2.rulers].To = parent.years
+									end
+
+									for i, j in pairs(c2.regions) do
+										parent:RegionTransfer(c1, c2, j.name, false)
+									end
+
+									parent.thisWorld:delete(parent, c2)
 								end
 							end
 						end
@@ -1192,10 +1241,10 @@ return
 								gend = "Female"
 							end
 							local found = false
-							for i, cp in pairs(self.thisWorld.countries.rulernames) do
+							for i, cp in pairs(fc.rulernames) do
 								if cp == mat[2] then found = true end
 							end
-							for i, cp in pairs(self.thisWorld.countries.frulernames) do
+							for i, cp in pairs(fc.frulernames) do
 								if cp == mat[2] then found = true end
 							end
 							if found == false then
@@ -1723,7 +1772,7 @@ return
 					nomlower = nomlower:gsub("vf", "f")
 					nomlower = nomlower:gsub("vt", "t")
 					nomlower = nomlower:gsub("aia", "ia")
-					nomlower = nomlower:gsub("eia", "ia")
+					nomlower = nomlower:gsub("eia", "ea")
 					nomlower = nomlower:gsub("oia", "ia")
 					nomlower = nomlower:gsub("uia", "ia")
 
@@ -1826,11 +1875,15 @@ return
 							rn.nodes = self:deepcopy(rm.nodes)
 							rn.cities = self:deepcopy(rm.cities)
 
-							for i=1,#c2.people do
+							for i=#c2.people,1,-1 do
 								if c2.people[i] ~= nil then
-									if c2.people[i].region == rn.name then
-										c2.people[i].region = ""
-										c2.people[i].city = ""
+									if c2.people[i].isruler == false then
+										if c2.people[i].region == rn.name then
+											c2.people[i].region = ""
+											c2.people[i].city = ""
+											table.insert(c1.people, c2.people[i])
+											table.remove(c2.people, i)
+										end
 									end
 								end
 							end
