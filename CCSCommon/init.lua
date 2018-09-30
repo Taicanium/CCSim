@@ -788,40 +788,43 @@ return
 					args=2,
 					inverse=false,
 					performEvent=function(self, parent, c1, c2)
-						local ethmatch = false
+						local patron = false
 						
-						if c1.majority == c2.majority then ethmatch = true end
+						for i=1,#c2.rulers do if c2.rulers[i].Country == c1.name then patron = true end end
+						for i=1,#c1.rulers do if c1.rulers[i].Country == c2.name then patron = true end end
 						
-						if ethmatch == true then
-							if c1.relations[c2.name] ~= nil then
-								if c1.relations[c2.name] > 30 then
-									c1:event(parent, "Annexed "..c2.name)
-									c2:event(parent, "Annexed by "..c1.name)
+						if patron == false then
+							if c1.majority == c2.majority then
+								if c1.relations[c2.name] ~= nil then
+									if c1.relations[c2.name] > 30 then
+										c1:event(parent, "Annexed "..c2.name)
+										c2:event(parent, "Annexed by "..c1.name)
 
-									for i=#c2.nodes,1,-1 do
-										local x = c2.nodes[i][1]
-										local y = c2.nodes[i][2]
-										local z = c2.nodes[i][3]
+										for i=#c2.nodes,1,-1 do
+											local x = c2.nodes[i][1]
+											local y = c2.nodes[i][2]
+											local z = c2.nodes[i][3]
 
-										parent.thisWorld.planet[x][y][z].country = c1.name
-										table.insert(c1.nodes, {x, y, z})
+											parent.thisWorld.planet[x][y][z].country = c1.name
+											table.insert(c1.nodes, {x, y, z})
+										end
+
+										for i=1,#c2.ascendants do
+											table.insert(c1.ascendants, c2.ascendants[i])
+										end
+
+										c1.stability = c1.stability - 5
+										if c1.stability < 1 then c1.stability = 1 end
+										if #c2.rulers > 0 then
+											c2.rulers[#c2.rulers].To = parent.years
+										end
+
+										for i, j in pairs(c2.regions) do
+											parent:RegionTransfer(c1, c2, j.name, false)
+										end
+
+										parent.thisWorld:delete(parent, c2)
 									end
-
-									for i=1,#c2.ascendants do
-										table.insert(c1.ascendants, c2.ascendants[i])
-									end
-
-									c1.stability = c1.stability - 5
-									if c1.stability < 1 then c1.stability = 1 end
-									if #c2.rulers > 0 then
-										c2.rulers[#c2.rulers].To = parent.years
-									end
-
-									for i, j in pairs(c2.regions) do
-										parent:RegionTransfer(c1, c2, j.name, false)
-									end
-
-									parent.thisWorld:delete(parent, c2)
 								end
 							end
 						end
