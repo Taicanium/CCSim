@@ -392,7 +392,7 @@ return
 
 				for i, cp in pairs(parent.thisWorld.countries) do
 					if cp.name ~= nl.name then
-						local movechance = math.random(1, 1250)
+						local movechance = math.random(1, 1000)
 						if movechance < 6 then
 							for j=#nl.people,1,-1 do
 								if nl.people[j].name == self.name and nl.people[j].surname == self.surname and nl.people[j].birth == self.birth and nl.people[j].level == self.level then
@@ -415,7 +415,6 @@ return
 
 				if self.military == true then
 					self.militaryTraining = self.militaryTraining + 1
-					if self.militaryTraining > 15 then self.militaryTraining = 15 end
 					nl.strength = nl.strength + self.militaryTraining
 				else
 					if self.age < 35 then

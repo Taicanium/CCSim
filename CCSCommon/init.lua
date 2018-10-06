@@ -550,7 +550,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=4,
+					chance=5,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -604,20 +604,24 @@ return
 										for k, l in pairs(j.cities) do
 											if l.name == c.capitalcity then
 												local oldcap = c.capitalcity
+												local oldreg = c.capitalregion
 												c.capitalcity = nil
+												c.capitalregion = nil
 												for m, n in pairs(newl.regions) do
-													for o, p in pairs(n.cities) do
-														if c.capitalcity == nil then
-															local chance = math.random(1, 100)
-															if chance == 35 then
-																c.capitalregion = n.name
-																c.capitalcity = p.name
+													if n.name ~= oldreg then
+														for o, p in pairs(n.cities) do
+															if c.capitalcity == nil then
+																local chance = math.random(1, 100)
+																if chance == 35 then
+																	c.capitalregion = n.name
+																	c.capitalcity = p.name
 
-																local msg = "Capital moved"
-																if oldcap ~= "" then msg = msg.." from "..oldcap end
-																msg = msg.." to "..c.capitalcity
+																	local msg = "Capital moved"
+																	if oldcap ~= "" then msg = msg.." from "..oldcap end
+																	msg = msg.." to "..c.capitalcity
 
-																c:event(parent, msg)
+																	c:event(parent, msg)
+																end
 															end
 														end
 													end
@@ -749,9 +753,7 @@ return
 
 						if cCount > 2 then
 							local oldcap = c.capitalcity
-							local oldreg = c.capitalregion
 							if oldcap == nil then oldcap = "" end
-							if oldreg == nil then oldreg = "" end
 							c.capitalregion = nil
 							c.capitalcity = nil
 
@@ -783,7 +785,7 @@ return
 				},
 				{
 					name="Annexation",
-					chance=3,
+					chance=7,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -796,7 +798,7 @@ return
 						if patron == false then
 							if c1.majority == c2.majority then
 								if c1.relations[c2.name] ~= nil then
-									if c1.relations[c2.name] > 30 then
+									if c1.relations[c2.name] > 25 then
 										c1:event(parent, "Annexed "..c2.name)
 										c2:event(parent, "Annexed by "..c1.name)
 
@@ -1900,8 +1902,10 @@ return
 
 									while c2.capitalregion == nil do
 										for i, j in pairs(c2.regions) do
-											local chance = math.random(1, 10)
-											if chance == 5 then c2.capitalregion = j.name end
+											if j.name ~= rn.name then
+												local chance = math.random(1, 10)
+												if chance == 5 then c2.capitalregion = j.name end
+											end
 										end
 									end
 
