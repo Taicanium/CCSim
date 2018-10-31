@@ -149,9 +149,6 @@ P Havana
 C Cyprus
 R Nicosia
 P Nicosia
-C Cyprus
-R Nicosia
-P Nicosia
 C Czechia
 R Prague
 P Prague
@@ -240,9 +237,6 @@ C Egypt
 R Nile Delta
 P Cairo
 S Alexandria
-C El Salvador
-R San Salvador
-P San Salvador
 C El Salvador
 R San Salvador
 P San Salvador
@@ -515,9 +509,6 @@ Emperor Heisei 1989 2019
 C Jordan
 R Amman
 P Amman
-C Kazakhstan
-R Astana
-P Astana
 C Kazakhstan
 R Astana
 P Astana
