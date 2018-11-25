@@ -40,8 +40,8 @@ luac.out
 *.hex
 
 output.txt
-in_progress.dat
 initial.r
 final.r
 *.ged
 *.paf
+*.lst

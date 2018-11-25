@@ -90,6 +90,30 @@ return
 				else
 					nn.surname = self.spouse.surname
 				end
+				
+				if self.royalGenerations ~= -1 and self.spouse.royalGenerations ~= -1 then
+					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
+						if self.surname ~= self.spouse.surname then
+							if self.royalGenerations > self.spouse.royalGenerations then nn.surname = self.surname.."-"..self.spouse.surname
+							elseif self.royalGenerations < self.spouse.royalGenerations then nn.surname = self.spouse.surname.."-"..self.surname
+							else
+								if self.gender == "Male" then nn.surname = self.surname.."-"..self.spouse.surname
+								else nn.surname = self.spouse.surname.."-"..self.surname end
+							end
+							
+							local surn, cnt = nn.surname:gsub("%-", "%-")
+							if cnt > 1 then
+								local ind = 1
+								local nsurn = ""
+								for x in nn.surname:gmatch("(%a+)%-") do
+									if ind == 2 then nsurn = nsurn.."-"..x ind = ind + 1 end
+									if ind == 1 then nsurn = nsurn..x ind = ind + 1 end
+								end
+								nn.surname = nsurn
+							end
+						end
+					end
+				end
 
 				local sys = parent.systems[nl.system]
 
@@ -202,6 +226,8 @@ return
 
 				local rankLim = 2
 				if sys.dynastic == false then rankLim = 1 end
+				
+				if self.spouse then if self.spouse.name == nil then self.spouse = nil end end
 
 				if self.gender == "Male" or sys.dynastic == false then
 					if self.title ~= nil and self.level ~= nil then

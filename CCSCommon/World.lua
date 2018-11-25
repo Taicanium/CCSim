@@ -205,7 +205,7 @@ return
 
 				local bodyCount = math.random(20, 35)
 				local wNodeCount = 0
-				local maxWNodes = math.random(math.floor(#self.planetdefined / 2.75), math.ceil(#self.planetdefined / 2.25))
+				local maxWNodes = math.random(math.floor(#self.planetdefined / 1.65), math.ceil(#self.planetdefined / 1.425))
 
 				for i=1,bodyCount do
 					parent:rseed()

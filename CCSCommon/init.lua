@@ -785,7 +785,7 @@ return
 				},
 				{
 					name="Annexation",
-					chance=7,
+					chance=12,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -1758,6 +1758,7 @@ return
 					nomlower = nomlower:gsub("gd", "d")
 					nomlower = nomlower:gsub("dg", "g")
 					nomlower = nomlower:gsub("jg", "j")
+					nomlower = nomlower:gsub("gt", "t")
 					nomlower = nomlower:gsub("jc", "j")
 					nomlower = nomlower:gsub("hg", "g")
 					nomlower = nomlower:gsub("tm", "t")
@@ -2170,10 +2171,10 @@ return
 						if formerTotal ~= #royals then
 							for j=formerTotal+1,#royals do
 								for k=1,#adjusts do
-									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2] end
-									if royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
-									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2] end
-									if royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2]
+									elseif royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
+									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2]
+									elseif royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
 								end
 
 								if royals[j].father > #royals then royals[j].father = 0 end
@@ -2197,11 +2198,8 @@ return
 
 								if found == nil then
 									local doFam = false
-									if royals[j].father ~= 0 then
-										if royals[j].mother ~= 0 then
-											doFam = true
-										end
-									end
+									if royals[j].father ~= 0 then doFam = true end
+									if royals[j].mother ~= 0 then doFam = true end
 									if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
 								else
 									if chil == false then table.insert(fams[found].chil, j) end

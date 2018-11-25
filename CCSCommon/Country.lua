@@ -49,7 +49,9 @@ return
 					for i=1,#self.people do
 						if self.people[i].useParents == true then
 							if self.people[i].royalGenerations ~= -1 then
-								table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
+								if self.people[i].royalGenerations < 8 then
+									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
+								end
 							end
 						end
 						self.people[i]:destroy()
@@ -125,7 +127,9 @@ return
 				if b > 0 then
 					if self.people[y] ~= nil then
 						if self.people[y].royalGenerations ~= -1 then
-							table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+							if self.people[y].royalGenerations < 8 then
+								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
@@ -285,6 +289,8 @@ return
 
 				self.demonym = self.demonym:gsub("ii", "i")
 				self.demonym = self.demonym:gsub("aa", "a")
+				self.demonym = self.demonym:gsub("eia", "ia")
+				self.demonym = self.demonym:gsub("uia", "ia")
 			end,
 
 			set = function(self, parent)
@@ -402,6 +408,69 @@ return
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
 						self.people[newRuler].number = namenum
+						if self.people[newRuler].royalGenerations >= 0 then
+							if self.people[newRuler].gender == "Male" then
+								for i=1,#self.people do
+									if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].name then
+										if self.people[i].father.Surname == self.people[newRuler].surname then
+											if self.people[i].father.Birth == self.people[newRuler].birth then
+												if self.people[i].father.Birthplace == self.people[newRuler].birthplace then
+													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
+													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
+													self.people[i].royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
+												end
+											end
+										end
+									end end
+								end
+							else
+								for i=1,#self.people do
+									if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].name then
+										if self.people[i].mother.Surname == self.people[newRuler].surname then
+											if self.people[i].mother.Birth == self.people[newRuler].birth then
+												if self.people[i].mother.Birthplace == self.people[newRuler].birthplace then
+													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
+													self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
+													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
+													self.people[i].royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
+												end
+											end
+										end
+									end end
+								end
+							end
+						end
+						
+						if self.people[newRuler].spouse then if self.people[newRuler].spouse.royalGenerations then if self.people[newRuler].spouse.royalGenerations >= 0 then
+							if self.people[newRuler].spouse.royalGenerations < self.people[newRuler].royalGenerations then
+								if self.people[newRuler].spouse.gender == "Male" then
+									for i=1,#self.people do
+										if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].spouse.name then 
+											if self.people[i].father.Surname == self.people[newRuler].spouse.surname then
+												if self.people[i].father.Birth == self.people[newRuler].spouse.birth then
+													if self.people[i].father.Birthplace == self.people[newRuler].spouse.birthplace then
+														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
+													end
+												end
+											end
+										end end
+									end
+								else
+									for i=1,#self.people do
+										if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].spouse.name then
+											if self.people[i].mother.Surname == self.people[newRuler].spouse.surname then
+												if self.people[i].mother.Birth == self.people[newRuler].spouse.birth then
+													if self.people[i].mother.Birthplace == self.people[newRuler].spouse.birthplace then
+														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
+														self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
+													end
+												end
+											end
+										end end
+									end
+								end
+							end
+						end end end
 						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
