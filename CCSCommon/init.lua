@@ -785,7 +785,7 @@ return
 				},
 				{
 					name="Annexation",
-					chance=12,
+					chance=20,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -1535,6 +1535,7 @@ return
 					if self.years > self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
+						self.thisWorld:autosave(self)
 					end
 				end
 

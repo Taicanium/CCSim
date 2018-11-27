@@ -610,7 +610,7 @@ return
 							end
 							if isCity == true then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land == true then
-									if self.planet[x][y][z].country ~= "" then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"")
+									if self.planet[x][y][z].country ~= "" then if self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
 									else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
