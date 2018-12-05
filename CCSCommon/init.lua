@@ -283,16 +283,18 @@ return
 						for i=1,#ac do
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
-							local already = false
-							for j=1,#ao do if c3.name == ao[j].name then already = true end end
-							if already == false then
-								local ic = math.random(1, 25)
-								if ic == 10 then
-									table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
+							if c3 then
+								local already = false
+								for j=1,#ao do if c3.name == ao[j].name then already = true end end
+								if already == false then
+									local ic = math.random(1, 25)
+									if ic == 10 then
+										table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 
-									self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
-									c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
-									c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
+										self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
+										c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
+										c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
+									end
 								end
 							end
 						end
@@ -303,16 +305,18 @@ return
 						for i=1,#ac do
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
-							local already = false
-							for j=1,#ao do if c3.name == ao[j].name then already = true end end
-							if already == false then
-								local ic = math.random(1, 25)
-								if ic == 10 then
-									table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
+							if c3 then
+								local already = false
+								for j=1,#ao do if c3.name == ao[j].name then already = true end end
+								if already == false then
+									local ic = math.random(1, 25)
+									if ic == 10 then
+										table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 
-									c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
-									self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
-									c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
+										c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
+										self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
+										c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
+									end
 								end
 							end
 						end
@@ -358,15 +362,19 @@ return
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 							for i=1,#ao do
-								c1strength = c1strength + ao[i].strength
-								ao[i]:event(parent, "Victory with "..c1.name.." in war with "..self.target.name)
+								if ao[i] then
+									c1strength = c1strength + ao[i].strength
+									ao[i]:event(parent, "Victory with "..c1.name.." in war with "..self.target.name)
+								end
 							end
 
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
-								c2strength = c2strength + ao[i].strength
-								ao[i]:event(parent, "Defeat with "..self.target.name.." in war with "..c1.name)
+								if ao[i] then
+									c2strength = c2strength + ao[i].strength
+									ao[i]:event(parent, "Defeat with "..self.target.name.." in war with "..c1.name)
+								end
 							end
 
 							parent:removeAllyOngoing(c1, self.target, self.name)

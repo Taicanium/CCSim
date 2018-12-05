@@ -23,7 +23,8 @@ function main()
 		datin = io.read()
 		datin = string.lower(datin)
 
-		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 else CCSCommon.showinfo = 0 end
+		CCSCommon.showinfo = 0
+		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
 		io.write(string.format("\nHow often do you want the world data to be autosaved? Enter a number of years, or -1 for never. > "))
 		datin = io.read()
@@ -40,7 +41,6 @@ function main()
 		datin = string.lower(datin)
 
 		CCSCommon.doR = false
-
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 
 		io.write(string.format("\nDo you want to produce a GEDCOM file for royal lines (y/n)? > "))
@@ -48,7 +48,6 @@ function main()
 		datin = string.lower(datin)
 
 		CCSCommon.ged = false
-
 		if string.lower(datin) == "y" then CCSCommon.ged = true end
 
 		io.write(string.format("\nData > "))
