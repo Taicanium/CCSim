@@ -32,7 +32,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 121
+				nl.deathrate = 130
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -43,26 +43,7 @@ return
 
 				return nl
 			end,
-
-			destroy = function(self, parent)
-				if self.people ~= nil then
-					for i=1,#self.people do
-						if self.people[i].useParents == true then
-							if self.people[i].royalGenerations ~= -1 then
-								if self.people[i].royalGenerations < 5 then
-									table.insert(self.ascendants, {Name=self.people[i].name, Surname=self.people[i].surname, Gender=self.people[i].gender:sub(1, 1), Number=self.people[i].number, Birth=self.people[i].birth, BirthPlace=self.people[i].birthplace, Death=self.people[i].death, DeathPlace=self.people[i].deathplace, Father=self.people[i].father, Mother=self.people[i].mother, Title=self.people[i].title})
-								end
-							end
-						end
-						self.people[i]:destroy()
-						self.people[i] = nil
-					end
-					self.people = nil
-				end
-				
-				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
-			end,
-
+			
 			add = function(self, n)
 				table.insert(self.people, n)
 			end,
@@ -122,13 +103,14 @@ return
 				end
 			end,
 
-			delete = function(self, y)
-				local b = #self.people
-				if b > 0 then
+			delete = function(self, parent, y)
+				if self.people ~= nil and #self.people > 0 then
 					if self.people[y] ~= nil then
+						self.people[y].death = parent.years
+						self.people[y].deathplace = self.name
 						if self.people[y].royalGenerations ~= -1 then
 							if self.people[y].royalGenerations < 5 then
-								table.insert(self.ascendants, {Name=self.people[y].name, Surname=self.people[y].surname, Gender=self.people[y].gender:sub(1, 1), Number=self.people[y].number, Birth=self.people[y].birth, BirthPlace=self.people[y].birthplace, Death=self.people[y].death, DeathPlace=self.name, Father=self.people[y].father, Mother=self.people[y].mother, Title=self.people[y].title})
+								table.insert(self.ascendants, parent:makeAscendant(self, self.people[y]))
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
@@ -139,6 +121,17 @@ return
 						end
 					end
 				end
+			end,
+			
+			destroy = function(self, parent)
+				if self.people ~= nil then
+					for i=1,#self.people do
+						self:delete(parent, i)
+					end
+					self.people = nil
+				end
+				
+				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
 			end,
 
 			event = function(self, parent, e)
@@ -255,7 +248,23 @@ return
 				end
 
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name:sub(1, #self.name-1).."ian"
-				elseif self.name:sub(#self.name, #self.name) == "y" then self.demonym = self.name:sub(1, #self.name-1)
+				elseif self.name:sub(#self.name, #self.name) == "y" then
+					split = self.name:sub(1, #self.name-1)
+					if split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
+					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
+					elseif split:sub(#split, #split) == "b" then self.demonym = split.."ian"
+					elseif split:sub(#split, #split) == "d" then self.demonym = split.."ish"
+					elseif split:sub(#split, #split) == "f" then self.demonym = split.."ish"
+					elseif split:sub(#split, #split) == "g" then self.demonym = split.."ian"
+					elseif split:sub(#split, #split) == "h" then self.demonym = split.."ian"
+					elseif split:sub(#split, #split) == "a" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "e" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "i" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "o" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "u" then self.demonym = split.."n"
+					elseif split:sub(#split, #split) == "l" then self.demonym = split.."ish"
+					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
+					else self.demonym = split end
 				elseif self.name:sub(#self.name, #self.name) == "e" then self.demonym = self.name:sub(1, #self.name-1).."ish"
 				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "s" then
@@ -268,8 +277,8 @@ return
 					split = self.name:sub(1, #self.name-4)
 					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
 					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
-					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-2).."ian"
-					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-2).."ian"
+					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-1).."ian"
+					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
@@ -290,7 +299,9 @@ return
 				self.demonym = self.demonym:gsub("ii", "i")
 				self.demonym = self.demonym:gsub("aa", "a")
 				self.demonym = self.demonym:gsub("eia", "ia")
+				self.demonym = self.demonym:gsub("oia", "ia")
 				self.demonym = self.demonym:gsub("uia", "ia")
+				self.demonym = self.demonym:gsub("yi", "i")
 			end,
 
 			set = function(self, parent)
@@ -309,7 +320,7 @@ return
 					n.level = 2
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
-					n.nationality = self.demonym
+					n.nationality = self.name
 					self:add(n)
 				end
 
@@ -348,8 +359,7 @@ return
 					while self.people[r].isruler == true do
 						r = math.random(1, #self.people)
 					end
-					self.people[r].death = parent.years
-					self:delete(r)
+					self:delete(parent, r)
 				end
 
 				for i=1,self.population do
@@ -357,7 +367,7 @@ return
 					n:makename(parent, self)
 					n.level = 2
 					n.title = "Citizen"
-					n.ethnicity = {[self.name]=100}
+					n.ethnicity = {[self.demonym]=100}
 					n.nationality = self.name
 					self:add(n)
 				end
@@ -403,7 +413,6 @@ return
 						self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
 						self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
 						self.people[newRuler].royal = true
-						self.people[newRuler].useParents = true
 						self.people[newRuler].royalGenerations = 0
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
@@ -784,8 +793,7 @@ return
 								self.hasruler = -1
 							end
 
-							self.people[i].death = parent.years
-							self:delete(i)
+							self:delete(parent, i)
 						else
 							d = math.random(1, self.deathrate)
 							if d == 3 then
@@ -793,8 +801,7 @@ return
 									self.hasruler = -1
 								end
 
-								self.people[i].death = parent.years
-								self:delete(i)
+								self:delete(parent, i)
 							end
 						end
 					end

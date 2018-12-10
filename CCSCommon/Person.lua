@@ -22,7 +22,6 @@ return
 				n.spouse = nil
 				n.father = nil
 				n.mother = nil
-				n.useParents = false
 				n.isruler = false
 				n.parentRuler = false
 				n.royal = false
@@ -127,26 +126,17 @@ return
 							nn.royalSystem = self.spouse.royalSystem
 							nn.lastRoyalAncestor = self.spouse.lastRoyalAncestor
 							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes + 1 end
-							if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
-							else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
-							nn.useParents = true
 						else
 							nn.royalGenerations = self.royalGenerations + 1
 							nn.royalSystem = self.royalSystem
 							nn.lastRoyalAncestor = self.lastRoyalAncestor
 							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
-							if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
-							else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
-							nn.useParents = true
 						end
 					else
 						nn.royalGenerations = self.royalGenerations + 1
 						nn.royalSystem = self.royalSystem
 						nn.lastRoyalAncestor = self.lastRoyalAncestor
 						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
-						if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self) end
-						else if parent.ged == true then nn:SetFamily(self, self.spouse) end end
-						nn.useParents = true
 					end
 				end
 
@@ -180,14 +170,18 @@ return
 
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
 
-				for i, j in pairs(self.ethnicity) do nn[i] = j end
+				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
 
 				for i, j in pairs(self.spouse.ethnicity) do
-					if nn[i] == nil then nn[i] = 0 end
-					nn[i] = nn[i] + j
+					if nn.ethnicity[i] == nil then nn.ethnicity[i] = 0 end
+					nn.ethnicity[i] = nn.ethnicity[i] + j
 				end
 
-				for i, j in pairs(nn.ethnicity) do nn[i] = nn[i] / 2 end
+				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i] / 2 end
+				nn.nationality = nl.name
+				
+				if self.gender == "Female" then if parent.ged == true then nn:SetFamily(nl, self.spouse, self, parent) end
+				else if parent.ged == true then nn:SetFamily(nl, self, self.spouse, parent) end end
 
 				nl:add(nn)
 			end,
@@ -211,9 +205,9 @@ return
 				end
 			end,
 
-			SetFamily = function(self, father, mother)
-				self.father = {Name=father.name, Surname=father.surname, Gender="M", Number=father.number, Birth=father.birth, BirthPlace=father.birthplace, Death=father.death, DeathPlace=father.deathplace, Father=father.father, Mother=father.mother, Title=father.title}
-				self.mother = {Name=mother.name, Surname=mother.surname, Gender="F", Number=mother.number, Birth=mother.birth, BirthPlace=mother.birthplace, Death=mother.death, DeathPlace=mother.deathplace, Father=mother.father, Mother=mother.mother, Title=mother.title}
+			SetFamily = function(self, nl, father, mother, parent)
+				self.father = parent:makeAscendant(nl, father)
+				self.mother = parent:makeAscendant(nl, mother)
 			end,
 
 			update = function(self, parent, nl)
@@ -410,31 +404,33 @@ return
 					table.insert(nl.parties, newp)
 				end
 
-				local movechance = math.random(1, 25)
+				local movechance = math.random(1, 150)
 				if movechance == 12 then
 					self.region = ""
 					self.city = ""
 				end
 
-				for i, cp in pairs(parent.thisWorld.countries) do
-					if cp.name ~= nl.name then
-						local movechance = math.random(1, 1000)
-						if movechance < 6 then
-							for j=#nl.people,1,-1 do
-								if nl.people[j].name == self.name and nl.people[j].surname == self.surname and nl.people[j].birth == self.birth and nl.people[j].level == self.level then
-									local k = table.remove(nl.people, j)
-									table.insert(nl.people, k)
+				if self.isruler == false then
+					for i, cp in pairs(parent.thisWorld.countries) do
+						if cp.name ~= nl.name then
+							local movechance = math.random(1, 35000)
+							if movechance == 17499 then
+								for j=#nl.people,1,-1 do
+									if nl.people[j].name == self.name and nl.people[j].surname == self.surname and nl.people[j].birth == self.birth and nl.people[j].level == self.level then
+										local k = table.remove(nl.people, j)
+										table.insert(cp.people, k)
+									end
 								end
-
+								
 								if self.spouse ~= nil then
 									self.spouse = nil
 								end
-							end
 
-							self.region = ""
-							self.city = ""
-							self.military = false
-							self.nationality = nl.name
+								self.region = ""
+								self.city = ""
+								self.military = false
+								self.nationality = cp.name
+							end
 						end
 					end
 				end
@@ -472,6 +468,10 @@ return
 					local values = {}
 					for i, j in pairs(nl.regions[self.region].cities) do table.insert(values, j.name) end
 					self.city = values[math.random(1, #values)]
+					if self.spouse then
+						self.spouse.region = self.region
+						self.spouse.city = self.city
+					end
 				end
 
 				if nl.regions[self.region] ~= nil then

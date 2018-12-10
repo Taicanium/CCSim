@@ -17,25 +17,39 @@ return
 			c_events = {
 				{
 					name="Coup d'Etat",
-					chance=8,
+					chance=10,
 					target=nil,
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
 						c:event(parent, "Coup d'Etat")
 
-						for q=1,#c.people do
-							if c.people[q] ~= nil then
-								if c.people[q].isruler == true then
-									c.people[q].death = parent.years
-									c:delete(q)
+						parent:rseed()
+						local dchance = math.random(1, 100)
+						if dchance < 41 then -- Executed
+							for q=1,#c.people do
+								if c.people[q] ~= nil then
+									if c.people[q].isruler == true then
+										c:delete(parent, q)
+									end
 								end
 							end
+						else -- Exiled
+							local newC = parent:randomChoice(parent.thisWorld.countries)
+							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							local s = table.remove(c.people, q)
+							s.isruler = false
+							s.region = ""
+							s.city = ""
+							s.military = false
+							s.nationality = newC.name
+							if s.spouse ~= nil then s.spouse = nil end
+							table.insert(newC.people, s)
 						end
+						
+						c.hasruler = -1
 
-						parent:rseed()
-
-						c.stability = c.stability - 5
+						c.stability = c.stability - 10
 						if c.stability < 1 then c.stability = 1 end
 
 						return -1
@@ -43,20 +57,37 @@ return
 				},
 				{
 					name="Revolution",
-					chance=4,
+					chance=5,
 					target=nil,
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
-						for q=1,#c.people do
-							if c.people[q] ~= nil then
-								if c.people[q].isruler == true then
-									c.people[q].death = parent.years
-									c:delete(q)
+						parent:rseed()
+						
+						local dchance = math.random(1, 100)
+						if dchance < 51 then -- Executed
+							for q=1,#c.people do
+								if c.people[q] ~= nil then
+									if c.people[q].isruler == true then
+										c:delete(parent, q)
+									end
 								end
 							end
+						else -- Exiled
+							local newC = parent:randomChoice(parent.thisWorld.countries)
+							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							local s = table.remove(c.people, q)
+							s.isruler = false
+							s.region = ""
+							s.city = ""
+							s.military = false
+							s.nationality = newC.name
+							if s.spouse ~= nil then s.spouse = nil end
+							table.insert(newC.people, s)
 						end
 
+						c.hasruler = false
+						
 						local oldsys = parent.systems[c.system].name
 
 						while parent.systems[c.system].name == oldsys do
@@ -81,18 +112,15 @@ return
 							end
 						end
 
-						c.stability = c.stability + 10
+						c.stability = c.stability - 15
 						if c.stability < 1 then c.stability = 1 end
 
 						if math.floor(#c.people / 10) > 1 then
 							for d=1,math.random(1, math.floor(#c.people / 10)) do
 								local z = math.random(1, #c.people)
-								c.people[z].death = parent.years
-								c:delete(z)
+								c:delete(parent, z)
 							end
 						end
-
-						parent:rseed()
 
 						return -1
 					end
@@ -181,17 +209,31 @@ return
 						if self.status >= 100 then -- Government victory
 							c:event(parent, "End of civil war; victory for "..c.rulers[#c.rulers].Title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].Number).." of "..c.rulers[#c.rulers].Country)
 						else -- Opposition victory
-							for q=1,#c.people do
-								if c.people[q] ~= nil then
-									if c.people[q].isruler == true then
-										c.people[q].death = parent.years
-										c:delete(q)
+							local dchance = math.random(1, 100)
+							if dchance < 51 then -- Executed
+								for q=1,#c.people do
+									if c.people[q] ~= nil then
+										if c.people[q].isruler == true then
+											c:delete(parent, q)
+										end
 									end
 								end
+							else -- Exiled
+								local newC = parent:randomChoice(parent.thisWorld.countries)
+								if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+								local s = table.remove(c.people, q)
+								s.isruler = false
+								s.region = ""
+								s.city = ""
+								s.military = false
+								s.nationality = newC.name
+								if s.spouse ~= nil then s.spouse = nil end
+								table.insert(newC.people, s)
 							end
 
+							c.hasruler = -1
+							
 							local oldsys = parent.systems[c.system].name
-
 							c.system = math.random(1, #parent.systems)
 
 							c:checkRuler(parent)
@@ -604,7 +646,7 @@ return
 
 								parent.thisWorld:add(newl)
 
-								c.stability = c.stability - math.random(5, 10)
+								c.stability = c.stability - math.random(3, 10)
 								if c.stability < 1 then c.stability = 1 end
 								
 								if c.capitalregion == newl.name then
@@ -793,7 +835,7 @@ return
 				},
 				{
 					name="Annexation",
-					chance=20,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -806,7 +848,7 @@ return
 						if patron == false then
 							if c1.majority == c2.majority then
 								if c1.relations[c2.name] ~= nil then
-									if c1.relations[c2.name] > 25 then
+									if c1.relations[c2.name] > 60 then
 										c1:event(parent, "Annexed "..c2.name)
 										c2:event(parent, "Annexed by "..c1.name)
 
@@ -897,7 +939,7 @@ return
 					dynastic=true
 				}
 			},
-			vowels = {"a", "e", "i", "o", "u"},
+			vowels = {"a", "e", "i", "o", "u", "y"},
 			years = 1,
 			yearstorun = 0,
 			final = {},
@@ -978,6 +1020,8 @@ return
 				local royals = {}
 				local fams = {}
 
+				os.execute(clrcmd)
+				
 				for i=1,#self.final do					
 					local newc = false
 					local fr = 1
@@ -1039,7 +1083,7 @@ return
 
 				print("")
 
-				for i=1,#self.final do self.final[i]:destroy() end
+				for i=1,#self.final do self.final[i]:destroy(self) end
 
 				if self.ged == true then
 					local dat = self:sortAscendants(self.final)
@@ -1061,6 +1105,14 @@ return
 						if royals[j].birth < 0 then msgout = msgout.." B.C." end
 						msgout = msgout.."\n2 PLAC "..royals[j].birthplace
 						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace end
+						if royals[j].ethnicity then
+							local ei = 1
+							for q, b in pairs(royals[j].ethnicity) do
+								if ei == 1 then msgout = msgout.."\n1 NOTE Descent:\n2 CONT " else msgout = msgout.."\n2 CONT " end
+								msgout = msgout..tostring(b).."% "..tostring(q)
+								ei = ei + 1
+							end
+						end
 
 						for k=1,#fams do
 							if fams[k].husb == j then
@@ -1082,7 +1134,7 @@ return
 						ged:flush()
 
 						percentage = math.floor(j / #royals * 10000)/100
-						io.write("\rWriting individuals...\t"..tostring(percentage).."  \t% done")
+						io.write("\rWriting individuals...\t"..tostring(percentage).."   \t% done")
 					end
 
 					print("")
@@ -1110,7 +1162,7 @@ return
 						ged:flush()
 
 						percentage = math.floor(j / #fams * 10000)/100
-						io.write("\rWriting families...\t"..tostring(percentage).."  \t% done")
+						io.write("\rWriting families...\t"..tostring(percentage).."   \t% done")
 					end
 
 					ged:flush()
@@ -1356,8 +1408,8 @@ return
 										if royals[k].birthplace == person.BirthPlace then
 											found = true
 											fInd = k
-											if person.Death ~= 0 then royals[k].death = person.Death end
-											if person.DeathPlace ~= "" then royals[k].deathplace = person.DeathPlace end
+											if person.Death ~= 0 then if royals[k].death == 0 then royals[k].death = person.Death end end
+											if person.DeathPlace ~= "" then if royals[k].deathplace == "" then royals[k].deathplace = person.DeathPlace end end
 										end
 									end
 								end
@@ -1378,7 +1430,8 @@ return
 						deathplace=person.DeathPlace,
 						father=0,
 						mother=0,
-						title=person.Title
+						title=person.Title,
+						ethnicity=person.Ethnicity
 					})
 
 					fInd = #royals
@@ -1400,6 +1453,8 @@ return
 								if self.systems[k].franks[l] == royals[fInd].title then MorE = 3 end
 							end
 						end
+						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
+						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
 					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
 
@@ -1551,6 +1606,11 @@ return
 
 				os.execute(self.clrcmd)
 				print("\nEnd Simulation!")
+			end,
+			
+			makeAscendant = function(self, c, person)
+				local t = {Name=person.name, Surname=person.surname, Gender=person.gender:sub(1, 1), Number=person.number, Birth=person.birth, BirthPlace=person.birthplace, Death=person.death, DeathPlace=c.name, Father=person.father, Mother=person.mother, Title=person.title, Ethnicity=person.ethnicity}
+				return t
 			end,
 
 			name = function(self, personal, l)
@@ -1894,10 +1954,11 @@ return
 								if c2.people[i] ~= nil then
 									if c2.people[i].isruler == false then
 										if c2.people[i].region == rn.name then
-											c2.people[i].region = ""
-											c2.people[i].city = ""
-											table.insert(c1.people, c2.people[i])
-											table.remove(c2.people, i)
+											local c2p = table.remove(c2.people, i)
+											c2p.region = ""
+											c2p.city = ""
+											c2p.nationality = c1.name
+											table.insert(c1.people, c2p)
 										end
 									end
 								end
@@ -2140,7 +2201,7 @@ return
 
 					for M=ascCount,1,-1 do
 						percentage = math.floor((ascCount-M+1) / ascCount * 10000)/100
-						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."  \t% done")
+						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."   \t% done")
 
 						self:getAscendants(data[i], royals, data[i].ascendants[M])
 						table.remove(data[i].ascendants, M)
@@ -2158,12 +2219,12 @@ return
 													if royals[k].gender == royals[j].gender then
 														if royals[k].number == royals[j].number then
 															if royals[k].title == royals[j].title then
-																table.insert(adjusts, {k, j})
-																if royals[k].death ~= 0 then royals[j].death = royals[k].death end
-																if royals[k].deathplace ~= "" then royals[j].deathplace = royals[k].deathplace end
+																if royals[k].death ~= 0 then if royals[j].death == 0 then royals[j].death = royals[k].death end end
+																if royals[k].deathplace ~= "" then if royals[j].deathplace == "" then royals[j].deathplace = royals[k].deathplace end end
 																table.remove(royals, k)
 																limit = limit - 1
 																if k <= j then j = j - 1 end
+																table.insert(adjusts, {k, j})
 															end
 														end
 													end

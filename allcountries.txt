@@ -122,7 +122,6 @@ P Beijing
 S Shanghai
 R Nanjing
 S Nanjing
-S Nanking
 R Tibet
 S Lhasa
 C Colombia
@@ -665,12 +664,23 @@ C Peru
 R Lima
 P Lima
 C Philippines
-R Manila
+R Metro Manila
 P Manila
+S Quezon City
+R Mindanao
+S Davao City
+S Zamboanga City
 C Poland
-R Warsaw
+R Masovia
 P Warsaw
+R Greater Poland
+S Poznan
+R Lesser Poland
 S Krakow
+R Lower Silesia
+S Wroclaw
+R Pomerania
+S Gdansk
 C Portugal
 R Lisbon
 P Lisbon
@@ -802,6 +812,8 @@ S Skelleftea
 C Switzerland
 R Bern
 P Bern
+R Zurich
+S Zurich
 C Syria
 R Aleppo
 S Aleppo
@@ -1070,7 +1082,7 @@ C Vietnam
 R North Vietnam
 P Hanoi
 R South Vietnam
-R Ho Chi Minh City
+S Ho Chi Minh City
 C Western Sahara
 R La'youn
 P La'youn

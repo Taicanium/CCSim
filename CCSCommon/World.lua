@@ -3,6 +3,8 @@ threadpool = nil
 
 torchstatus, torch = pcall(require, "torch")
 
+jsonstatus, json = pcall(require, "cjson")
+
 return
 	function()
 		local World = {
@@ -38,106 +40,270 @@ return
 				print("Opening data file...")
 				local f = io.open("in_progress.dat", "r+b")
 				print("Reading data file...")
+				
+				if jsonstatus then
+					local jTable = json.decode(f:read("*all"))
+					
+					parent.autosaveDur = tonumber(jTable[1])
+					parent.numCountries = tonumber(jTable[2])
+					parent.popLimit = tonumber(jTable[3])
+					parent.showinfo = tonumber(jTable[4])
+					parent.startyear = tonumber(jTable[5])
+					parent.maxyears = tonumber(jTable[6])
+					parent.years = tonumber(jTable[7])
+					parent.yearstorun = tonumber(jTable[8])
+					parent.final = jTable[9]
+					self.countries = jTable[10]
+					self.fromFile = jTable[11]
+					parent.ged = jTable[12]
+					parent.doR = jTable[13]
+					if parent.doR == true then
+						self.planet = jTable[14]
+						self.planetdefined = jTable[15]
+						self.cColors = jTable[16]
+						self.cTriplets = jTable[17]
+					end
+					
+					for i, j in pairs(self.countries) do
+						setmetatable(j, Country)
+						for k, l in pairs(j.people) do
+							setmetatable(l, Person)
+						end
+						for k, l in pairs(j.parties) do
+							setmetatable(l, Party)
+						end
+						for k, l in pairs(j.regions) do
+							setmetatable(l, Region)
+							for m, n in pairs(l.cities) do
+								setmetatable(n, City)
+							end
+						end
+					end
+				else
+					local datin = f:read(1)
+					parent.autosaveDur = tonumber(f:read(tonumber(datin)))
 
-				local datin = f:read(1)
-				parent.autosaveDur = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.numCountries = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.numCountries = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.popLimit = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.popLimit = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.showinfo = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.showinfo = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.startyear = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.startyear = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.maxyears = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.maxyears = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.years = tonumber(f:read(tonumber(datin)))
 
-				datin = f:read(1)
-				parent.years = tonumber(f:read(tonumber(datin)))
+					datin = f:read(1)
+					parent.yearstorun = tonumber(f:read(tonumber(datin)))
+					
+					parent.final = self:loadtable(parent, f)
 
-				datin = f:read(1)
-				parent.yearstorun = tonumber(f:read(tonumber(datin)))
+					self.countries = self:loadtable(parent, f)
 
-				datin = f:read(1)
-				if datin == "0" then self.fromFile = false else self.fromFile = true end
+					datin = f:read(1)
+					if datin == "0" then self.fromFile = false else self.fromFile = true end
 
-				datin = f:read(1)
-				if datin == "0" then parent.ged = false else parent.ged = true end
+					datin = f:read(1)
+					if datin == "0" then parent.ged = false else parent.ged = true end
 
-				datin = f:read(1)
-				if datin == "0" then parent.doR = false else
-					parent.doR = true
-					self.planet = self:loadtable(parent, f)
-					self.planetdefined = self:loadtable(parent, f)
-					self.cColors = self:loadtable(parent, f)
-					self.cTriplets = self:loadtable(parent, f)
+					datin = f:read(1)
+					if datin == "0" then parent.doR = false else
+						parent.doR = true
+						self.planet = self:loadtable(parent, f)
+						self.planetdefined = self:loadtable(parent, f)
+						self.cColors = self:loadtable(parent, f)
+						self.cTriplets = self:loadtable(parent, f)
+					end
 				end
-
-				parent.final = self:loadtable(parent, f)
-
-				self.countries = self:loadtable(parent, f)
-
+				
 				f:close()
 				f = nil
+				
+				for i, j in pairs(self.countries) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
+						end end
+					end end
+				end end
+				
+				for i, j in pairs(parent.final) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
+						end end
+					end end
+				end end
+
+				for i, j in pairs(self.countries) do
+					for k, l in pairs(j.ongoing) do
+						for m, n in pairs(l) do
+							if type(n) == "string" then
+								local fn = self:loadfunction(parent, m, l[m])
+								l[m] = fn
+							end
+						end
+					end
+				end
 
 				print("File closed.")
 			end,
 
 			autosave = function(self, parent)
-				parent:sortAscendants(self)
-
 				io.write(string.format("\nAutosaving..."))
 
 				local f = io.open("in_progress.dat", "w+b")
+				
+				for i, j in pairs(self.countries) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "table" then
+								if l.spouse.name == n.name then
+									if l.spouse.surname == n.surname then
+										if l.spouse.birth == n.birth then
+											if l.spouse.birthplace == n.birthplace then
+												if l.spouse.level == n.level then
+													l.spouse = m
+												end
+											end
+										end
+									end
+								end
+							end
+						end end
+					end end
+				end end
+				
+				for i, j in pairs(parent.final) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "table" then
+								if l.spouse.name == n.name then
+									if l.spouse.surname == n.surname then
+										if l.spouse.birth == n.birth then
+											if l.spouse.birthplace == n.birthplace then
+												if l.spouse.level == n.level then
+													l.spouse = m
+												end
+											end
+										end
+									end
+								end
+							end
+						end end
+					end end
+				end end
+				
+				for i, j in pairs(self.countries) do
+					for k, l in pairs(j.ongoing) do
+						for m, n in pairs(l) do
+							if type(n) == "function" then
+								l[m] = tostring(string.dump(n))
+							end
+						end
+					end
+				end
+				
+				if jsonstatus then
+					local jTable = {parent.autosaveDur, parent.numCountries, parent.popLimit, parent.showinfo, parent.startyear, parent.maxyears, parent.years, parent.yearstorun, parent.final, self.countries, self.fromFile, parent.ged, parent.doR}
+					
+					if parent.doR == true then
+						table.insert(jTable, self.planet)
+						table.insert(jTable, self.planetdefined)
+						table.insert(jTable, self.cColors)
+						table.insert(jTable, self.cTriplets)
+					end
+				
+					local stat, jData = pcall(json.encode, jTable)
+					if stat then f:write(jData) end
+				else
+					f:write(string.len(tostring(parent.autosaveDur)))
+					f:write(parent.autosaveDur)
 
-				f:write(string.len(tostring(parent.autosaveDur)))
-				f:write(parent.autosaveDur)
+					f:write(string.len(tostring(parent.numCountries)))
+					f:write(parent.numCountries)
 
-				f:write(string.len(tostring(parent.numCountries)))
-				f:write(parent.numCountries)
+					f:write(string.len(tostring(parent.popLimit)))
+					f:write(parent.popLimit)
 
-				f:write(string.len(tostring(parent.popLimit)))
-				f:write(parent.popLimit)
+					f:write(string.len(tostring(parent.showinfo)))
+					f:write(parent.showinfo)
 
-				f:write(string.len(tostring(parent.showinfo)))
-				f:write(parent.showinfo)
+					f:write(string.len(tostring(parent.startyear)))
+					f:write(parent.startyear)
 
-				f:write(string.len(tostring(parent.startyear)))
-				f:write(parent.startyear)
+					f:write(string.len(tostring(parent.maxyears)))
+					f:write(parent.maxyears)
 
-				f:write(string.len(tostring(parent.maxyears)))
-				f:write(parent.maxyears)
+					f:write(string.len(tostring(parent.years)))
+					f:write(parent.years)
 
-				f:write(string.len(tostring(parent.years)))
-				f:write(parent.years)
+					f:write(string.len(tostring(parent.yearstorun)))
+					f:write(parent.yearstorun)
+					
+					self:savetable(parent, parent.final, f)
 
-				f:write(string.len(tostring(parent.yearstorun)))
-				f:write(parent.yearstorun)
+					self:savetable(parent, self.countries, f)
+					
+					if self.fromFile == true then f:write("1") else f:write("0") end
 
-				if self.fromFile == true then f:write("1") else f:write("0") end
+					if parent.ged == true then f:write("1") else f:write("0") end
 
-				if parent.ged == true then f:write("1") else f:write("0") end
-
-				if parent.doR == true then
-					f:write("1")
-					self:savetable(parent, self.planet, f)
-					self:savetable(parent, self.planetdefined, f)
-					self:savetable(parent, self.cColors, f)
-					self:savetable(parent, self.cTriplets, f)
-				else f:write("0") end
-
-				self:savetable(parent, parent.final, f)
-
-				self:savetable(parent, self.countries, f)
-
+					if parent.doR == true then
+						f:write("1")
+						self:savetable(parent, self.planet, f)
+						self:savetable(parent, self.planetdefined, f)
+						self:savetable(parent, self.cColors, f)
+						self:savetable(parent, self.cTriplets, f)
+					else f:write("0") end
+				end
+				
 				f:flush()
 				f:close()
 				f = nil
+					
+				for i, j in pairs(self.countries) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
+						end end
+					end end
+				end end
+				
+				for i, j in pairs(parent.final) do if j.people then
+					for k, l in pairs(j.people) do if l.spouse then
+						for m, n in pairs(j.people) do if n.spouse then
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
+						end end
+					end end
+				end end
+				
+				for i, j in pairs(self.countries) do
+					for k, l in pairs(j.ongoing) do
+						for m, n in pairs(l) do
+							if type(n) == "string" then
+								local fn = self:loadfunction(parent, m, l[m])
+								l[m] = fn
+							end
+						end
+					end
+				end
 			end,
 
 			constructVoxelPlanet = function(self, parent)
@@ -337,7 +503,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."  \t% done")
+					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."   \t% done")
 				end
 
 				for i=1,#self.planetdefined do
@@ -821,7 +987,7 @@ return
 
 			savetable = function(self, parent, t, f)
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
-				local exceptions = {"spouse", "__index"}
+				local exceptions = {"__index"}
 
 				if t.mtName == nil then f:write("5nilmt") else
 					f:write(string.len(t.mtName))
@@ -843,14 +1009,14 @@ return
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
 					if found == false then 
 						local itype = types[type(i)]
-						f:write(tostring(itype))
+						f:write(itype)
 
 						f:write(string.len(tostring(string.len(i))))
 						f:write(string.len(tostring(i)))
 						f:write(tostring(i))
 
 						local jtype = type(j)
-						f:write(tostring(types[jtype]))
+						f:write(types[jtype])
 
 						if jtype == "table" then
 							self:savetable(parent, j, f)
