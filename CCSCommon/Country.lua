@@ -32,8 +32,8 @@ return
 				nl.population = 0
 				nl.ethnicities = {}
 				nl.majority = ""
-				nl.birthrate = 6
-				nl.deathrate = 225
+				nl.birthrate = 4
+				nl.deathrate = 275
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -723,7 +723,7 @@ return
 				self.strength = 0
 
 				if self.population > parent.popLimit then
-					self.birthrate = 6
+					self.birthrate = 4
 				else
 					self.birthrate = 100
 				end
