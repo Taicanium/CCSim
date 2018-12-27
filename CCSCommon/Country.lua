@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 126
+				nl.deathrate = 225
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -792,7 +792,7 @@ return
 						self.averageAge = self.averageAge + self.people[i].age
 
 						age = self.people[i].age
-						if age > 125 then
+						if age > 130 then
 							self:delete(parent, i)
 						else
 							d = math.random(1, self.deathrate)
