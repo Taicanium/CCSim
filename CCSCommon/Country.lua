@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 4
-				nl.deathrate = 120
+				nl.deathrate = 200
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
