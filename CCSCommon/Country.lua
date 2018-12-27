@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 4
-				nl.deathrate = 275
+				nl.deathrate = 120
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -796,7 +796,7 @@ return
 							self:delete(parent, i)
 						else
 							d = math.random(1, self.deathrate)
-							if d > 3 and d < 6 then
+							if d == 27 then
 								self:delete(parent, i)
 							end
 						end
