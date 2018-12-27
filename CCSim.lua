@@ -2,7 +2,8 @@ CCSCommon = require("CCSCommon")()
 
 function main()
 	local clrarr = os.execute("clear")
-	if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	if type(clrarr) == "table" then if clrarr[1] == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end
 
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
