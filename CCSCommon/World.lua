@@ -27,7 +27,7 @@ return
 
 			destroy = function(self)
 				for i, cp in pairs(self.countries) do
-					cp:destroy()
+					cp:destroy(parent)
 					cp = nil
 				end
 			end,
@@ -42,7 +42,9 @@ return
 				print("Reading data file...")
 				
 				if jsonstatus then
-					local jTable = json.decode(f:read("*all"))
+					local jData = f:read("*all")
+					print("Decoding JSON...")
+					local jTable = json.decode(jData)
 					
 					parent.autosaveDur = tonumber(jTable[1])
 					parent.numCountries = tonumber(jTable[2])
@@ -63,6 +65,8 @@ return
 						self.cColors = jTable[16]
 						self.cTriplets = jTable[17]
 					end
+					
+					print("Reconstructing metatables...")
 					
 					for i, j in pairs(self.countries) do
 						setmetatable(j, Country)
@@ -162,7 +166,8 @@ return
 			end,
 
 			autosave = function(self, parent)
-				io.write(string.format("\nAutosaving..."))
+				parent:sortAscendants(self.countries)
+				print("\nAutosaving...")
 
 				local f = io.open("in_progress.dat", "w+b")
 				
@@ -225,9 +230,13 @@ return
 						table.insert(jTable, self.cColors)
 						table.insert(jTable, self.cTriplets)
 					end
-				
+					
+					print("Encoding JSON...")
 					local stat, jData = pcall(json.encode, jTable)
-					if stat then f:write(jData) end
+					if stat then
+						print("Writing JSON...")
+						f:write(jData)
+					end
 				else
 					f:write(string.len(tostring(parent.autosaveDur)))
 					f:write(parent.autosaveDur)
@@ -428,7 +437,7 @@ return
 
 						if #oceanNodes >= maxsize then stop = true end
 						if wNodeCount >= maxWNodes then stop = true end
-						io.write("\r"..tostring(#oceanNodes).."/"..tostring(maxsize)..", max "..tostring(maxWNodes))
+						io.write("\r"..tostring(#oceanNodes).."/"..tostring(maxsize)..", max "..tostring(maxWNodes-wNodeCount))
 					end
 				end
 

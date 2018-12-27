@@ -86,7 +86,7 @@ return
 							table.insert(newC.people, s)
 						end
 
-						c.hasruler = false
+						c.hasruler = -1
 						
 						local oldsys = parent.systems[c.system].name
 
@@ -903,6 +903,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
 			},
 			popLimit = 10000,
+			royals = {},
 			showinfo = 0,
 			startyear = 1,
 			systems = {
@@ -1017,7 +1018,6 @@ return
 				local f = io.open("output.txt", "w+")
 
 				local ged = nil
-				local royals = {}
 				local fams = {}
 
 				os.execute(clrcmd)
@@ -1086,28 +1086,27 @@ return
 				for i=1,#self.final do self.final[i]:destroy(self) end
 
 				if self.ged == true then
-					local dat = self:sortAscendants(self.final)
-					local royals = dat[1]
-					local fams = dat[2]
+					local fams = self:sortAscendants(self.final)
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
 					print("")
 
-					for j=1,#royals do
-						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..royals[j].gender.."\n1 NAME "..royals[j].name.." /"..royals[j].surname.."/"
-						if royals[j].number ~= 0 then msgout = msgout.." "..self:roman(royals[j].number) end
-						if royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..royals[j].title end
-						msgout = msgout.."\n2 SURN "..royals[j].surname.."\n2 GIVN "..royals[j].name.."\n"
-						if royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(royals[j].number).."\n" end
-						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(royals[j].birth)
-						if royals[j].birth < 0 then msgout = msgout.." B.C." end
-						msgout = msgout.."\n2 PLAC "..royals[j].birthplace
-						if tostring(royals[j].death) ~= "0" then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(royals[j].death).."\n2 PLAC "..royals[j].deathplace end
-						if royals[j].ethnicity then
+					for j=1,#self.royals do
+						if self.royals[j].death > self.maxyears then self.royals[j].death = 0 end
+						local msgout = "0 @I"..tostring(j).."@ INDI\n1 SEX "..self.royals[j].gender.."\n1 NAME "..self.royals[j].name.." /"..self.royals[j].surname.."/"
+						if self.royals[j].number ~= 0 then msgout = msgout.." "..self:roman(self.royals[j].number) end
+						if self.royals[j].number ~= 0 then msgout = msgout.."\n2 NPFX "..self.royals[j].title end
+						msgout = msgout.."\n2 SURN "..self.royals[j].surname.."\n2 GIVN "..self.royals[j].name.."\n"
+						if self.royals[j].number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(self.royals[j].number).."\n" end
+						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(self.royals[j].birth)
+						if self.royals[j].birth < 0 then msgout = msgout.." B.C." end
+						msgout = msgout.."\n2 PLAC "..self.royals[j].birthplace
+						if tostring(self.royals[j].death) ~= "0" and self.royals[j].death <= self.maxyears then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(self.royals[j].death).."\n2 PLAC "..self.royals[j].deathplace end
+						if self.royals[j].ethnicity then
 							local ei = 1
-							for q, b in pairs(royals[j].ethnicity) do
+							for q, b in pairs(self.royals[j].ethnicity) do
 								if ei == 1 then msgout = msgout.."\n1 NOTE Descent:\n2 CONT " else msgout = msgout.."\n2 CONT " end
 								msgout = msgout..tostring(b).."% "..tostring(q)
 								ei = ei + 1
@@ -1133,7 +1132,7 @@ return
 						ged:write(msgout)
 						ged:flush()
 
-						percentage = math.floor(j / #royals * 10000)/100
+						percentage = math.floor(j / #self.royals * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."   \t% done")
 					end
 
@@ -1400,16 +1399,18 @@ return
 				local found = false
 				local fInd = 0
 				for k=1,#royals do
-					if royals[k].birth == person.Birth then
+					if royals[k].birth == person.birth then
 						if royals[k].name == person.Name then
 							if royals[k].gender == person.Gender then
 								if royals[k].surname == person.Surname then
 									if royals[k].number == person.Number then
-										if royals[k].birthplace == person.BirthPlace then
+										if royals[k].birthplace == person.birthplace then
 											found = true
 											fInd = k
-											if person.Death ~= 0 then if royals[k].death == 0 then royals[k].death = person.Death end end
-											if person.DeathPlace ~= "" then if royals[k].deathplace == "" then royals[k].deathplace = person.DeathPlace end end
+											if person.death ~= 0 then if royals[k].death == 0 then royals[k].death = person.death end end
+											if person.deathplace ~= "" then if royals[k].deathplace == "" then royals[k].deathplace = person.deathplace end end
+											if royals[k].death ~= 0 then if person.death == 0 then person.death = royals[k].death end end
+											if royals[k].deathplace ~= "" then if person.deathplace == "" then person.deathplace = royals[k].deathplace end end
 										end
 									end
 								end
@@ -1422,12 +1423,12 @@ return
 					table.insert(royals, {
 						name=person.Name,
 						surname=person.Surname,
-						birth=person.Birth,
-						death=person.Death,
+						birth=person.birth,
+						death=person.death,
 						number=person.Number,
 						gender=person.Gender,
-						birthplace=person.BirthPlace,
-						deathplace=person.DeathPlace,
+						birthplace=person.birthplace,
+						deathplace=person.deathplace,
 						father=0,
 						mother=0,
 						title=person.Title,
@@ -1598,7 +1599,7 @@ return
 					if self.years > self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
-						self.thisWorld:autosave(self)
+						-- self.thisWorld:autosave(self)
 					end
 				end
 
@@ -1609,7 +1610,7 @@ return
 			end,
 			
 			makeAscendant = function(self, c, person)
-				local t = {Name=person.name, Surname=person.surname, Gender=person.gender:sub(1, 1), Number=person.number, Birth=person.birth, BirthPlace=person.birthplace, Death=person.death, DeathPlace=c.name, Father=person.father, Mother=person.mother, Title=person.title, Ethnicity=person.ethnicity}
+				local t = {Name=person.name, Surname=person.surname, Gender=person.gender:sub(1, 1), Number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, Father=person.father, Mother=person.mother, Title=person.title, Ethnicity=person.ethnicity}
 				return t
 			end,
 
@@ -2190,11 +2191,10 @@ return
 
 			sortAscendants = function(self, data)
 				local percentage = 0
-				local royals = {}
 				local fams = {}
 
 				for i=1,#data do
-					local formerTotal = #royals
+					local formerTotal = #self.royals
 					local ascCount = #data[i].ascendants
 
 					if ascCount > 0 then print("") end
@@ -2203,25 +2203,22 @@ return
 						percentage = math.floor((ascCount-M+1) / ascCount * 10000)/100
 						io.write("\rListing people for country "..tostring(i).."/"..tostring(#data).."...\t"..tostring(percentage).."   \t% done")
 
-						self:getAscendants(data[i], royals, data[i].ascendants[M])
-						table.remove(data[i].ascendants, M)
-
-						local limit = #royals
+						local limit = #self.royals
 						local j = 1
 						local adjusts = {}
 						while j <= limit do
-							for k=#royals,formerTotal+1,-1 do
+							for k=#self.royals,formerTotal+1,-1 do
 								if j ~= k then
 									if j <= limit then
-										if royals[k].birth == royals[j].birth then
-											if royals[k].name == royals[j].name then
-												if royals[k].surname == royals[j].surname then
-													if royals[k].gender == royals[j].gender then
-														if royals[k].number == royals[j].number then
-															if royals[k].title == royals[j].title then
-																if royals[k].death ~= 0 then if royals[j].death == 0 then royals[j].death = royals[k].death end end
-																if royals[k].deathplace ~= "" then if royals[j].deathplace == "" then royals[j].deathplace = royals[k].deathplace end end
-																table.remove(royals, k)
+										if self.royals[k].birth == self.royals[j].birth then
+											if self.royals[k].name == self.royals[j].name then
+												if self.royals[k].surname == self.royals[j].surname then
+													if self.royals[k].gender == self.royals[j].gender then
+														if self.royals[k].number == self.royals[j].number then
+															if self.royals[k].title == self.royals[j].title then
+																if self.royals[k].death ~= 0 then if self.royals[j].death == 0 then self.royals[j].death = self.royals[k].death end end
+																if self.royals[k].deathplace ~= "" then if self.royals[j].deathplace == "" then self.royals[j].deathplace = self.royals[k].deathplace end end
+																table.remove(self.royals, k)
 																limit = limit - 1
 																if k <= j then j = j - 1 end
 																table.insert(adjusts, {k, j})
@@ -2238,48 +2235,48 @@ return
 							j = j + 1
 						end
 
-						if formerTotal ~= #royals then
-							for j=formerTotal+1,#royals do
+						if formerTotal ~= #self.royals then
+							for j=formerTotal+1,#self.royals do
 								for k=1,#adjusts do
-									if royals[j].father == adjusts[k][1] then royals[j].father = adjusts[k][2]
-									elseif royals[j].father > adjusts[k][1] then royals[j].father = royals[j].father - 1 end
-									if royals[j].mother == adjusts[k][1] then royals[j].mother = adjusts[k][2]
-									elseif royals[j].mother > adjusts[k][1] then royals[j].mother = royals[j].mother - 1 end
+									if self.royals[j].father == adjusts[k][1] then self.royals[j].father = adjusts[k][2]
+									elseif self.royals[j].father > adjusts[k][1] then self.royals[j].father = self.royals[j].father - 1 end
+									if self.royals[j].mother == adjusts[k][1] then self.royals[j].mother = adjusts[k][2]
+									elseif self.royals[j].mother > adjusts[k][1] then self.royals[j].mother = self.royals[j].mother - 1 end
 								end
 
-								if royals[j].father > #royals then royals[j].father = 0 end
-								if royals[j].mother > #royals then royals[j].mother = 0 end
-							end
-
-							for j=formerTotal+1,#royals do
-								local found = nil
-								local chil = false
-								for k=1,#fams do
-									if royals[j].father ~= 0 then
-										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
-									end
-
-									if royals[j].mother ~= 0 then
-										if fams[k].husb == royals[j].father and fams[k].wife == royals[j].mother then found = k end
-									end
-
-									for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
-								end
-
-								if found == nil then
-									local doFam = false
-									if royals[j].father ~= 0 then doFam = true end
-									if royals[j].mother ~= 0 then doFam = true end
-									if doFam == true then table.insert(fams, {husb=royals[j].father, wife=royals[j].mother, chil={j}}) end
-								else
-									if chil == false then table.insert(fams[found].chil, j) end
-								end
+								if self.royals[j].father > #self.royals then self.royals[j].father = 0 end
+								if self.royals[j].mother > #self.royals then self.royals[j].mother = 0 end
 							end
 						end
 					end
 				end
+				
+				for j=1,#self.royals do
+					local found = nil
+					local chil = false
+					for k=1,#fams do
+						if self.royals[j].father ~= 0 then
+							if fams[k].husb == self.royals[j].father and fams[k].wife == self.royals[j].mother then found = k end
+						end
 
-				return {royals, fams}
+						if self.royals[j].mother ~= 0 then
+							if fams[k].husb == self.royals[j].father and fams[k].wife == self.royals[j].mother then found = k end
+						end
+
+						for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
+					end
+
+					if found == nil then
+						local doFam = false
+						if self.royals[j].father ~= 0 then doFam = true end
+						if self.royals[j].mother ~= 0 then doFam = true end
+						if doFam == true then table.insert(fams, {husb=self.royals[j].father, wife=self.royals[j].mother, chil={j}}) end
+					else
+						if chil == false then table.insert(fams[found].chil, j) end
+					end
+				end
+
+				return fams
 			end
 		}
 

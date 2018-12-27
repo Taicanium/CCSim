@@ -18,6 +18,7 @@ return
 				nl.rulernames = {}
 				nl.frulernames = {}
 				nl.ascendants = {}
+				nl.newAscs = {}
 				nl.ongoing = {}
 				nl.allyOngoing = {}
 				nl.alliances = {}
@@ -109,8 +110,9 @@ return
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
 						if self.people[y].royalGenerations ~= -1 then
-							if self.people[y].royalGenerations < 5 then
-								table.insert(self.ascendants, parent:makeAscendant(self, self.people[y]))
+							if self.people[y].royalGenerations < 4 then
+								local asc = parent:makeAscendant(self, self.people[y])
+								table.insert(self.newAscs, asc)
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
@@ -128,6 +130,8 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
+					for i=1,#self.newAscs do parent:getAscendants(self, parent.royals, self.newAscs[i]) end
+					self.newAscs = {}
 					self.people = nil
 				end
 				
@@ -422,8 +426,8 @@ return
 								for i=1,#self.people do
 									if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].name then
 										if self.people[i].father.Surname == self.people[newRuler].surname then
-											if self.people[i].father.Birth == self.people[newRuler].birth then
-												if self.people[i].father.Birthplace == self.people[newRuler].birthplace then
+											if self.people[i].father.birth == self.people[newRuler].birth then
+												if self.people[i].father.birthplace == self.people[newRuler].birthplace then
 													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
 													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
 													self.people[i].royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
@@ -436,8 +440,8 @@ return
 								for i=1,#self.people do
 									if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].name then
 										if self.people[i].mother.Surname == self.people[newRuler].surname then
-											if self.people[i].mother.Birth == self.people[newRuler].birth then
-												if self.people[i].mother.Birthplace == self.people[newRuler].birthplace then
+											if self.people[i].mother.birth == self.people[newRuler].birth then
+												if self.people[i].mother.birthplace == self.people[newRuler].birthplace then
 													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
 													self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
 													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
@@ -456,8 +460,8 @@ return
 									for i=1,#self.people do
 										if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].spouse.name then 
 											if self.people[i].father.Surname == self.people[newRuler].spouse.surname then
-												if self.people[i].father.Birth == self.people[newRuler].spouse.birth then
-													if self.people[i].father.Birthplace == self.people[newRuler].spouse.birthplace then
+												if self.people[i].father.birth == self.people[newRuler].spouse.birth then
+													if self.people[i].father.birthplace == self.people[newRuler].spouse.birthplace then
 														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
 													end
 												end
@@ -468,8 +472,8 @@ return
 									for i=1,#self.people do
 										if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].spouse.name then
 											if self.people[i].mother.Surname == self.people[newRuler].spouse.surname then
-												if self.people[i].mother.Birth == self.people[newRuler].spouse.birth then
-													if self.people[i].mother.Birthplace == self.people[newRuler].spouse.birthplace then
+												if self.people[i].mother.birth == self.people[newRuler].spouse.birth then
+													if self.people[i].mother.birthplace == self.people[newRuler].spouse.birthplace then
 														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
 														self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
 													end
@@ -789,18 +793,10 @@ return
 
 						age = self.people[i].age
 						if age > 125 then
-							if self.people[i].isruler == true then
-								self.hasruler = -1
-							end
-
 							self:delete(parent, i)
 						else
 							d = math.random(1, self.deathrate)
 							if d == 3 then
-								if self.people[i].isruler == true then
-									self.hasruler = -1
-								end
-
 								self:delete(parent, i)
 							end
 						end
@@ -821,6 +817,9 @@ return
 				end
 
 				self:checkRuler(parent)
+				
+				for i=1,#self.newAscs do parent:getAscendants(self, parent.royals, self.newAscs[i]) end
+				self.newAscs = {}
 			end
 		}
 
