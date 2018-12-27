@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 150
+				nl.deathrate = 300
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -725,7 +725,7 @@ return
 				if self.population < parent.popLimit then
 					self.birthrate = 6
 				else
-					self.birthrate = 100
+					self.birthrate = self.population
 				end
 
 				local oldcap = nil
