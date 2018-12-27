@@ -1020,7 +1020,7 @@ return
 				local ged = nil
 				local fams = {}
 
-				os.execute(clrcmd)
+				os.execute(self.clrcmd)
 				
 				for i=1,#self.final do					
 					local newc = false
