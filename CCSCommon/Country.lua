@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 130
+				nl.deathrate = 126
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -723,9 +723,9 @@ return
 				self.strength = 0
 
 				if self.population > parent.popLimit then
-					self.deathrate = 5
+					self.birthrate = 6
 				else
-					self.deathrate = 130
+					self.birthrate = 100
 				end
 
 				local oldcap = nil
@@ -796,7 +796,7 @@ return
 							self:delete(parent, i)
 						else
 							d = math.random(1, self.deathrate)
-							if d == 3 then
+							if d > 3 and d < 6 then
 								self:delete(parent, i)
 							end
 						end
