@@ -1,6 +1,3 @@
-threadsstatus, threads = pcall(require, "threads")
-threadpool = nil
-
 torchstatus, torch = pcall(require, "torch")
 
 jsonstatus, json = pcall(require, "cjson")
@@ -20,7 +17,6 @@ return
 				nm.planetR = 0
 				nm.fromFile = false
 				nm.mtName = "World"
-				nm.threadsDone = {}
 
 				return nm
 			end,
@@ -1051,40 +1047,9 @@ return
 
 				local f0 = _time()
 
-				if threadsstatus then
-					if threadpool == nil then
-						if torchstatus then threadpool = threads.Threads(torch.getnumthreads()) else threadpool = threads.Threads(4) end
-					end
-
-					for i, cp in pairs(self.countries) do
-						self.threadsDone[i] = 1
-					end
-
-					for i, cp in pairs(self.countries) do
-						if cp ~= nil then
-							if cp.update ~= nil then
-								threadpool:addjob(
-									function() cp:update(parent, i) end,
-
-									function() parent.thisWorld.threadsDone[i] = 1 end
-								)
-								self.threadsDone[i] = 0
-							end
-						end
-					end
-
-					threadpool:synchronize()
-
-					local allfinished = false
-					while allfinished == false do
-						allfinished = true
-						for i=1,#self.threadsDone do if self.threadsDone[i] == 0 then allfinished = false end end
-					end
-				else
-					for i, cp in pairs(self.countries) do
-						if cp ~= nil then
-							cp:update(parent)
-						end
+				for i, cp in pairs(self.countries) do
+					if cp ~= nil then
+						cp:update(parent)
 					end
 				end
 
