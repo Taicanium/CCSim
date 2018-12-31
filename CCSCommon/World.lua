@@ -61,24 +61,6 @@ return
 						self.cColors = jTable[16]
 						self.cTriplets = jTable[17]
 					end
-					
-					print("Reconstructing metatables...")
-					
-					for i, j in pairs(self.countries) do
-						setmetatable(j, Country)
-						for k, l in pairs(j.people) do
-							setmetatable(l, Person)
-						end
-						for k, l in pairs(j.parties) do
-							setmetatable(l, Party)
-						end
-						for k, l in pairs(j.regions) do
-							setmetatable(l, Region)
-							for m, n in pairs(l.cities) do
-								setmetatable(n, City)
-							end
-						end
-					end
 				else
 					local datin = f:read(1)
 					parent.autosaveDur = tonumber(f:read(tonumber(datin)))
@@ -123,9 +105,38 @@ return
 						self.cTriplets = self:loadtable(parent, f)
 					end
 				end
+					
+				print("Reconstructing metatables...")
+				
+				for i, j in pairs(self.countries) do
+					setmetatable(j, Country)
+					for k, l in pairs(j.people) do
+						setmetatable(l, Person)
+					end
+					for k, l in pairs(j.parties) do
+						setmetatable(l, Party)
+					end
+					for k, l in pairs(j.regions) do
+						setmetatable(l, Region)
+						for m, n in pairs(l.cities) do
+							setmetatable(n, City)
+						end
+					end
+				end
 				
 				f:close()
 				f = nil
+
+				for i, j in pairs(self.countries) do
+					for k, l in pairs(j.ongoing) do
+						for m, n in pairs(l) do
+							if type(n) == "string" then
+								local fn = self:loadfunction(parent, m, l[m])
+								l[m] = fn
+							end
+						end
+					end
+				end
 				
 				for i, j in pairs(self.countries) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
@@ -146,17 +157,6 @@ return
 						end end
 					end end
 				end end
-
-				for i, j in pairs(self.countries) do
-					for k, l in pairs(j.ongoing) do
-						for m, n in pairs(l) do
-							if type(n) == "string" then
-								local fn = self:loadfunction(parent, m, l[m])
-								l[m] = fn
-							end
-						end
-					end
-				end
 
 				print("File closed.")
 			end,
@@ -211,7 +211,7 @@ return
 					for k, l in pairs(j.ongoing) do
 						for m, n in pairs(l) do
 							if type(n) == "function" then
-								l[m] = tostring(string.dump(n))
+								l[m] = string.dump(n)
 							end
 						end
 					end
@@ -279,6 +279,17 @@ return
 				f:close()
 				f = nil
 					
+				for i, j in pairs(self.countries) do
+					for k, l in pairs(j.ongoing) do
+						for m, n in pairs(l) do
+							if type(n) == "string" then
+								local fn = self:loadfunction(parent, m, n)
+								l[m] = fn
+							end
+						end
+					end
+				end
+					
 				for i, j in pairs(self.countries) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
 						for m, n in pairs(j.people) do if n.spouse then
@@ -298,17 +309,6 @@ return
 						end end
 					end end
 				end end
-				
-				for i, j in pairs(self.countries) do
-					for k, l in pairs(j.ongoing) do
-						for m, n in pairs(l) do
-							if type(n) == "string" then
-								local fn = self:loadfunction(parent, m, l[m])
-								l[m] = fn
-							end
-						end
-					end
-				end
 			end,
 
 			constructVoxelPlanet = function(self, parent)
@@ -549,7 +549,7 @@ return
 
 			getfunctionvalues = function(self, fnname, fn, t)
 				local found = false
-				local exceptions = {"__index"}
+				local exceptions = {"__index", "target"}
 
 				for i, j in pairs(t) do
 					if type(j) == "function" then
@@ -557,9 +557,7 @@ return
 							local q = 1
 							while true do
 								local name = debug.getupvalue(j, q)
-								if not name then
-									break
-								end
+								if not name then break end
 								debug.upvaluejoin(fn, q, j, q)
 								q = q + 1
 							end
