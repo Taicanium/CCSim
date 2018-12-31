@@ -133,8 +133,8 @@ return
 					for k, l in pairs(j.ongoing) do
 						for m, n in pairs(l) do
 							if type(n) == "string" then
-								local fn = self:loadfunction(parent, m, l[m])
-								l[m] = fn
+								local fn = loadstring(n)
+								if fn then l[m] = fn end
 							end
 						end
 					end
@@ -289,8 +289,8 @@ return
 					for k, l in pairs(j.ongoing) do
 						for m, n in pairs(l) do
 							if type(n) == "string" then
-								local fn = self:loadfunction(parent, m, n)
-								l[m] = fn
+								local fn = loadstring(n)
+								if fn then l[m] = fn end
 							end
 						end
 					end
