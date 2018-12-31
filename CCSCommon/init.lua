@@ -902,7 +902,7 @@ return
 				{"Liberal", "Moderate", "Conservative", "Centralist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist"},
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship"},
 			},
-			popLimit = 10000,
+			popLimit = 2000,
 			royals = {},
 			showinfo = 0,
 			startyear = 1,

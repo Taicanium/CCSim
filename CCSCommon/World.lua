@@ -1073,11 +1073,11 @@ return
 
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.75 then
-						if parent.popLimit > 1000 then
+						if parent.popLimit > 2000 then
 							parent.popLimit = math.floor(parent.popLimit - (500 * (f1 / 0.3)))
 						end
 
-						if parent.popLimit < 1000 then parent.popLimit = 1000 end
+						if parent.popLimit < 2000 then parent.popLimit = 2000 end
 					elseif f1 < 0.35 then
 						if parent.popLimit < 25000 then parent.popLimit = math.floor(parent.popLimit + (500 * (0.08 / f1))) end
 					end

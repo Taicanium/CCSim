@@ -312,7 +312,7 @@ return
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				self.population = math.random(500, 1000)
+				self.population = math.random(1000, 2000)
 				self:makename(parent)
 
 				for i=1,self.population do
@@ -724,8 +724,10 @@ return
 
 				if self.population < parent.popLimit then
 					self.birthrate = 6
+					self.deathrate = 300
 				else
-					self.birthrate = self.population
+					self.birthrate = 20
+					self.deathrate = 150
 				end
 
 				local oldcap = nil
