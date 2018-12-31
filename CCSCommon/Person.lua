@@ -243,7 +243,7 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim end
-						if self.isruler == true then self.level = #sys.ranks
+						if self.isruler == true then self.level = #sys.ranks end
 
 						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.ranks - 1 end
 					else
@@ -268,7 +268,7 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim end
-						if self.isruler == true then self.level = #sys.franks
+						if self.isruler == true then self.level = #sys.franks end
 
 						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.franks - 1 end
 					else
