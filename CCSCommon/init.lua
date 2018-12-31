@@ -1036,7 +1036,7 @@ return
 					end
 
 					if newc == true then
-						f:write(string.format("1. "..self.final[i].rulers[1].Title.." "..self.final[i].rulers[1].name.." "..self:roman(self.final[i].rulers[1].Number).." of "..self.final[i].rulers[1].Country.." ("..tostring(self.final[i].rulers[1].From).." - "..tostring(self.final[i].rulers[1].To)..")").."\n...\n")
+						f:write(string.format("1. "..self:getRulerString(self.final[i].rulers[1]).."\n"))
 						for k=1,#self.final[i].rulers do
 							if self.final[i].rulers[k].To ~= "Current" then
 								if tonumber(self.final[i].rulers[k].To) >= pr then
@@ -1263,9 +1263,9 @@ return
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
 							if dynastic == true then
-								table.insert(fc.rulers, {Title=mat[1], name=mat[2], Number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
+								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=mat[3], Number=tostring(number), Country=fc.name, From=mat[4], To=mat[5]})
 							else
-								table.insert(fc.rulers, {Title=mat[1], name=mat[2], Number=mat[3], Country=fc.name, From=mat[4], To=mat[5]})
+								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=mat[3], Number=mat[4], Country=fc.name, From=mat[5], To=mat[6]})
 							end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
@@ -1474,7 +1474,8 @@ return
 			end,
 
 			getRulerString = function(self, data)
-				return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
+				if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
+				else return string.format(data.Title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")") end
 			end,
 
 			loop = function(self)

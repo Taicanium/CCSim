@@ -484,9 +484,9 @@ return
 								end
 							end
 						end end end
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, surname=self.people[newRuler].surname, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, surname=self.people[newRuler].surname, Number=nil, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
 
 					self.rulerage = self.people[newRuler].age
@@ -726,8 +726,8 @@ return
 					self.birthrate = 6
 					self.deathrate = 300
 				else
-					self.birthrate = 20
-					self.deathrate = 150
+					self.birthrate = 100
+					self.deathrate = 50
 				end
 
 				local oldcap = nil

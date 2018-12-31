@@ -2,7 +2,8 @@ CCSCommon = require("CCSCommon")()
 
 function main()
 	local clrarr = os.execute("clear")
-	if type(clrarr) == "table" then if clrarr[1] == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	if clrarr == nil then CCSCommon.clrcmd = "cls"
+	elseif type(clrarr) == "table" then if clrarr[1] == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	elseif type(clrarr) == "boolean" then if clrarr == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end
 
