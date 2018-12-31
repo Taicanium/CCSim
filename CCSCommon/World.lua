@@ -564,7 +564,7 @@ return
 						end
 					elseif type(j) == "table" then
 						local isexception = false
-						for q=1,#exceptions do if exceptions[q] == i then isexception = true end end
+						for q=1,#exceptions do if exceptions[q] == tostring(i) then isexception = true end end
 						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
 					end
 				end
@@ -572,9 +572,7 @@ return
 
 			loadfunction = function(self, parent, fnname, fndata)
 				local fn = loadstring(fndata)
-
-				self:getfunctionvalues(fnname, fn, self)
-
+				if fn then self:getfunctionvalues(fnname, fn, self) end
 				return fn
 			end,
 
