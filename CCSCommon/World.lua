@@ -1080,7 +1080,7 @@ return
 
 						if parent.popLimit < 500 then parent.popLimit = 500 end
 					elseif f1 < 0.35 then
-						if parent.popLimit < 25000 then parent.popLimit = math.floor(parent.popLimit + (200 * (0.08 / f1))) end
+						if parent.popLimit < 10000 then parent.popLimit = math.floor(parent.popLimit + (200 * (0.08 / f1))) end
 					end
 				end
 			end
