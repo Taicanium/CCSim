@@ -572,8 +572,7 @@ return
 
 			loadfunction = function(self, parent, fnname, fndata)
 				local fn = loadstring(fndata)
-				if fn then self:getfunctionvalues(fnname, fn, self) end
-				return fn
+				if fn then self:getfunctionvalues(fnname, fn, self) return fn else return fndata end
 			end,
 
 			loadtable = function(self, parent, f)
