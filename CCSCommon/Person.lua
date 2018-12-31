@@ -228,7 +228,9 @@ return
 
 				if self.gender == "Male" or sys.dynastic == false then
 					if self.title ~= nil and self.level ~= nil then
-						if self.title ~= sys.ranks[#sys.ranks] and self.level < #sys.ranks - rankLim then
+						self.title = sys.ranks[self.level]
+					
+						if self.level < #sys.ranks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
 								self.prevTitle = self.title
@@ -241,17 +243,19 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim end
+						if self.isruler == true then self.level = #sys.ranks
 
 						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.ranks - 1 end
-
-						self.title = sys.ranks[self.level]
 					else
 						self.level = 2
-						self.title = "Citizen"
 					end
+					
+					self.title = sys.ranks[self.level]
 				else
 					if self.title ~= nil and self.level ~= nil then
-						if self.title ~= sys.franks[#sys.franks] and self.level < #sys.franks - rankLim then
+						self.title = sys.franks[self.level]
+					
+						if self.level < #sys.franks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
 								self.prevTitle = self.title
@@ -264,14 +268,14 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim end
+						if self.isruler == true then self.level = #sys.franks
 
-						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.ranks - 1 end
-
-						self.title = sys.franks[self.level]
+						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.franks - 1 end
 					else
 						self.level = 2
-						self.title = "Citizen"
 					end
+					
+					self.title = sys.franks[self.level]
 				end
 
 				if self.spouse ~= nil then
@@ -281,7 +285,7 @@ return
 				if self.spouse == nil then
 					if self.age > 15 then
 						local c = math.random(1, 8)
-						if c == 2 then
+						if c == 4 then
 							m = math.random(1, #nl.people)
 							if nl.people[m].spouse == nil then
 								if self.gender ~= nl.people[m].gender then
@@ -442,7 +446,7 @@ return
 					self.militaryTraining = self.militaryTraining + 1
 					nl.strength = nl.strength + self.militaryTraining
 				else
-					if self.age < 35 then
+					if self.age < 32 then
 						local joinChance = math.random(1, 250)
 						local threshold = 5
 						for j=1,#nl.ongoing do if nl.ongoing[j].name == "War" then threshold = 25 end end
