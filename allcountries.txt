@@ -342,6 +342,8 @@ P Tbilisi
 C Germany
 R Berlin
 P Berlin
+R Munich
+S Munich
 C Ghana
 R Accra
 P Accra
@@ -390,6 +392,8 @@ P Baghdad
 C Israel
 R Jerusalem
 P Jerusalem
+R Tel Aviv
+S Tel Aviv
 C Italy
 R Rome
 P Rome
@@ -583,6 +587,8 @@ P Port Louis
 C Mexico
 R Mexico City
 P Mexico City
+R Yucatan
+S Cancun
 C Micronesia
 R Palikir
 P Palikir
