@@ -1072,7 +1072,7 @@ return
 				local f1 = _time() - f0
 
 				if parent.years > parent.startyear + 1 then
-					if f1 > 0.75 then
+					if f1 > 0.5 then
 						if parent.popLimit > 500 then
 							parent.popLimit = math.floor(parent.popLimit - (200 * (f1 / 0.3)))
 						end
