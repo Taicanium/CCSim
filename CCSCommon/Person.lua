@@ -143,16 +143,14 @@ return
 				if self.royal == true then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.royalSystem
-					local title = ""
-					if self.gender == "Male" then title = parent.systems[nn.royalSystem].ranks[#parent.systems[nn.royalSystem].ranks] else title = parent.systems[nn.royalSystem].franks[#parent.systems[nn.royalSystem].franks] end
+					local title = self.title
 					nn.lastRoyalAncestor = string.format(title.." "..self.name.." "..parent:roman(self.number).." of "..nl.name)
 					nn.royalInfo.Gens=nn.royalGenerations
 					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
 				else if self.spouse.royal == true then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.spouse.royalSystem
-					local title = ""
-					if self.gender == "Female" then title = parent.systems[nn.royalSystem].ranks[#parent.systems[nn.royalSystem].ranks] else title = parent.systems[nn.royalSystem].franks[#parent.systems[nn.royalSystem].franks] end
+					local title = self.spouse.title
 					nn.lastRoyalAncestor = string.format(title.." "..self.spouse.name.." "..parent:roman(self.spouse.number).." of "..nl.name)
 					nn.royalInfo.Gens=nn.royalGenerations
 					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
