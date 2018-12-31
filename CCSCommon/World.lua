@@ -126,6 +126,8 @@ return
 				
 				f:close()
 				f = nil
+				
+				print("Restoring encoded recursive values...")
 
 				for i, j in pairs(self.countries) do
 					for k, l in pairs(j.ongoing) do
@@ -166,6 +168,8 @@ return
 				print("\nAutosaving...")
 
 				local f = io.open("in_progress.dat", "w+b")
+				
+				print("Encoding recursive values...")
 				
 				for i, j in pairs(self.countries) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
@@ -278,6 +282,8 @@ return
 				f:flush()
 				f:close()
 				f = nil
+				
+				print("Restoring encoded recursive values...")
 					
 				for i, j in pairs(self.countries) do
 					for k, l in pairs(j.ongoing) do
