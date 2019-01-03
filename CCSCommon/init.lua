@@ -1262,7 +1262,7 @@ return
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
 							if dynastic == true then
-								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=self:name(true, 6), Number=tostring(number), Country=fc.name, From=mat[4], To=mat[5]})
+								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=self:name(true, 6), Number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
 							else
 								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=mat[3], Number=mat[4], Country=fc.name, From=mat[5], To=mat[6]})
 							end
