@@ -145,6 +145,8 @@ return
 								local fn = loadstring(n)
 								if fn then l[m] = fn end
 							end
+							
+							if m == "target" then for o, p in pairs(self.countries) do if tostring(o) == tostring(n) then l[m] = p end end end
 						end
 					end
 				end
@@ -226,6 +228,8 @@ return
 								if type(n) == "function" then
 									l[m] = string.dump(n)
 								end
+							
+								if m == "target" then for o, p in pairs(self.countries) do if p.name == n.name then l[m] = o end end end
 							end
 						end
 					end
@@ -308,6 +312,8 @@ return
 									local fn = loadstring(n)
 									if fn then l[m] = fn end
 								end
+							
+								if m == "target" then for o, p in pairs(self.countries) do if tostring(o) == tostring(n) then l[m] = p end end end
 							end
 						end
 					end
