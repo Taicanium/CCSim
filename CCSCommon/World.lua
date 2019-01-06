@@ -118,17 +118,17 @@ return
 				print("Reconstructing metatables...")
 				
 				for i, j in pairs(self.countries) do
-					setmetatable(j, Country)
+					setmetatable(j, require("CCSCommon.Country")())
 					for k, l in pairs(j.people) do
-						setmetatable(l, Person)
+						setmetatable(l, require("CCSCommon.Person")())
 					end
 					for k, l in pairs(j.parties) do
-						setmetatable(l, Party)
+						setmetatable(l, require("CCSCommon.Party")())
 					end
 					for k, l in pairs(j.regions) do
-						setmetatable(l, Region)
+						setmetatable(l, require("CCSCommon.Region")())
 						for m, n in pairs(l.cities) do
-							setmetatable(n, City)
+							setmetatable(n, require("CCSCommon.City")())
 						end
 					end
 				end
