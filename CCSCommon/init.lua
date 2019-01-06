@@ -974,7 +974,7 @@ return
 						io.write(string.format("\nDo you want to change the autosave interval, currently every "..tostring(self.autosaveDur).." years (y/n)? > "))
 						res = io.read()
 						if res == "y" then
-							io.write(string.format("\What would you like the new autosave interval to be? > "))
+							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
 							res = tonumber(io.read())
 							while res == nil do
 								io.write(string.format("\nPlease enter a number. > "))
