@@ -908,9 +908,9 @@ return
 			systems = {
 				{
 					name="Monarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Baron", "Viscount", "Earl", "Marquis", "Lord", "Duke", "Prince", "King"},
-					franks={"Homeless", "Citizen", "Mayor", "Dame", "Baroness", "Viscountess", "Countess", "Marquess", "Lady", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "Monarchy"},
+					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
+					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marquess", "Duchess", "Princess", "Queen"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship"},
 					dynastic=true
 				},
 				{
@@ -922,20 +922,20 @@ return
 				{
 					name="Democracy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Speaker", "Prime Minister"},
-					formalities={"Union", "Democratic Republic", "Free State", "Realm", "Electorate"},
+					formalities={"Union", "Democratic Republic", "Free State", "Realm", "Electorate", "State"},
 					dynastic=false
 				},
 				{
 					name="Oligarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
-					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy"},
+					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy", "Collective"},
 					dynastic=false
 				},
 				{
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
-					formalities={"Empire", "Emirate", "Magistrate", "Imperium"},
+					formalities={"Empire", "Emirate", "Magistracy", "Imperium", "Supreme Crown"},
 					dynastic=true
 				}
 			},
@@ -969,6 +969,18 @@ return
 								res = tonumber(io.read())
 							end
 							self.maxyears = self.maxyears + res
+						end
+						
+						io.write(string.format("\nDo you want to change the autosave interval, currently every "..tostring(self.autosaveDur).." years (y/n)? > "))
+						res = io.read()
+						if res == "y" then
+							io.write(string.format("\What would you like the new autosave interval to be? > "))
+							res = tonumber(io.read())
+							while res == nil do
+								io.write(string.format("\nPlease enter a number. > "))
+								res = tonumber(io.read())
+							end
+							self.autosaveDur = res
 						end
 
 						return true

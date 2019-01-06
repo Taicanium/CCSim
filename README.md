@@ -12,7 +12,7 @@ The user also has the option of generating a GEDCOM (.ged) file which can be loa
 Side note: If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply having the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
 
 # File Format
-As an alternative to randomly generated data, CCSim supports the use of a text file with predetermined country data to use as a base for its simulation (which remains random). "monarchies.txt" is a file included with this repository that provides predetermined data on the monarchies of England, France, Belgium, Denmark, Russia, and Japan, up to the year 2094 based on assumptions of the futures of those countries to that point. "allcountries.txt" includes the preceding data in addition to all other present countries on Earth (as of 2018), and their capital cities. It should be noted that prewritten countries can be autosaved, but R scripts will not be generated for them.
+As an alternative to randomly generated data, CCSim supports the use of a text file with predetermined country data to use as a base for its simulation (which remains random). "monarchies.txt" is a file included with this repository that provides predetermined data on the monarchies of England, France, Belgium, Denmark, Russia, and Japan, up to the year 2094 based on assumptions of the futures of those countries (and disregarding the revolutions in France and Russia) to that point. "allcountries.txt" includes the preceding data in addition to all other present countries on Earth (as of 2018), and their capital cities. It should be noted that prewritten countries can be autosaved, but R scripts will not be generated for them.
 
 If the user wishes to write their own data file, the required data format is as follows:
 
@@ -46,7 +46,7 @@ Notably, when randomly generating countries, CCSim also generates a set of rando
 
 The titles in each system are as follows:
 
-Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marquess", "Lord/Lady", "Duke/Duchess", "Prince/Princess", "King/Queen"
+Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Lord/Lady", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marquess", "Duke/Duchess", "Prince/Princess", "King/Queen"
 
 Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
 

@@ -37,31 +37,40 @@ return
 				local f = io.open("in_progress.dat", "r+b")
 				print("Reading data file...")
 				
+				local jsonLoad = false
+				
 				if jsonstatus then
 					local jData = f:read("*all")
 					print("Decoding JSON...")
-					local jTable = json.decode(jData)
-					
-					parent.autosaveDur = tonumber(jTable[1])
-					parent.numCountries = tonumber(jTable[2])
-					parent.popLimit = tonumber(jTable[3])
-					parent.showinfo = tonumber(jTable[4])
-					parent.startyear = tonumber(jTable[5])
-					parent.maxyears = tonumber(jTable[6])
-					parent.years = tonumber(jTable[7])
-					parent.yearstorun = tonumber(jTable[8])
-					parent.final = jTable[9]
-					self.countries = jTable[10]
-					self.fromFile = jTable[11]
-					parent.ged = jTable[12]
-					parent.doR = jTable[13]
-					if parent.doR == true then
-						self.planet = jTable[14]
-						self.planetdefined = jTable[15]
-						self.cColors = jTable[16]
-						self.cTriplets = jTable[17]
+					local stat, jTable = pcall(json.decode, jData)
+					if stat then
+						parent.autosaveDur = tonumber(jTable[1])
+						parent.numCountries = tonumber(jTable[2])
+						parent.popLimit = tonumber(jTable[3])
+						parent.showinfo = tonumber(jTable[4])
+						parent.startyear = tonumber(jTable[5])
+						parent.maxyears = tonumber(jTable[6])
+						parent.years = tonumber(jTable[7])
+						parent.yearstorun = tonumber(jTable[8])
+						parent.final = jTable[9]
+						self.countries = jTable[10]
+						self.fromFile = jTable[11]
+						parent.ged = jTable[12]
+						parent.doR = jTable[13]
+						if parent.doR == true then
+							self.planet = jTable[14]
+							self.planetdefined = jTable[15]
+							self.cColors = jTable[16]
+							self.cTriplets = jTable[17]
+						end
+						
+						jsonLoad = true
+					else
+						print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.")
 					end
-				else
+				end
+				
+				if jsonLoad == false then
 					local datin = f:read(1)
 					parent.autosaveDur = tonumber(f:read(tonumber(datin)))
 
@@ -168,153 +177,163 @@ return
 				print("\nAutosaving...")
 
 				local f = io.open("in_progress.dat", "w+b")
-				
-				print("Encoding recursive values...")
-				
-				for i, j in pairs(self.countries) do if j.people then
-					for k, l in pairs(j.people) do if l.spouse then
-						for m, n in pairs(j.people) do if n.spouse then
-							if type(l.spouse) == "table" then
-								if l.spouse.name == n.name then
-									if l.spouse.surname == n.surname then
-										if l.spouse.birth == n.birth then
-											if l.spouse.birthplace == n.birthplace then
-												if l.spouse.level == n.level then
-													l.spouse = m
+				if f then
+					print("Encoding recursive values...")
+					
+					for i, j in pairs(self.countries) do if j.people then
+						for k, l in pairs(j.people) do if l.spouse then
+							for m, n in pairs(j.people) do if n.spouse then
+								if type(l.spouse) == "table" then
+									if l.spouse.name == n.name then
+										if l.spouse.surname == n.surname then
+											if l.spouse.birth == n.birth then
+												if l.spouse.birthplace == n.birthplace then
+													if l.spouse.level == n.level then
+														l.spouse = m
+													end
 												end
 											end
 										end
 									end
 								end
-							end
+							end end
 						end end
 					end end
-				end end
-				
-				for i, j in pairs(parent.final) do if j.people then
-					for k, l in pairs(j.people) do if l.spouse then
-						for m, n in pairs(j.people) do if n.spouse then
-							if type(l.spouse) == "table" then
-								if l.spouse.name == n.name then
-									if l.spouse.surname == n.surname then
-										if l.spouse.birth == n.birth then
-											if l.spouse.birthplace == n.birthplace then
-												if l.spouse.level == n.level then
-													l.spouse = m
+					
+					for i, j in pairs(parent.final) do if j.people then
+						for k, l in pairs(j.people) do if l.spouse then
+							for m, n in pairs(j.people) do if n.spouse then
+								if type(l.spouse) == "table" then
+									if l.spouse.name == n.name then
+										if l.spouse.surname == n.surname then
+											if l.spouse.birth == n.birth then
+												if l.spouse.birthplace == n.birthplace then
+													if l.spouse.level == n.level then
+														l.spouse = m
+													end
 												end
 											end
 										end
 									end
 								end
-							end
+							end end
 						end end
 					end end
-				end end
-				
-				for i, j in pairs(self.countries) do
-					for k, l in pairs(j.ongoing) do
-						for m, n in pairs(l) do
-							if type(n) == "function" then
-								l[m] = string.dump(n)
+					
+					for i, j in pairs(self.countries) do
+						for k, l in pairs(j.ongoing) do
+							for m, n in pairs(l) do
+								if type(n) == "function" then
+									l[m] = string.dump(n)
+								end
 							end
 						end
 					end
-				end
-				
-				if jsonstatus then
-					local jTable = {parent.autosaveDur, parent.numCountries, parent.popLimit, parent.showinfo, parent.startyear, parent.maxyears, parent.years, parent.yearstorun, parent.final, self.countries, self.fromFile, parent.ged, parent.doR}
 					
-					if parent.doR == true then
-						table.insert(jTable, self.planet)
-						table.insert(jTable, self.planetdefined)
-						table.insert(jTable, self.cColors)
-						table.insert(jTable, self.cTriplets)
+					local jsonSaved = false
+					
+					if jsonstatus then
+						local jTable = {parent.autosaveDur, parent.numCountries, parent.popLimit, parent.showinfo, parent.startyear, parent.maxyears, parent.years, parent.yearstorun, parent.final, self.countries, self.fromFile, parent.ged, parent.doR}
+						
+						if parent.doR == true then
+							table.insert(jTable, self.planet)
+							table.insert(jTable, self.planetdefined)
+							table.insert(jTable, self.cColors)
+							table.insert(jTable, self.cTriplets)
+						end
+						
+						print("Encoding JSON...")
+						local stat, jData = pcall(json.encode, jTable)
+						if stat then
+							print("Writing JSON...")
+							f:write(jData)
+							jsonSaved = true
+						else
+							print("Unable to encode JSON data! Falling back to native encoding.")
+						end
 					end
 					
-					print("Encoding JSON...")
-					local stat, jData = pcall(json.encode, jTable)
-					if stat then
-						print("Writing JSON...")
-						f:write(jData)
+					if jsonSaved == false then
+						f:write(string.len(tostring(parent.autosaveDur)))
+						f:write(parent.autosaveDur)
+
+						f:write(string.len(tostring(parent.numCountries)))
+						f:write(parent.numCountries)
+
+						f:write(string.len(tostring(parent.popLimit)))
+						f:write(parent.popLimit)
+
+						f:write(string.len(tostring(parent.showinfo)))
+						f:write(parent.showinfo)
+
+						f:write(string.len(tostring(parent.startyear)))
+						f:write(parent.startyear)
+
+						f:write(string.len(tostring(parent.maxyears)))
+						f:write(parent.maxyears)
+
+						f:write(string.len(tostring(parent.years)))
+						f:write(parent.years)
+
+						f:write(string.len(tostring(parent.yearstorun)))
+						f:write(parent.yearstorun)
+						
+						self:savetable(parent, parent.final, f)
+
+						self:savetable(parent, self.countries, f)
+						
+						if self.fromFile == true then f:write("1") else f:write("0") end
+
+						if parent.ged == true then f:write("1") else f:write("0") end
+
+						if parent.doR == true then
+							f:write("1")
+							self:savetable(parent, self.planet, f)
+							self:savetable(parent, self.planetdefined, f)
+							self:savetable(parent, self.cColors, f)
+							self:savetable(parent, self.cTriplets, f)
+						else f:write("0") end
 					end
+					
+					f:flush()
+					f:close()
+					f = nil
+					
+					print("Restoring encoded recursive values...")
+						
+					for i, j in pairs(self.countries) do
+						for k, l in pairs(j.ongoing) do
+							for m, n in pairs(l) do
+								if type(n) == "string" then
+									local fn = loadstring(n)
+									if fn then l[m] = fn end
+								end
+							end
+						end
+					end
+						
+					for i, j in pairs(self.countries) do if j.people then
+						for k, l in pairs(j.people) do if l.spouse then
+							for m, n in pairs(j.people) do if n.spouse then
+								if type(l.spouse) == "number" then
+									l.spouse = j.people[l.spouse]
+								end
+							end end
+						end end
+					end end
+					
+					for i, j in pairs(parent.final) do if j.people then
+						for k, l in pairs(j.people) do if l.spouse then
+							for m, n in pairs(j.people) do if n.spouse then
+								if type(l.spouse) == "number" then
+									l.spouse = j.people[l.spouse]
+								end
+							end end
+						end end
+					end end
 				else
-					f:write(string.len(tostring(parent.autosaveDur)))
-					f:write(parent.autosaveDur)
-
-					f:write(string.len(tostring(parent.numCountries)))
-					f:write(parent.numCountries)
-
-					f:write(string.len(tostring(parent.popLimit)))
-					f:write(parent.popLimit)
-
-					f:write(string.len(tostring(parent.showinfo)))
-					f:write(parent.showinfo)
-
-					f:write(string.len(tostring(parent.startyear)))
-					f:write(parent.startyear)
-
-					f:write(string.len(tostring(parent.maxyears)))
-					f:write(parent.maxyears)
-
-					f:write(string.len(tostring(parent.years)))
-					f:write(parent.years)
-
-					f:write(string.len(tostring(parent.yearstorun)))
-					f:write(parent.yearstorun)
-					
-					self:savetable(parent, parent.final, f)
-
-					self:savetable(parent, self.countries, f)
-					
-					if self.fromFile == true then f:write("1") else f:write("0") end
-
-					if parent.ged == true then f:write("1") else f:write("0") end
-
-					if parent.doR == true then
-						f:write("1")
-						self:savetable(parent, self.planet, f)
-						self:savetable(parent, self.planetdefined, f)
-						self:savetable(parent, self.cColors, f)
-						self:savetable(parent, self.cTriplets, f)
-					else f:write("0") end
+					print("Unable to open in_progress.dat for writing! Autosave not completed!")
 				end
-				
-				f:flush()
-				f:close()
-				f = nil
-				
-				print("Restoring encoded recursive values...")
-					
-				for i, j in pairs(self.countries) do
-					for k, l in pairs(j.ongoing) do
-						for m, n in pairs(l) do
-							if type(n) == "string" then
-								local fn = loadstring(n)
-								if fn then l[m] = fn end
-							end
-						end
-					end
-				end
-					
-				for i, j in pairs(self.countries) do if j.people then
-					for k, l in pairs(j.people) do if l.spouse then
-						for m, n in pairs(j.people) do if n.spouse then
-							if type(l.spouse) == "number" then
-								l.spouse = j.people[l.spouse]
-							end
-						end end
-					end end
-				end end
-				
-				for i, j in pairs(parent.final) do if j.people then
-					for k, l in pairs(j.people) do if l.spouse then
-						for m, n in pairs(j.people) do if n.spouse then
-							if type(l.spouse) == "number" then
-								l.spouse = j.people[l.spouse]
-							end
-						end end
-					end end
-				end end
 			end,
 
 			constructVoxelPlanet = function(self, parent)
