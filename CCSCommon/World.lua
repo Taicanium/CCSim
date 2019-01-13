@@ -547,7 +547,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."   \t% done")
+					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."    \t% done")
 				end
 
 				for i=1,#self.planetdefined do
@@ -1093,7 +1093,7 @@ return
 					end
 
 					if cp ~= nil then
-						if parent.ged == false then parent:deepnil(cp.ascendants) end
+						if parent.ged == false then parent:deepnil(cp.newAscs) end
 
 						if cp.population < 10 then
 							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end

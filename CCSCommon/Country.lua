@@ -17,7 +17,6 @@ return
 				nl.rulers = {}
 				nl.rulernames = {}
 				nl.frulernames = {}
-				nl.ascendants = {}
 				nl.newAscs = {}
 				nl.ongoing = {}
 				nl.allyOngoing = {}
@@ -33,7 +32,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 15000
+				nl.deathrate = 20000
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -130,7 +129,7 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
-					for i=1,#self.newAscs do parent:getAscendants(self, parent.royals, self.newAscs[i]) end
+					for i=1,#self.newAscs do table.insert(parent.royals, self.newAscs[i]) end
 					self.newAscs = {}
 					self.people = nil
 				end
@@ -727,10 +726,10 @@ return
 
 				if self.population < parent.popLimit then
 					self.birthrate = 6
-					self.deathrate = 15000
+					self.deathrate = 20000
 				else
 					self.birthrate = 100
-					self.deathrate = 3000
+					self.deathrate = 4500
 				end
 
 				local oldcap = nil
@@ -823,7 +822,7 @@ return
 
 				self:checkRuler(parent)
 				
-				for i=1,#self.newAscs do parent:getAscendants(self, parent.royals, self.newAscs[i]) end
+				for i=1,#self.newAscs do table.insert(parent.royals, self.newAscs[i]) end
 				self.newAscs = {}
 			end
 		}
