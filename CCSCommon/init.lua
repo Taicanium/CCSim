@@ -1446,8 +1446,8 @@ return
 						father=0,
 						mother=0,
 						title=person.Title,
-						ethnicity=person.Ethnicity
-						index=0,
+						ethnicity=person.Ethnicity,
+						index=0
 					})
 
 					fInd = #royals
