@@ -72,7 +72,6 @@ return
 				self.pbelief = nil
 				self.ebelief = nil
 				self.cbelief = nil
-				self.number = nil
 				self.military = nil
 				self.militaryTraining = nil
 				self.recentbirth = nil

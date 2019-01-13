@@ -1485,8 +1485,13 @@ return
 			end,
 
 			getRulerString = function(self, data)
-				if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
-				else return string.format(data.Title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
+				if data.Country then
+					if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
+					else return string.format(data.Title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
+				else
+					if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
+					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
+				end
 			end,
 
 			loop = function(self)
