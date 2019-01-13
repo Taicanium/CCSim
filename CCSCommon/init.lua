@@ -2230,8 +2230,8 @@ return
 									if l.gender == j.gender then
 										if l.number == j.number then
 											if l.title == j.title then
-												if l.death ~= 0 and l.death ~= nil then j.death = l.death end end
-												if l.deathplace ~= "" and l.deathplace ~= nil then j.deathplace = l.deathplace end end
+												if l.death ~= 0 and l.death ~= nil then j.death = l.death end
+												if l.deathplace ~= "" and l.deathplace ~= nil then j.deathplace = l.deathplace end
 												table.insert(adjusts, {k, i})
 												self.royals[k] = nil
 											end
@@ -2241,6 +2241,7 @@ return
 							end
 						end
 					end end
+					
 					finished = finished + 1
 				end
 
@@ -2251,12 +2252,12 @@ return
 				for i, j in pairs(self.royals) do
 					j.index = index
 					for k=1,#adjusts do
-						if j.father == adjusts[k][1] then j.father = adjusts[k][2]
-						if j.mother == adjusts[k][1] then j.mother = adjusts[k][2]
+						if j.father == adjusts[k][1] then j.father = adjusts[k][2] end
+						if j.mother == adjusts[k][1] then j.mother = adjusts[k][2] end
 					end
 				end
 				
-				for i, j in pairs(self.royals)
+				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = false
 					for k=1,#fams do
