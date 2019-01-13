@@ -33,7 +33,7 @@ return
 				nl.ethnicities = {}
 				nl.majority = ""
 				nl.birthrate = 6
-				nl.deathrate = 300
+				nl.deathrate = 15000
 				nl.regions = {}
 				nl.parties = {}
 				nl.nodes = {}
@@ -727,10 +727,10 @@ return
 
 				if self.population < parent.popLimit then
 					self.birthrate = 6
-					self.deathrate = 300
+					self.deathrate = 15000
 				else
 					self.birthrate = 100
-					self.deathrate = 50
+					self.deathrate = 3000
 				end
 
 				local oldcap = nil
@@ -796,13 +796,13 @@ return
 
 						self.averageAge = self.averageAge + self.people[i].age
 
-						age = self.people[i].age
+						local age = self.people[i].age
 						if age > 130 then
 							self:delete(parent, i)
 						else
-							d = math.random(1, self.deathrate)
-							if d == 27 then
-								self:delete(parent, i)
+							if self.deathrate-math.pow(age, 2) < age then self:delete(parent, i) else
+								d = math.random(1, self.deathrate-math.pow(age, 2))
+								if d < age then self:delete(parent, i) end
 							end
 						end
 					end
