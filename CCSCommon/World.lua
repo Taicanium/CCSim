@@ -170,6 +170,8 @@ return
 						end end
 					end end
 				end end
+				
+				for i, j in pairs(parent.final) do if type(i) == "number" then table.insert(self.countries, j) else self.countries[i] = j end end
 
 				print("File closed.")
 			end,
@@ -181,6 +183,12 @@ return
 				local f = io.open("in_progress.dat", "w+b")
 				if f then
 					print("Encoding recursive values...")
+					
+					for i, j in pairs(parent.final) do
+						for k, l in pairs(self.countries) do
+							if j.name == l.name then parent.final[i] = nil end
+						end
+					end
 					
 					for i, j in pairs(self.countries) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then

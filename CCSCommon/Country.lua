@@ -136,6 +136,9 @@ return
 				end
 				
 				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
+				
+				table.insert(parent.final, self)
+				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 			end,
 
 			event = function(self, parent, e)
