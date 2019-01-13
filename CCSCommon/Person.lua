@@ -46,29 +46,9 @@ return
 			end,
 
 			destroy = function(self)
-				self.age = nil
-				self.prevName = nil
-				self.prevTitle = nil
-				self.party = nil
-				self.region = nil
-				self.city = nil
 				self.ethnicity = nil
 				self.spouse = nil
-				self.isruler = nil
-				self.parentRuler = nil
-				self.royal = nil
-				self.royalSystem = nil
-				self.royalGenerations = nil
-				self.maternalLineTimes = nil
-				self.lastRoyalAncestor = nil
 				self.royalInfo = nil
-				self.pbelief = nil
-				self.ebelief = nil
-				self.cbelief = nil
-				self.military = nil
-				self.militaryTraining = nil
-				self.recentbirth = nil
-				self.mtName = nil
 			end,
 
 			dobirth = function(self, parent, nl)
@@ -282,7 +262,7 @@ return
 							if nl.people[m].spouse == nil then
 								if self.gender ~= nl.people[m].gender then
 									self.spouse = nl.people[m]
-									self.spouse.spouse = self
+									nl.people[m].spouse = self
 								end
 							end
 						end
