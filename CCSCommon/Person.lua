@@ -46,20 +46,13 @@ return
 			end,
 
 			destroy = function(self)
-				self.name = nil
-				self.surname = nil
-				self.birth = nil
 				self.age = nil
-				self.gender = nil
-				self.ethnicity = nil
-				self.nationality = nil
-				self.level = nil
 				self.prevName = nil
 				self.prevTitle = nil
-				self.title = nil
 				self.party = nil
 				self.region = nil
 				self.city = nil
+				self.ethnicity = nil
 				self.spouse = nil
 				self.isruler = nil
 				self.parentRuler = nil
