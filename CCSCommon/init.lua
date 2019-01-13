@@ -1485,7 +1485,7 @@ return
 			end,
 
 			getRulerString = function(self, data)
-				if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub(" () ", " ")
+				if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
 				else return string.format(data.Title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
 			end,
 
