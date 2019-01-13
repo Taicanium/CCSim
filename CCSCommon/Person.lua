@@ -5,6 +5,7 @@ return
 				local n = {}
 				setmetatable(n, self)
 
+				n.def = {} -- A utility variable used to set whether this person has been destroyed.
 				n.name = ""
 				n.surname = ""
 				n.birth = 0
@@ -46,6 +47,7 @@ return
 			end,
 
 			destroy = function(self)
+				self.def = nil -- See above.
 				self.ethnicity = nil
 				self.spouse = nil
 				self.royalInfo = nil
@@ -196,7 +198,7 @@ return
 				local rankLim = 2
 				if sys.dynastic == false then rankLim = 1 end
 				
-				if self.spouse then if self.spouse.name == nil then self.spouse = nil end end
+				if self.spouse then if self.spouse.def == nil then self.spouse = nil end end
 
 				if self.gender == "Male" or sys.dynastic == false then
 					if self.title ~= nil and self.level ~= nil then
