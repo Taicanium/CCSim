@@ -1182,7 +1182,10 @@ return
 						percentage = math.floor(j / #fams * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
 					end
-
+					
+					msgout = "0 TRLR\n"
+					
+					ged:write(msgout)
 					ged:flush()
 					ged:close()
 					ged = nil
@@ -1517,8 +1520,8 @@ return
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					for i, cp in pairs(self.thisWorld.countries) do
-						for j=#self.final,1,-1 do
-							if self.final[j].name == cp.name then table.remove(self.final, j) end
+						for j, k in pairs(self.final) do
+							if k.name == cp.name then self.final[j] = nil end
 						end
 
 						table.insert(self.final, cp)
