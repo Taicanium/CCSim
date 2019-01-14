@@ -1106,6 +1106,7 @@ return
 					
 					local ascCount = 0
 					for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
+					local finished = 0
 
 					for i, j in pairs(self.royals) do
 						if j.death > self.maxyears then j.death = 0 end
@@ -1146,7 +1147,8 @@ return
 						ged:write(msgout)
 						ged:flush()
 
-						percentage = math.floor(j / ascCount * 10000)/100
+						finished = finished + 1
+						percentage = math.floor(finished / ascCount * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."    \t% done")
 					end
 
