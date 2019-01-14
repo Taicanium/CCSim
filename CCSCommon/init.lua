@@ -1033,28 +1033,28 @@ return
 
 				os.execute(self.clrcmd)
 				
-				for i=1,#self.final do					
+				for i, cp in pairs(self.final) do					
 					local newc = false
 					local fr = 1
 					local pr = 1
-					f:write(string.format("Country: "..self.final[i].name.."\nFounded: "..self.final[i].founded..", survived for "..self.final[i].age.." years\n\n"))
+					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..cp.age.." years\n\n"))
 
-					for k=1,#self.final[i].events do
-						if self.final[i].events[k].Event:sub(1, 12) == "Independence" then
+					for k=1,#cp.events do
+						if cp.events[k].Event:sub(1, 12) == "Independence" then
 							newc = true
-							pr = tonumber(self.final[i].events[k].Year)
+							pr = tonumber(cp.events[k].Year)
 						end
 					end
 
 					if newc == true then
-						f:write(string.format("1. "..self:getRulerString(self.final[i].rulers[1]).."\n"))
-						for k=1,#self.final[i].rulers do
-							if self.final[i].rulers[k].To ~= "Current" then
-								if tonumber(self.final[i].rulers[k].To) >= pr then
-									if tonumber(self.final[i].rulers[k].From) < pr then
-										f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
+						f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
+						for k=1,#cp.rulers do
+							if cp.rulers[k].To ~= "Current" then
+								if tonumber(cp.rulers[k].To) >= pr then
+									if tonumber(cp.rulers[k].From) < pr then
+										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 										fr = k + 1
-										k = #self.final[i].rulers + 1
+										k = #cp.rulers + 1
 									end
 								end
 							end
@@ -1062,24 +1062,24 @@ return
 					end
 
 					for j=pr,self.maxyears do
-						for k=1,#self.final[i].events do
-							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) == "Revolution" then
-									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
+						for k=1,#cp.events do
+							if tonumber(cp.events[k].Year) == j then
+								if cp.events[k].Event:sub(1, 10) == "Revolution" then
+									f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
 								end
 							end
 						end
 
-						for k=fr,#self.final[i].rulers do
-							if tonumber(self.final[i].rulers[k].From) == j then
-								f:write(string.format(k..". "..self:getRulerString(self.final[i].rulers[k]).."\n"))
+						for k=fr,#cp.rulers do
+							if tonumber(cp.rulers[k].From) == j then
+								f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 							end
 						end
 
-						for k=1,#self.final[i].events do
-							if tonumber(self.final[i].events[k].Year) == j then
-								if self.final[i].events[k].Event:sub(1, 10) ~= "Revolution" then
-									f:write(string.format(self.final[i].events[k].Year..": "..self.final[i].events[k].Event.."\n"))
+						for k=1,#cp.events do
+							if tonumber(cp.events[k].Year) == j then
+								if cp.events[k].Event:sub(1, 10) ~= "Revolution" then
+									f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
 								end
 							end
 						end
@@ -1094,7 +1094,7 @@ return
 
 				print("")
 
-				for i=1,#self.final do self.final[i]:destroy(self) end
+				for i=1,#self.final do cp:destroy(self) end
 
 				if self.ged == true then
 					local fams = self:sortAscendants(self.final)
