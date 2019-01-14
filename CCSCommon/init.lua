@@ -2271,6 +2271,8 @@ return
 				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = false
+					if j.father == nil then j.father = 0 end
+					if j.mother == nil then j.mother = 0 end
 					for k=1,#fams do
 						if j.father ~= 0 then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
