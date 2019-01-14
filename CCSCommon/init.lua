@@ -1158,6 +1158,9 @@ return
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
 						if fams[j].husb ~= 0 then
+							print(fams[j])
+							print("\n\n")
+							print(self.royals[fams[j].husb])
 							msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n"
 						end
 
