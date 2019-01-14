@@ -2220,7 +2220,6 @@ return
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				if ascCount > 0 then print("") end
 
-				local adjusts = {}
 				local finished = 0
 				for i, j in pairs(self.royals) do
 					percentage = math.floor((ascCount-finished+1) / ascCount * 10000)/100
@@ -2234,8 +2233,7 @@ return
 											if l.title == j.title then
 												if l.death ~= 0 and l.death ~= nil then j.death = l.death end
 												if l.deathplace ~= "" and l.deathplace ~= nil then j.deathplace = l.deathplace end
-												table.insert(adjusts, {k, i})
-												self.royals[k] = nil
+												self.royals[k] = i
 											end
 										end
 									end
@@ -2252,10 +2250,18 @@ return
 				local index = 1
 				
 				for i, j in pairs(self.royals) do
-					j.index = index
-					for k=1,#adjusts do
-						if j.father == adjusts[k][1] then j.father = adjusts[k][2] end
-						if j.mother == adjusts[k][1] then j.mother = adjusts[k][2] end
+					if type(j) == "number" then
+						for k, l in pairs(self.royals) do
+							if type(l) == "table" then
+								if l.father == i then l.father = j end
+								if l.mother == i then l.mother = j end
+							end
+						end
+						
+						self.royals[i] = nil
+					else
+						j.index = index
+						index = index + 1
 					end
 				end
 				
