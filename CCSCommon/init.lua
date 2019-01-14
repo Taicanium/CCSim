@@ -1159,8 +1159,8 @@ return
 
 						if fams[j].husb ~= 0 then
 							print(fams[j])
-							print("\n\n")
-							print(self.royals[fams[j].husb])
+							print("\n")
+							print(fams[j].husb, self.royals[fams[j].husb])
 							msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n"
 						end
 
@@ -1486,8 +1486,6 @@ return
 					if person.mother ~= nil then
 						royals[fInd].mother = self:getAscendants(final, royals, person.mother)
 					end
-
-					table.insert(final.ascendants, person)
 				end
 
 				return fInd
@@ -2282,16 +2280,16 @@ return
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
-						for l=1,#fams[k].chil do if fams[k].chil[l] == j then found = k chil = true end end
+						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
 					end
 
 					if found == nil then
 						local doFam = false
 						if j.father ~= 0 then doFam = true end
 						if j.mother ~= 0 then doFam = true end
-						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={j}}) end
+						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
 					else
-						if chil == false then table.insert(fams[found].chil, j) end
+						if chil == false then table.insert(fams[found].chil, i) end
 					end
 				end
 
