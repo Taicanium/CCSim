@@ -1452,10 +1452,13 @@ return
 						mother=0,
 						title=person.title,
 						ethnicity=person.ethnicity,
-						index=0
+						index=0,
+						arrIndex=0,
+						rIndex=0
 					})
 
 					fInd = #royals
+					royals[fInd].arrIndex = fInd
 
 					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
@@ -2234,7 +2237,7 @@ return
 											if l.title == j.title then
 												if l.death ~= 0 and l.death ~= nil then j.death = l.death end
 												if l.deathplace ~= "" and l.deathplace ~= nil then j.deathplace = l.deathplace end
-												self.royals[k] = i
+												l.rIndex = j.arrIndex
 											end
 										end
 									end
@@ -2251,19 +2254,21 @@ return
 				local index = 1
 				
 				for i, j in pairs(self.royals) do
-					if type(j) == "number" then
+					if j.rIndex ~= 0 then
 						for k, l in pairs(self.royals) do
-							if type(l) == "table" then
-								if l.father == i then l.father = j end
-								if l.mother == i then l.mother = j end
-							end
+							if l.father == j.arrIndex then l.father = j.rIndex end
+							if l.mother == j.arrIndex then l.mother = j.rIndex end
 						end
-						
-						self.royals[i] = nil
-					else
-						j.index = index
-						index = index + 1
 					end
+				end
+				
+				for i, j in pairs(self.royals) do
+					if j.rIndex ~= 0 then self.royals[i] = nil end
+				end
+				
+				for i, j in pairs(self.royals) do
+					j.index = index
+					index = index + 1
 				end
 				
 				for i, j in pairs(self.royals) do
