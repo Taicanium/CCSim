@@ -14,8 +14,8 @@ return
 				n.ethnicity = {}
 				n.nationality = ""
 				n.level = 2
-				n.prevName = ""
-				n.prevTitle = "Citizen"
+				n.prevname = ""
+				n.prevtitle = "Citizen"
 				n.title = "Citizen"
 				n.party = ""
 				n.region = ""
@@ -41,7 +41,7 @@ return
 				n.military = false
 				n.militaryTraining = 0
 				n.recentbirth = false
-				n.mtName = "Person"
+				n.mtname = "Person"
 
 				return n
 			end,
@@ -207,10 +207,10 @@ return
 						if self.level < #sys.ranks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
-								self.prevTitle = self.title
+								self.prevtitle = self.title
 								self.level = self.level - 1
 							elseif x > 85 then
-								self.prevTitle = self.title
+								self.prevtitle = self.title
 								self.level = self.level + 1
 							end
 						end
@@ -232,10 +232,10 @@ return
 						if self.level < #sys.franks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
-								self.prevTitle = self.title
+								self.prevtitle = self.title
 								self.level = self.level - 1
 							elseif x > 85 then
-								self.prevTitle = self.title
+								self.prevtitle = self.title
 								self.level = self.level + 1
 							end
 						end

@@ -9,7 +9,7 @@ return
 				r.cities = {}
 				r.population = 0
 				r.nodes = {}
-				r.mtName = "Region"
+				r.mtname = "Region"
 
 				return r
 			end,

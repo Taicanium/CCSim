@@ -10,7 +10,7 @@ return
 				c.x = nil
 				c.y = nil
 				c.z = nil
-				c.mtName = "City"
+				c.mtname = "City"
 
 				return c
 			end,

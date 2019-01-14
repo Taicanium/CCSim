@@ -22,7 +22,7 @@ return
 				nl.allyOngoing = {}
 				nl.alliances = {}
 				nl.system = 0
-				nl.snt = {} -- System, Number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
+				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
 				nl.formalities = {}
 				nl.demonym = ""
 				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
@@ -39,7 +39,7 @@ return
 				nl.civilWars = 0
 				nl.capitalregion = ""
 				nl.capitalcity = ""
-				nl.mtName = "Country"
+				nl.mtname = "Country"
 
 				return nl
 			end,
@@ -381,8 +381,8 @@ return
 
 			setRuler = function(self, parent, newRuler)
 				if self.hasruler == -1 then
-					self.people[newRuler].prevName = self.people[newRuler].name
-					self.people[newRuler].prevTitle = self.people[newRuler].title
+					self.people[newRuler].prevname = self.people[newRuler].name
+					self.people[newRuler].prevtitle = self.people[newRuler].title
 
 					self.people[newRuler].level = #parent.systems[self.system].ranks
 					self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
@@ -405,7 +405,7 @@ return
 					for i=1,#self.rulers do
 						if tonumber(self.rulers[i].From) >= self.founded then
 							if self.rulers[i].name == self.people[newRuler].name then
-								if self.rulers[i].Title == self.people[newRuler].title then
+								if self.rulers[i].title == self.people[newRuler].title then
 									namenum = namenum + 1
 								end
 							end
@@ -426,8 +426,8 @@ return
 						if self.people[newRuler].royalGenerations >= 0 then
 							if self.people[newRuler].gender == "Male" then
 								for i=1,#self.people do
-									if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].name then
-										if self.people[i].father.Surname == self.people[newRuler].surname then
+									if self.people[i].father then if self.people[i].father.name == self.people[newRuler].name then
+										if self.people[i].father.surname == self.people[newRuler].surname then
 											if self.people[i].father.birth == self.people[newRuler].birth then
 												if self.people[i].father.birthplace == self.people[newRuler].birthplace then
 													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
@@ -440,8 +440,8 @@ return
 								end
 							else
 								for i=1,#self.people do
-									if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].name then
-										if self.people[i].mother.Surname == self.people[newRuler].surname then
+									if self.people[i].mother then if self.people[i].mother.name == self.people[newRuler].name then
+										if self.people[i].mother.surname == self.people[newRuler].surname then
 											if self.people[i].mother.birth == self.people[newRuler].birth then
 												if self.people[i].mother.birthplace == self.people[newRuler].birthplace then
 													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
@@ -460,8 +460,8 @@ return
 							if self.people[newRuler].spouse.royalGenerations < self.people[newRuler].royalGenerations then
 								if self.people[newRuler].spouse.gender == "Male" then
 									for i=1,#self.people do
-										if self.people[i].father then if self.people[i].father.Name == self.people[newRuler].spouse.name then 
-											if self.people[i].father.Surname == self.people[newRuler].spouse.surname then
+										if self.people[i].father then if self.people[i].father.name == self.people[newRuler].spouse.name then 
+											if self.people[i].father.surname == self.people[newRuler].spouse.surname then
 												if self.people[i].father.birth == self.people[newRuler].spouse.birth then
 													if self.people[i].father.birthplace == self.people[newRuler].spouse.birthplace then
 														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
@@ -472,8 +472,8 @@ return
 									end
 								else
 									for i=1,#self.people do
-										if self.people[i].mother then if self.people[i].mother.Name == self.people[newRuler].spouse.name then
-											if self.people[i].mother.Surname == self.people[newRuler].spouse.surname then
+										if self.people[i].mother then if self.people[i].mother.name == self.people[newRuler].spouse.name then
+											if self.people[i].mother.surname == self.people[newRuler].spouse.surname then
 												if self.people[i].mother.birth == self.people[newRuler].spouse.birth then
 													if self.people[i].mother.birthplace == self.people[newRuler].spouse.birthplace then
 														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
@@ -486,9 +486,9 @@ return
 								end
 							end
 						end end end
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, surname=self.people[newRuler].surname, Number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
-						table.insert(self.rulers, {name=self.people[newRuler].name, Title=self.people[newRuler].title, surname=self.people[newRuler].surname, Number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
 
 					self.rulerage = self.people[newRuler].age

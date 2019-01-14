@@ -207,7 +207,7 @@ return
 					end,
 					endEvent=function(self, parent, c)
 						if self.status >= 100 then -- Government victory
-							c:event(parent, "End of civil war; victory for "..c.rulers[#c.rulers].Title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].Number).." of "..c.rulers[#c.rulers].Country)
+							c:event(parent, "End of civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
@@ -244,25 +244,25 @@ return
 							end
 
 							local namenum = 0
-							local prevTitle = ""
-							if c.people[newRuler].prevTitle ~= nil then prevTitle = c.people[newRuler].prevTitle.." " end
+							local prevtitle = ""
+							if c.people[newRuler].prevtitle ~= nil then prevtitle = c.people[newRuler].prevtitle.." " end
 
-							if prevTitle == "Homeless " then prevTitle = "" end
-							if prevTitle == "Citizen " then prevTitle = "" end
-							if prevTitle == "Mayor " then prevTitle = "" end
+							if prevtitle == "Homeless " then prevtitle = "" end
+							if prevtitle == "Citizen " then prevtitle = "" end
+							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic == true then
 								for i=1,#c.rulers do
 									if tonumber(c.rulers[i].From) >= c.founded then
 										if c.rulers[i].name == c.people[newRuler].name then
-											if c.rulers[i].Title == c.people[newRuler].title then
+											if c.rulers[i].title == c.people[newRuler].title then
 												namenum = namenum + 1
 											end
 										end
 									end
 								end
 
-								c:event(parent, "End of civil war; victory for "..prevTitle..c.people[newRuler].prevName.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(namenum).." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].prevname.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(namenum).." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -276,7 +276,7 @@ return
 									end
 								end
 							else
-								c:event(parent, "End of civil war; victory for "..prevTitle..c.people[newRuler].prevName.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..c.people[newRuler].surname.." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].prevname.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..c.people[newRuler].surname.." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -1266,7 +1266,7 @@ return
 							if #fc.rulers > 0 then
 								for i=1,#fc.rulers do
 									if fc.rulers[i].name == mat[2] then
-										if fc.rulers[i].Title == mat[1] then
+										if fc.rulers[i].title == mat[1] then
 											number = number + 1
 										end
 									end
@@ -1277,9 +1277,9 @@ return
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
 							if dynastic == true then
-								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname="", Number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
+								table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
 							else
-								table.insert(fc.rulers, {Title=mat[1], name=mat[2], surname=mat[3], Number=mat[3], Country=fc.name, From=mat[4], To=mat[5]})
+								table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], Country=fc.name, From=mat[4], To=mat[5]})
 							end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
@@ -1414,10 +1414,10 @@ return
 				local fInd = 0
 				for k=1,#royals do
 					if royals[k].birth == person.birth then
-						if royals[k].name == person.Name then
-							if royals[k].gender == person.Gender then
-								if royals[k].surname == person.Surname then
-									if royals[k].number == person.Number then
+						if royals[k].name == person.name then
+							if royals[k].gender == person.gender then
+								if royals[k].surname == person.surname then
+									if royals[k].number == person.number then
 										if royals[k].birthplace == person.birthplace then
 											found = true
 											fInd = k
@@ -1435,18 +1435,18 @@ return
 
 				if found == false then
 					table.insert(royals, {
-						name=person.Name,
-						surname=person.Surname,
+						name=person.name,
+						surname=person.surname,
 						birth=person.birth,
 						death=person.death,
-						number=person.Number,
-						gender=person.Gender,
+						number=person.number,
+						gender=person.gender,
 						birthplace=person.birthplace,
 						deathplace=person.deathplace,
 						father=0,
 						mother=0,
-						title=person.Title,
-						ethnicity=person.Ethnicity,
+						title=person.title,
+						ethnicity=person.ethnicity,
 						index=0
 					})
 
@@ -1474,12 +1474,12 @@ return
 					end
 					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
 
-					if person.Father ~= nil then
-						royals[fInd].father = self:getAscendants(final, royals, person.Father)
+					if person.father ~= nil then
+						royals[fInd].father = self:getAscendants(final, royals, person.father)
 					end
 
-					if person.Mother ~= nil then
-						royals[fInd].mother = self:getAscendants(final, royals, person.Mother)
+					if person.mother ~= nil then
+						royals[fInd].mother = self:getAscendants(final, royals, person.mother)
 					end
 
 					table.insert(final.ascendants, person)
@@ -1490,8 +1490,8 @@ return
 
 			getRulerString = function(self, data)
 				if data.Country then
-					if tonumber(data.Number) ~= nil then return string.format(data.Title.." "..data.name.." "..self:roman(data.Number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
-					else return string.format(data.Title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
+					if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
+					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
 				else
 					if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
 					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
@@ -1631,7 +1631,7 @@ return
 			end,
 			
 			makeAscendant = function(self, c, person)
-				local t = {Name=person.name, Surname=person.surname, Gender=person.gender:sub(1, 1), Number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, Father=person.father, Mother=person.mother, Title=person.title, Ethnicity=person.ethnicity}
+				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity}
 				return t
 			end,
 

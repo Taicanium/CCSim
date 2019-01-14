@@ -14,7 +14,7 @@ return
 				p.popularity = 50
 				p.membership = 0
 				p.revolted = false
-				p.mtName = "Party"
+				p.mtname = "Party"
 
 				return p
 			end,

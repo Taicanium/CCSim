@@ -16,7 +16,7 @@ return
 				nm.planetdefined = {}
 				nm.planetR = 0
 				nm.fromFile = false
-				nm.mtName = "World"
+				nm.mtname = "World"
 
 				return nm
 			end,
@@ -1028,9 +1028,9 @@ return
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
 				local exceptions = {"__index"}
 
-				if t.mtName == nil then f:write("5nilmt") else
-					f:write(string.len(t.mtName))
-					f:write(t.mtName)
+				if t.mtname == nil then f:write("5nilmt") else
+					f:write(string.len(t.mtname))
+					f:write(t.mtname)
 				end
 
 				local iCount = 0
