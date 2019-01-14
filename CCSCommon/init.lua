@@ -2259,11 +2259,13 @@ return
 							if l.father == j.arrIndex then l.father = j.rIndex end
 							if l.mother == j.arrIndex then l.mother = j.rIndex end
 						end
+						
+						j.arrIndex = 0
 					end
 				end
 				
 				for i, j in pairs(self.royals) do
-					if j.rIndex ~= 0 then self.royals[i] = nil end
+					if j.arrIndex == 0 then self.royals[i] = nil end
 				end
 				
 				for i, j in pairs(self.royals) do
