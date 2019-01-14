@@ -2228,7 +2228,7 @@ return
 				for i, j in pairs(self.royals) do
 					percentage = math.floor((ascCount-finished+1) / ascCount * 10000)/100
 					io.write("\rListing individuals...\t"..tostring(percentage).."    \t% done")
-					for k, l in pairs(self.royals) do if k ~= i then
+					for k, l in pairs(self.royals) do if j.arrIndex ~= l.arrIndex then
 						if l.birth == j.birth then
 							if l.name == j.name then
 								if l.surname == j.surname then
