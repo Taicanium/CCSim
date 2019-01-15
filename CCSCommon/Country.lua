@@ -646,7 +646,7 @@ return
 					if self.snt[parent.systems[i].name] == nil then self.snt[parent.systems[i].name] = 0 end
 				end
 
-				self.stability = self.stability + math.random(-2, 2)
+				self.stability = self.stability + math.random(-3, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 

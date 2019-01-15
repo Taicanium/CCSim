@@ -1263,7 +1263,7 @@ return
 							for q=3,#mat do
 								s.name = s.name.." "..mat[q]
 							end
-							fc.capitalregion = fr
+							fc.capitalregion = fr.name
 							fc.capitalcity = s.name
 							fr.cities[s.name] = s
 						else
@@ -1499,8 +1499,8 @@ return
 
 			getRulerString = function(self, data)
 				if data.Country then
-					if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("()", ""):gsub("  ", " ")
-					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"):gsub("  ", " ") end
+					if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
+					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
 				else
 					if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
 					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
