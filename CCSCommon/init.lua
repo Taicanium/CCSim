@@ -1450,7 +1450,7 @@ return
 						ethnicity=person.ethnicity,
 						index=0,
 						arrIndex=""
-					})
+					}
 					
 					royals[fInd].arrIndex = fInd
 
