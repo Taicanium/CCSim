@@ -2224,7 +2224,7 @@ return
 				local fams = {}
 				
 				local ascCount = 0
-				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j)
+				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				print("Sorting "..tostring(ascCount).." individuals...")
 
