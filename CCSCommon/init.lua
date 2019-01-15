@@ -2225,7 +2225,10 @@ return
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
-				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
+				for i, j in pairs(self.royals) do
+					j.rIndex = -1
+					ascCount = ascCount + 1
+				end
 				print("Sorting "..tostring(ascCount).." individuals...")
 
 				local finished = 0
@@ -2253,23 +2256,26 @@ return
 					finished = finished + 1
 				end
 
-				print("\nAdjusting individuals...")
+				ascCount = 0
+				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
+				
+				print("\nAdjusting "..tostring(ascCount).." individuals...")
 				
 				local index = 1
 				
 				for i, j in pairs(self.royals) do
-					if j.rIndex ~= 0 then
+					if j.rIndex ~= -1 then
 						for k, l in pairs(self.royals) do
 							if l.father == j.arrIndex then l.father = j.rIndex end
 							if l.mother == j.arrIndex then l.mother = j.rIndex end
 						end
 						
-						j.arrIndex = 0
+						j.arrIndex = -1
 					end
 				end
 				
 				for i, j in pairs(self.royals) do
-					if j.arrIndex == 0 then self.royals[i] = nil end
+					if j.arrIndex == -1 then self.royals[i] = nil end
 				end
 				
 				for i, j in pairs(self.royals) do
