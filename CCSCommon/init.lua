@@ -1129,13 +1129,13 @@ return
 						end
 
 						for k=1,#fams do
-							if fams[k].husb == j then
+							if fams[k].husb == i then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-							elseif fams[k].wife == j then
+							elseif fams[k].wife == i then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
 							else
 								for l=1,#fams[k].chil do
-									if fams[k].chil[l] == j then
+									if fams[k].chil[l] == i then
 										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
 									end
 								end
@@ -1157,7 +1157,7 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= 0 then
+						if fams[j].husb ~= "" then
 							print(fams[j])
 							print("\n")
 							print(fams[j].husb, self.royals[fams[j].husb])
@@ -1165,6 +1165,9 @@ return
 						end
 
 						if fams[j].wife ~= 0 then
+							print(fams[j])
+							print("\n")
+							print(fams[j].wife, self.royals[fams[j].wife])
 							msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n"
 						end
 
@@ -1419,30 +1422,20 @@ return
 
 			getAscendants = function(self, final, royals, person)
 				local found = false
-				local fInd = 0
-				for k=1,#royals do
-					if royals[k].birth == person.birth then
-						if royals[k].name == person.name then
-							if royals[k].gender == person.gender then
-								if royals[k].surname == person.surname then
-									if royals[k].number == person.number then
-										if royals[k].birthplace == person.birthplace then
-											found = true
-											fInd = k
-											if person.death ~= 0 then if royals[k].death == 0 then royals[k].death = person.death end end
-											if person.deathplace ~= "" then if royals[k].deathplace == "" then royals[k].deathplace = person.deathplace end end
-											if royals[k].death ~= 0 then if person.death == 0 then person.death = royals[k].death end end
-											if royals[k].deathplace ~= "" then if person.deathplace == "" then person.deathplace = royals[k].deathplace end end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
+				local fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title
 
-				if found == false then
-					table.insert(royals, {
+				if royals[fInd] ~= nil then
+					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
+						if person[i] == nil then person[i] = j
+						elseif person[i] == 0 or person[i] == "" then person[i] = j end
+					end end
+					
+					for i, j in pairs(person) do if j ~= nil and j ~= "" and j ~= 0 then
+						if royals[fInd][i] == nil then royals[fInd][i] = j
+						elseif royals[fInd][i] == 0 or royals[fInd][i] == "" then royals[fInd][i] = j end
+					end end
+				else
+					royals[fInd] = {
 						name=person.name,
 						surname=person.surname,
 						birth=person.birth,
@@ -1451,16 +1444,14 @@ return
 						gender=person.gender,
 						birthplace=person.birthplace,
 						deathplace=person.deathplace,
-						father=0,
-						mother=0,
+						father="",
+						mother="",
 						title=person.title,
 						ethnicity=person.ethnicity,
 						index=0,
-						arrIndex=0,
-						rIndex=0
+						arrIndex=""
 					})
-
-					fInd = #royals
+					
 					royals[fInd].arrIndex = fInd
 
 					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
@@ -2225,58 +2216,10 @@ return
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
-				for i, j in pairs(self.royals) do
-					j.rIndex = -1
-					ascCount = ascCount + 1
-				end
-				print("Sorting "..tostring(ascCount).." individuals...")
-
-				local finished = 0
-				for i, j in pairs(self.royals) do
-					percentage = math.floor((ascCount-finished+1) / ascCount * 10000)/100
-					io.write("\rListing individuals...\t"..tostring(percentage).."    \t% done")
-					for k, l in pairs(self.royals) do if j.arrIndex ~= l.arrIndex then
-						if l.birth == j.birth then
-							if l.name == j.name then
-								if l.surname == j.surname then
-									if l.gender == j.gender then
-										if l.number == j.number then
-											if l.title == j.title then
-												if l.death ~= 0 and l.death ~= nil then j.death = l.death end
-												if l.deathplace ~= "" and l.deathplace ~= nil then j.deathplace = l.deathplace end
-												l.rIndex = j.arrIndex
-											end
-										end
-									end
-								end
-							end
-						end
-					end end
-					
-					finished = finished + 1
-				end
-
-				ascCount = 0
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
-				
-				print("\nAdjusting "..tostring(ascCount).." individuals...")
+				print("Sorting "..tostring(ascCount).." individuals...")
 				
 				local index = 1
-				
-				for i, j in pairs(self.royals) do
-					if j.rIndex ~= -1 then
-						for k, l in pairs(self.royals) do
-							if l.father == j.arrIndex then l.father = j.rIndex end
-							if l.mother == j.arrIndex then l.mother = j.rIndex end
-						end
-						
-						j.arrIndex = -1
-					end
-				end
-				
-				for i, j in pairs(self.royals) do
-					if j.arrIndex == -1 then self.royals[i] = nil end
-				end
 				
 				for i, j in pairs(self.royals) do
 					j.index = index
@@ -2286,14 +2229,14 @@ return
 				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = false
-					if j.father == nil then j.father = 0 end
-					if j.mother == nil then j.mother = 0 end
+					if j.father == nil then j.father = "" end
+					if j.mother == nil then j.mother = "" end
 					for k=1,#fams do
-						if j.father ~= 0 then
+						if j.father ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
-						if j.mother ~= 0 then
+						if j.mother ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
@@ -2302,8 +2245,8 @@ return
 
 					if found == nil then
 						local doFam = false
-						if j.father ~= 0 then doFam = true end
-						if j.mother ~= 0 then doFam = true end
+						if j.father ~= "" then doFam = true end
+						if j.mother ~= "" then doFam = true end
 						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
 					else
 						if chil == false then table.insert(fams[found].chil, i) end

@@ -129,7 +129,7 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
-					for i=1,#self.newAscs do table.insert(parent.royals, self.newAscs[i]) end
+					for i=1,#self.newAscs do parent:getAscendants(self.newAscs[i]) end
 					self.newAscs = {}
 					self.people = nil
 				end
@@ -822,7 +822,7 @@ return
 
 				self:checkRuler(parent)
 				
-				for i=1,#self.newAscs do table.insert(parent.royals, self.newAscs[i]) end
+				for i=1,#self.newAscs do parent:getAscendants(self.newAscs[i]) end
 				self.newAscs = {}
 			end
 		}
