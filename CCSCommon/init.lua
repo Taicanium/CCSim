@@ -1094,9 +1094,9 @@ return
 
 				print("")
 
-				for i=1,#self.final do cp:destroy(self) end
-
 				if self.ged == true then
+					for i, cp in pairs(self.final) do cp:destroy(self) end
+				
 					local fams = self:sortAscendants(self.final)
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
@@ -2224,8 +2224,9 @@ return
 				local fams = {}
 				
 				local ascCount = 0
+				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j)
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
-				if ascCount > 0 then print("") end
+				print("Sorting "..tostring(ascCount).." individuals...")
 
 				local finished = 0
 				for i, j in pairs(self.royals) do
