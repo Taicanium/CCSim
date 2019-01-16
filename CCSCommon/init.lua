@@ -1423,20 +1423,13 @@ return
 			getAscendants = function(self, final, royals, person)
 				local found = false
 				local fInd = ""
-				if type(person) == "table" then fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title else fInd = person end
-
-				if royals[fInd] ~= nil then
-					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
-						if person[i] == nil then person[i] = j
-						elseif person[i] == 0 or person[i] == "" then person[i] = j end
-					end end
-					
-					for i, j in pairs(person) do if j ~= nil and j ~= "" and j ~= 0 then
-						if royals[fInd][i] == nil then royals[fInd][i] = j
-						elseif royals[fInd][i] == 0 or royals[fInd][i] == "" then royals[fInd][i] = j end
-					end end
+				local pTable = {}
+				if type(person) == "table" then
+					fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title
+					pTable = t
 				else
-					royals[fInd] = {
+					fInd = person
+					pTable = {
 						name=person.name,
 						surname=person.surname,
 						birth=person.birth,
@@ -1451,8 +1444,20 @@ return
 						ethnicity=person.ethnicity,
 						index=0,
 						arrIndex=""
-					}
+					} end
+
+				if royals[fInd] ~= nil then
+					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
+						if person[i] == nil then person[i] = j
+						elseif person[i] == 0 or person[i] == "" then person[i] = j end
+					end end
 					
+					for i, j in pairs(person) do if j ~= nil and j ~= "" and j ~= 0 then
+						if royals[fInd][i] == nil then royals[fInd][i] = j
+						elseif royals[fInd][i] == 0 or royals[fInd][i] == "" then royals[fInd][i] = j end
+					end end
+				else
+					royals[fInd] = pTable
 					royals[fInd].arrIndex = fInd
 
 					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
@@ -1632,7 +1637,7 @@ return
 			end,
 			
 			makeAscendant = function(self, c, person)
-				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity}
+				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity, index=0, arrIndex=""}
 				self:getAscendants(self.final, self.royals, t)
 				return t
 			end,
