@@ -1422,7 +1422,8 @@ return
 
 			getAscendants = function(self, final, royals, person)
 				local found = false
-				local fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title
+				local fInd = ""
+				if type(person) == "table" then fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title else fInd = person end
 
 				if royals[fInd] ~= nil then
 					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
@@ -1632,6 +1633,7 @@ return
 			
 			makeAscendant = function(self, c, person)
 				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity}
+				self:getAscendants(self.final, self.royals, t)
 				return t
 			end,
 
