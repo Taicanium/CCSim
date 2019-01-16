@@ -1426,7 +1426,7 @@ return
 				local pTable = {}
 				if type(person) == "table" then
 					fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title
-					pTable = t
+					pTable = person
 				else
 					fInd = person
 					pTable = {
