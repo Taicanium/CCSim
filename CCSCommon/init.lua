@@ -1448,11 +1448,11 @@ return
 
 				if royals[fInd] ~= nil then
 					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
-						if person[i] == nil then person[i] = j
-						elseif person[i] == 0 or person[i] == "" then person[i] = j end
+						if pTable[i] == nil then pTable[i] = j
+						elseif pTable[i] == 0 or pTable[i] == "" then pTable[i] = j end
 					end end
 					
-					for i, j in pairs(person) do if j ~= nil and j ~= "" and j ~= 0 then
+					for i, j in pairs(pTable) do if j ~= nil and j ~= "" and j ~= 0 then
 						if royals[fInd][i] == nil then royals[fInd][i] = j
 						elseif royals[fInd][i] == 0 or royals[fInd][i] == "" then royals[fInd][i] = j end
 					end end
