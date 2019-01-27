@@ -74,11 +74,12 @@ return
 								else nn.surname = self.spouse.surname.."-"..self.surname end
 							end
 							
-							local surn, cnt = nn.surname:gsub("%-", "%-")
+							local cnt = 0
+							for dash in nn.surname:gmatch("%-") do cnt = cnt + 1 end
 							if cnt > 1 then
 								local ind = 1
 								local nsurn = ""
-								for x in nn.surname:gmatch("(%a+)%-") do
+								for x in nn.surname:gmatch("%a+%-") do
 									if ind == 2 then nsurn = nsurn.."-"..x ind = ind + 1 end
 									if ind == 1 then nsurn = nsurn..x ind = ind + 1 end
 								end
