@@ -1,0 +1,179 @@
+Year 2020
+C Alabama
+R Alabama
+S Montgomery
+C Alaska
+R Alaska
+S Juneau
+S Fairbanks
+C Arizona
+R Arizona
+S Phoenix
+S Flagstaff
+C Arkansas
+R Arkansas
+S Little Rock
+C California
+R California
+S Sacramento
+S Los Angeles
+S San Diego
+C Colorado
+R Colorado
+S Denver
+S Colorado Springs
+C Connecticut
+R Connecticut
+S Hartford
+C Delaware
+R Delaware
+S Dover
+C Florida
+R Florida
+S Tallahassee
+S Miami
+S Orlando
+C Georgia
+R Georgia
+S Savannah
+S Atlanta
+C Hawaii
+R Hawaii
+S Honolulu
+C Idaho
+R Idaho
+S Boise
+C Illinois
+R Illinois
+S Chicago
+S Springfield
+C Indiana
+R Indiana
+S Indianapolis
+C Iowa
+R Iowa
+S Des Moines
+C Kansas
+R Kansas
+S Topeka
+C Kentucky
+R Kentucky
+S Frankfurt
+C Louisiana
+R Louisiana
+S Baton Rouge
+S New Orleans
+C Maine
+R Maine
+S Augusta
+C Maryland
+R Maryland
+S Annapolis
+C Massachusetts
+R Massachusetts
+S Boston
+C Michigan
+R Michigan
+S Lansing
+S Detroit
+C Minnesota
+R Minnesota
+S Saint Paul
+C Mississippi
+R Mississippi
+S Jackson
+C Missouri
+R Missouri
+S Kansas City
+S Jefferson City
+C Montana
+R Montana
+S Helena
+C Nebraska
+R Nebraska
+S Lincoln
+S Omaha
+C Nevada
+R Nevada
+S Carson City
+S Las Vegas
+S Reno
+C New Hampshire
+R New Hampshire
+S Concord
+C New Jersey
+R New Jersey
+S Trenton
+C New Mexico
+R New Mexico
+S Santa Fe
+C New York
+R New York
+S New York City
+S Albany
+S Utica
+C North Carolina
+R North Carolina
+S Raleigh
+S Charlotte
+C North Dakota
+R North Dakota
+S Bismarck
+C Ohio
+R Ohio
+S Cincinatti
+S Columbus
+C Oklahoma
+R Oklahoma
+S Oklahoma City
+S Tulsa
+C Oregon
+R Oregon
+S Salem
+C Pennsylvania
+R Pennsylvania
+S Harrisburg
+C Rhode Island
+R Rhode Island
+S Providence
+C South Carolina
+R South Carolina
+S Columbia
+C South Dakota
+R South Dakota
+S Pierre
+C Tennessee
+R Tennessee
+S Nashville
+S Chattanooga
+S Memphis
+C Texas
+R Texas
+S Austin
+S Dallas
+C Utah
+R Utah
+S Salt Lake City
+C Vermont
+R Vermont
+S Montpelier
+C Virginia
+R Virginia
+S Richmond
+S Charlottesville
+S Washington
+C Washington
+R Washington
+S Seattle
+S Olympia
+C West Virginia
+R West Virginia
+S Charleston
+S Wheeling
+C Wisconsin
+R Wisconsin
+S Madison
+S Milwaukee
+C Wyoming
+R Wyoming
+S Cheyenne

@@ -825,6 +825,8 @@ R Aleppo
 S Aleppo
 R Damascus
 P Damascus
+R Raqqa
+S Raqqa
 C Taiwan
 R Taipei
 P Taipei
@@ -866,6 +868,8 @@ P Tunis
 C Turkey
 R Ankara
 P Ankara
+R Istanbul
+S Istanbul
 C Turkmenistan
 R Ashgabat
 P Ashgabat
