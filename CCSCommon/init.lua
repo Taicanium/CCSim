@@ -384,7 +384,7 @@ return
 							varistab = varistab - extFactor - 50
 						end
 
-						self.status = self.status + math.ceil(math.random(varistab-15, varistab+15)/2)
+						self.status = self.status + math.ceil(math.random((math.floor(varistab)-15, math.ceil(varistab)+15)/2)
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
@@ -610,17 +610,9 @@ return
 						local chance = math.random(1, 100)
 
 						if chance > 48 then
-							local values = {}
-
-							for i, j in pairs(c.regions) do
-								table.insert(values, j.name)
-							end
-
 							if #values > 1 then
-								local v = values[math.random(1, #values)]
-
 								local newl = Country:new()
-								local nc = c.regions[v]
+								local nc = parent:randomChoice(c.regions)
 
 								newl.name = nc.name
 
@@ -655,27 +647,16 @@ return
 											if l.name == c.capitalcity then
 												local oldcap = c.capitalcity
 												local oldreg = c.capitalregion
-												c.capitalcity = nil
-												c.capitalregion = nil
-												for m, n in pairs(newl.regions) do
-													if n.name ~= oldreg then
-														for o, p in pairs(n.cities) do
-															if c.capitalcity == nil then
-																local chance = math.random(1, 100)
-																if chance == 35 then
-																	c.capitalregion = n.name
-																	c.capitalcity = p.name
+												
+												local nr = parent:randomChoice(newl.regions)
+												c.capitalcity = nr.name
+												c.capitalregion = parent:randomChoice(nr.cities).name
+												
+												local msg = "Capital moved"
+												if oldcap ~= "" then msg = msg.." from "..oldcap end
+												msg = msg.." to "..c.capitalcity
 
-																	local msg = "Capital moved"
-																	if oldcap ~= "" then msg = msg.." from "..oldcap end
-																	msg = msg.." to "..c.capitalcity
-
-																	c:event(parent, msg)
-																end
-															end
-														end
-													end
-												end
+												c:event(parent, msg)
 											end
 										end
 									end

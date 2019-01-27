@@ -145,8 +145,8 @@ return
 			end,
 
 			eventloop = function(self, parent)
-				local v = math.floor(math.random(600, 1000) * self.stability)
-				local vi = math.floor(math.random(600, 1000) * (100 - self.stability))
+				local v = math.floor(math.random(600, 1000) * math.floor(self.stability))
+				local vi = math.floor(math.random(600, 1000) * (100 - math.floor(self.stability)))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
@@ -248,7 +248,7 @@ return
 				end
 
 				for i=1,#parent.systems do
-					self.formalities[parent.systems[i].name] = parent.systems[i].formalities[math.random(1, #parent.systems[i].formalities)]
+					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
 					tf = math.random(2, 200)
 					if math.floor(tf/2) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
@@ -390,14 +390,14 @@ return
 					parent:rseed()
 
 					if self.people[newRuler].gender == "Female" then
-						self.people[newRuler].name = self.frulernames[math.floor(math.random(1, #self.frulernames))]
+						self.people[newRuler].name = parent:randomChoice(self.frulernames)
 
 						if parent.systems[self.system].franks ~= nil then
 							self.people[newRuler].level = #parent.systems[self.system].franks
 							self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
 						end
 					else
-						self.people[newRuler].name = self.rulernames[math.floor(math.random(1, #self.rulernames))]
+						self.people[newRuler].name = parent:randomChoice(self.rulernames)
 					end
 
 					local namenum = 1
@@ -524,7 +524,7 @@ return
 					local r = ""
 					local poss = {}
 					for k, l in pairs(self.regions) do table.insert(poss, l.name) end
-					r = poss[math.random(1, #poss)]
+					r = parent:randomChoice(poss)
 					parent:deepnil(self.regions[r])
 					self.regions[r] = nil
 					rCount = 0
@@ -538,7 +538,7 @@ return
 
 					local found = false
 					while found == false do
-						local pd = self.nodes[math.random(1, #self.nodes)]
+						local pd = parent:randomChoice(self.nodes)
 						x = pd[1]
 						y = pd[2]
 						z = pd[3]
@@ -617,13 +617,13 @@ return
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
 						if l.x == nil or l.y == nil or l.z == nil then
-							local pd = j.nodes[math.random(1, #j.nodes)]
+							local pd = parent:randomChoice(j.nodes)
 							local x = pd[1]
 							local y = pd[2]
 							local z = pd[3]
 
 							while parent.thisWorld.planet[x][y][z].city ~= "" do
-								pd = j.nodes[math.random(1, #j.nodes)]
+								pd = parent:randomChoice(j.nodes)
 								x = pd[1]
 								y = pd[2]
 								z = pd[3]
@@ -736,18 +736,14 @@ return
 				local oldreg = nil
 
 				if self.regions[self.capitalregion] == nil then
-					local values = {}
-					for i, j in pairs(self.regions) do table.insert(values, j.name) end
 					oldreg = self.capitalregion
-					self.capitalregion = values[math.random(1, #values)]
+					self.capitalregion = parent:randomChoice(self.regions).name
 					oldcap = self.capitalcity
 					self.capitalcity = nil
 				end
 
 				if self.regions[self.capitalregion].cities[self.capitalcity] == nil then
-					local values = {}
-					for i, j in pairs(self.regions[self.capitalregion].cities) do table.insert(values, j.name) end
-					self.capitalcity = values[math.random(1, #values)]
+					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities).name
 					if oldcap ~= nil then
 						if self.regions[oldreg] ~= nil then
 							if self.regions[oldreg].cities[oldcap] ~= nil then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
@@ -800,7 +796,7 @@ return
 							self:delete(parent, i)
 						else
 							if self.deathrate-math.pow(age, 2) < age then self:delete(parent, i) else
-								d = math.random(1, self.deathrate-math.pow(age, 2))
+								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
 								if d < age then self:delete(parent, i) end
 							end
 						end

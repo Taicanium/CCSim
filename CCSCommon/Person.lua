@@ -441,16 +441,12 @@ return
 				end
 
 				if self.region == "" or nl.regions[self.region] == nil then
-					local values = {}
-					for i, j in pairs(nl.regions) do table.insert(values, j.name) end
-					self.region = values[math.random(1, #values)]
+					self.region = parent:randomChoice(nl.regions).name
 					self.city = ""
 				end
 
 				if self.city == "" or nl.regions[self.region].cities[self.city] then
-					local values = {}
-					for i, j in pairs(nl.regions[self.region].cities) do table.insert(values, j.name) end
-					self.city = values[math.random(1, #values)]
+					self.city = parent:randomChoice(nl.regions[self.region].cities).name
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
