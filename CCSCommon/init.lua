@@ -153,14 +153,14 @@ return
 								if interv == false then
 									if cp.relations[c.name] ~= nil then
 										if cp.relations[c.name] < 50 then
-											local intervene = math.random(1, cp.relations[c.name]*4)
+											local intervene = math.random(1, math.floor(cp.relations[c.name])*4)
 											if intervene == 1 then
 												c:event(parent, "Intervention on the side of the opposition by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
 												table.insert(self.opIntervened, cp.name)
 											end
 										elseif cp.relations[c.name] > 50 then
-											local intervene = math.random(50, (150-cp.relations[c.name])*4)
+											local intervene = math.random(50, (150-math.floor(cp.relations[c.name]))*4)
 											if intervene == 50 then
 												c:event(parent, "Intervention on the side of the government by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
@@ -199,7 +199,7 @@ return
 							end
 						end
 
-						self.status = self.status + math.ceil(math.random(varistab-15,varistab+15)/2)
+						self.status = self.status + math.ceil(math.random(math.floor(varistab)-15,math.ceil(varistab)+15)/2)
 
 						if self.status <= -100 then return self:endEvent(parent, c) end
 						if self.status >= 100 then return self:endEvent(parent, c) end
