@@ -2199,6 +2199,7 @@ return
 				self:sleep(0.002)
 				local tc = _time()
 				local n = tonumber(tostring(tc):reverse())
+				if n == nil then n = _time() end
 				while n < 100000 do n = n * math.floor(math.random(8, 12)) end
 				while n > 100000000 do n = n / math.floor(math.random(8, 12)) end
 				math.randomseed(math.ceil(n))
@@ -2206,7 +2207,7 @@ return
 				local s = math.random(2, 4)
 				for i=3,s do math.random(100, 1000) end
 				for i=3,x do
-					math.randomseed(math.random(n, i*n))
+					math.randomseed(math.random(math.floor(n), i*math.ceil(n)))
 					for j=3,s do math.random(100, 1000) end
 				end
 				for i=3,s do math.random(100, 1000) end
