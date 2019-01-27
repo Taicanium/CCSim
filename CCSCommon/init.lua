@@ -608,9 +608,11 @@ return
 						parent:rseed()
 
 						local chance = math.random(1, 100)
+						local values = 0
+						for i, j in pairs(c.regions) do values = values + 1 end
 
 						if chance > 48 then
-							if #values > 1 then
+							if values > 1 then
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
 
