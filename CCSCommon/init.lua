@@ -384,7 +384,7 @@ return
 							varistab = varistab - extFactor - 50
 						end
 
-						self.status = self.status + math.ceil(math.random((math.floor(varistab)-15, math.ceil(varistab)+15)/2)
+						self.status = self.status + math.ceil(math.random(math.floor(varistab)-15, math.ceil(varistab)+15)/2)
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
