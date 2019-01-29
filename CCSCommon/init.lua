@@ -1464,13 +1464,15 @@ return
 			end,
 
 			getRulerString = function(self, data)
-				if data.Country then
-					if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
-					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")") end
-				else
-					if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
-					else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
-				end
+				if data then
+					if data.Country then
+						if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
+						else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")") end
+					elseif data.number then
+						if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
+						else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
+					else return "None" end
+				else return "None" end
 			end,
 
 			loop = function(self)
@@ -1499,7 +1501,7 @@ return
 						for i, cp in pairs(self.thisWorld.countries) do
 							if cp.dfif[self.systems[cp.system].name] == true then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
 							else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-							msg = msg.." - Population: "..cp.population..", strength: "..tostring(cp.strength).."\n"
+							msg = msg.." - Population: "..cp.population.." - Ctrength: "..tostring(cp.strength).." - Current ruler: "..self:getRulerString(cp.rulers[#cp.rulers])\n"
 						end
 
 						msg = msg.."\nWars:"
