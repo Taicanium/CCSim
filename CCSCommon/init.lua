@@ -1552,7 +1552,7 @@ return
 						end
 					end
 					
-					msg = "\n\nYear "..self.years.." : "..self.numCountries.." countries\n\n"
+					msg = mag.."\n\nYear "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					print(msg)
 
