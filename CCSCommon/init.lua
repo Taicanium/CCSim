@@ -1514,40 +1514,7 @@ return
 						for i, cp in pairs(self.thisWorld.countries) do
 							if cp.dfif[self.systems[cp.system].name] == true then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
 							else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-							msg = msg.." - Population: "..cp.population.." (average age: "..math.ceil(cp.averageAge)..")"
-							if cp.capitalregion ~= nil then
-								if cp.capitalcity ~= nil then
-									if cp.regions[cp.capitalregion] ~= nil then
-										if cp.regions[cp.capitalregion].cities[cp.capitalcity] ~= nil then
-											msg = msg.."\nCapital: "..cp.capitalcity.." (pop. "..cp.regions[cp.capitalregion].cities[cp.capitalcity].population..")"
-										else msg = msg.."\nCapital: None" end
-									else msg = msg.."\nCapital: None" end
-								else msg = msg.."\nCapital: None" end
-							else msg = msg.."\nCapital: None" end
-							if cp.rulers ~= nil then
-								if cp.rulers[#cp.rulers] ~= nil then
-									msg = msg.."\nCurrent ruler: "
-									if cp.rulers[#cp.rulers].To == "Current" then
-										msg = msg..self:getRulerString(cp.rulers[#cp.rulers])..", age "..cp.rulerage
-										for m=1,#cp.parties do
-											if cp.rulers[#cp.rulers].Party == cp.parties[m].name then
-												msg = msg..", of the "..cp.parties[m].name.." ("..cp.parties[m].pfreedom.." P, "..cp.parties[m].efreedom.." E, "..cp.parties[m].cfreedom.." C), "..cp.parties[m].popularity.."% popularity"
-												if cp.parties[m].radical == true then msg = msg.." (radical)" end
-											end
-										end
-									else
-										msg = msg.."None"
-									end
-
-									for m=1,#cp.parties do
-										if cp.parties[m].leading == true then
-											msg = msg.."\nRuling party: "..cp.parties[m].name.." ("..cp.parties[m].pfreedom.." P, "..cp.parties[m].efreedom.." E, "..cp.parties[m].cfreedom.." C), "..cp.parties[m].popularity.."% popularity"
-											if cp.parties[m].radical == true then msg = msg.." (radical)" end
-										end
-									end
-								end
-							end
-							msg = msg.."\n\n"
+							msg = msg.." - Population: "..cp.population..", strength: "..tostring(cp.strength).."\n"
 						end
 
 						msg = msg.."\nWars:"
