@@ -1020,7 +1020,7 @@ return
 					local newc = false
 					local fr = 1
 					local pr = 1
-					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..cp.age.." years\n\n"))
+					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
 
 					for k=1,#cp.events do
 						if cp.events[k].Event:sub(1, 12) == "Independence" then
