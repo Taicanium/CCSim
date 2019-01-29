@@ -872,6 +872,7 @@ return
 			},
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
+			disabled = {},
 			doR = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
 			ged = false,
@@ -1219,38 +1220,32 @@ return
 							self.startyear = tonumber(mat[2])
 							self.years = tonumber(mat[2])
 							self.maxyears = self.maxyears + self.startyear
+						elseif mat[1] == "Disable" then
+							local sEvent = mat[2]
+							for q=3,#mat do sEvent = sEvent.." "..mat[q] end
+							table.insert(self.disabled, sEvent)
 						elseif mat[1] == "C" then
 							local nl = Country:new()
 							nl.name = mat[2]
-							for q=3,#mat do
-								nl.name = nl.name.." "..mat[q]
-							end
-							for q=1,#self.systems do
-								nl.snt[self.systems[q].name] = 0
-							end
+							for q=3,#mat do nl.name = nl.name.." "..mat[q]
+							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
 							self.thisWorld:add(nl)
 							fc = nl
 						elseif mat[1] == "R" then
 							local r = Region:new()
 							r.name = mat[2]
-							for q=3,#mat do
-								r.name = r.name.." "..mat[q]
-							end
+							for q=3,#mat do r.name = r.name.." "..mat[q] end
 							fc.regions[r.name] = r
 							fr = r
 						elseif mat[1] == "S" then
 							local s = City:new()
 							s.name = mat[2]
-							for q=3,#mat do
-								s.name = s.name.." "..mat[q]
-							end
+							for q=3,#mat do s.name = s.name.." "..mat[q] end
 							fr.cities[s.name] = s
 						elseif mat[1] == "P" then
 							local s = City:new()
 							s.name = mat[2]
-							for q=3,#mat do
-								s.name = s.name.." "..mat[q]
-							end
+							for q=3,#mat do s.name = s.name.." "..mat[q] end
 							fc.capitalregion = fr.name
 							fc.capitalcity = s.name
 							fr.cities[s.name] = s
@@ -1259,24 +1254,13 @@ return
 							local number = 1
 							local gend = "Male"
 							local to = self.years
-							if #fc.rulers > 0 then
-								for i=1,#fc.rulers do
-									if fc.rulers[i].name == mat[2] then
-										if fc.rulers[i].title == mat[1] then
-											number = number + 1
-										end
-									end
-								end
-							end
+							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] then number = number + 1 end end end end
 							if mat[1] == "King" then dynastic = true end
 							if mat[1] == "Emperor" then dynastic = true end
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
-							if dynastic == true then
-								table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
-							else
-								table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], Country=fc.name, From=mat[4], To=mat[5]})
-							end
+							if dynastic == true then table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
+							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], Country=fc.name, From=mat[4], To=mat[5]}) end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
 								fc.system = 1

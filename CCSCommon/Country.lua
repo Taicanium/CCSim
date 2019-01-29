@@ -183,27 +183,31 @@ return
 				end
 
 				for i=1,#parent.c_events do
-					local chance = math.floor(math.random(1, v))
-					if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
-					if chance <= parent.c_events[i].chance then
-						if parent.c_events[i].args == 1 then
-							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing].performEvent ~= nil then
-								if self.ongoing[#self.ongoing]:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
-								else
-									self.ongoing[#self.ongoing]:beginEvent(parent, self)
-								end
-							else table.remove(self.ongoing, #self.ongoing) end
-						elseif parent.c_events[i].args == 2 then
-							local other = parent:randomChoice(parent.thisWorld.countries)
-							while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
-							table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-							if self.ongoing[#self.ongoing].performEvent ~= nil then
-								if self.ongoing[#self.ongoing]:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-								else
-									self.ongoing[#self.ongoing]:beginEvent(parent, self, other)
-								end
-							else table.remove(self.ongoing, #self.ongoing) end
+					local isDisabled = false
+					for j=1,#parent.disabled do if parent.disabled[j] == parent.c_events[i].name then isDisabled = true end end
+					if isDisabled == false then
+						local chance = math.floor(math.random(1, v))
+						if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
+						if chance <= parent.c_events[i].chance then
+							if parent.c_events[i].args == 1 then
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing].performEvent ~= nil then
+									if self.ongoing[#self.ongoing]:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:beginEvent(parent, self)
+									end
+								else table.remove(self.ongoing, #self.ongoing) end
+							elseif parent.c_events[i].args == 2 then
+								local other = parent:randomChoice(parent.thisWorld.countries)
+								while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
+								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+								if self.ongoing[#self.ongoing].performEvent ~= nil then
+									if self.ongoing[#self.ongoing]:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+									else
+										self.ongoing[#self.ongoing]:beginEvent(parent, self, other)
+									end
+								else table.remove(self.ongoing, #self.ongoing) end
+							end
 						end
 					end
 				end
