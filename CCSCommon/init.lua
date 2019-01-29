@@ -1486,7 +1486,6 @@ return
 				while _running do
 					self.thisWorld:update(self)
 
-					os.execute(self.clrcmd)
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					for i, cp in pairs(self.thisWorld.countries) do
@@ -1555,6 +1554,7 @@ return
 						end
 					end
 
+					os.execute(self.clrcmd)
 					print(msg)
 
 					self.years = self.years + 1
