@@ -1483,7 +1483,6 @@ return
 					self.thisWorld:update(self)
 
 					os.execute(self.clrcmd)
-					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					for i, cp in pairs(self.thisWorld.countries) do
 						for j, k in pairs(self.final) do
@@ -1550,6 +1549,8 @@ return
 							end
 						end
 					end
+					
+					msg = "\n\nYear "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					print(msg)
 
