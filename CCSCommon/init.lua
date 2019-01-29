@@ -1227,7 +1227,7 @@ return
 						elseif mat[1] == "C" then
 							local nl = Country:new()
 							nl.name = mat[2]
-							for q=3,#mat do nl.name = nl.name.." "..mat[q]
+							for q=3,#mat do nl.name = nl.name.." "..mat[q] end
 							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
 							self.thisWorld:add(nl)
 							fc = nl
