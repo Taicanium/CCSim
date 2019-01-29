@@ -37,6 +37,8 @@ return
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							local ruler = nil
+							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
 							local s = table.remove(c.people, q)
 							s.isruler = false
 							s.region = ""
