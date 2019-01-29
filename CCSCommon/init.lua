@@ -1229,6 +1229,7 @@ return
 							nl.name = mat[2]
 							for q=3,#mat do nl.name = nl.name.." "..mat[q] end
 							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
+							nl.system = -1
 							self.thisWorld:add(nl)
 							fc = nl
 						elseif mat[1] == "R" then
@@ -1327,6 +1328,7 @@ return
 							cp.founded = self.years
 							cp.age = 0
 							cp.system = math.random(1, #self.systems)
+							cp.snt[self.systems[cp.system].name] = cp.snt[self.systems[cp.system].name] + 1
 						end
 
 						cp:makename(self)
@@ -1552,7 +1554,7 @@ return
 						end
 					end
 					
-					msg = mag.."\n\nYear "..self.years.." : "..self.numCountries.." countries\n\n"
+					msg = msg.."\n\nYear "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					print(msg)
 
