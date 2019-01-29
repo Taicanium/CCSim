@@ -1499,8 +1499,8 @@ return
 						local alliances = {}
 
 						for i, cp in pairs(self.thisWorld.countries) do
-							if cp.dfif[self.systems[cp.system].name] == true then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
-							else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
+							if cp.dfif[self.systems[cp.system].name] == true then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
+							else msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
 							msg = msg.." - Population: "..cp.population.." - Ctrength: "..tostring(cp.strength).." - Current ruler: "..self:getRulerString(cp.rulers[#cp.rulers])\n"
 						end
 
