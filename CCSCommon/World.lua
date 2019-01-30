@@ -163,11 +163,9 @@ return
 				
 				for i, j in pairs(parent.final) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
-						for m, n in pairs(j.people) do if n.spouse then
-							if type(l.spouse) == "number" then
-								l.spouse = j.people[l.spouse]
-							end
-						end end
+						if type(l.spouse) == "number" then
+							l.spouse = j.people[l.spouse]
+						end
 					end end
 				end end
 				
@@ -199,7 +197,7 @@ return
 											if l.spouse.birth == n.birth then
 												if l.spouse.birthplace == n.birthplace then
 													if l.spouse.level == n.level then
-														l.spouse = m
+														l.spouse = tonumber(m)
 													end
 												end
 											end
@@ -219,7 +217,7 @@ return
 											if l.spouse.birth == n.birth then
 												if l.spouse.birthplace == n.birthplace then
 													if l.spouse.level == n.level then
-														l.spouse = m
+														l.spouse = tonumber(m)
 													end
 												end
 											end
@@ -328,21 +326,17 @@ return
 						
 					for i, j in pairs(self.countries) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
-							for m, n in pairs(j.people) do if n.spouse then
-								if type(l.spouse) == "number" then
-									l.spouse = j.people[l.spouse]
-								end
-							end end
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
 						end end
 					end end
 					
 					for i, j in pairs(parent.final) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
-							for m, n in pairs(j.people) do if n.spouse then
-								if type(l.spouse) == "number" then
-									l.spouse = j.people[l.spouse]
-								end
-							end end
+							if type(l.spouse) == "number" then
+								l.spouse = j.people[l.spouse]
+							end
 						end end
 					end end
 				else
