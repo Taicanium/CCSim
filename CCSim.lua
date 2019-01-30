@@ -29,7 +29,7 @@ function main()
 		CCSCommon.showinfo = 0
 		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
-		io.write(string.format("\nHow often do you want the world data to be autosaved? Enter a number of years, or -1 for never. > "))
+		io.write(string.format("\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > "))
 		datin = io.read()
 		CCSCommon.autosaveDur = tonumber(datin)
 		while CCSCommon.autosaveDur == nil do

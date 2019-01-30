@@ -1512,7 +1512,7 @@ return
 						
 						local totalC = 0
 						for i, cp in pairs(self.thisWorld.countries) do totalC = totalC + 1 end
-						if cCount < totalC then msg = msg.."[+"..tostring(totalC-cCount).." more]" end
+						if cCount < totalC then msg = msg.."[+"..tostring(totalC-cCount).." more]\n" end
 
 						msg = msg.."\nWars:"
 						local count = 0
