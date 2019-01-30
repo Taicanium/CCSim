@@ -1486,8 +1486,6 @@ return
 				while _running do
 					self.thisWorld:update(self)
 
-					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
-
 					for i, cp in pairs(self.thisWorld.countries) do
 						for j, k in pairs(self.final) do
 							if k.name == cp.name then self.final[j] = nil end
@@ -1499,12 +1497,22 @@ return
 					if self.showinfo == 1 then
 						local wars = {}
 						local alliances = {}
+						
+						msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
+						local cCount = 0
 
 						for i, cp in pairs(self.thisWorld.countries) do
-							if cp.dfif[self.systems[cp.system].name] == true then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
-							else msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-							msg = msg.." - Population: "..cp.population.." - Strength: "..tostring(cp.strength).." - Current ruler: "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
+							if cCount <= 20 then
+								if cp.dfif[self.systems[cp.system].name] == true then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
+								else msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
+								msg = msg.." - Population: "..cp.population.." - Current ruler: "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
+								cCount = cCount + 1
+							end
 						end
+						
+						local totalC = 0
+						for i, cp in pairs(self.thisWorld.countries) do totalC = totalC + 1 end
+						if cCount < totalC then msg = msg.."[+"..tostring(totalC-cCount).." more]" end
 
 						msg = msg.."\nWars:"
 						local count = 0

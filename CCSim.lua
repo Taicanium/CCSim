@@ -22,7 +22,7 @@ function main()
 			CCSCommon.maxyears = tonumber(datin)
 		end
 
-		io.write(string.format("\nDo you want to show detailed info in the console before it is saved (y/n)?\n Answering N may result in a slight speedup. > "))
+		io.write(string.format("\nDo you want to show detailed info in the console (y/n)?\n Answering N may result in a slight speedup. > "))
 		datin = io.read()
 		datin = string.lower(datin)
 
