@@ -64,7 +64,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								for i=1,#self.people do
-									if self.people[i].royalSystem == sys.name then
+									if self.people[i].royalGenerations > 0 then
 										table.insert(possibles, i)
 									end
 								end
@@ -83,20 +83,13 @@ return
 								end
 
 								if closest == -1 then
-									for i=#self.people,1,-1 do
-										local chance = math.random(1, 1000)
-										if chance == 25 then self:setRuler(parent, i) end
-										i = 0
-									end
+									local i = math.random(1, #self.people)
+									self:setRuler(parent, i)
 								else
 									self:setRuler(parent, closest)
 								end
 							else
-								for i=#self.people,1,-1 do
-									local chance = math.random(1, 1000)
-									if chance == 25 then self:setRuler(parent, i) end
-									i = 0
-								end
+								local i = math.random(1, #self.people)
 							end
 						end
 					end
@@ -110,8 +103,7 @@ return
 						self.people[y].deathplace = self.name
 						if self.people[y].royalGenerations ~= -1 then
 							if self.people[y].royalGenerations < 3 then
-								local asc = parent:makeAscendant(self, self.people[y])
-								table.insert(self.newAscs, asc)
+								table.insert(self.newAscs, parent:makeAscendant(self, self.people[y]))
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end

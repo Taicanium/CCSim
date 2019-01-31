@@ -845,7 +845,7 @@ return
 					end
 				},
 				{
-					name="Annexation",
+					name="Annex",
 					chance=4,
 					target=nil,
 					args=2,
@@ -1170,19 +1170,8 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= "" then
-							print(fams[j])
-							print("\n")
-							print(fams[j].husb, self.royals[fams[j].husb])
-							msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n"
-						end
-
-						if fams[j].wife ~= 0 then
-							print(fams[j])
-							print("\n")
-							print(fams[j].wife, self.royals[fams[j].wife])
-							msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n"
-						end
+						if fams[j].husb ~= "" then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
+						if fams[j].wife ~= 0 then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
 
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k] ~= fams[j].husb then
@@ -1420,43 +1409,38 @@ return
 
 			getAscendants = function(self, final, royals, person)
 				local found = false
-				local fInd = ""
-				local pTable = {}
-				if type(person) == "table" then
-					fInd = person.name.." "..person.surname.." "..person.birth.." "..person.death.." "..person.number.." "..person.gender.." "..person.birthplace.." "..person.deathplace.." "..person.title
-					pTable = person
-				else
-					fInd = person
-					pTable = {
-						name=person.name,
-						surname=person.surname,
-						birth=person.birth,
-						death=person.death,
-						number=person.number,
-						gender=person.gender,
-						birthplace=person.birthplace,
-						deathplace=person.deathplace,
-						father="",
-						mother="",
-						title=person.title,
-						ethnicity=person.ethnicity,
-						index=0,
-						arrIndex=""
-					} end
+				local fInd = nil
+				local pTable = {
+					name=person.name,
+					surname=person.surname,
+					birth=person.birth,
+					death=person.death,
+					number=person.number,
+					gender=person.gender,
+					birthplace=person.birthplace,
+					deathplace=person.deathplace,
+					father="",
+					mother="",
+					title=person.title,
+					ethnicity=person.ethnicity,
+					index=0,
+				}
 
-				if royals[fInd] ~= nil then
-					for i, j in pairs(royals[fInd]) do if j ~= nil and j ~= "" and j ~= 0 then
-						if pTable[i] == nil then pTable[i] = j
-						elseif pTable[i] == 0 or pTable[i] == "" then pTable[i] = j end
-					end end
-					
-					for i, j in pairs(pTable) do if j ~= nil and j ~= "" and j ~= 0 then
-						if royals[fInd][i] == nil then royals[fInd][i] = j
-						elseif royals[fInd][i] == 0 or royals[fInd][i] == "" then royals[fInd][i] = j end
-					end end
-				else
-					royals[fInd] = pTable
-					royals[fInd].arrIndex = fInd
+				local pString = person.name.." "..person.surname.." "..person.birth.." "..person.birthplace.." "..person.gender
+				
+				for i, j in pairs(royals) do
+					local rString = j.name.." "..j.surname.." "..j.birth.." "..j.birthplace.." "..j.gender
+					if pString == rString then
+						if j.death ~= person.death then j.death = person.death end
+						if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end
+						fInd = i
+					end
+				end
+
+				if fInd == nil then
+					table.insert(royals, pTable)
+					fInd = #royals
+					royals[fInd].index = fInd
 
 					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
@@ -1613,7 +1597,7 @@ return
 			end,
 			
 			makeAscendant = function(self, c, person)
-				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity, index=0, arrIndex=""}
+				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity, index=0}
 				self:getAscendants(self.final, self.royals, t)
 				return t
 			end,
@@ -2175,23 +2159,11 @@ return
 			sortAscendants = function(self, data)
 				local percentage = 0
 				local fams = {}
-				local sorted = {}
 				
+				print("Sorting individuals...")
 				local ascCount = 0
 				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
-				print("Sorting "..tostring(ascCount).." individuals...")
-				
-				local index = 1
-				
-				for i, j in pairs(self.royals) do
-					j.index = index
-					sorted[index] = j
-					index = index + 1
-				end
-				
-				self.royals = sorted
-				
 				print("Linking "..tostring(ascCount).." individuals...")
 				
 				for i=1,#self.royals do
