@@ -157,12 +157,8 @@ return
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].args > 1 then
 							local found = false
-							if self.ongoing[i].target ~= nil then
-								if self.ongoing[i].target.name ~= nil then
-									for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end
-								end
-							end
-							if found == false then table.remove(self.ongoing, i))
+							if self.ongoing[i].target ~= nil then if self.ongoing[i].target.name ~= nil then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end end
+							if found == false then table.remove(self.ongoing, i) end
 						end
 					end
 				end
