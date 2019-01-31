@@ -39,7 +39,7 @@ return
 							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
-							local s = table.remove(c.people, q)
+							local s = table.remove(c.people, ruler)
 							s.isruler = false
 							s.region = ""
 							s.city = ""
@@ -78,7 +78,9 @@ return
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-							local s = table.remove(c.people, q)
+							local ruler = nil
+							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
+							local s = table.remove(c.people, ruler)
 							s.isruler = false
 							s.region = ""
 							s.city = ""
@@ -216,6 +218,7 @@ return
 								for q=1,#c.people do
 									if c.people[q] ~= nil then
 										if c.people[q].isruler == true then
+											c.people[q].isruler = false
 											c:delete(parent, q)
 										end
 									end
@@ -223,7 +226,9 @@ return
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-								local s = table.remove(c.people, q)
+								local ruler = nil
+								for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
+								local s = table.remove(c.people, ruler)
 								s.isruler = false
 								s.region = ""
 								s.city = ""
