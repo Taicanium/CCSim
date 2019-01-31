@@ -1131,7 +1131,7 @@ return
 						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
 						if j.birth < 0 then msgout = msgout.." B.C." end
 						msgout = msgout.."\n2 PLAC "..j.birthplace
-						if tostring(j.death) ~= "0" and j.death <= self.maxyears then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
+						if tostring(j.death) ~= "0" and j.death ~= 0 then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
 						if j.ethnicity then
 							local ei = 1
 							for q, b in pairs(j.ethnicity) do
@@ -1407,7 +1407,7 @@ return
 				return acOut
 			end,
 
-			getAscendants = function(self, final, royals, person)
+			getAscendants = function(self, royals, person)
 				local found = false
 				local fInd = nil
 				local pTable = {
@@ -1431,8 +1431,9 @@ return
 				for i, j in pairs(royals) do
 					local rString = j.name.." "..j.surname.." "..j.birth.." "..j.birthplace.." "..j.gender
 					if pString == rString then
-						if j.death ~= person.death then j.death = person.death end
-						if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end
+						if person.death ~= nil then if person.death ~= 0 then if j.death ~= person.death then j.death = person.death end end end
+						if person.deathplace ~= nil then if person.deathplace ~= "" then if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end end end
+						if j.death == self.years then j.death = 0 j.deathplace = "" end
 						fInd = i
 					end
 				end
@@ -1465,11 +1466,11 @@ return
 					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
 
 					if person.father ~= nil then
-						royals[fInd].father = self:getAscendants(final, royals, person.father)
+						royals[fInd].father = self:getAscendants(royals, person.father)
 					end
 
 					if person.mother ~= nil then
-						royals[fInd].mother = self:getAscendants(final, royals, person.mother)
+						royals[fInd].mother = self:getAscendants(royals, person.mother)
 					end
 				end
 
@@ -1598,7 +1599,6 @@ return
 			
 			makeAscendant = function(self, c, person)
 				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity, index=0}
-				self:getAscendants(self.final, self.royals, t)
 				return t
 			end,
 
@@ -2160,9 +2160,7 @@ return
 				local percentage = 0
 				local fams = {}
 				
-				print("Sorting individuals...")
 				local ascCount = 0
-				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				print("Linking "..tostring(ascCount).." individuals...")
 				
