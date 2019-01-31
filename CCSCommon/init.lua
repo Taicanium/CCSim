@@ -1633,7 +1633,7 @@ return
 						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
 					end
 
-					local mid = self:middlegroups(self.middlegroups)
+					local mid = self:randomChoice(self.middlegroups)
 					local istaken = false
 
 					for i=1,#taken do if taken[i] == mid then istaken = true end end
