@@ -1107,7 +1107,8 @@ return
 				print("")
 
 				if self.ged == true then
-					for i, cp in pairs(self.final) do cp:destroy(self) end
+					print(self.final)
+					for i, j in pairs(self.final) do j:destroy(self) end
 				
 					local fams = self:sortAscendants(self.final)
 
