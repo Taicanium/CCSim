@@ -1494,11 +1494,12 @@ return
 						table.insert(self.final, cp)
 					end
 
+					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
+					
 					if self.showinfo == 1 then
 						local wars = {}
 						local alliances = {}
 						
-						msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 						local cCount = 0
 
 						for i, cp in pairs(self.thisWorld.countries) do
