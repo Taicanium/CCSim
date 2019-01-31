@@ -780,8 +780,8 @@ return
 										table.insert(c1.nodes, {x, y, z})
 									end
 
-									for i=1,#c2.newAscs do
-										table.insert(c1.newAscs, c2.newAscs[i])
+									for i=1,#c2.ascs do
+										table.insert(c1.ascs, c2.ascs[i])
 									end
 
 									c1.stability = c1.stability - 5
@@ -872,8 +872,8 @@ return
 											table.insert(c1.nodes, {x, y, z})
 										end
 
-										for i=1,#c2.newAscs do
-											table.insert(c1.newAscs, c2.newAscs[i])
+										for i=1,#c2.ascs do
+											table.insert(c1.ascs, c2.ascs[i])
 										end
 
 										c1.stability = c1.stability - 5

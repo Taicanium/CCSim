@@ -17,7 +17,7 @@ return
 				nl.rulers = {}
 				nl.rulernames = {}
 				nl.frulernames = {}
-				nl.newAscs = {}
+				nl.ascs = {}
 				nl.ongoing = {}
 				nl.allyOngoing = {}
 				nl.alliances = {}
@@ -104,7 +104,7 @@ return
 						self.people[y].deathplace = self.name
 						if self.people[y].royalGenerations ~= -1 then
 							if self.people[y].royalGenerations < 3 then
-								table.insert(self.newAscs, parent:makeAscendant(self, self.people[y]))
+								table.insert(self.ascs, parent:makeAscendant(self, self.people[y]))
 							end
 						end
 						if self.people[y].isruler == true then self.hasruler = -1 end
@@ -122,8 +122,8 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
-					for i=1,#self.newAscs do parent:getAscendants(parent.final, parent.royals, self.newAscs[i]) end
-					self.newAscs = {}
+					for i=1,#self.ascs do parent:getAscendants(parent.royals, self.ascs[i]) end
+					self.ascs = {}
 					self.people = nil
 				end
 				
@@ -813,9 +813,6 @@ return
 				self.majority = largest
 
 				self:checkRuler(parent)
-				
-				for i=1,#self.newAscs do parent:getAscendants(parent.final, parent.royals, self.newAscs[i]) end
-				self.newAscs = {}
 			end
 		}
 
