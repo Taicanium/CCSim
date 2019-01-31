@@ -1107,8 +1107,7 @@ return
 				print("")
 
 				if self.ged == true then
-					print(self.final)
-					for i, j in pairs(self.final) do j:destroy(self) end
+					for i, j in pairs(self.thisWorld.countries) do j:destroy(self) end
 				
 					local fams = self:sortAscendants(self.final)
 
