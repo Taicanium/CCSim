@@ -815,7 +815,7 @@ return
 						if j.party == l.name then if l.popularity < 10 then
 							local cChance = math.random(1, 15)
 							if cChance == 7 then for m, n in pairs(parent.c_events) do if n.name == "Coup d'Etat" then self:triggerEvent(parent, m) end end end
-						end end end
+						end end
 					end
 				end
 
