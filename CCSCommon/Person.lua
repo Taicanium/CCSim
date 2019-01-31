@@ -340,29 +340,29 @@ return
 					end
 
 					if self.party == "" then
-						local pr = math.random(1, #nl.parties)
-						local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
+						local pr = parent:randomChoice(nl.parties)
+						local partytotal = pr.pfreedom + pr.efreedom + pr.cfreedom
 						if math.abs(belieftotal - partytotal) < 125 then
-							self.party = nl.parties[pr].name
-							nl.parties[pr].membership = nl.parties[pr].membership + 1
+							self.party = pr.name
+							pr.membership = pr.membership + 1
 							if self.isruler == true then
 								nl.rulers[#nl.rulers].Party = self.party
 							end
 						end
 					else
-						local pi = 0
-						for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = i end end
-						if pi ~= 0 then
-							if tonumber(nl.parties[pi].popularity) ~= nil and tonumber(nl.parties[pi].membership) ~= nil then
-								local cc = math.random(1, 100 * math.ceil(nl.parties[pi].popularity) + 1)
+						local pi = nil
+						for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = nl.parties[i] end end
+						if pi ~= nil then
+							if tonumber(pi.popularity) ~= nil and tonumber(pi.membership) ~= nil then
+								local cc = math.random(1, 100 * math.ceil(pi.popularity) + 1)
 								if cc == 10 then
-									nl.parties[pi].membership = nl.parties[pi].membership - 1
+									pi.membership = pi.membership - 1
 
-									local pr = math.random(1, #nl.parties)
-									local partytotal = nl.parties[pr].pfreedom + nl.parties[pr].efreedom + nl.parties[pr].cfreedom
+									local pr = parent:randomChoice(nl.parties)
+									local partytotal = pr.pfreedom + pr.efreedom + pr.cfreedom
 									if math.abs(belieftotal - partytotal) < 125 then
-										self.party = nl.parties[pr].name
-										nl.parties[pr].membership = nl.parties[pr].membership + 1
+										self.party = pr.name
+										pr.membership = pr.membership + 1
 										if self.isruler == true then
 											nl.rulers[#nl.rulers].Party = self.party
 										end
@@ -373,9 +373,7 @@ return
 					end
 				else
 					local newp = Party:new()
-					local ni = nil
-					for i, cp in pairs(parent.thisWorld.countries) do if cp.name == nl.name then ni = cp end end
-					newp:makename(parent, ni)
+					newp:makename(parent, nl)
 					newp.cfreedom = self.cbelief
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief

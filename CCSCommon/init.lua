@@ -38,7 +38,7 @@ return
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
-							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
+							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
 							s.isruler = false
 							s.region = ""
@@ -79,7 +79,7 @@ return
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
-							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
+							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
 							s.isruler = false
 							s.region = ""
@@ -94,9 +94,7 @@ return
 						
 						local oldsys = parent.systems[c.system].name
 
-						while parent.systems[c.system].name == oldsys do
-							c.system = math.random(1, #parent.systems)
-						end
+						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
 
 						c:checkRuler(parent)
 
@@ -227,7 +225,7 @@ return
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								local ruler = nil
-								for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then ruler = q end end end
+								for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 								local s = table.remove(c.people, ruler)
 								s.isruler = false
 								s.region = ""
@@ -681,8 +679,8 @@ return
 												local oldreg = c.capitalregion
 												
 												local nr = parent:randomChoice(newl.regions)
-												c.capitalcity = nr.name
-												c.capitalregion = parent:randomChoice(nr.cities).name
+												c.capitalregion = nr.name
+												c.capitalcity = parent:randomChoice(nr.cities).name
 												
 												local msg = "Capital moved"
 												if oldcap ~= "" then msg = msg.." from "..oldcap end
@@ -1625,7 +1623,7 @@ return
 
 				local taken = {}
 
-				nom = nom..self.initialgroups[math.random(1, #self.initialgroups)]
+				nom = nom..self:randomChoice(self.initialgroups)
 				table.insert(taken, string.lower(nom))
 
 				while string.len(nom) < length do
@@ -1635,16 +1633,12 @@ return
 						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
 					end
 
-					local mid = self.middlegroups[math.random(1, #self.middlegroups)]
+					local mid = self:middlegroups(self.middlegroups)
 					local istaken = false
 
-					for i=1,#taken do
-						if taken[i] == mid then istaken = true end
-					end
+					for i=1,#taken do if taken[i] == mid then istaken = true end end
 
-					for i=1,#self.consonants do
-						if mid:sub(1, 1) == self.consonants[i] then mbwc = true end
-					end
+					for i=1,#self.consonants do if mid:sub(1, 1) == self.consonants[i] then mbwc = true end end
 
 					if istaken == false then
 						if ieic == true then
@@ -1662,14 +1656,14 @@ return
 				end
 
 				if personal == false then
-					local ending = self.endgroups[math.random(1, #self.endgroups)]	
+					local ending = self:randomChoice(endgroups)
 					nom = nom..ending
 				end
 
 				nom = self:namecheck(nom)
 
 				if string.len(nom) == 1 then
-					nom = nom..string.lower(self.vowels[math.random(1, #self.vowels)])
+					nom = nom..string.lower(self:randomChoice(self.vowels))
 				end
 
 				return nom
@@ -1723,11 +1717,9 @@ return
 							newnom = newnom..nomin:sub(j, j)
 						end
 
-						newnom = newnom..self.consonants[math.random(1, #self.consonants)]
+						newnom = newnom..self:randomChoice(self.consonants)
 
-						for j=i+3,string.len(nomin) do
-							newnom = newnom..nomin:sub(j, j)
-						end
+						for j=i+3,string.len(nomin) do newnom = newnom..nomin:sub(j, j) end
 
 						nomin = newnom
 
@@ -1780,7 +1772,7 @@ return
 								newnom = newnom..nomin:sub(j, j)
 							end
 
-							newnom = newnom..self.vowels[math.random(1, #self.vowels)]
+							newnom = newnom..self:randomChoice(self.vowels)
 
 							for j=i+3,string.len(nomin) do
 								newnom = newnom..nomin:sub(j, j)
@@ -1935,7 +1927,7 @@ return
 				return t[index]
 			end,
 
-			RegionTransfer = function(self, c1, c2, r, cont)
+			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 ~= nil and c2 ~= nil then
 					local rCount = 0
 					for i, j in pairs(c2.regions) do
@@ -1943,7 +1935,7 @@ return
 					end
 
 					local lim = 1
-					if cont == false then lim = 0 end
+					if conq == true then lim = 0 end
 
 					if rCount > lim then
 						local rm = c2.regions[r]
@@ -1960,38 +1952,22 @@ return
 								if c2.people[i] ~= nil then
 									if c2.people[i].isruler == false then
 										if c2.people[i].region == rn.name then
-											local c2p = table.remove(c2.people, i)
-											c2p.region = ""
-											c2p.city = ""
-											c2p.nationality = c1.name
-											table.insert(c1.people, c2p)
+											local p = table.remove(c2.people, i)
+											p.region = ""
+											p.city = ""
+											p.nationality = c1.name
+											table.insert(c1.people, p)
 										end
 									end
 								end
 							end
 
-							if cont == true then
+							if conq == false then
 								if c2.capitalregion == rn.name then
 									local msg = "Capital moved from "..c2.capitalcity.." to "
 
-									c2.capitalregion = nil
-									c2.capitalcity = nil
-
-									while c2.capitalregion == nil do
-										for i, j in pairs(c2.regions) do
-											if j.name ~= rn.name then
-												local chance = math.random(1, 10)
-												if chance == 5 then c2.capitalregion = j.name end
-											end
-										end
-									end
-
-									while c2.capitalcity == nil do
-										for i, j in pairs(c2.regions[c2.capitalregion].cities) do
-											local chance = math.random(1, 25)
-											if chance == 12 then c2.capitalcity = j.name end
-										end
-									end
+									c2.capitalregion = parent:randomChoice(c2.regions)
+									c2.capitalcity = parent:randomChoice(c2.regions[c2.capitalregion].cities)
 
 									msg = msg..c2.capitalcity
 									c2:event(self, msg)

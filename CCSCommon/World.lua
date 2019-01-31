@@ -1075,18 +1075,12 @@ return
 
 				local f0 = _time()
 
-				for i, cp in pairs(self.countries) do
-					if cp ~= nil then
-						cp:update(parent)
-					end
-				end
+				for i, cp in pairs(self.countries) do if cp ~= nil then cp:update(parent) end end
 
 				for i, cp in pairs(self.countries) do
 					if cp ~= nil then
 						cp:eventloop(parent)
-					end
-
-					if cp ~= nil then
+						
 						if parent.ged == false then parent:deepnil(cp.newAscs) end
 
 						if cp.population < 10 then

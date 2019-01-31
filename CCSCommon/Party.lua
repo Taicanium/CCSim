@@ -13,7 +13,6 @@ return
 				p.leading = false
 				p.popularity = 50
 				p.membership = 0
-				p.revolted = false
 				p.mtname = "Party"
 
 				return p
@@ -60,7 +59,7 @@ return
 
 				if self.name == "" then
 					local nf = math.random(1, 3)
-					v = math.random(1, #parent.partynames[nf])
+					local v = math.random(1, #parent.partynames[nf])
 					self.name = self.name..parent.partynames[nf][v].." "
 				end
 

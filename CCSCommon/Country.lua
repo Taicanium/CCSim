@@ -162,7 +162,7 @@ return
 									for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end
 								end
 							end
-							if found == false then parent:deepnil(table.remove(self.ongoing, i)) end
+							if found == false then table.remove(self.ongoing, i))
 						end
 					end
 				end
@@ -189,25 +189,7 @@ return
 						local chance = math.floor(math.random(1, v))
 						if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
 						if chance <= parent.c_events[i].chance then
-							if parent.c_events[i].args == 1 then
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, self)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							elseif parent.c_events[i].args == 2 then
-								local other = parent:randomChoice(parent.thisWorld.countries)
-								while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
-								table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-								if self.ongoing[#self.ongoing].performEvent ~= nil then
-									if self.ongoing[#self.ongoing]:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-									else
-										self.ongoing[#self.ongoing]:beginEvent(parent, self, other)
-									end
-								else table.remove(self.ongoing, #self.ongoing) end
-							end
+							self:triggerEvent(parent, i)
 						end
 					end
 				end
@@ -525,12 +507,9 @@ return
 				local maxR = math.ceil(#self.nodes / 35)
 
 				while rCount > maxR do
-					local r = ""
-					local poss = {}
-					for k, l in pairs(self.regions) do table.insert(poss, l.name) end
-					r = parent:randomChoice(poss)
-					parent:deepnil(self.regions[r])
-					self.regions[r] = nil
+					local r = parent:randomChoice(self.regions)
+					parent:deepnil(r)
+					r = nil
 					rCount = 0
 					for l, m in pairs(self.regions) do rCount = rCount + 1 end
 				end
@@ -603,16 +582,13 @@ return
 					local maxC = math.ceil(#j.nodes / 25)
 
 					while cCount > maxC do
-						local r = ""
-						local poss = {}
-						for k, l in pairs(j.cities) do table.insert(poss, l.name) end
-						r = poss[math.random(1, #poss)]
-						local x = j.cities[r].x
-						local y = j.cities[r].y
-						local z = j.cities[r].z
-						if j.cities[r].x ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
-						parent:deepnil(j.cities[r])
-						j.cities[r] = nil
+						local r = parent:randomChoice(j.cities)
+						local x = r.x
+						local y = r.y
+						local z = r.z
+						if r.x ~= nil and r.y ~= nil and r.z ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
+						parent:deepnil(r)
+						r = nil
 						cCount = 0
 						for m, n in pairs(j.cities) do cCount = cCount + 1 end
 					end
@@ -639,6 +615,31 @@ return
 						end
 
 						parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
+					end
+				end
+			end,
+			
+			triggerEvent = function(self, parent, i)
+				if parent.c_events[i].args == 1 then
+					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+					local newE = self.ongoing[#self.ongoing]
+					
+					if newE.performEvent ~= nil then
+						if newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
+						else newE:beginEvent(parent, self) end
+					else table.remove(self.ongoing, #self.ongoing) end
+				elseif parent.c_events[i].args == 2 then
+					local other = parent:randomChoice(parent.thisWorld.countries)
+					while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
+					
+					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+					local newE = self.ongoing[#self.ongoing]
+					
+					if newE.performEvent ~= nil then
+						if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+						else newE:beginEvent(parent, self, other) end
+					else
+						parent:deepnil(table.remove(self.ongoing, #self.ongoing))
 					end
 				end
 			end,
@@ -755,7 +756,7 @@ return
 					self.capitalcity = nil
 				end
 
-				if self.regions[self.capitalregion].cities[self.capitalcity] == nil then
+				if self.capitalcity == nil or self.regions[self.capitalregion].cities[self.capitalcity] == nil then
 					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities).name
 					if oldcap ~= nil then
 						if self.regions[oldreg] ~= nil then
@@ -773,44 +774,46 @@ return
 				
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
-				for i=#self.people,1,-1 do
-					if self.people[i] ~= nil then self.people[i]:update(parent, self) end
+				for i, j in pairs(self.people) do
+					if j ~= nil then j:update(parent, self) end
 
-					if self.people[i] ~= nil then
-						if self.people[i].isruler == true then
+					if j ~= nil then
+						if j.isruler == true then
 							self.hasruler = 0
-							self.rulerage = self.people[i].age
+							self.rulerage = j.age
 						end
 
-						local belieftotal = self.people[i].pbelief + self.people[i].ebelief + self.people[i].cbelief
+						self.averageAge = self.averageAge + j.age
 
-						if #self.parties > 0 then
-							for j=#self.parties,1,-1 do
-								local partytotal = self.parties[j].pfreedom + self.parties[j].efreedom + self.parties[j].cfreedom
-								if math.abs(belieftotal - partytotal) < 100 then
-									self.parties[j].popularity = self.parties[j].popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
-								end
-
-								if self.parties[j].revolted == true then
-									local pr = table.remove(self.parties, i)
-									pr = nil
-								else
-									if self.people[i].party == self.parties[j].name then
-										self.parties[j].membership = self.parties[j].membership + 1
-									end
-								end
-							end
-						end
-
-						self.averageAge = self.averageAge + self.people[i].age
-
-						local age = self.people[i].age
+						local age = j.age
 						if age > 130 then
 							self:delete(parent, i)
 						else
 							if self.deathrate-math.pow(age, 2) < age then self:delete(parent, i) else
 								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
 								if d < age then self:delete(parent, i) end
+							end
+						end
+						
+						local belieftotal = j.pbelief + j.ebelief + j.cbelief
+
+						if j ~= nil then
+							if #self.parties > 0 then
+								for k, l in pairs(self.parties) do
+									local partytotal = l.pfreedom + l.efreedom + l.cfreedom
+									if math.abs(belieftotal - partytotal) < 100 then
+										l.popularity = l.popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
+									end
+
+									if j.party == l.name then
+										l.membership = l.membership + 1
+									end
+									
+									if j.isruler == true then if j.party == l.name then if l.popularity < 10 then
+										local cChance = math.random(1, 15)
+										if cChance == 7 then for m, n in pairs(parent.c_events) do if n.name == "Coup d'Etat" then self:triggerEvent(parent, m) end end end
+									end end end
+								end
 							end
 						end
 					end
@@ -824,10 +827,6 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
-
-				for i=#self.parties,1,-1 do
-					self.parties[i].popularity = math.ceil(self.parties[i].popularity)
-				end
 
 				self:checkRuler(parent)
 				
