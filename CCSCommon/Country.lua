@@ -109,7 +109,7 @@ return
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
 						if self.people[y].royalGenerations ~= -1 then
-							if self.people[y].royalGenerations < 4 then
+							if self.people[y].royalGenerations < 3 then
 								local asc = parent:makeAscendant(self, self.people[y])
 								table.insert(self.newAscs, asc)
 							end
