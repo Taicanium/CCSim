@@ -83,6 +83,10 @@ P Gaborone
 C Brazil
 R Brasilia
 P Brasilia
+R Sao Paolo
+S Sao Paolo
+R Rio de Janeiro
+S Rio de Janeiro 
 C Brunei
 R Bandar Seri Begawan
 P Bandar Seri Begawan
@@ -107,7 +111,7 @@ P Ottawa
 C Cape Verde
 R Praia
 P Praia
-C Central African Republic
+C Central Africa
 R Bangui
 P Bangui
 C Chad

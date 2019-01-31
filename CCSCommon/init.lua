@@ -622,6 +622,7 @@ return
 							if values > 1 then
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
+								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
 								newl.name = nc.name
 
@@ -644,6 +645,28 @@ return
 
 								newl.rulers = parent:deepcopy(c.rulers)
 								newl.rulernames = parent:deepcopy(c.rulernames)
+								newl.frulernames = parent:deepcopy(c.frulernames)
+								
+								for i, j in pairs(parent.final) do
+									if j.name == newl.name then
+										local conqYear = nil
+										local retrieve = true
+										for k, l in pairs(j.events) do
+											if l.Event:match("Conquered") then conqYear = l.Year end
+											if conqYear ~= nil then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and l.Year ~= conqYear then retrieve = false end end
+										end
+										
+										if retrieve == true then
+											local rIndex = 1
+											for k, l in pairs(j.rulers) do
+												table.insert(newl.rulers, rIndex, l)
+												rIndex = rIndex + 1
+											end
+											for k, l in pairs(j.rulernames) do table.insert(newl.rulernames, l) end
+											for k, l in pairs(j.frulernames) do table.insert(newl.frulernames, l) end
+										end
+									end
+								end
 
 								parent.thisWorld:add(newl)
 
