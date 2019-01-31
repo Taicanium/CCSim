@@ -735,6 +735,15 @@ return
 					self.birthrate = 100
 					self.deathrate = 4500
 				end
+				
+				while math.floor(self.population) > math.floor(math.floor(parent.popLimit) * 10) do
+					for i=1,math.floor(parent.popLimit) do
+						local keys = {}
+						for i=1,#self.people do table.insert(keys, i) end
+						local p = parent:randomChoice(keys)
+						self:delete(p)
+					end
+				end
 
 				local oldcap = nil
 				local oldreg = nil
