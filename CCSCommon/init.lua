@@ -1656,7 +1656,7 @@ return
 				end
 
 				if personal == false then
-					local ending = self:randomChoice(endgroups)
+					local ending = self:randomChoice(self.endgroups)
 					nom = nom..ending
 				end
 
