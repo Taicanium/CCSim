@@ -1120,7 +1120,8 @@ return
 					for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 					local finished = 0
 
-					for i, j in pairs(self.royals) do
+					for i=1,#self.royals do
+						local j = self.royals[i]
 						if j.death > self.maxyears then j.death = 0 end
 						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
@@ -2174,6 +2175,7 @@ return
 			sortAscendants = function(self, data)
 				local percentage = 0
 				local fams = {}
+				local sorted = {}
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do self:getAscendants(self.final, self.royals, j) end
@@ -2184,10 +2186,16 @@ return
 				
 				for i, j in pairs(self.royals) do
 					j.index = index
+					sorted[index] = j
 					index = index + 1
 				end
 				
-				for i, j in pairs(self.royals) do
+				self.royals = sorted
+				
+				print("Linking "..tostring(ascCount).." individuals...")
+				
+				for i=1,#self.royals do
+					local j = self.royals[i]
 					local found = nil
 					local chil = false
 					if j.father == nil then j.father = "" end
