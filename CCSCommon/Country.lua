@@ -736,8 +736,8 @@ return
 					self.deathrate = 4500
 				end
 				
-				if #self.people > 500 then while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 10) do
-					for i=1,math.floor(parent.popLimit) do
+				if #self.people > 500 then if math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 10) then
+					for i=1,math.floor(#self.people/10) do
 						local keys = {}
 						for i=1,#self.people do table.insert(keys, i) end
 						local p = parent:randomChoice(keys)
