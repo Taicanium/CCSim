@@ -90,6 +90,7 @@ return
 								end
 							else
 								local i = math.random(1, #self.people)
+								self:setRuler(parent, i)
 							end
 						end
 					end
