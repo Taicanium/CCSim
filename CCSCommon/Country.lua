@@ -810,15 +810,6 @@ return
 					end
 				end
 				
-				for i, j in pairs(self.people) do
-					for k, l in pairs(self.parties) do
-						if j.party == l.name then if l.popularity < 10 then
-							local cChance = math.random(1, 15)
-							if cChance == 7 then for m, n in pairs(parent.c_events) do if n.name == "Coup d'Etat" then self:triggerEvent(parent, m) end end end
-						end end
-					end
-				end
-
 				self.averageAge = self.averageAge / #self.people
 				
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i] / #self.people) * 100 end
