@@ -1107,8 +1107,17 @@ return
 				print("")
 
 				if self.ged == true then
-					print("Sorting living individuals. This might take a moment...");
-					for i, j in pairs(self.thisWorld.countries) do j:destroy(self) end
+					print("Sorting living individuals. This might take a moment...")
+					local fCount = 0
+					local fIndex = 1
+					for i, j in pairs(self.thisWorld.countries) do fCount = fCount + 1 end
+					for i, j in pairs(self.thisWorld.countries) do
+						print("Country "..tostring(fIndex).."/"..tostring(fCount))
+						j:destroy(self)
+						fIndex = fIndex + 1
+					end
+				
+					print("Filtering duplicate individuals. This might take a moment...")
 				
 					local fams = self:sortAscendants()
 
@@ -2175,19 +2184,22 @@ return
 			end,
 
 			sortAscendants = function(self)
-				local percentage = 0
 				local fams = {}
+				local removed = 0
+				local oldCount = 0
+				local done = 0
 				
-				for i=1,#self.royals do
-					local j = self.royals[i]
+				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
+				
+				for i, j in pairs(self.royals)
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father, -2) end
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother, -2) end
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted")
 				end
 				
-				local removed = 0
-				local oldCount = 0
-				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
+				done = 0
 				
 				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
@@ -2198,6 +2210,8 @@ return
 						self.royals[i] = nil
 						removed = removed + 1
 					end
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered")
 				end
 				
 				print("Trimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
