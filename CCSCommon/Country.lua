@@ -102,7 +102,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						table.insert(self.ascs, parent:makeAscendant(self, self.people[y]))
+						table.insert(self.ascs, parent:makeAscendant(self.people[y]))
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
 						if w ~= nil then
