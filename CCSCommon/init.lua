@@ -2176,7 +2176,7 @@ return
 				if t.royalGenerations > v or t.royalGenerations == -1 then
 					t.royalGenerations = v
 				end
-				for i, j in pairs(t.children) do self:setGensChildren(j, v+1)
+				for i, j in pairs(t.children) do self:setGensChildren(j, v+1) end
 			end,
 
 			sleep = function(self, t)
