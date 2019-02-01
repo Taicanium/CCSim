@@ -2195,20 +2195,23 @@ return
 				local fams = {}
 				local removed = 0
 				local oldCount = 0
+				local count = 0
 				local done = 0
 				
 				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
+				count = oldCount
 				
 				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(j.father, -2, i) end
 					if j.gens == 0 then self:setGens(j.mother, -2, i) end
-					done = done + 1
 					if j.gens == -1 or j.gens >= self.genLimit then
 						self.royals[i] = nil
 						removed = removed + 1
+						count = count - 1
 					end
-					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted.")
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
 				
 				done = 0
@@ -2222,17 +2225,18 @@ return
 					if j.father == "" or j.mother == "" then
 						self.royals[i] = nil
 						removed = removed + 1
+						count = count - 1
 					end
 					
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered.")
+					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
 				end
 				
 				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".")
 				
-				local ascCount = 0
-				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
-				print("Linking "..tostring(ascCount).." individuals...")
+				count = 0
+				for i, j in pairs(self.royals) do count = count + 1 end
+				print("Linking "..tostring(count).." individuals...")
 				
 				done = 0
 				
@@ -2261,7 +2265,7 @@ return
 					end
 					
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(ascCount).." linked.")
+					io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 				end
 
 				return fams
