@@ -2191,7 +2191,7 @@ return
 				
 				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
 				
-				for i, j in pairs(self.royals)
+				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father, -2) end
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother, -2) end
