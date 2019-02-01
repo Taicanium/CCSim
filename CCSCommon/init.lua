@@ -2211,12 +2211,13 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered.")
 				end
 				
-				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
-				self:sleep(3)
+				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".")
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				print("Linking "..tostring(ascCount).." individuals...")
+				
+				done = 0
 				
 				for i, j in pairs(self.royals) do
 					local found = nil
@@ -2245,6 +2246,9 @@ return
 					else
 						if chil == true then table.insert(fams[found].chil, i) end
 					end
+					
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(ascCount).." linked.")
 				end
 
 				return fams
