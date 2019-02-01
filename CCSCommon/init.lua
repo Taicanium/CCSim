@@ -1112,12 +1112,12 @@ return
 					local fIndex = 1
 					for i, j in pairs(self.thisWorld.countries) do fCount = fCount + 1 end
 					for i, j in pairs(self.thisWorld.countries) do
-						print("Country "..tostring(fIndex).."/"..tostring(fCount))
+						io.write("\rCountry "..tostring(fIndex).."/"..tostring(fCount))
 						j:destroy(self)
 						fIndex = fIndex + 1
 					end
 				
-					print("Filtering duplicate or irrelevant individuals. This might take a moment...")
+					print("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
 				
 					local fams = self:sortAscendants()
 
