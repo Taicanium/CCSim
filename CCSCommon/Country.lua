@@ -102,7 +102,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						table.insert(self.ascs, parent:makeAscendant(self.people[y]))
+						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
 						if w ~= nil then
@@ -118,8 +118,6 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
-					print("Sorting "..tostring(#self.ascs).." individuals in country "..self.name.."...")
-					for i=1,#self.ascs do parent:getAscendants(parent.royals, self.ascs[i]) end
 					self.ascs = {}
 					self.people = nil
 				end

@@ -1117,11 +1117,17 @@ return
 					print("")
 					
 					local ascCount = 0
-					for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
+					local sRoyals = {}
+					local ind = 1
+					for i, j in pairs(self.royals) do
+						j.index = ind
+						sRoyals[ind] = j
+						ascCount = ascCount + 1
+					end
 					local finished = 0
 
-					for i=1,#self.royals do
-						local j = self.royals[i]
+					for i=1,#sRoyals do
+						local j = sRoyals[i]
 						if j.death > self.maxyears then j.death = 0 end
 						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
@@ -1419,8 +1425,8 @@ return
 					gender=person.gender,
 					birthplace=person.birthplace,
 					deathplace=person.deathplace,
-					father=0,
-					mother=0,
+					father="",
+					mother="",
 					title=person.title,
 					ethnicity=person.ethnicity,
 					gens=person.gens,
@@ -1443,9 +1449,8 @@ return
 				end
 
 				if fInd == nil then
-					table.insert(royals, pTable)
-					fInd = #royals
-					royals[fInd].index = fInd
+					fInd = pString
+					royals[fInd] = pTable
 
 					local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
@@ -2188,17 +2193,13 @@ return
 				
 				local removed = 0
 				
-				for i=#self.royals,1,-1 do
-					local j = self.royals[i]
+				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
-						for k=1,#self.royals do
-							local l = self.royals[k]
-							if l.father == i then l.father = 0 end
-							if l.father > i then l.father = l.father - 1 end
-							if l.mother == i then l.mother = 0 end
-							if l.mother > i then l.mother = l.mother - 1 end
+						for k, l in pairs(self.royals)
+							if l.father == i then l.father = "" end
+							if l.mother == i then l.mother = "" end
 						end
-						table.remove(self.royals, i)
+						self.royals[i] = nil
 						removed = removed + 1
 					end
 				end
@@ -2209,31 +2210,30 @@ return
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				print("Linking "..tostring(ascCount).." individuals...")
 				
-				for i=1,#self.royals do
-					local j = self.royals[i]
+				for i, j in pairs(self.royals) do
 					local found = nil
-					local chil = false
-					if j.father == nil then j.father = 0 end
-					if j.mother == nil then j.mother = 0 end
+					local chil = true
+					if j.father == nil then j.father = "" end
+					if j.mother == nil then j.mother = "" end
 					for k=1,#fams do
-						if j.father ~= 0 then
+						if j.father ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
-						if j.mother ~= 0 then
+						if j.mother ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
-						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
+						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
 					end
 
 					if found == nil then
 						local doFam = false
-						if j.father ~= 0 then doFam = true end
-						if j.mother ~= 0 then doFam = true end
+						if j.father ~= "" then doFam = true end
+						if j.mother ~= "" then doFam = true end
 						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
 					else
-						if chil == false then table.insert(fams[found].chil, i) end
+						if chil == true then table.insert(fams[found].chil, i) end
 					end
 				end
 
