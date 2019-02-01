@@ -1437,6 +1437,7 @@ return
 					title=person.title,
 					ethnicity=person.ethnicity,
 					gens=person.gens,
+					children={},
 					index=0
 				}
 
@@ -1471,6 +1472,10 @@ return
 				
 				if royals[fInd].father == "" then if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end end
 				if royals[fInd].mother == "" then if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end end
+				if #royals[fInd].children ~= #person.children then
+					royals[fInd].children = {}
+					for i, j in pairs(person.children) do table.insert(royals[fInd].children, self:getAscendants(royals, j)) end
+				end
 
 				return fInd
 			end,
@@ -1606,7 +1611,10 @@ return
 						else rtitle = "Empress" end
 					end
 				end
-				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, index=0}
+				
+				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
+				for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end
+				return t
 			end,
 
 			name = function(self, personal, l)
@@ -2157,13 +2165,14 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 			
-			setGens = function(self, i, v)
+			setGens = function(self, i, v, c)
 				local r = self.royals[i]
 				if r ~= nil then
 					if r.gens == -1 then r.gens = v
 					elseif r.gens >= self.genLimit then r.gens = v end
 					self:setGens(r.father, v)
 					self:setGens(r.mother, v)
+					if c == nil then for k, l in pairs(r.children) do self:setGens(l, v, 1) end end
 				end
 			end,
 			
