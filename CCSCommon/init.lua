@@ -1122,6 +1122,7 @@ return
 					for i, j in pairs(self.royals) do
 						j.index = ind
 						sRoyals[ind] = j
+						ind = ind + 1
 						ascCount = ascCount + 1
 					end
 					local finished = 0
@@ -2184,6 +2185,8 @@ return
 				end
 				
 				local removed = 0
+				local oldCount = 0
+				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
 				
 				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
@@ -2196,7 +2199,7 @@ return
 					end
 				end
 				
-				print("Trimmed "..tostring(removed).." unrelated individuals.");
+				print("Trimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
 				self:sleep(3)
 				
 				local ascCount = 0
