@@ -1457,7 +1457,7 @@ return
 						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
-					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" elseif MorE == -1 then title = "" end
+					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" elseif MorE == 3 then royals[fInd].title = "Empress" elseif MorE == -1 then title = "" end
 
 					if person.father ~= nil then
 						royals[fInd].father = self:getAscendants(royals, person.father)
