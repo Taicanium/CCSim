@@ -679,7 +679,8 @@ return
 				end
 				
 				if math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 10) then if #self.people > 500 then
-					for i=1,math.floor(math.floor(#self.people)/3) do self:delete(parent:randomChoice(self.people, true)) end
+					self.birthrate = 500
+					for i=1,math.floor(math.floor(#self.people)/2) do self:delete(parent:randomChoice(self.people, true)) end
 				end end
 
 				local oldcap = nil
