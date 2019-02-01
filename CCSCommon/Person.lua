@@ -186,8 +186,8 @@ return
 			end,
 
 			SetFamily = function(self, nl, father, mother, parent)
-				self.father = parent:makeAscendant(nl, father)
-				self.mother = parent:makeAscendant(nl, mother)
+				self.father = parent:makeAscendant(father)
+				self.mother = parent:makeAscendant(mother)
 				table.insert(self.father.children, self)
 				table.insert(self.mother.children, self)
 			end,
