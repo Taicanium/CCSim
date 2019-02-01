@@ -1117,7 +1117,7 @@ return
 						fIndex = fIndex + 1
 					end
 				
-					print("Filtering duplicate individuals. This might take a moment...")
+					print("Filtering duplicate or irrelevant individuals. This might take a moment...")
 				
 					local fams = self:sortAscendants()
 
