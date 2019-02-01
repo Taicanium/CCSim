@@ -2165,7 +2165,7 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 			
-			setGens = function(self, i, v)
+			setGens = function(self, i, v, g)
 				local r = self.royals[i]
 				if r ~= nil then
 					local set = true
@@ -2177,9 +2177,9 @@ return
 					end
 					
 					if set == false then
-						for j, k in pairs(r.children) do self:setGens(k, v) end
-						self:setGens(r.father, v)
-						self:setGens(r.mother, v)
+						if g < 1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end end
+						self:setGens(r.father, v, 0)
+						self:setGens(r.mother, v, 0)
 					end
 				end
 			end,
@@ -2208,9 +2208,9 @@ return
 				
 				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					if j.gens == 0 then self:setGens(j.father, -2, i) end
-					if j.gens == 0 then self:setGens(j.mother, -2, i) end
-					for k, l in pairs(j.children) do self:setGens(l, -2, i) end
+					if j.gens == 0 then self:setGens(j.father, -2, 0) end
+					if j.gens == 0 then self:setGens(j.mother, -2, 0) end
+					for k, l in pairs(j.children) do self:setGens(l, -2, 1) end
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
