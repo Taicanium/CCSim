@@ -2195,7 +2195,7 @@ return
 				
 				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
-						for k, l in pairs(self.royals)
+						for k, l in pairs(self.royals) do
 							if l.father == i then l.father = "" end
 							if l.mother == i then l.mother = "" end
 						end
