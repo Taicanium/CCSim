@@ -1434,7 +1434,7 @@ return
 					deathplace=person.deathplace,
 					father="",
 					mother="",
-					title=person.title,
+					title="",
 					ethnicity=person.ethnicity,
 					gens=person.gens,
 					gensSet=false,
@@ -1447,16 +1447,17 @@ return
 				if royals[pString] ~= nil then
 					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end
 					if person.deathplace ~= nil then if person.deathplace ~= "" then if royals[pString].deathplace ~= person.deathplace then royals[pString].deathplace = person.deathplace end end end
-					if person.title ~= nil then if person.title ~= "" then if royals[pString].title ~= person.title then
-						if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[pString].title = person.title end
-					end end end
 					fInd = pString
 				end
 
 				if fInd == nil then
 					fInd = pString
 					royals[fInd] = pTable
-
+				end
+				
+				if person.title ~= nil then if royals[fInd].title ~= person.title then
+					if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[fInd].title = person.title end
+					
 					local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
 						if royals[fInd].title == "King" then MorE = 0 end
@@ -1467,14 +1468,18 @@ return
 						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
-					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" elseif MorE == 3 then royals[fInd].title = "Empress" elseif MorE == -1 then royals[fInd].title = "" end
-				end
+					if MorE == -1 then royals[fInd].title = "" end
+				end end end
 				
 				if royals[fInd].father == "" then if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end end
 				if royals[fInd].mother == "" then if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end end
 				if #royals[fInd].children ~= #person.children then
-					royals[fInd].children = {}
-					for i, j in pairs(person.children) do table.insert(royals[fInd].children, self:getAscendants(royals, j)) end
+					for i, j in pairs(person.children) do
+						local found = false
+						local asc = self:getAscendants(royals, j)
+						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end
+						if found == false then table.insert(royals[fInd].children, asc) end
+					end
 				end
 
 				return fInd

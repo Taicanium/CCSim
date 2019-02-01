@@ -17,7 +17,6 @@ return
 				nl.rulers = {}
 				nl.rulernames = {}
 				nl.frulernames = {}
-				nl.ascs = {}
 				nl.ongoing = {}
 				nl.allyOngoing = {}
 				nl.alliances = {}
@@ -118,7 +117,6 @@ return
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
-					self.ascs = {}
 					self.people = nil
 				end
 				
