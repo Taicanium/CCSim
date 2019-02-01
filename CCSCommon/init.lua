@@ -438,7 +438,7 @@ return
 											if chance == 12 then rname = b.name end
 										end
 									end
-									parent:RegionTransfer(c1, self.target, rname, true)
+									parent:RegionTransfer(c1, self.target, rname, false)
 								end
 							end
 						elseif self.status <= -100 then
@@ -476,7 +476,7 @@ return
 											if chance == 12 then rname = b.name end
 										end
 									end
-									parent:RegionTransfer(self.target, c1, rname, true)
+									parent:RegionTransfer(self.target, c1, rname, false)
 								end
 							end
 						end
@@ -738,7 +738,7 @@ return
 												if schance == 12 then rname = b.name end
 											end
 										end
-										parent:RegionTransfer(c1, c2, rname, true)
+										parent:RegionTransfer(c1, c2, rname, false)
 									end
 								end
 							end
@@ -790,7 +790,7 @@ return
 									end
 
 									for i, j in pairs(c2.regions) do
-										parent:RegionTransfer(c1, c2, j.name, false)
+										parent:RegionTransfer(c1, c2, j.name, true)
 									end
 
 									parent.thisWorld:delete(parent, c2)
@@ -882,7 +882,7 @@ return
 										end
 
 										for i, j in pairs(c2.regions) do
-											parent:RegionTransfer(c1, c2, j.name, false)
+											parent:RegionTransfer(c1, c2, j.name, true)
 										end
 
 										parent.thisWorld:delete(parent, c2)
