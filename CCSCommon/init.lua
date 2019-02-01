@@ -1110,7 +1110,7 @@ return
 				if self.ged == true then
 					for i, j in pairs(self.thisWorld.countries) do j:destroy(self) end
 				
-					local fams = self:sortAscendants(self.final)
+					local fams = self:sortAscendants()
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
@@ -2178,7 +2178,7 @@ return
 				while _time() < n + t do end
 			end,
 
-			sortAscendants = function(self, data)
+			sortAscendants = function(self)
 				local percentage = 0
 				local fams = {}
 				
