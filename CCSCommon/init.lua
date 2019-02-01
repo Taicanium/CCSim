@@ -1176,8 +1176,8 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= 0 then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
-						if fams[j].wife ~= 0 then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
+						if fams[j].husb ~= "" then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
+						if fams[j].wife ~= "" then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
 
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k] ~= fams[j].husb then
