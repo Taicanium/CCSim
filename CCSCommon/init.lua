@@ -1613,7 +1613,7 @@ return
 				end
 				
 				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
-				for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end
+				if person.children ~= nil then for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end
 				return t
 			end,
 
