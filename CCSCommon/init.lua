@@ -2216,7 +2216,6 @@ return
 					if j.gens == -1 or j.gens >= self.genLimit then
 						self.royals[i] = nil
 						removed = removed + 1
-						count = count - 1
 					end
 					
 					done = done + 1
@@ -2268,7 +2267,6 @@ return
 					if found == false then
 						self.royals[i] = nil
 						removed = removed + 1
-						count = count - 1
 					end
 				end
 				
