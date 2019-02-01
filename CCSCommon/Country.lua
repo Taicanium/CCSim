@@ -680,7 +680,7 @@ return
 					self.deathrate = 4500
 				end
 				
-				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 10) do
+				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
 					self:delete(parent, parent:randomChoice(self.people, true))
 				end
 
