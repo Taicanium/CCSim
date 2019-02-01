@@ -1427,7 +1427,6 @@ return
 					index=0,
 				}
 
-				print(person)
 				local pString = person.name.." "..person.surname.." "..person.birth.." "..person.birthplace.." "..person.gender
 				
 				for i, j in pairs(royals) do
