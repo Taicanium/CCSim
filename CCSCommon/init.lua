@@ -2168,10 +2168,15 @@ return
 			setGens = function(self, i, v)
 				local r = self.royals[i]
 				if r ~= nil then
+					local set = true
 					if r.gensSet == false then
 						if r.gens == -1 then r.gens = v
 						elseif r.gens >= self.genLimit then r.gens = v end
+						set = false
 						r.gensSet = true
+					end
+					
+					if set == false then
 						for j, k in pairs(r.children) do self:setGens(k, v) end
 						self:setGens(r.father, v)
 						self:setGens(r.mother, v)
@@ -2205,13 +2210,22 @@ return
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(j.father, -2, i) end
 					if j.gens == 0 then self:setGens(j.mother, -2, i) end
+					for k, l in pairs(j.children) do self:setGens(l, -2, i) end
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
+				end
+				
+				done = 0
+					
+				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
 						self.royals[i] = nil
 						removed = removed + 1
 						count = count - 1
 					end
+					
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
+					io.write("\r"..tostring(done).."/"..tostring(count).." relevant-filtered.")
 				end
 				
 				done = 0
@@ -2229,7 +2243,7 @@ return
 					end
 					
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
+					io.write("\r"..tostring(done).."/"..tostring(count).." orphan-filtered.")
 				end
 				
 				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".")
