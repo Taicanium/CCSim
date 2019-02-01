@@ -2184,8 +2184,8 @@ return
 				for i=1,#self.royals do
 					local j = self.royals[i]
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					self:setGens(royals, self.royals[i].father)
-					self:setGens(royals, self.royals[i].mother)
+					self:setGens(self.royals, self.royals[i].father)
+					self:setGens(self.royals, self.royals[i].mother)
 				end
 				
 				for i=#self.royals,1,-1 do
