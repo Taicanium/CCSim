@@ -1159,6 +1159,7 @@ return
 						end
 
 						for k=1,#fams do
+							print(fams[k], self.royals[fams[k].husb], self.royals[fams[k].wife])
 							if self.royals[fams[k].husb].index == i then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
 							elseif self.royals[fams[k].wife].index == i then
@@ -2161,13 +2162,13 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 			
-			setGens = function(self, royals, i, v)
-				local r = royals[i]
+			setGens = function(self, i, v)
+				local r = self.royals[i]
 				if r ~= nil then
 					if r.gens == -1 then r.gens = v
 					elseif r.gens >= self.genLimit then r.gens = v end
-					self:setGens(royals, r.father, v)
-					self:setGens(royals, r.mother, v)
+					self:setGens(r.father, v)
+					self:setGens(r.mother, v)
 				end
 			end,
 			
@@ -2193,8 +2194,8 @@ return
 				
 				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father, -2) end
-					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother, -2) end
+					if j.gens == 0 then self:setGens(j.father, -2) end
+					if j.gens == 0 then self:setGens(j.mother, -2) end
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted.")
 				end
@@ -2210,7 +2211,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered.")
 				end
 				
-				print("Trimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
+				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
 				self:sleep(3)
 				
 				local ascCount = 0
