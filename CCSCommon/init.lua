@@ -1171,12 +1171,13 @@ return
 						msgout = msgout.."\n"
 
 						ged:write(msgout)
-						ged:flush()
 
 						finished = finished + 1
 						percentage = math.floor(finished / ascCount * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."    \t% done")
 					end
+					
+					ged:flush()
 
 					print("")
 
@@ -1195,7 +1196,6 @@ return
 						end
 
 						ged:write(msgout)
-						ged:flush()
 
 						percentage = math.floor(j / #fams * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
