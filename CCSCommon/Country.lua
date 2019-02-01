@@ -677,12 +677,7 @@ return
 				end
 				
 				if math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 10) then if #self.people > 500 then
-					local keys = {}
-					for i=1,math.floor(#self.people) do table.insert(keys, i) end
-					for i=1,math.floor(#self.people/10) do
-						local p = parent:randomChoice(keys)
-						if self.people[p] ~= nil then self:delete(p) end
-					end
+					for i=1,math.floor(math.floor(#self.people)/5) do self:delete(parent:randomChoice(self.people, true)) end
 				end end
 
 				local oldcap = nil

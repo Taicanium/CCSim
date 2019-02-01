@@ -1917,11 +1917,11 @@ return
 				return fin
 			end,
 
-			randomChoice = function(self, t)
+			randomChoice = function(self, t, doKeys)
 				local keys = {}
 				for key, value in pairs(t) do keys[#keys+1] = key end
 				local index = keys[math.random(1, #keys)]
-				return t[index]
+				if doKeys then return index else return t[index] end
 			end,
 
 			RegionTransfer = function(self, c1, c2, r, conq)
