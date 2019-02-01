@@ -1435,17 +1435,14 @@ return
 
 				local pString = person.name.." "..person.surname.." "..person.birth.." "..person.birthplace.." "..person.gender
 				
-				for i, j in pairs(royals) do
-					local rString = j.name.." "..j.surname.." "..j.birth.." "..j.birthplace.." "..j.gender
-					if pString == rString then
-						if person.death ~= nil then if person.death ~= 0 then if j.death ~= person.death then j.death = person.death end end end
-						if person.deathplace ~= nil then if person.deathplace ~= "" then if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end end end
-						if person.title ~= nil then if person.title ~= "" then if j.title ~= person.title then
-							if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then j.title = person.title end
-						end end end
-						if j.death == self.years then j.death = 0 j.deathplace = "" end
-						fInd = i
-					end
+				if royals[pString] ~= nil then
+					if person.death ~= nil then if person.death ~= 0 then if j.death ~= person.death then j.death = person.death end end end
+					if person.deathplace ~= nil then if person.deathplace ~= "" then if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end end end
+					if person.title ~= nil then if person.title ~= "" then if j.title ~= person.title then
+						if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then j.title = person.title end
+					end end end
+					if j.death == self.years then j.death = 0 j.deathplace = "" end
+					fInd = pString
 				end
 
 				if fInd == nil then
