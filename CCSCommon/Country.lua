@@ -102,11 +102,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						if self.people[y].royalGenerations ~= -1 then
-							if self.people[y].royalGenerations < 3 then
-								table.insert(self.ascs, parent:makeAscendant(self, self.people[y]))
-							end
-						end
+						table.insert(self.ascs, parent:makeAscendant(self, self.people[y]))
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
 						if w ~= nil then

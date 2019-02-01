@@ -175,7 +175,6 @@ return
 			end,
 
 			autosave = function(self, parent)
-				parent:sortAscendants(self.countries)
 				print("\nAutosaving...")
 
 				local f = io.open("in_progress.dat", "w+b")

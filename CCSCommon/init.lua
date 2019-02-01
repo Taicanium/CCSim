@@ -902,6 +902,7 @@ return
 			doR = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
 			ged = false,
+			genLimit = 3,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The"},
 			maxyears = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos"},
@@ -1033,7 +1034,7 @@ return
 					dat = nil
 				else dat = nil end
 			end,
-
+			
 			finish = function(self, parent)
 				os.execute(self.clrcmd)
 				print("\nPrinting result...")
@@ -1599,8 +1600,17 @@ return
 			end,
 			
 			makeAscendant = function(self, c, person)
-				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=person.title, ethnicity=person.ethnicity, index=0}
-				return t
+				local rtitle = person.title
+				if person.royalGenerations == 0 then
+					if person.royalSystem == "Monarchy" then
+						if person.gender == "Male" then rtitle = "King"
+						else rtitle = "Queen" end
+					elseif person.royalSystem == "Empire" then
+						if person.gender == "Male" then rtitle = "Emperor"
+						else rtitle = "Empress" end
+					end
+				end
+				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, index=0}
 			end,
 
 			name = function(self, personal, l)
@@ -2151,6 +2161,17 @@ return
 				end
 				for i=3,s do math.random(100, 1000) end
 			end,
+			
+			setGens = function(self, royals, i)
+				local r = royals[i]
+				if r ~= nil then
+					if royals[i].gens == nil then royals[i].gens = -2
+					elseif royals[i].gens == -1 then royals[i].gens = -2
+					elseif royals[i].gens >= self.genLimit then royals[i].gens = -2 end
+					self:setGens(royals, r.father)
+					self:setGens(royals, r.mother)
+				end
+			end,
 
 			sleep = function(self, t)
 				local n = _time()
@@ -2161,35 +2182,53 @@ return
 				local percentage = 0
 				local fams = {}
 				
+				for i=1,#self.royals do
+					local j = self.royals[i]
+					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
+					self:setGens(royals, self.royals[i].father)
+					self:setGens(royals, self.royals[i].mother)
+				end
+				
+				for i=#self.royals,1,-1 do
+					local j = self.royals[i]
+					if j.gens == nil then self.royals[i] = "nil"
+					elseif j.gens == -1 then self.royals[i] = "nil"
+					elseif j.gens >= self.genLimit then self.royals[i] = "nil" end
+				end
+				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
 				print("Linking "..tostring(ascCount).." individuals...")
 				
 				for i=1,#self.royals do
 					local j = self.royals[i]
-					local found = nil
-					local chil = false
-					if j.father == nil then j.father = "" end
-					if j.mother == nil then j.mother = "" end
-					for k=1,#fams do
-						if j.father ~= "" then
-							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
+					if j ~= "nil" then
+						local found = nil
+						local chil = false
+						if j.father == nil then j.father = 0 end
+						if j.mother == nil then j.mother = 0 end
+						if self.royals[j.father] == "nil" then j.father = 0 end
+						if self.royals[j.mother] == "nil" then j.mother = 0 end
+						for k=1,#fams do
+							if j.father ~= 0 then
+								if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
+							end
+
+							if j.mother ~= 0 then
+								if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
+							end
+
+							for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
 						end
 
-						if j.mother ~= "" then
-							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
+						if found == nil then
+							local doFam = false
+							if j.father ~= 0 then doFam = true end
+							if j.mother ~= 0 then doFam = true end
+							if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
+						else
+							if chil == false then table.insert(fams[found].chil, i) end
 						end
-
-						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
-					end
-
-					if found == nil then
-						local doFam = false
-						if j.father ~= "" then doFam = true end
-						if j.mother ~= "" then doFam = true end
-						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
-					else
-						if chil == false then table.insert(fams[found].chil, i) end
 					end
 				end
 
