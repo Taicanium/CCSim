@@ -1614,7 +1614,7 @@ return
 
 			name = function(self, personal, l)
 				local nom = ""
-				if l == nil then length = math.random(4, 7) else length = math.random(l - 2, l) end
+				if l == nil then length = math.random(3, 6) else length = math.random(l - 2, l) end
 
 				local taken = {}
 
@@ -2188,11 +2188,25 @@ return
 					self:setGens(self.royals, self.royals[i].mother)
 				end
 				
-				for i=#self.royals,1,-1 do
+				for i=1,#self.royals do
 					local j = self.royals[i]
 					if j.gens == nil then self.royals[i] = "nil"
 					elseif j.gens == -1 then self.royals[i] = "nil"
 					elseif j.gens >= self.genLimit then self.royals[i] = "nil" end
+				end
+				
+				for i=#self.royals,1,-1 do
+					local j = self.royals[i]
+					if j == "nil" then
+						for k=1,#self.royals do
+							local l = self.royals[k]
+							if l.father == i then l.father = 0 end
+							if l.father > i then l.father = l.father - 1 end
+							if l.mother == i then l.mother = 0 end
+							if l.mother > i then l.mother = l.mother - 1 end
+						end
+						table.remove(self.royals, i)
+					end
 				end
 				
 				local ascCount = 0
@@ -2201,33 +2215,29 @@ return
 				
 				for i=1,#self.royals do
 					local j = self.royals[i]
-					if j ~= "nil" then
-						local found = nil
-						local chil = false
-						if j.father == nil then j.father = 0 end
-						if j.mother == nil then j.mother = 0 end
-						if self.royals[j.father] == "nil" then j.father = 0 end
-						if self.royals[j.mother] == "nil" then j.mother = 0 end
-						for k=1,#fams do
-							if j.father ~= 0 then
-								if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
-							end
-
-							if j.mother ~= 0 then
-								if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
-							end
-
-							for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
+					local found = nil
+					local chil = false
+					if j.father == nil then j.father = 0 end
+					if j.mother == nil then j.mother = 0 end
+					for k=1,#fams do
+						if j.father ~= 0 then
+							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
 
-						if found == nil then
-							local doFam = false
-							if j.father ~= 0 then doFam = true end
-							if j.mother ~= 0 then doFam = true end
-							if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
-						else
-							if chil == false then table.insert(fams[found].chil, i) end
+						if j.mother ~= 0 then
+							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 						end
+
+						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = true end end
+					end
+
+					if found == nil then
+						local doFam = false
+						if j.father ~= 0 then doFam = true end
+						if j.mother ~= 0 then doFam = true end
+						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
+					else
+						if chil == false then table.insert(fams[found].chil, i) end
 					end
 				end
 
