@@ -693,7 +693,6 @@ return
 								end
 
 								parent:deepnil(c.regions[v])
-								c.regions[v] = nil
 							end
 						end
 
@@ -2047,7 +2046,6 @@ return
 							c2:event(self, lossMsg)
 
 							self:deepnil(c2.regions[rn.name])
-							c2.regions[rn.name] = nil
 						end
 					end
 				end

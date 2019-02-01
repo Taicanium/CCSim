@@ -452,7 +452,6 @@ return
 				while rCount > maxR do
 					local r = parent:randomChoice(self.regions)
 					parent:deepnil(r)
-					r = nil
 					rCount = 0
 					for l, m in pairs(self.regions) do rCount = rCount + 1 end
 				end
@@ -531,7 +530,6 @@ return
 						local z = r.z
 						if r.x ~= nil and r.y ~= nil and r.z ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
 						parent:deepnil(r)
-						r = nil
 						cCount = 0
 						for m, n in pairs(j.cities) do cCount = cCount + 1 end
 					end
