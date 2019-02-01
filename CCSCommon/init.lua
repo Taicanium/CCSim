@@ -1107,6 +1107,7 @@ return
 				print("")
 
 				if self.ged == true then
+					print("Sorting living individuals. This might take a moment...");
 					for i, j in pairs(self.thisWorld.countries) do j:destroy(self) end
 				
 					local fams = self:sortAscendants()
