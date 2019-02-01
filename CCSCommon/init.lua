@@ -1963,8 +1963,8 @@ return
 								if c2.capitalregion == rn.name then
 									local msg = "Capital moved from "..c2.capitalcity.." to "
 
-									c2.capitalregion = self:randomChoice(c2.regions)
-									c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities)
+									c2.capitalregion = self:randomChoice(c2.regions).name
+									c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities).name
 
 									msg = msg..c2.capitalcity
 									c2:event(self, msg)
