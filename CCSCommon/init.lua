@@ -2210,7 +2210,7 @@ return
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(j.father, -2, 0) end
 					if j.gens == 0 then self:setGens(j.mother, -2, 0) end
-					for k, l in pairs(j.children) do self:setGens(l, -2, 1) end
+					if j.gens == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
