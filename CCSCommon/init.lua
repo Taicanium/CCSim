@@ -2195,6 +2195,8 @@ return
 					elseif j.gens >= self.genLimit then self.royals[i] = "nil" end
 				end
 				
+				local removed = 0
+				
 				for i=#self.royals,1,-1 do
 					local j = self.royals[i]
 					if j == "nil" then
@@ -2206,8 +2208,11 @@ return
 							if l.mother > i then l.mother = l.mother - 1 end
 						end
 						table.remove(self.royals, i)
+						removed = removed + 1
 					end
 				end
+				
+				print("Trimmed "..tostring(removed).." unrelated individuals.");
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
