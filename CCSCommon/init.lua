@@ -1437,6 +1437,7 @@ return
 					title=person.title,
 					ethnicity=person.ethnicity,
 					gens=person.gens,
+					gensSet=false,
 					children={},
 					index=0
 				}
@@ -2164,14 +2165,17 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 			
-			setGens = function(self, i, v, c)
+			setGens = function(self, i, v)
 				local r = self.royals[i]
 				if r ~= nil then
-					if c == nil then self:setGens(r.father, v) end
-					if c == nil then self:setGens(r.mother, v) end
-					if c == nil then for k, l in pairs(r.children) do self:setGens(l, v, 1) end end
-					if r.gens == -1 then r.gens = v
-					elseif r.gens >= self.genLimit then r.gens = v end
+					if r.gensSet == false then
+						if r.gens == -1 then r.gens = v
+						elseif r.gens >= self.genLimit then r.gens = v end
+						r.gensSet = true
+						for j, k in pairs(r.children) do self:setGens(k, v) end
+						self:setGens(r.father, v)
+						self:setGens(r.mother, v)
+					end
 				end
 			end,
 			
@@ -2197,20 +2201,19 @@ return
 				
 				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					if j.gens == 0 then self:setGens(j.father, -2) end
-					if j.gens == 0 then self:setGens(j.mother, -2) end
+					if j.gens == 0 then self:setGens(j.father, -2, i) end
+					if j.gens == 0 then self:setGens(j.mother, -2, i) end
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted.")
-				end
-				
-				done = 0
-				
-				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
 						self.royals[i] = nil
 						removed = removed + 1
 					end
+					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted.")
+				end
+				
+				done = 0
 					
+				for i, j in pairs(self.royals) do
 					if j.father == nil then j.father = "" end
 					if j.mother == nil then j.mother = "" end
 					if self.royals[j.father] == nil then j.father = "" end
