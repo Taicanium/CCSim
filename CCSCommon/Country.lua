@@ -280,6 +280,14 @@ return
 				self.demonym = self.demonym:gsub("oia", "ia")
 				self.demonym = self.demonym:gsub("uia", "ia")
 				self.demonym = self.demonym:gsub("yi", "i")
+				self.demonym = self.demonym:gsub("eish", "ish")
+				self.demonym = self.demonym:gsub("uish", "ish")
+				self.demonym = self.demonym:gsub("aish", "ish")
+				self.demonym = self.demonym:gsub("oish", "ish")
+				self.demonym = self.demonym:gsub("eian", "ian")
+				self.demonym = self.demonym:gsub("uian", "ian")
+				self.demonym = self.demonym:gsub("aian", "ian")
+				self.demonym = self.demonym:gsub("oian", "ian")
 			end,
 
 			set = function(self, parent)
