@@ -1424,7 +1424,8 @@ return
 					mother=0,
 					title=person.title,
 					ethnicity=person.ethnicity,
-					index=0,
+					gens=person.gens,
+					index=0
 				}
 
 				local pString = person.name.." "..person.surname.." "..person.birth.." "..person.birthplace.." "..person.gender
@@ -1609,7 +1610,7 @@ return
 						else rtitle = "Empress" end
 					end
 				end
-				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, index=0}
+				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, index=0}
 			end,
 
 			name = function(self, personal, l)
@@ -2164,8 +2165,7 @@ return
 			setGens = function(self, royals, i)
 				local r = royals[i]
 				if r ~= nil then
-					if royals[i].gens == nil then royals[i].gens = -2
-					elseif royals[i].gens == -1 then royals[i].gens = -2
+					if royals[i].gens == -1 then royals[i].gens = -2
 					elseif royals[i].gens >= self.genLimit then royals[i].gens = -2 end
 					self:setGens(royals, r.father)
 					self:setGens(royals, r.mother)
@@ -2188,18 +2188,11 @@ return
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother) end
 				end
 				
-				for i=1,#self.royals do
-					local j = self.royals[i]
-					if j.gens == nil then self.royals[i] = "nil"
-					elseif j.gens == -1 then self.royals[i] = "nil"
-					elseif j.gens >= self.genLimit then self.royals[i] = "nil" end
-				end
-				
 				local removed = 0
 				
 				for i=#self.royals,1,-1 do
 					local j = self.royals[i]
-					if j == "nil" then
+					if j.gens == -1 or j.gens >= self.genLimit then
 						for k=1,#self.royals do
 							local l = self.royals[k]
 							if l.father == i then l.father = 0 end
