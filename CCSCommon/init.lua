@@ -2173,16 +2173,13 @@ return
 			setGens = function(self, i, v, g)
 				local r = self.royals[i]
 				if r ~= nil then
-					local set = true
-					if r.gensSet == false then
+					local set = r.gensSet
+					r.gensSet = true
+					if set == false then
 						if r.gens == -1 then r.gens = v
 						elseif r.gens >= self.genLimit then r.gens = v end
-						set = false
-						r.gensSet = true
-					end
-					
-					if set == false then
-						if g < 1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end end
+						if g < 1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end
+						else if r.gens < self.genLimit - 1 and r.gens > -1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end end end
 						self:setGens(r.father, v, 0)
 						self:setGens(r.mother, v, 0)
 					end
@@ -2231,33 +2228,15 @@ return
 					end
 					
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." relevant-filtered.")
+					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
 				end
 				
 				print("")
-				done = 0
-					
-				for i, j in pairs(self.royals) do
-					if j.father == nil then j.father = "" end
-					if j.mother == nil then j.mother = "" end
-					if self.royals[j.father] == nil then j.father = "" end
-					if self.royals[j.mother] == nil then j.mother = "" end
-					
-					if j.father == "" or j.mother == "" then
-						self.royals[i] = nil
-						removed = removed + 1
-						count = count - 1
-					end
-					
-					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." orphan-filtered.")
-				end
-				
-				print("")
-				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".")
+				print("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
 				
 				count = 0
 				for i, j in pairs(self.royals) do count = count + 1 end
+				oldCount = count
 				print("Linking "..tostring(count).." individuals...")
 				
 				done = 0
@@ -2266,21 +2245,14 @@ return
 					local found = nil
 					local chil = true
 					for k=1,#fams do
-						if j.father ~= "" then
-							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
-						end
-
-						if j.mother ~= "" then
-							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
-						end
+						if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 
 						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
 					end
 
 					if found == nil then
 						local doFam = false
-						if j.father ~= "" then doFam = true end
-						if j.mother ~= "" then doFam = true end
+						if j.father ~= "" and j.mother ~= "" then doFam = true end
 						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
 					else
 						if chil == true then table.insert(fams[found].chil, i) end
@@ -2289,6 +2261,26 @@ return
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 				end
+				
+				removed = 0
+				print("Removing unrelated individuals...")
+				
+				for i, j in pairs(self.royals) do
+					local found = false
+					for k=1,#fams do
+						if fams[k].husb == i then found = true end
+						if fams[k].wife == i then found = true end
+						for l, m in pairs(fams[k].chil) do if m == i then found = true end end
+					end
+					
+					if found == false then
+						self.royals[i] = nil
+						removed = removed + 1
+						count = count - 1
+					end
+				end
+				
+				print("Removed an additional "..tostring(removed).." individuals.")
 
 				return fams
 			end
