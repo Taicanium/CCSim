@@ -2167,11 +2167,11 @@ return
 			setGens = function(self, i, v, c)
 				local r = self.royals[i]
 				if r ~= nil then
-					if r.gens == -1 then r.gens = v
-					elseif r.gens >= self.genLimit then r.gens = v end
 					if c == nil then self:setGens(r.father, v) end
 					if c == nil then self:setGens(r.mother, v) end
 					if c == nil then for k, l in pairs(r.children) do self:setGens(l, v, 1) end end
+					if r.gens == -1 then r.gens = v
+					elseif r.gens >= self.genLimit then r.gens = v end
 				end
 			end,
 			
@@ -2210,6 +2210,17 @@ return
 						self.royals[i] = nil
 						removed = removed + 1
 					end
+					
+					if j.father == nil then j.father = "" end
+					if j.mother == nil then j.mother = "" end
+					if self.royals[j.father] == nil then j.father = "" end
+					if self.royals[j.mother] == nil then j.mother = "" end
+					
+					if j.father == "" or j.mother == "" then
+						self.royals[i] = nil
+						removed = removed + 1
+					end
+					
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered.")
 				end
@@ -2225,10 +2236,6 @@ return
 				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = true
-					if j.father == nil then j.father = "" end
-					if j.mother == nil then j.mother = "" end
-					if self.royals[j.father] == nil then j.father = "" end
-					if self.royals[j.mother] == nil then j.mother = "" end
 					for k=1,#fams do
 						if j.father ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
