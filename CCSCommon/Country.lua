@@ -288,6 +288,8 @@ return
 				self.demonym = self.demonym:gsub("uian", "ian")
 				self.demonym = self.demonym:gsub("aian", "ian")
 				self.demonym = self.demonym:gsub("oian", "ian")
+				
+				if self.demonym:sub(#self.demonym, #self.demonym) == "j" then self.demonym = self.demonym:sub(1, #self.demonym-1) end
 			end,
 
 			set = function(self, parent)
