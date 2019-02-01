@@ -1461,13 +1461,8 @@ return
 					end
 					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" elseif MorE == 3 then royals[fInd].title = "Empress" elseif MorE == -1 then title = "" end
 
-					if person.father ~= nil then
-						royals[fInd].father = self:getAscendants(royals, person.father)
-					end
-
-					if person.mother ~= nil then
-						royals[fInd].mother = self:getAscendants(royals, person.mother)
-					end
+					if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end
+					if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end
 				end
 
 				return fInd
@@ -2202,6 +2197,7 @@ return
 				end
 				
 				print("Trimmed "..tostring(removed).." unrelated individuals.");
+				self:sleep(3)
 				
 				local ascCount = 0
 				for i, j in pairs(self.royals) do ascCount = ascCount + 1 end
