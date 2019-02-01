@@ -1149,13 +1149,13 @@ return
 						end
 
 						for k=1,#fams do
-							if fams[k].husb == i then
+							if self.royals[fams[k].husb].index == i then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-							elseif fams[k].wife == i then
+							elseif self.royals[fams[k].wife].index == i then
 								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
 							else
 								for l=1,#fams[k].chil do
-									if fams[k].chil[l] == i then
+									if self.royals[fams[k].chil[l]].index == i then
 										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
 									end
 								end
@@ -1460,7 +1460,7 @@ return
 						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
-					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" elseif MorE == 3 then royals[fInd].title = "Empress" elseif MorE == -1 then title = "" end
+					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" elseif MorE == 3 then royals[fInd].title = "Empress" elseif MorE == -1 then royals[fInd].title = "" end
 
 					if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end
 					if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end
