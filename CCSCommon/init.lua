@@ -2215,6 +2215,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
 				
+				print("")
 				done = 0
 					
 				for i, j in pairs(self.royals) do
@@ -2228,6 +2229,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." relevant-filtered.")
 				end
 				
+				print("")
 				done = 0
 					
 				for i, j in pairs(self.royals) do
@@ -2246,6 +2248,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." orphan-filtered.")
 				end
 				
+				print("")
 				print("\nTrimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".")
 				
 				count = 0
