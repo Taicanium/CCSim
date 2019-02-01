@@ -1435,7 +1435,7 @@ return
 						if person.death ~= nil then if person.death ~= 0 then if j.death ~= person.death then j.death = person.death end end end
 						if person.deathplace ~= nil then if person.deathplace ~= "" then if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end end end
 						if person.title ~= nil then if person.title ~= "" then if j.title ~= person.title then
-							if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then j.title = person.title
+							if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then j.title = person.title end
 						end end end
 						if j.death == self.years then j.death = 0 j.deathplace = "" end
 						fInd = i
