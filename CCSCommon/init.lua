@@ -1469,7 +1469,7 @@ return
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
 					if MorE == -1 then royals[fInd].title = "" end
-				end end end
+				end end
 				
 				if royals[fInd].father == "" then if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end end
 				if royals[fInd].mother == "" then if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end end
@@ -1477,7 +1477,7 @@ return
 					for i, j in pairs(person.children) do
 						local found = false
 						local asc = self:getAscendants(royals, j)
-						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end
+						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
 						if found == false then table.insert(royals[fInd].children, asc) end
 					end
 				end
