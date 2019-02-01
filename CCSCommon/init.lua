@@ -1139,7 +1139,7 @@ return
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
-						if j.death > self.maxyears then j.death = 0 end
+						if j.death >= self.years then j.death = 0 end
 						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
 						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
@@ -1148,7 +1148,7 @@ return
 						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
 						if j.birth < 0 then msgout = msgout.." B.C." end
 						msgout = msgout.."\n2 PLAC "..j.birthplace
-						if tostring(j.death) ~= "0" and j.death ~= 0 then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
+						if j.death ~= 0 then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
 						if j.ethnicity then
 							local ei = 1
 							for q, b in pairs(j.ethnicity) do
@@ -1449,7 +1449,6 @@ return
 					if person.title ~= nil then if person.title ~= "" then if royals[pString].title ~= person.title then
 						if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[pString].title = person.title end
 					end end end
-					if royals[pString].death == self.years then royals[pString].death = 0 royals[pString].deathplace = "" end
 					fInd = pString
 				end
 
