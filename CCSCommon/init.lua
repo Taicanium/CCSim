@@ -1171,7 +1171,7 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= "" then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
+						if fams[j].husb ~= 0 then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
 						if fams[j].wife ~= 0 then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
 
 						for k=1,#fams[j].chil do
@@ -1420,8 +1420,8 @@ return
 					gender=person.gender,
 					birthplace=person.birthplace,
 					deathplace=person.deathplace,
-					father="",
-					mother="",
+					father=0,
+					mother=0,
 					title=person.title,
 					ethnicity=person.ethnicity,
 					index=0,
