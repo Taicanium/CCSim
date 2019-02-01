@@ -1159,16 +1159,11 @@ return
 						end
 
 						for k=1,#fams do
-							print(fams[k], self.royals[fams[k].husb], self.royals[fams[k].wife])
-							if self.royals[fams[k].husb].index == i then
-								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-							elseif self.royals[fams[k].wife].index == i then
-								msgout = msgout.."\n1 FAMS @F"..tostring(k).."@"
-							else
-								for l=1,#fams[k].chil do
-									if self.royals[fams[k].chil[l]].index == i then
-										msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
-									end
+							if self.royals[fams[k].husb] ~= nil then if self.royals[fams[k].husb].index == i then msgout = msgout.."\n1 FAMS @F"..tostring(k).."@" end end
+							if self.royals[fams[k].wife] ~= nil then if self.royals[fams[k].wife].index == i then msgout = msgout.."\n1 FAMS @F"..tostring(k).."@" end end
+							for l=1,#fams[k].chil do
+								if self.royals[fams[k].chil[l]].index == i then
+									msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
 								end
 							end
 						end
@@ -1188,8 +1183,8 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= "" then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
-						if fams[j].wife ~= "" then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
+						if self.royals[fams[j].husb] ~= nil then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
+						if self.royals[fams[j].wife] ~= nil then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
 
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k] ~= fams[j].husb then
