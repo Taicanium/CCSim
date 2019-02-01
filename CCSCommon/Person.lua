@@ -160,8 +160,8 @@ return
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i] / 2 end
 				nn.nationality = nl.name
 				
-				if self.gender == "Female" then if parent.ged == true then nn:SetFamily(nl, self.spouse, self, parent) end
-				else if parent.ged == true then nn:SetFamily(nl, self, self.spouse, parent) end end
+				if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self, parent) end
+				else if parent.ged == true then nn:SetFamily(self, self.spouse, parent) end end
 				
 				nl:add(nn)
 			end,
@@ -185,7 +185,7 @@ return
 				end
 			end,
 
-			SetFamily = function(self, nl, father, mother, parent)
+			SetFamily = function(self, father, mother, parent)
 				self.father = parent:makeAscendant(father)
 				self.mother = parent:makeAscendant(mother)
 				table.insert(father.children, self)

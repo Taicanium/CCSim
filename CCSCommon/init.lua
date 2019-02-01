@@ -1125,7 +1125,7 @@ return
 						if j.death > self.maxyears then j.death = 0 end
 						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
-						if j.number ~= 0 then msgout = msgout.."\n2 NPFX "..j.title end
+						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
 						msgout = msgout.."\n2 SURN "..j.surname.."\n2 GIVN "..j.name.."\n"
 						if j.number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(j.number).."\n" end
 						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
@@ -1434,6 +1434,9 @@ return
 					if pString == rString then
 						if person.death ~= nil then if person.death ~= 0 then if j.death ~= person.death then j.death = person.death end end end
 						if person.deathplace ~= nil then if person.deathplace ~= "" then if j.deathplace ~= person.deathplace then j.deathplace = person.deathplace end end end
+						if person.title ~= nil then if person.title ~= "" then if j.title ~= person.title then
+							if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then j.title = person.title
+						end end end
 						if j.death == self.years then j.death = 0 j.deathplace = "" end
 						fInd = i
 					end
@@ -1444,27 +1447,17 @@ return
 					fInd = #royals
 					royals[fInd].index = fInd
 
-					local MorE = 0 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
+					local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
-						if self.systems[k].name == "Monarchy" then
-							for l=1,#self.systems[k].ranks do
-								if self.systems[k].ranks[l] == royals[fInd].title then MorE = 0 end
-							end
-							for l=1,#self.systems[k].franks do
-								if self.systems[k].franks[l] == royals[fInd].title then MorE = 1 end
-							end
-						elseif self.systems[k].name == "Empire" then
-							for l=1,#self.systems[k].ranks do
-								if self.systems[k].ranks[l] == royals[fInd].title then MorE = 2 end
-							end
-							for l=1,#self.systems[k].franks do
-								if self.systems[k].franks[l] == royals[fInd].title then MorE = 3 end
-							end
-						end
+						if royals[fInd].title == "King" then MorE = 0 end
+						if royals[fInd].title == "Queen" then MorE = 1 end
+						if royals[fInd].title == "Emperor" then MorE = 2 end
+						if royals[fInd].title == "Empress" then MorE = 3 end
+						
 						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
-					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" end
+					if MorE == 0 then royals[fInd].title = "King" elseif MorE == 1 then royals[fInd].title = "Queen" elseif MorE == 2 then royals[fInd].title = "Emperor" else royals[fInd].title = "Empress" elseif MorE == -1 then title = "" end
 
 					if person.father ~= nil then
 						royals[fInd].father = self:getAscendants(royals, person.father)
