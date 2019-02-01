@@ -1107,7 +1107,7 @@ return
 				print("")
 
 				if self.ged == true then
-					print("Sorting living individuals. This might take a moment...")
+					print("Sorting living individuals...")
 					local fCount = 0
 					local fIndex = 1
 					for i, j in pairs(self.thisWorld.countries) do fCount = fCount + 1 end
@@ -2196,22 +2196,18 @@ return
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father, -2) end
 					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother, -2) end
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted")
+					io.write("\r"..tostring(done).."/"..tostring(oldCount).." sorted.")
 				end
 				
 				done = 0
 				
 				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
-						for k, l in pairs(self.royals) do
-							if l.father == i then l.father = "" end
-							if l.mother == i then l.mother = "" end
-						end
 						self.royals[i] = nil
 						removed = removed + 1
 					end
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered")
+					io.write("\r"..tostring(done).."/"..tostring(oldCount).." filtered.")
 				end
 				
 				print("Trimmed "..tostring(removed).." unrelated individuals, out of "..tostring(oldCount)..".");
@@ -2226,6 +2222,8 @@ return
 					local chil = true
 					if j.father == nil then j.father = "" end
 					if j.mother == nil then j.mother = "" end
+					if self.royals[j.father] == nil then j.father = "" end
+					if self.royals[j.mother] == nil then j.mother = "" end
 					for k=1,#fams do
 						if j.father ~= "" then
 							if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
