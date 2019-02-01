@@ -2170,8 +2170,8 @@ return
 				if r ~= nil then
 					if r.gens == -1 then r.gens = v
 					elseif r.gens >= self.genLimit then r.gens = v end
-					self:setGens(r.father, v)
-					self:setGens(r.mother, v)
+					if c == nil then self:setGens(r.father, v) end
+					if c == nil then self:setGens(r.mother, v) end
 					if c == nil then for k, l in pairs(r.children) do self:setGens(l, v, 1) end end
 				end
 			end,
