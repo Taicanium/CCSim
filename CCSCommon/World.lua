@@ -1080,8 +1080,6 @@ return
 					if cp ~= nil then
 						cp:eventloop(parent)
 						
-						if parent.ged == false then parent:deepnil(cp.ascs) end
-
 						if cp.population < 10 then
 							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
 							cp:event(parent, "Disappeared")

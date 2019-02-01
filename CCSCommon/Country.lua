@@ -101,7 +101,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
+						if parent.ged == true then parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y])) end
 						if self.people[y].isruler == true then self.hasruler = -1 end
 						w = table.remove(self.people, y)
 						if w ~= nil then

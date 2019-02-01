@@ -779,10 +779,6 @@ return
 										table.insert(c1.nodes, {x, y, z})
 									end
 
-									for i=1,#c2.ascs do
-										table.insert(c1.ascs, c2.ascs[i])
-									end
-
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
 									if #c2.rulers > 0 then
@@ -869,10 +865,6 @@ return
 
 											parent.thisWorld.planet[x][y][z].country = c1.name
 											table.insert(c1.nodes, {x, y, z})
-										end
-
-										for i=1,#c2.ascs do
-											table.insert(c1.ascs, c2.ascs[i])
 										end
 
 										c1.stability = c1.stability - 5
