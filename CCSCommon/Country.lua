@@ -403,69 +403,18 @@ return
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
 						self.people[newRuler].number = namenum
-						if self.people[newRuler].royalGenerations >= 0 then
-							if self.people[newRuler].gender == "Male" then
-								for i=1,#self.people do
-									if self.people[i].father then if self.people[i].father.name == self.people[newRuler].name then
-										if self.people[i].father.surname == self.people[newRuler].surname then
-											if self.people[i].father.birth == self.people[newRuler].birth then
-												if self.people[i].father.birthplace == self.people[newRuler].birthplace then
-													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
-													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
-													self.people[i].royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
-												end
-											end
-										end
-									end end
-								end
-							else
-								for i=1,#self.people do
-									if self.people[i].mother then if self.people[i].mother.name == self.people[newRuler].name then
-										if self.people[i].mother.surname == self.people[newRuler].surname then
-											if self.people[i].mother.birth == self.people[newRuler].birth then
-												if self.people[i].mother.birthplace == self.people[newRuler].birthplace then
-													self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
-													self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
-													self.people[i].royalInfo.Gens = self.people[i].royalGenerations
-													self.people[i].royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
-												end
-											end
-										end
-									end end
-								end
+						
+						for i, j in pairs(self.people[newRuler].children) do
+							if j.def == {} then
+								parent:setGensChildren(j, 1)
+								if j.royalGenerations == 1 then j.royalSystem = parent.systems[self.system].name end
+								j.royalInfo.Gens = j.royalGenerations
+								j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
 							end
 						end
 						
-						if self.people[newRuler].spouse then if self.people[newRuler].spouse.royalGenerations then if self.people[newRuler].spouse.royalGenerations >= 0 then
-							if self.people[newRuler].spouse.royalGenerations < self.people[newRuler].royalGenerations then
-								if self.people[newRuler].spouse.gender == "Male" then
-									for i=1,#self.people do
-										if self.people[i].father then if self.people[i].father.name == self.people[newRuler].spouse.name then 
-											if self.people[i].father.surname == self.people[newRuler].spouse.surname then
-												if self.people[i].father.birth == self.people[newRuler].spouse.birth then
-													if self.people[i].father.birthplace == self.people[newRuler].spouse.birthplace then
-														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
-													end
-												end
-											end
-										end end
-									end
-								else
-									for i=1,#self.people do
-										if self.people[i].mother then if self.people[i].mother.name == self.people[newRuler].spouse.name then
-											if self.people[i].mother.surname == self.people[newRuler].spouse.surname then
-												if self.people[i].mother.birth == self.people[newRuler].spouse.birth then
-													if self.people[i].mother.birthplace == self.people[newRuler].spouse.birthplace then
-														self.people[i].royalGenerations = self.people[newRuler].royalGenerations + 1
-														self.people[i].maternalLineTimes = self.people[newRuler].maternalLineTimes + 1
-													end
-												end
-											end
-										end end
-									end
-								end
-							end
-						end end end
+						if self.people[newRuler].gender == "Female" then for i, j in pairs(self.people[newRuler].children) do if j.def == {} then j.maternalLineTimes = self.people[newRuler].maternalLineTimes + 1 end end end
+							
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})

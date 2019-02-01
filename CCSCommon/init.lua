@@ -1599,7 +1599,7 @@ return
 				print("\nEnd Simulation!")
 			end,
 			
-			makeAscendant = function(self, c, person)
+			makeAscendant = function(self, person)
 				local rtitle = person.title
 				if person.royalGenerations == 0 then
 					if person.royalSystem == "Monarchy" then
@@ -1610,7 +1610,7 @@ return
 						else rtitle = "Empress" end
 					end
 				end
-				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=c.name, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, index=0}
+				return {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, index=0}
 			end,
 
 			name = function(self, personal, l)
@@ -2162,14 +2162,21 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 			
-			setGens = function(self, royals, i)
+			setGens = function(self, royals, i, v)
 				local r = royals[i]
 				if r ~= nil then
-					if royals[i].gens == -1 then royals[i].gens = -2
-					elseif royals[i].gens >= self.genLimit then royals[i].gens = -2 end
-					self:setGens(royals, r.father)
-					self:setGens(royals, r.mother)
+					if r.gens == -1 then r.gens = v
+					elseif r.gens >= self.genLimit then r.gens = v end
+					self:setGens(royals, r.father, v)
+					self:setGens(royals, r.mother, v)
 				end
+			end,
+			
+			setGensChildren = function(self, t, v)
+				if t.royalGenerations > v or t.royalGenerations == -1 then
+					t.royalGenerations = v
+				end
+				for i, j in pairs(t.children) do self:setGensChildren(j, v+1)
 			end,
 
 			sleep = function(self, t)
@@ -2184,8 +2191,8 @@ return
 				for i=1,#self.royals do
 					local j = self.royals[i]
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father) end
-					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother) end
+					if j.gens == 0 then self:setGens(self.royals, self.royals[i].father, -2) end
+					if j.gens == 0 then self:setGens(self.royals, self.royals[i].mother, -2) end
 				end
 				
 				local removed = 0

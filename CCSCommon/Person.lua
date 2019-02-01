@@ -23,6 +23,7 @@ return
 				n.spouse = nil
 				n.father = nil
 				n.mother = nil
+				n.children = {}
 				n.isruler = false
 				n.parentRuler = false
 				n.royal = false
@@ -51,6 +52,7 @@ return
 				self.ethnicity = nil
 				self.spouse = nil
 				self.royalInfo = nil
+				self.children = nil
 			end,
 
 			dobirth = function(self, parent, nl)
@@ -160,7 +162,7 @@ return
 				
 				if self.gender == "Female" then if parent.ged == true then nn:SetFamily(nl, self.spouse, self, parent) end
 				else if parent.ged == true then nn:SetFamily(nl, self, self.spouse, parent) end end
-
+				
 				nl:add(nn)
 			end,
 
@@ -186,6 +188,8 @@ return
 			SetFamily = function(self, nl, father, mother, parent)
 				self.father = parent:makeAscendant(nl, father)
 				self.mother = parent:makeAscendant(nl, mother)
+				table.insert(self.father.children, self)
+				table.insert(self.mother.children, self)
 			end,
 
 			update = function(self, parent, nl)
