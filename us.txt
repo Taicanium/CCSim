@@ -2,6 +2,7 @@ Year 2020
 C Alabama
 R Alabama
 P Montgomery
+S Birmingham
 C Alaska
 R Alaska
 P Juneau
@@ -36,8 +37,8 @@ S Miami
 S Orlando
 C Georgia
 R Georgia
-S Savannah
 P Atlanta
+S Savannah
 C Hawaii
 R Hawaii
 P Honolulu
@@ -46,8 +47,8 @@ R Idaho
 P Boise
 C Illinois
 R Illinois
-S Chicago
 P Springfield
+S Chicago
 C Indiana
 R Indiana
 P Indianapolis
@@ -87,8 +88,8 @@ R Mississippi
 P Jackson
 C Missouri
 R Missouri
-S Kansas City
 P Jefferson City
+S Kansas City
 C Montana
 R Montana
 P Helena
@@ -114,8 +115,8 @@ P Santa Fe
 S Albequerque
 C New York
 R New York
-S New York City
 P Albany
+S New York City
 S Utica
 C North Carolina
 R North Carolina
@@ -126,16 +127,16 @@ R North Dakota
 P Bismarck
 C Ohio
 R Ohio
-S Cincinatti
 P Columbus
+S Cincinatti
 C Oklahoma
 R Oklahoma
 P Oklahoma City
 S Tulsa
 C Oregon
 R Oregon
-S Salem
 P Portland
+S Salem
 C Pennsylvania
 R Pennsylvania
 P Harrisburg
@@ -171,8 +172,8 @@ S Charlottesville
 S Washington
 C Washington
 R Washington
-S Seattle
 P Olympia
+S Seattle
 C West Virginia
 R West Virginia
 P Charleston
