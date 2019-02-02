@@ -2254,7 +2254,10 @@ return
 				end
 				
 				removed = 0
-				print("Removing unrelated individuals...")
+				done = 0
+				count = 0
+				for i, j in pairs(self.royals) do count = count + 1 end
+				print("\nRemoving unrelated individuals...")
 				
 				for i, j in pairs(self.royals) do
 					local found = false
@@ -2268,6 +2271,9 @@ return
 						self.royals[i] = nil
 						removed = removed + 1
 					end
+					
+					done = done + 1
+					io.write("\r"..tostring(done).."/"..tostring(count).." scanned.")
 				end
 				
 				print("Removed an additional "..tostring(removed).." individuals.")
