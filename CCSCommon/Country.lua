@@ -270,22 +270,24 @@ return
 					else self.demonym = self.name.."ian" end
 				end
 
-				self.demonym = self.demonym:gsub("ii", "i")
-				self.demonym = self.demonym:gsub("aa", "a")
-				self.demonym = self.demonym:gsub("eia", "ia")
-				self.demonym = self.demonym:gsub("oia", "ia")
-				self.demonym = self.demonym:gsub("uia", "ia")
-				self.demonym = self.demonym:gsub("yi", "i")
-				self.demonym = self.demonym:gsub("eish", "ish")
-				self.demonym = self.demonym:gsub("uish", "ish")
-				self.demonym = self.demonym:gsub("aish", "ish")
-				self.demonym = self.demonym:gsub("iish", "ish")
-				self.demonym = self.demonym:gsub("oish", "ish")
-				self.demonym = self.demonym:gsub("eian", "ian")
-				self.demonym = self.demonym:gsub("iian", "ian")
-				self.demonym = self.demonym:gsub("uian", "ian")
-				self.demonym = self.demonym:gsub("aian", "ian")
-				self.demonym = self.demonym:gsub("oian", "ian")
+				for i=1,3 do
+					self.demonym = self.demonym:gsub("ii", "i")
+					self.demonym = self.demonym:gsub("aa", "a")
+					self.demonym = self.demonym:gsub("eia", "ia")
+					self.demonym = self.demonym:gsub("oia", "ia")
+					self.demonym = self.demonym:gsub("uia", "ia")
+					self.demonym = self.demonym:gsub("yi", "i")
+					self.demonym = self.demonym:gsub("eish", "ish")
+					self.demonym = self.demonym:gsub("uish", "ish")
+					self.demonym = self.demonym:gsub("aish", "ish")
+					self.demonym = self.demonym:gsub("iish", "ish")
+					self.demonym = self.demonym:gsub("oish", "ish")
+					self.demonym = self.demonym:gsub("eian", "ian")
+					self.demonym = self.demonym:gsub("iian", "ian")
+					self.demonym = self.demonym:gsub("uian", "ian")
+					self.demonym = self.demonym:gsub("aian", "ian")
+					self.demonym = self.demonym:gsub("oian", "ian")
+				end
 				
 				if self.demonym:sub(#self.demonym, #self.demonym) == "j" then self.demonym = self.demonym:sub(1, #self.demonym-1) end
 			end,
