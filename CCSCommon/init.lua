@@ -2231,16 +2231,16 @@ return
 				for i, j in pairs(self.royals) do count = count + 1 end
 				print("\nRemoving unrelated individuals...")
 				
+				local rel = {}
+				
+				for k=1,#fams do
+					rel[fams[k].husb] = 1
+					rel[fams[k].wife] = 1
+					for i, j in pairs(fams[k].chil) do rel[j] = 1 end
+				end
+				
 				for i, j in pairs(self.royals) do
-					local found = false
-					for k=1,#fams do
-						if fams[k].husb == i then found = true end
-						if fams[k].wife == i then found = true end
-						for l, m in pairs(fams[k].chil) do if m == i then found = true end end
-						if found == true then k = #fams + 1 end
-					end
-					
-					if found == false then
+					if rel[i] == nil then
 						self.royals[i] = nil
 						removed = removed + 1
 					end
