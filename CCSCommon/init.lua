@@ -1950,8 +1950,6 @@ return
 									if c2.people[i].isruler == false then
 										if c2.people[i].region == rn.name then
 											local p = table.remove(c2.people, i)
-											p.region = ""
-											p.city = ""
 											p.nationality = c1.name
 											table.insert(c1.people, p)
 										end
@@ -1970,8 +1968,6 @@ return
 									c2:event(self, msg)
 								end
 							end
-
-							c1.regions[rn.name] = rn
 
 							local gainMsg = "Gained the "..rn.name.." region "
 							local lossMsg = "Loss of the "..rn.name.." region "
@@ -2047,7 +2043,8 @@ return
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
 
-							self:deepnil(c2.regions[rn.name])
+							c1.regions[rn.name] = rn
+							c2.regions[rn.name] = nil
 						end
 					end
 				end
