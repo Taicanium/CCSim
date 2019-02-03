@@ -431,13 +431,7 @@ return
 								local rcount = 0
 								for q, b in pairs(self.target.regions) do rcount = rcount + 1 end
 								if rcount > 1 then
-									local rname = ""
-									while rname == "" do
-										for q, b in pairs(self.target.regions) do
-											local chance = math.random(1, 25)
-											if chance == 12 then rname = b.name end
-										end
-									end
+									local rname = parent:randomChoice(self.target.regions).name
 									parent:RegionTransfer(c1, self.target, rname, false)
 								end
 							end
@@ -469,13 +463,7 @@ return
 								local rcount = 0
 								for q, b in pairs(c1.regions) do rcount = rcount + 1 end
 								if rcount > 1 then
-									local rname = ""
-									while rname == "" do
-										for q, b in pairs(c1.regions) do
-											local chance = math.random(1, 25)
-											if chance == 12 then rname = b.name end
-										end
-									end
+									local rname = parent:randomChoice(c1.regions).name
 									parent:RegionTransfer(self.target, c1, rname, false)
 								end
 							end
@@ -715,7 +703,7 @@ return
 						end
 
 						if c1.relations[c2.name] ~= nil then
-							if c1.relations[c2.name] < 11 then
+							if c1.relations[c2.name] < 16 then
 								c1:event(parent, "Invaded "..c2.name)
 								c2:event(parent, "Invaded by "..c1.name)
 
@@ -728,16 +716,10 @@ return
 
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount + 1 end
-								if rcount > 1 then
+								if rcount > 1 and c1strength > c2strength + (c2strength / 5) then
 									local rchance = math.random(1, 30)
 									if rchance < 5 then
-										local rname = ""
-										while rname == "" do
-											for q, b in pairs(c2.regions) do
-												local schance = math.random(1, 25)
-												if schance == 12 then rname = b.name end
-											end
-										end
+										local rname = parent:randomChoice(c2.regions).name
 										parent:RegionTransfer(c1, c2, rname, false)
 									end
 								end
@@ -1935,15 +1917,8 @@ return
 					if conq == true then lim = 0 end
 
 					if rCount > lim then
-						local rm = c2.regions[r]
-
-						if rm ~= nil then
-							local rn = Region:new()
-
-							rn.name = rm.name
-							rn.population = rm.population
-							rn.nodes = self:deepcopy(rm.nodes)
-							rn.cities = self:deepcopy(rm.cities)
+						if c2.regions[r] ~= nil then
+							local rn = c2.regions[r]
 
 							for i=#c2.people,1,-1 do
 								if c2.people[i] ~= nil then
@@ -1956,6 +1931,9 @@ return
 									end
 								end
 							end
+
+							c1.regions[rn.name] = rn
+							c2.regions[rn.name] = nil
 
 							if conq == false then
 								if c2.capitalregion == rn.name then
@@ -1973,7 +1951,7 @@ return
 							local lossMsg = "Loss of the "..rn.name.." region "
 
 							local cCount = 0
-							for i, j in pairs(rm.cities) do cCount = cCount + 1 end
+							for i, j in pairs(rn.cities) do cCount = cCount + 1 end
 							if cCount > 0 then
 								gainMsg = gainMsg.."(including the "
 								lossMsg = lossMsg.."(including the "
@@ -1983,7 +1961,7 @@ return
 										gainMsg = gainMsg.."cities of "
 										lossMsg = lossMsg.."cities of "
 										local index = 1
-										for i, j in pairs(rm.cities) do
+										for i, j in pairs(rn.cities) do
 											if index ~= cCount then
 												gainMsg = gainMsg..j.name.." "
 												lossMsg = lossMsg..j.name.." "
@@ -1991,7 +1969,7 @@ return
 											index = index + 1
 										end
 										index = 1
-										for i, j in pairs(rm.cities) do
+										for i, j in pairs(rn.cities) do
 											if index == cCount then
 												gainMsg = gainMsg.."and "..j.name
 												lossMsg = lossMsg.."and "..j.name
@@ -2002,7 +1980,7 @@ return
 										gainMsg = gainMsg.."cities of "
 										lossMsg = lossMsg.."cities of "
 										local index = 1
-										for i, j in pairs(rm.cities) do
+										for i, j in pairs(rn.cities) do
 											if index < cCount - 1 then
 												gainMsg = gainMsg..j.name..", "
 												lossMsg = lossMsg..j.name..", "
@@ -2010,7 +1988,7 @@ return
 											index = index + 1
 										end
 										index = 1
-										for i, j in pairs(rm.cities) do
+										for i, j in pairs(rn.cities) do
 											if index == cCount - 1 then
 												gainMsg = gainMsg..j.name.." "
 												lossMsg = lossMsg..j.name.." "
@@ -2018,7 +1996,7 @@ return
 											index = index + 1
 										end
 										index = 1
-										for i, j in pairs(rm.cities) do
+										for i, j in pairs(rn.cities) do
 											if index == cCount then
 												gainMsg = gainMsg.."and "..j.name
 												lossMsg = lossMsg.."and "..j.name
@@ -2027,7 +2005,7 @@ return
 										end
 									end
 								else
-									for i, j in pairs(rm.cities) do
+									for i, j in pairs(rn.cities) do
 										gainMsg = gainMsg.."city of "..j.name
 										lossMsg = lossMsg.."city of "..j.name
 									end
@@ -2042,9 +2020,6 @@ return
 
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
-
-							c1.regions[rn.name] = rn
-							c2.regions[rn.name] = nil
 						end
 					end
 				end
