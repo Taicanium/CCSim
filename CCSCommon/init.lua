@@ -2265,6 +2265,7 @@ return
 						if fams[k].husb == i then found = true end
 						if fams[k].wife == i then found = true end
 						for l, m in pairs(fams[k].chil) do if m == i then found = true end end
+						if found == true then k = #fams + 1 end
 					end
 					
 					if found == false then
