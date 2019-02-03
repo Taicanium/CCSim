@@ -1569,7 +1569,6 @@ return
 
 				self:finish()
 
-				os.execute(self.clrcmd)
 				print("\nEnd Simulation!")
 			end,
 			
