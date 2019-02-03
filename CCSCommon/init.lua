@@ -2248,7 +2248,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." scanned.")
 				end
 				
-				print("Removed an additional "..tostring(removed).." individuals.")
+				print("\nRemoved an additional "..tostring(removed).." individuals.")
 
 				return fams
 			end
