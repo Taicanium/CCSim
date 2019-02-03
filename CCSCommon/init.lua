@@ -1092,7 +1092,6 @@ return
 					end
 				
 					print("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
-				
 					local fams = self:sortAscendants()
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
@@ -1132,15 +1131,8 @@ return
 							end
 						end
 
-						for k=1,#fams do
-							if self.royals[fams[k].husb] ~= nil then if self.royals[fams[k].husb].index == i then msgout = msgout.."\n1 FAMS @F"..tostring(k).."@" end end
-							if self.royals[fams[k].wife] ~= nil then if self.royals[fams[k].wife].index == i then msgout = msgout.."\n1 FAMS @F"..tostring(k).."@" end end
-							for l=1,#fams[k].chil do
-								if self.royals[fams[k].chil[l]].index == i then
-									msgout = msgout.."\n1 FAMC @F"..tostring(k).."@"
-								end
-							end
-						end
+						for q, b in pairs(j.fams) do msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end
+						for q, b in pairs(j.famc) do msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end
 
 						msgout = msgout.."\n"
 
@@ -1413,6 +1405,8 @@ return
 					gens=person.gens,
 					gensSet=false,
 					children={},
+					fams={},
+					famc={},
 					index=0
 				}
 
@@ -2216,7 +2210,13 @@ return
 					if found == nil then
 						local doFam = false
 						if j.father ~= "" and j.mother ~= "" then doFam = true end
-						if doFam == true then table.insert(fams, {husb=j.father, wife=j.mother, chil={i}}) end
+						if doFam == true then
+							local fam = {husb=j.father, wife=j.mother, chil={i}}
+							table.insert(fams, fam)
+							table.insert(self.royals[j.father].fams, #fams)
+							table.insert(self.royals[j.mother].fams, #fams)
+							table.insert(j.famc, #fams)
+						end
 					else
 						if chil == true then table.insert(fams[found].chil, i) end
 					end
