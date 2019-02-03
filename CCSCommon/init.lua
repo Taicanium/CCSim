@@ -716,7 +716,7 @@ return
 
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount + 1 end
-								if rcount > 1 and c1strength > c2strength + (c2strength / 5) then
+								if rcount > 1 and c1.strength > c2.strength + (c2.strength / 5) then
 									local rchance = math.random(1, 30)
 									if rchance < 5 then
 										local rname = parent:randomChoice(c2.regions).name
