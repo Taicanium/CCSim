@@ -2217,7 +2217,12 @@ return
 							table.insert(j.famc, #fams)
 						end
 					else
-						if chil == true then table.insert(fams[found].chil, i) end
+						if chil == true then
+							table.insert(fams[found].chil, i)
+							table.insert(self.royals[j.father].fams, found)
+							table.insert(self.royals[j.mother].fams, found)
+							table.insert(j.famc, found)
+						end
 					end
 					
 					done = done + 1
