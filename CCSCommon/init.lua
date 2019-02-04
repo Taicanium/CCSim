@@ -2200,10 +2200,11 @@ return
 				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = true
-					for k=1,#fams do
+					for k=#fams,1,-1 do
 						if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 
 						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
+						if found ~= nil then k = #fams + 1 end
 					end
 
 					if found == nil then
