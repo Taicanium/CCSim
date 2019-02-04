@@ -59,7 +59,7 @@ return
 							local closest = -1
 							local closestGens = 10000000
 							local closestMats = 10000000
-							local closestAge = -1
+							local closestAge = 10000000
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								for i=1,#self.people do
@@ -71,7 +71,7 @@ return
 								for i=1,#possibles do
 									if self.people[possibles[i]].royalGenerations <= closestGens then
 										if self.people[possibles[i]].maternalLineTimes <= closestMats then
-											if self.people[possibles[i]].age >= closestAge then
+											if self.people[possibles[i]].age <= closestAge and self.people[possibles[i]].age > 14 then
 												closest = possibles[i]
 												closestGens = self.people[possibles[i]].royalGenerations
 												closestMats = self.people[possibles[i]].maternalLineTimes
