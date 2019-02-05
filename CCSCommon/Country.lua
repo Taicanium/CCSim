@@ -424,12 +424,25 @@ return
 					
 					if parent.ged == true then
 						local pString = self.people[newRuler].prevname.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+						local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+						
 						if parent.royals[pString] ~= nil then
 							local inf = parent.royals[pString]
-							local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
 							parent.royals[newString] = inf
 							parent.royals[pString] = nil
 						end
+						
+						for i, j in pairs(self.people[newRuler].children) do if j.def == {} then
+							local cString = j.name.." "..j.surname.." "..tostring(j.birth).." "..j.birthplace.." "..j.gender
+							
+							if self.people[newRuler].gender == "Male" then
+								j.father = parent:makeAscendant(self.people[newRuler])
+								if parent.royals[cString] ~= nil then parent.royals[cString].father = newString end
+							else
+								j.mother = parent:makeAscendant(self.people[newRuler])
+								if parent.royals[cString] ~= nil then parent.royals[cString].mother = newString end
+							end
+						end end
 					end
 
 					self.rulerage = self.people[newRuler].age
