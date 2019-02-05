@@ -653,7 +653,8 @@ return
 										end
 									end
 								end
-
+								
+								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
 
 								c.stability = c.stability - math.random(3, 10)
@@ -679,8 +680,6 @@ return
 										end
 									end
 								end
-
-								parent:deepnil(c.regions[v])
 							end
 						end
 
@@ -689,7 +688,7 @@ return
 				},
 				{
 					name="Invade",
-					chance=4,
+					chance=6,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -2204,7 +2203,7 @@ return
 						if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
 
 						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
-						if found ~= nil then k = #fams + 1 end
+						if found ~= nil then k = 1 end
 					end
 
 					if found == nil then
