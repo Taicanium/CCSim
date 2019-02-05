@@ -1409,7 +1409,7 @@ return
 					index=0
 				}
 
-				local pString = person.name.." "..person.surname.." "..person.birth.." "..person.birthplace.." "..person.gender
+				local pString = person.name.." "..person.surname.." "..tostring(person.birth).." "..person.birthplace.." "..person.gender
 				
 				if royals[pString] ~= nil then
 					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end

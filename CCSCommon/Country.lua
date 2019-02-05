@@ -421,6 +421,16 @@ return
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
+					
+					if parent.ged == true then
+						local pString = self.people[newRuler].prevname.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+						if parent.royals[pString] ~= nil then
+							local inf = parent.royals[pString]
+							local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+							parent.royals[newString] = inf
+							parent.royals[pString] = nil
+						end
+					end
 
 					self.rulerage = self.people[newRuler].age
 				end
