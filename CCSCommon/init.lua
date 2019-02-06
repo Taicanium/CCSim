@@ -1112,10 +1112,12 @@ return
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
 						if j.death >= self.years then j.death = 0 end
-						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
+						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "
+						if j.title ~= "" then msgout = msgout..j.title.." " end
+						msgout = msgout..j.name.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
 						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
-						msgout = msgout.."\n2 SURN "..j.surname.."\n2 GIVN "..j.name.."\n"
+						msgout = msgout.."\n2 GIVN "..j.name.."\n2 SURN "..j.surname.."\n"
 						if j.number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(j.number).."\n" end
 						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
 						if j.birth < 0 then msgout = msgout.." B.C." end
