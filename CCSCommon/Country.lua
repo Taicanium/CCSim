@@ -78,13 +78,13 @@ return
 									local psp = self.people[possibles[i]]
 									local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.number)
 									local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.number)
-									if fString == rString then table.insert(children, i) if psp.gender == "Male" then hasMale = true end end
-									if mString == rString then table.insert(children, i) if psp.gender == "Male" then hasMale = true end end
+									if fString == rString then table.insert(children, possibles[i]) if psp.gender == "Male" then hasMale = true end end
+									if mString == rString then table.insert(children, possibles[i]) if psp.gender == "Male" then hasMale = true end end
 								end
 								
 								if #children > 0 then
 									for i=1,#children do
-										local psp = children[i]
+										local psp = self.people[children[i]]
 										if psp.age >= closestAge then
 											if psp.gender == "Female" then if hasMale == false then
 												closest = i
