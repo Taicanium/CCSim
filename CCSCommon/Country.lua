@@ -458,6 +458,10 @@ return
 						if inf ~= nil then
 							parent.royals[newString] = inf
 							parent.royals[pString] = nil
+							
+							parent.royals[newString].name = self.people[newRuler].name
+							parent.royals[newString].number = self.people[newRuler].number
+							parent.royals[newString].title = self.people[newRuler].title
 						end
 
 						for i, j in pairs(parent.royals) do if j.father == pString or j.mother == pString then
