@@ -42,7 +42,7 @@ return
 
 				return nl
 			end,
-			
+
 			add = function(self, n)
 				table.insert(self.people, n)
 			end,
@@ -53,13 +53,15 @@ return
 						self.rulers[#self.rulers].To = parent.years
 					end
 
-					if #self.people > 1 then			
+					if #self.people > 1 then
 						while self.hasruler == -1 do
 							local possibles = {}
 							local closest = -1
 							local closestGens = 10000000
 							local closestMats = 10000000
-							local closestAge = 10000000
+							local closestAge = -1
+							local eldestChild = -1
+							local hasMale = false
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								for i=1,#self.people do
@@ -69,23 +71,45 @@ return
 								end
 
 								for i=1,#possibles do
-									if self.people[possibles[i]].royalGenerations <= closestGens then
-										if self.people[possibles[i]].maternalLineTimes <= closestMats then
-											if self.people[possibles[i]].age <= closestAge and self.people[possibles[i]].age > 14 then
+									local psp = self.people[possibles[i]]
+									if psp.gender == "Male" then hasMale = true end
+								end
+								
+								for i=1,#possibles do
+									local psp = self.people[possibles[i]]
+									if psp.royalGenerations <= closestGens then
+										if psp.maternalLineTimes <= closestMats then
+											if psp.age >= closestAge then
 												closest = possibles[i]
-												closestGens = self.people[possibles[i]].royalGenerations
-												closestMats = self.people[possibles[i]].maternalLineTimes
-												closestAge = self.people[possibles[i]].age
+												closestGens = psp.royalGenerations
+												closestMats = psp.maternalLineTimes
+												closestAge = psp.age
+												local prl = self.rulers[#self.rulers]
+												local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.birth).." "..psp.father.birthplace.." "..psp.father.gender
+												local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.birth).." "..psp.mother.birthplace.." "..psp.mother.gender
+												local rString = prl.name.." "..prl.surname.." "..tostring(prl.birth).." "..prl.birthplace.." "..prl.gender
+												if fString == rString then
+													if psp.gender == "Female" then if hasMale == false then eldestChild = i end
+													else eldestChild = i end
+												end
+												
+												if mString == rString then
+													if psp.gender == "Female" then if hasMale == false then eldestChild = i end
+													else eldestChild = i end
+												end
 											end
 										end
 									end
 								end
 
-								if closest == -1 then
-									local i = math.random(1, #self.people)
-									self:setRuler(parent, i)
+								if eldestChild ~= -1 then self:setRuler(eldestChild)
 								else
-									self:setRuler(parent, closest)
+									if closest == -1 then
+										local i = math.random(1, #self.people)
+										self:setRuler(parent, i)
+									else
+										self:setRuler(parent, closest)
+									end
 								end
 							else
 								local i = math.random(1, #self.people)
@@ -111,7 +135,7 @@ return
 					end
 				end
 			end,
-			
+
 			destroy = function(self, parent)
 				if self.people ~= nil then
 					for i=1,#self.people do
@@ -119,9 +143,9 @@ return
 					end
 					self.people = nil
 				end
-				
+
 				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
-				
+
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
 			end,
@@ -148,7 +172,7 @@ return
 						end
 					end
 				end
-				
+
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] ~= nil then
 						if self.ongoing[i].doStep ~= nil then
@@ -288,7 +312,7 @@ return
 					self.demonym = self.demonym:gsub("aian", "ian")
 					self.demonym = self.demonym:gsub("oian", "ian")
 				end
-				
+
 				if self.demonym:sub(#self.demonym, #self.demonym) == "j" then self.demonym = self.demonym:sub(1, #self.demonym-1) end
 			end,
 
@@ -405,7 +429,7 @@ return
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
 						self.people[newRuler].number = namenum
-						
+
 						for i, j in pairs(self.people[newRuler].children) do
 							if j.def == {} then
 								parent:setGensChildren(j, 1)
@@ -414,27 +438,27 @@ return
 								j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
 							end
 						end
-						
+
 						if self.people[newRuler].gender == "Female" then for i, j in pairs(self.people[newRuler].children) do if j.def == {} then j.maternalLineTimes = self.people[newRuler].maternalLineTimes + 1 end end end
-							
+
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
-					
+
 					if parent.ged == true then
 						local pString = self.people[newRuler].prevname.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
 						local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
-						
+
 						if parent.royals[pString] ~= nil then
 							local inf = parent.royals[pString]
 							parent.royals[newString] = inf
 							parent.royals[pString] = nil
 						end
-						
+
 						for i, j in pairs(self.people[newRuler].children) do if j.def == {} then
 							local cString = j.name.." "..j.surname.." "..tostring(j.birth).." "..j.birthplace.." "..j.gender
-							
+
 							if self.people[newRuler].gender == "Male" then
 								j.father = parent:makeAscendant(self.people[newRuler])
 								if parent.royals[cString] ~= nil then parent.royals[cString].father = newString end
@@ -584,12 +608,12 @@ return
 					end
 				end
 			end,
-			
+
 			triggerEvent = function(self, parent, i)
 				if parent.c_events[i].args == 1 then
 					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 					local newE = self.ongoing[#self.ongoing]
-					
+
 					if newE.performEvent ~= nil then
 						if newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 						else newE:beginEvent(parent, self) end
@@ -597,10 +621,10 @@ return
 				elseif parent.c_events[i].args == 2 then
 					local other = parent:randomChoice(parent.thisWorld.countries)
 					while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
-					
+
 					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 					local newE = self.ongoing[#self.ongoing]
-					
+
 					if newE.performEvent ~= nil then
 						if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 						else newE:beginEvent(parent, self, other) end
@@ -702,7 +726,7 @@ return
 					self.birthrate = 300
 					self.deathrate = 4500
 				end
-				
+
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
 					self:delete(parent, parent:randomChoice(self.people, true))
 				end
@@ -732,7 +756,7 @@ return
 						l.population = 0
 					end
 				end
-				
+
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
 				for i, j in pairs(self.people) do
@@ -755,7 +779,7 @@ return
 								if d < age then self:delete(parent, i) end
 							end
 						end
-						
+
 						local belieftotal = j.pbelief + j.ebelief + j.cbelief
 
 						if j ~= nil then
@@ -774,11 +798,11 @@ return
 						end
 					end
 				end
-				
+
 				self.averageAge = self.averageAge / #self.people
-				
+
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i] / #self.people) * 100 end
-				
+
 				local largest = ""
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end

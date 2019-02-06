@@ -65,7 +65,7 @@ return
 				else
 					nn.surname = self.spouse.surname
 				end
-				
+
 				if self.royalGenerations ~= -1 and self.spouse.royalGenerations ~= -1 then
 					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
 						if self.surname ~= self.spouse.surname then
@@ -75,7 +75,7 @@ return
 								if self.gender == "Male" then nn.surname = self.surname.."-"..self.spouse.surname
 								else nn.surname = self.spouse.surname.."-"..self.surname end
 							end
-							
+
 							local cnt = 0
 							for dash in nn.surname:gmatch("%-") do cnt = cnt + 1 end
 							if cnt > 1 then
@@ -159,10 +159,10 @@ return
 
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i] / 2 end
 				nn.nationality = nl.name
-				
+
 				if self.gender == "Female" then if parent.ged == true then nn:SetFamily(self.spouse, self, parent) end
 				else if parent.ged == true then nn:SetFamily(self, self.spouse, parent) end end
-				
+
 				nl:add(nn)
 			end,
 
@@ -202,13 +202,13 @@ return
 
 				local rankLim = 2
 				if sys.dynastic == false then rankLim = 1 end
-				
+
 				if self.spouse then if self.spouse.def == nil then self.spouse = nil end end
 
 				if self.gender == "Male" or sys.dynastic == false then
 					if self.title ~= nil and self.level ~= nil then
 						self.title = sys.ranks[self.level]
-					
+
 						if self.level < #sys.ranks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
@@ -228,12 +228,12 @@ return
 					else
 						self.level = 2
 					end
-					
+
 					self.title = sys.ranks[self.level]
 				else
 					if self.title ~= nil and self.level ~= nil then
 						self.title = sys.franks[self.level]
-					
+
 						if self.level < #sys.franks - rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
@@ -253,7 +253,7 @@ return
 					else
 						self.level = 2
 					end
-					
+
 					self.title = sys.franks[self.level]
 				end
 
@@ -407,7 +407,7 @@ return
 										table.insert(cp.people, k)
 									end
 								end
-								
+
 								if self.spouse ~= nil then
 									self.spouse = nil
 								end
@@ -437,7 +437,7 @@ return
 				end
 
 				if self.age > 65 then self.military = false end
-				
+
 				for i, j in pairs(self.ethnicity) do
 					if nl.ethnicities[i] == nil then nl.ethnicities[i] = 0 end
 					if self.ethnicity[i] >= 50 then nl.ethnicities[i] = nl.ethnicities[i] + 1 end

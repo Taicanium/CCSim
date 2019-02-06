@@ -48,7 +48,7 @@ return
 							if s.spouse ~= nil then s.spouse = nil end
 							table.insert(newC.people, s)
 						end
-						
+
 						c.hasruler = -1
 
 						c.stability = c.stability - 10
@@ -65,7 +65,7 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
-						
+
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
 							for q=1,#c.people do
@@ -91,7 +91,7 @@ return
 						end
 
 						c.hasruler = -1
-						
+
 						local oldsys = parent.systems[c.system].name
 
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
@@ -237,7 +237,7 @@ return
 							end
 
 							c.hasruler = -1
-							
+
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
 
@@ -632,7 +632,7 @@ return
 								newl.rulers = parent:deepcopy(c.rulers)
 								newl.rulernames = parent:deepcopy(c.rulernames)
 								newl.frulernames = parent:deepcopy(c.frulernames)
-								
+
 								for i, j in pairs(parent.final) do
 									if j.name == newl.name then
 										local conqYear = nil
@@ -641,7 +641,7 @@ return
 											if l.Event:match("Conquered") then conqYear = l.Year end
 											if conqYear ~= nil then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and l.Year ~= conqYear then retrieve = false end end
 										end
-										
+
 										if retrieve == true then
 											local rIndex = 1
 											for k, l in pairs(j.rulers) do
@@ -653,24 +653,24 @@ return
 										end
 									end
 								end
-								
+
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
 
 								c.stability = c.stability - math.random(3, 10)
 								if c.stability < 1 then c.stability = 1 end
-								
+
 								if c.capitalregion == newl.name then
 									for i, j in pairs(newl.regions) do
 										for k, l in pairs(j.cities) do
 											if l.name == c.capitalcity then
 												local oldcap = c.capitalcity
 												local oldreg = c.capitalregion
-												
+
 												local nr = parent:randomChoice(newl.regions)
 												c.capitalregion = nr.name
 												c.capitalcity = parent:randomChoice(nr.cities).name
-												
+
 												local msg = "Capital moved"
 												if oldcap ~= "" then msg = msg.." from "..oldcap end
 												msg = msg.." to "..c.capitalcity
@@ -736,7 +736,7 @@ return
 					inverse=true,
 					performEvent=function(self, parent, c1, c2)
 						local subchance = math.random(1, 100)
-						
+
 						if subchance < 50 then
 							for i=1,#c1.alliances do
 								if c1.alliances[i] == c2.name then return -1 end
@@ -828,10 +828,10 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c1, c2)
 						local patron = false
-						
+
 						for i=1,#c2.rulers do if c2.rulers[i].Country == c1.name then patron = true end end
 						for i=1,#c1.rulers do if c1.rulers[i].Country == c2.name then patron = true end end
-						
+
 						if patron == false then
 							if c1.majority == c2.majority then
 								if c1.relations[c2.name] ~= nil then
@@ -955,7 +955,7 @@ return
 							end
 							self.maxyears = self.maxyears + res
 						end
-						
+
 						io.write(string.format("\nDo you want to change the autosave interval, currently every "..tostring(self.autosaveDur).." years (y/n)? > "))
 						res = io.read()
 						if res == "y" then
@@ -1006,7 +1006,7 @@ return
 					dat = nil
 				else dat = nil end
 			end,
-			
+
 			finish = function(self, parent)
 				os.execute(self.clrcmd)
 				print("\nPrinting result...")
@@ -1017,8 +1017,8 @@ return
 				local fams = {}
 
 				os.execute(self.clrcmd)
-				
-				for i, cp in pairs(self.final) do					
+
+				for i, cp in pairs(self.final) do
 					local newc = false
 					local fr = 1
 					local pr = 1
@@ -1089,7 +1089,7 @@ return
 						j:destroy(self)
 						fIndex = fIndex + 1
 					end
-				
+
 					print("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
 					local fams = self:sortAscendants()
 
@@ -1097,7 +1097,7 @@ return
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
 					print("")
-					
+
 					local ascCount = 0
 					local sRoyals = {}
 					local ind = 1
@@ -1143,7 +1143,7 @@ return
 						percentage = math.floor(finished / ascCount * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."    \t% done")
 					end
-					
+
 					ged:flush()
 
 					print("")
@@ -1167,9 +1167,9 @@ return
 						percentage = math.floor(j / #fams * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
 					end
-					
+
 					msgout = "0 TRLR\n"
-					
+
 					ged:write(msgout)
 					ged:flush()
 					ged:close()
@@ -1412,7 +1412,7 @@ return
 				}
 
 				local pString = person.name.." "..person.surname.." "..tostring(person.birth).." "..person.birthplace.." "..person.gender
-				
+
 				if royals[pString] ~= nil then
 					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end
 					if person.deathplace ~= nil then if person.deathplace ~= "" then if royals[pString].deathplace ~= person.deathplace then royals[pString].deathplace = person.deathplace end end end
@@ -1423,23 +1423,23 @@ return
 					fInd = pString
 					royals[fInd] = pTable
 				end
-				
+
 				if person.title ~= nil then if royals[fInd].title ~= person.title then
 					if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[fInd].title = person.title end
-					
+
 					local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
 					for k=1,#self.systems do
 						if royals[fInd].title == "King" then MorE = 0 end
 						if royals[fInd].title == "Queen" then MorE = 1 end
 						if royals[fInd].title == "Emperor" then MorE = 2 end
 						if royals[fInd].title == "Empress" then MorE = 3 end
-						
+
 						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
 						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
 					end
 					if MorE == -1 then royals[fInd].title = "" end
 				end end
-				
+
 				if royals[fInd].father == "" then if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end end
 				if royals[fInd].mother == "" then if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end end
 				if #royals[fInd].children ~= #person.children then
@@ -1484,11 +1484,11 @@ return
 					end
 
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
-					
+
 					if self.showinfo == 1 then
 						local wars = {}
 						local alliances = {}
-						
+
 						local cCount = 0
 
 						for i, cp in pairs(self.thisWorld.countries) do
@@ -1499,7 +1499,7 @@ return
 								cCount = cCount + 1
 							end
 						end
-						
+
 						local totalC = 0
 						for i, cp in pairs(self.thisWorld.countries) do totalC = totalC + 1 end
 						if cCount < totalC then msg = msg.."[+"..tostring(totalC-cCount).." more]\n" end
@@ -1572,7 +1572,7 @@ return
 
 				print("\nEnd Simulation!")
 			end,
-			
+
 			makeAscendant = function(self, person)
 				local rtitle = person.title
 				if person.royalGenerations == 0 then
@@ -1584,7 +1584,7 @@ return
 						else rtitle = "Empress" end
 					end
 				end
-				
+
 				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
 				if person.children ~= nil then for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end end
 				return t
@@ -2127,7 +2127,7 @@ return
 				end
 				for i=3,s do math.random(100, 1000) end
 			end,
-			
+
 			setGens = function(self, i, v, g)
 				local r = self.royals[i]
 				if r ~= nil then
@@ -2143,7 +2143,7 @@ return
 					end
 				end
 			end,
-			
+
 			setGensChildren = function(self, t, v)
 				if t.royalGenerations > v or t.royalGenerations == -1 then
 					t.royalGenerations = v
@@ -2162,10 +2162,10 @@ return
 				local oldCount = 0
 				local count = 0
 				local done = 0
-				
+
 				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
 				count = oldCount
-				
+
 				for i, j in pairs(self.royals) do
 					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
 					if j.gens == 0 then self:setGens(j.father, -2, 0) end
@@ -2174,30 +2174,30 @@ return
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
-				
+
 				print("")
 				done = 0
-					
+
 				for i, j in pairs(self.royals) do
 					if j.gens == -1 or j.gens >= self.genLimit then
 						self.royals[i] = nil
 						removed = removed + 1
 					end
-					
+
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
 				end
-				
+
 				print("")
 				print("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
-				
+
 				count = 0
 				for i, j in pairs(self.royals) do count = count + 1 end
 				oldCount = count
 				print("Linking "..tostring(count).." individuals...")
-				
+
 				done = 0
-				
+
 				for i, j in pairs(self.royals) do
 					local found = nil
 					local chil = true
@@ -2210,7 +2210,7 @@ return
 
 					if found == nil then
 						local doFam = false
-						if j.father ~= "" and j.mother ~= "" then doFam = true end
+						if j.father ~= "" and j.mother ~= "" then if self.royals[j.father] ~= nil and self.royals[j.mother] ~= nil then doFam = true end
 						if doFam == true then
 							local fam = {husb=j.father, wife=j.mother, chil={i}}
 							table.insert(fams, fam)
@@ -2224,35 +2224,35 @@ return
 							table.insert(j.famc, found)
 						end
 					end
-					
+
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 				end
-				
+
 				removed = 0
 				done = 0
 				count = 0
 				for i, j in pairs(self.royals) do count = count + 1 end
 				print("\nRemoving unrelated individuals...")
-				
+
 				local rel = {}
-				
+
 				for k=1,#fams do
 					rel[fams[k].husb] = 1
 					rel[fams[k].wife] = 1
 					for i, j in pairs(fams[k].chil) do rel[j] = 1 end
 				end
-				
+
 				for i, j in pairs(self.royals) do
 					if rel[i] == nil then
 						self.royals[i] = nil
 						removed = removed + 1
 					end
-					
+
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." scanned.")
 				end
-				
+
 				print("\nRemoved an additional "..tostring(removed).." individuals.")
 
 				return fams

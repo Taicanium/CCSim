@@ -36,9 +36,9 @@ return
 				print("Opening data file...")
 				local f = io.open("in_progress.dat", "r+b")
 				print("Reading data file...")
-				
+
 				local jsonLoad = false
-				
+
 				if jsonstatus then
 					local jData = f:read("*all")
 					print("Decoding JSON...")
@@ -63,13 +63,13 @@ return
 							self.cColors = jTable[16]
 							self.cTriplets = jTable[17]
 						end
-						
+
 						jsonLoad = true
 					else
 						print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.")
 					end
 				end
-				
+
 				if jsonLoad == false then
 					local datin = f:read(1)
 					parent.autosaveDur = tonumber(f:read(tonumber(datin)))
@@ -94,7 +94,7 @@ return
 
 					datin = f:read(1)
 					parent.yearstorun = tonumber(f:read(tonumber(datin)))
-					
+
 					parent.final = self:loadtable(parent, f)
 
 					self.countries = self:loadtable(parent, f)
@@ -114,9 +114,9 @@ return
 						self.cTriplets = self:loadtable(parent, f)
 					end
 				end
-					
+
 				print("Reconstructing metatables...")
-				
+
 				for i, j in pairs(self.countries) do
 					setmetatable(j, require("CCSCommon.Country")())
 					for k, l in pairs(j.people) do
@@ -132,10 +132,10 @@ return
 						end
 					end
 				end
-				
+
 				f:close()
 				f = nil
-				
+
 				print("Restoring encoded recursive values...")
 
 				for i, j in pairs(self.countries) do
@@ -145,12 +145,12 @@ return
 								local fn = loadstring(n)
 								if fn then l[m] = fn end
 							end
-							
+
 							if m == "target" then for o, p in pairs(self.countries) do if tostring(o) == tostring(n) then l[m] = p end end end
 						end
 					end
 				end
-				
+
 				for i, j in pairs(self.countries) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
 						for m, n in pairs(j.people) do if n.spouse then
@@ -160,7 +160,7 @@ return
 						end end
 					end end
 				end end
-				
+
 				for i, j in pairs(parent.final) do if j.people then
 					for k, l in pairs(j.people) do if l.spouse then
 						if type(l.spouse) == "number" then
@@ -168,7 +168,7 @@ return
 						end
 					end end
 				end end
-				
+
 				for i, j in pairs(parent.final) do if type(i) == "number" then table.insert(self.countries, j) else self.countries[i] = j end end
 
 				print("File closed.")
@@ -180,13 +180,13 @@ return
 				local f = io.open("in_progress.dat", "w+b")
 				if f then
 					print("Encoding recursive values...")
-					
+
 					for i, j in pairs(parent.final) do
 						for k, l in pairs(self.countries) do
 							if j.name == l.name then parent.final[i] = nil end
 						end
 					end
-					
+
 					for i, j in pairs(self.countries) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
 							for m, n in pairs(j.people) do if n.spouse then
@@ -206,7 +206,7 @@ return
 							end end
 						end end
 					end end
-					
+
 					for i, j in pairs(parent.final) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
 							for m, n in pairs(j.people) do if n.spouse then
@@ -226,31 +226,31 @@ return
 							end end
 						end end
 					end end
-					
+
 					for i, j in pairs(self.countries) do
 						for k, l in pairs(j.ongoing) do
 							for m, n in pairs(l) do
 								if type(n) == "function" then
 									l[m] = string.dump(n)
 								end
-							
+
 								if m == "target" then for o, p in pairs(self.countries) do if p.name == n.name then l[m] = o end end end
 							end
 						end
 					end
-					
+
 					local jsonSaved = false
-					
+
 					if jsonstatus then
 						local jTable = {parent.autosaveDur, parent.numCountries, parent.popLimit, parent.showinfo, parent.startyear, parent.maxyears, parent.years, parent.yearstorun, parent.final, self.countries, self.fromFile, parent.ged, parent.doR}
-						
+
 						if parent.doR == true then
 							table.insert(jTable, self.planet)
 							table.insert(jTable, self.planetdefined)
 							table.insert(jTable, self.cColors)
 							table.insert(jTable, self.cTriplets)
 						end
-						
+
 						print("Encoding JSON...")
 						local stat, jData = pcall(json.encode, jTable)
 						if stat then
@@ -261,7 +261,7 @@ return
 							print("Unable to encode JSON data! Falling back to native encoding.")
 						end
 					end
-					
+
 					if jsonSaved == false then
 						f:write(string.len(tostring(parent.autosaveDur)))
 						f:write(parent.autosaveDur)
@@ -286,11 +286,11 @@ return
 
 						f:write(string.len(tostring(parent.yearstorun)))
 						f:write(parent.yearstorun)
-						
+
 						self:savetable(parent, parent.final, f)
 
 						self:savetable(parent, self.countries, f)
-						
+
 						if self.fromFile == true then f:write("1") else f:write("0") end
 
 						if parent.ged == true then f:write("1") else f:write("0") end
@@ -303,13 +303,13 @@ return
 							self:savetable(parent, self.cTriplets, f)
 						else f:write("0") end
 					end
-					
+
 					f:flush()
 					f:close()
 					f = nil
-					
+
 					print("Restoring encoded recursive values...")
-						
+
 					for i, j in pairs(self.countries) do
 						for k, l in pairs(j.ongoing) do
 							for m, n in pairs(l) do
@@ -317,12 +317,12 @@ return
 									local fn = loadstring(n)
 									if fn then l[m] = fn end
 								end
-							
+
 								if m == "target" then for o, p in pairs(self.countries) do if tostring(o) == tostring(n) then l[m] = p end end end
 							end
 						end
 					end
-						
+
 					for i, j in pairs(self.countries) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
 							if type(l.spouse) == "number" then
@@ -330,7 +330,7 @@ return
 							end
 						end end
 					end end
-					
+
 					for i, j in pairs(parent.final) do if j.people then
 						for k, l in pairs(j.people) do if l.spouse then
 							if type(l.spouse) == "number" then
@@ -350,7 +350,7 @@ return
 
 				local r = math.random(100, 150)
 				self.planetR = r
-				
+
 				local rdone = 0
 
 				for x=-r,r do
@@ -379,7 +379,7 @@ return
 						end
 					end
 				end
-				
+
 				print("")
 
 				for i=1,#self.planetdefined do
@@ -412,7 +412,7 @@ return
 
 				for i=1,bodyCount do
 					parent:rseed()
-					
+
 					local located = false
 
 					local rnd = math.random(1, #self.planetdefined)
@@ -569,7 +569,7 @@ return
 					for i, cp in pairs(self.countries) do
 						for j=#cp.ongoing,1,-1 do if cp.target ~= nil then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
 					end
-				
+
 					self.cColors[nz.name] = nil
 					self.cTriplets[nz.name] = nil
 					self.countries[nz.name] = nil
@@ -789,7 +789,7 @@ return
 							f:write(z)
 							if j < i+499 then f:write(", ") end
 						end
-						
+
 						f:write(")\ncsc <- c(")
 
 						for j=i,i+499 do
@@ -814,7 +814,7 @@ return
 							end
 							if j < i+499 then f:write(", ") end
 						end
-						
+
 						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE)")
 					else
 						f:write("\nx <- c(")
@@ -855,7 +855,7 @@ return
 							f:write(z)
 							if j < #self.planetdefined then f:write(", ") end
 						end
-						
+
 						f:write(")\ncsc <- c(")
 
 						for j=i,#self.planetdefined do
@@ -880,11 +880,11 @@ return
 							end
 							if j < #self.planetdefined then f:write(", ") end
 						end
-						
+
 						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE)")
 					end
 				end
-				
+
 				f:write("\ncsd <- c(")
 
 				for i, cp in pairs(self.countries) do
@@ -950,7 +950,7 @@ return
 					f:write("\""..txt.."\"")
 					if i < #cTexts then f:write(", ") end
 				end
-				
+
 				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=2)")
 
 				for i, cp in pairs(self.countries) do
@@ -1079,7 +1079,7 @@ return
 				for i, cp in pairs(self.countries) do
 					if cp ~= nil then
 						cp:eventloop(parent)
-						
+
 						if cp.population < 10 then
 							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
 							cp:event(parent, "Disappeared")
