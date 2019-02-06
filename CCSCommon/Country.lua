@@ -731,9 +731,9 @@ return
 
 				if self.population < parent.popLimit then
 					self.birthrate = 6
-					self.deathrate = 20000
+					self.deathrate = 10000
 				else
-					self.birthrate = 400
+					self.birthrate = 100
 					self.deathrate = 5000
 				end
 
@@ -785,9 +785,9 @@ return
 						if age > 130 then
 							self:delete(parent, i)
 						else
-							if self.deathrate-math.pow(age, 2) < age then self:delete(parent, i) else
+							if math.pow(age, 2) > math.ceil(self.deathrate) then self:delete(parent, i) else
 								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
-								if d < age then self:delete(parent, i) end
+								if d > math.pow(age, 2) and d < age*5 then self:delete(parent, i) end
 							end
 						end
 
