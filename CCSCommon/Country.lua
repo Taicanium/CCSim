@@ -85,9 +85,9 @@ return
 												closestMats = psp.maternalLineTimes
 												closestAge = psp.age
 												local prl = self.rulers[#self.rulers]
-												local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.birth).." "..psp.father.birthplace.." "..psp.father.gender
-												local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.birth).." "..psp.mother.birthplace.." "..psp.mother.gender
-												local rString = prl.name.." "..prl.surname.." "..tostring(prl.birth).." "..prl.birthplace.." "..prl.gender
+												local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.number)
+												local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.number)
+												local rString = prl.name.." "..prl.surname.." "..tostring(prl.number)
 												if fString == rString then
 													if psp.gender == "Female" then if hasMale == false then eldestChild = i end
 													else eldestChild = i end
