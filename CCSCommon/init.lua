@@ -2210,7 +2210,7 @@ return
 
 					if found == nil then
 						local doFam = false
-						if j.father ~= "" and j.mother ~= "" then if self.royals[j.father] ~= nil and self.royals[j.mother] ~= nil then doFam = true end
+						if j.father ~= "" and j.mother ~= "" then if self.royals[j.father] ~= nil and self.royals[j.mother] ~= nil then doFam = true end end
 						if doFam == true then
 							local fam = {husb=j.father, wife=j.mother, chil={i}}
 							table.insert(fams, fam)
