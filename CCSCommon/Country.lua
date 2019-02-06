@@ -70,7 +70,7 @@ return
 							if sys.dynastic == true then
 								for i=1,#self.people do
 									if self.people[i].royalGenerations > 0 then
-										table.insert(possibles, i)
+										if self.people[i].age <= 50 then table.insert(possibles, i) end
 									end
 								end
 								
@@ -733,8 +733,8 @@ return
 					self.birthrate = 6
 					self.deathrate = 20000
 				else
-					self.birthrate = 500
-					self.deathrate = 6500
+					self.birthrate = 400
+					self.deathrate = 5000
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
