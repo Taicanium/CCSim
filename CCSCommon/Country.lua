@@ -734,7 +734,7 @@ return
 					self.deathrate = 20000
 				else
 					self.birthrate = 500
-					self.deathrate = 9500
+					self.deathrate = 6500
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
