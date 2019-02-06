@@ -70,7 +70,7 @@ return
 							if sys.dynastic == true then
 								for i=1,#self.people do
 									if self.people[i].royalGenerations > 0 then
-										if self.people[i].age <= 50 then table.insert(possibles, i) end
+										if self.people[i].age <= 40 then table.insert(possibles, i) end
 									end
 								end
 								
