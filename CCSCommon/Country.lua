@@ -738,8 +738,7 @@ return
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
-					local p = parent:randomChoice(self.people, true)
-					if self.people[p].isruler == false then self:delete(parent, p) end
+					self:delete(parent, parent:randomChoice(self.people, true))
 				end
 
 				local oldcap = nil
@@ -785,7 +784,7 @@ return
 						if age > 130 then
 							self:delete(parent, i)
 						else
-							if math.pow(age, 2) > math.ceil(self.deathrate) then self:delete(parent, i) else
+							if math.ceil(self.deathrate)-math.pow(age, 2) < 2 then self:delete(parent, i) else
 								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
 								if d > math.pow(age, 2) and d < age*5 then self:delete(parent, i) end
 							end
