@@ -63,7 +63,9 @@ return
 							local eldestChild = -1
 							local children = {}
 							local hasMale = false
-							local rString = prl.name.." "..prl.surname.." "..tostring(prl.number)
+							local rString = ""
+							local prl = self.rulers[#self.rulers]
+							if prl ~= nil then rString = prl.name.." "..prl.surname.." "..tostring(prl.number) end
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								for i=1,#self.people do
