@@ -102,7 +102,7 @@ return
 									end
 								end
 
-								if eldestChild ~= -1 then self:setRuler(eldestChild)
+								if eldestChild ~= -1 then self:setRuler(parent, eldestChild)
 								else
 									if closest == -1 then
 										local i = math.random(1, #self.people)
@@ -314,6 +314,7 @@ return
 				end
 
 				if self.demonym:sub(#self.demonym, #self.demonym) == "j" then self.demonym = self.demonym:sub(1, #self.demonym-1) end
+				if self.demonym:sub(#self.demonym, #self.demonym) == "w" then self.demonym = self.demonym.."i" end
 			end,
 
 			set = function(self, parent)
