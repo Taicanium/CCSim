@@ -739,7 +739,7 @@ return
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
 					local p = parent:randomChoice(self.people, true)
-					if p.isruler == false then self:delete(parent, p) end
+					if self.people[p].isruler == false then self:delete(parent, p) end
 				end
 
 				local oldcap = nil
