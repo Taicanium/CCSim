@@ -733,12 +733,13 @@ return
 					self.birthrate = 6
 					self.deathrate = 20000
 				else
-					self.birthrate = 300
-					self.deathrate = 4500
+					self.birthrate = 500
+					self.deathrate = 9500
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
-					self:delete(parent, parent:randomChoice(self.people, true))
+					local p = parent:randomChoice(self.people, true)
+					if p.isruler == false then self:delete(parent, p) end
 				end
 
 				local oldcap = nil
