@@ -1158,7 +1158,7 @@ return
 						local numChil = #fams[j].chil
 						while #cSorted ~= numChil do
 							for k=1,#fams[j].chil do
-								local ch = fams[j].chil
+								local ch = self.royals[fams[j].chil[k]]
 								if ch.birth < brt then brt = ch.birth earliest = k end
 							end
 							
