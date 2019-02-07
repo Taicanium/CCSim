@@ -26,7 +26,6 @@ return
 				n.children = {}
 				n.isruler = false
 				n.parentRuler = false
-				n.royal = false
 				n.royalSystem = ""
 				n.royalGenerations = -1
 				n.birthplace = ""
@@ -117,14 +116,14 @@ return
 					end
 				end
 
-				if self.royal == true then
+				if self.isruler == true then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.royalSystem
 					local title = self.title
 					nn.lastRoyalAncestor = string.format(title.." "..self.name.." "..parent:roman(self.number).." of "..nl.name)
 					nn.royalInfo.Gens=nn.royalGenerations
 					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
-				else if self.spouse.royal == true then
+				else if self.spouse.isruler == true then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.spouse.royalSystem
 					local title = self.spouse.title
