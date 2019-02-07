@@ -31,7 +31,7 @@ return
 				nl.population = 0
 				nl.ethnicities = {}
 				nl.majority = ""
-				nl.birthrate = 6
+				nl.birthrate = 4
 				nl.regions = {}
 				nl.parties = {}
 				nl.rulerParty = ""
@@ -719,9 +719,9 @@ return
 				self.military = 0
 
 				if self.population < parent.popLimit then
-					self.birthrate = 6
+					self.birthrate = 4
 				else
-					self.birthrate = 600
+					self.birthrate = 800
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
@@ -771,7 +771,7 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 						else
-							d = math.random(1, 400-(age*3))
+							d = math.random(1, 500-(age*3))
 							if d < age then self:delete(parent, i) end
 						end
 
