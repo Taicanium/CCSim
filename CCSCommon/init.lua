@@ -2089,10 +2089,8 @@ return
 			end,
 
 			setGensChildren = function(self, t, v)
-				if t.royalGenerations > v or t.royalGenerations == -1 then
-					t.royalGenerations = v
-				end
-				for i, j in pairs(t.children) do self:setGensChildren(j, v+1) end
+				if t.def == {} then if t.royalGenerations > v or t.royalGenerations == -1 then t.royalGenerations = v end end
+				if t.children ~= nil then for i, j in pairs(t.children) do self:setGensChildren(j, v+1) end end
 			end,
 
 			sleep = function(self, t)
