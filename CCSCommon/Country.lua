@@ -63,44 +63,47 @@ return
 							local hasMale = false
 							local rString = ""
 							local prl = self.rulers[#self.rulers]
-							if prl ~= nil then rString = prl.name.." "..prl.surname.." "..tostring(prl.number) end
+							if #self.rulers > 0 then rString = prl.name.." "..prl.surname.." "..tostring(prl.number) end
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								for i=1,#self.people do
 									if self.people[i].royalGenerations > 0 then
 										if self.people[i].age <= self.averageAge + 25 then table.insert(possibles, i)
-										elseif self.people[i].royalGenerations == 1 then table.insert(possibles, i) end
+										else if self.people[i].royalGenerations == 1 then table.insert(possibles, i) end end
 									end
 								end
 								
-								for i=1,#possibles do
-									local psp = self.people[possibles[i]]
+								if #self.rulers > 0 then for i=1,#possibles do
+									local c = possibles[i]
+									local psp = self.people[c]
 									local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.number)
 									local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.number)
-									if fString == rString then table.insert(children, possibles[i]) if psp.gender == "Male" then hasMale = true end end
-									if mString == rString then table.insert(children, possibles[i]) if psp.gender == "Male" then hasMale = true end end
-								end
+									if fString == rString then table.insert(children, c) if psp.gender == "Male" then hasMale = true end end
+									if mString == rString then table.insert(children, c) if psp.gender == "Male" then hasMale = true end end
+								end end
 								
 								if #children > 0 then
 									for i=1,#children do
-										local psp = self.people[children[i]]
+										local c = children[i]
+										local psp = self.people[c]
 										if psp.age >= closestAge then
 											if psp.gender == "Female" then if hasMale == false then
-												closest = children[i]
+												closest = c
 												closestAge = psp.age
 											end else
-												closest = children[i]
+												closest = c
 												closestAge = psp.age
 											end
 										end
 									end
 								else
 									for i=1,#possibles do
-										local psp = self.people[possibles[i]]
+										local c = possibles[i]
+										local psp = self.people[c]
 										if psp.royalGenerations <= closestGens then
 											if psp.maternalLineTimes <= closestMats then
 												if psp.age >= closestAge then
-													closest = possibles[i]
+													closest = c
 													closestGens = psp.royalGenerations
 													closestMats = psp.maternalLineTimes
 													closestAge = psp.age
@@ -110,15 +113,15 @@ return
 									end
 								end
 
-								if closest == -1 then
+								if self.people[closest] == nil then
 									local p = math.random(1, #self.people)
-									if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, math.random(1, #self.people)) end
+									if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 								else
 									self:setRuler(parent, closest)
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, math.random(1, #self.people)) end
+								if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 							end
 						end
 					end
