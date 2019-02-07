@@ -145,8 +145,8 @@ return
 						self.status = 0 -- -100 is victory for the opposition side; 100 is victory for the present government.
 						self.status = self.status + parent:strengthFactor(c)
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.abs(self.status)).."% opposition"
-						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% government"
+						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
+						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% government"
 						else statString = "tossup" end
 						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
 						self.opIntervened = {}
@@ -207,10 +207,10 @@ return
 						self.status = self.status + math.ceil(math.random(math.floor(varistab),math.ceil(varistab))/2)
 						
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.abs(self.status)).."% opposition"
-						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% government"
+						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
+						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% government"
 						else statString = "tossup" end
-						self.eString = parent:ordinal(civilWars).." "..c.demonym.." civil war ("..statString..")"
+						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
 
 						if self.status <= -100 then return self:endEvent(parent, c) end
 						if self.status >= 100 then return self:endEvent(parent, c) end
@@ -398,8 +398,8 @@ return
 						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
 						
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.abs(self.status)).."% "..self.target.name
-						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% "..c1.name
+						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
 						else statString = "tossup" end
 						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 
