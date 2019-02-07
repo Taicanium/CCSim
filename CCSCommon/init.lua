@@ -64,13 +64,7 @@ return
 
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
-							for q=1,#c.people do
-								if c.people[q] ~= nil then
-									if c.people[q].isruler == true then
-										c:delete(parent, q)
-									end
-								end
-							end
+							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -89,7 +83,6 @@ return
 						c.hasruler = -1
 
 						local oldsys = parent.systems[c.system].name
-
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
 
 						c:checkRuler(parent)
@@ -99,13 +92,11 @@ return
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 						if c.snt[parent.systems[c.system].name] > 1 then
 							if parent.systems[c.system].dynastic == true then
-								local rul = nil
-								for i=1,#c.people do if c.people[i].royal == true then rul = i end end
-								if rul ~= nil then
-									if c.people[rul].royalInfo.LastAncestor ~= "" then
-										msg = "Enthronement of "..c.people[rul].title.." "..c.people[rul].name.." "..parent:roman(c.people[rul].number).." of "..c.name..", "..parent:generationString(c.people[rul].royalInfo.Gens, c.people[rul].gender).." of "..c.people[rul].royalInfo.LastAncestor
-										c:event(parent, msg)
-									end
+								local newRuler = -1
+								for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
+								if c.people[newRuler].royalInfo.LastAncestor ~= "" then
+									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
+									c:event(parent, msg)
 								end
 							end
 						end
@@ -216,13 +207,7 @@ return
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
-								for q=1,#c.people do
-									if c.people[q] ~= nil then
-										if c.people[q].isruler == true then
-											c:delete(parent, q)
-										end
-									end
-								end
+								for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -274,10 +259,8 @@ return
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
-										local rul = 0
-										for i=1,#c.people do if c.people[i].royal == true then rul = i end end
-										if c.people[rul].royalInfo.LastAncestor ~= "" then
-											msg = "Enthronement of "..c.people[rul].title.." "..c.people[rul].name.." "..parent:roman(c.people[rul].number).." of "..c.name..", "..parent:generationString(c.people[rul].royalInfo.Gens, c.people[rul].gender).." of "..c.people[rul].royalInfo.LastAncestor
+										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
 											c:event(parent, msg)
 										end
 									end
@@ -288,10 +271,8 @@ return
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
-										local rul = 0
-										for i=1,#c.people do if c.people[i].royal == true then rul = i end end
-										if c.people[rul].royalInfo.LastAncestor ~= "" then
-											msg = "Enthronement of "..c.people[rul].title.." "..c.people[rul].name.." "..parent:roman(c.people[rul].number).." of "..c.name..", "..parent:generationString(c.people[rul].royalInfo.Gens, c.people[rul].gender).." of "..c.people[rul].royalInfo.LastAncestor
+										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
 											c:event(parent, msg)
 										end
 									end
