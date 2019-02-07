@@ -80,8 +80,14 @@ return
 									local psp = self.people[c]
 									local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.number)
 									local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.number)
-									if fString == rString then table.insert(children, c) if psp.gender == "Male" then hasMale = true end end
-									if mString == rString then table.insert(children, c) if psp.gender == "Male" then hasMale = true end end
+									if fString == rString then 
+										table.insert(children, c)
+										if psp.gender == "Male" then hasMale = true end
+									end
+									if mString == rString then
+										table.insert(children, c)
+										if psp.gender == "Male" then hasMale = true end
+									end
 								end end
 								
 								if #children > 0 then
@@ -433,7 +439,6 @@ return
 					if parent.systems[self.system].dynastic == true then
 						self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
 						self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
-						self.people[newRuler].royal = true
 						self.people[newRuler].royalGenerations = 0
 						self.people[newRuler].maternalLineTimes = 0
 						self.people[newRuler].royalSystem = parent.systems[self.system].name
@@ -450,7 +455,7 @@ return
 							end
 						end
 
-						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(namenum), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					else
 						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					end
