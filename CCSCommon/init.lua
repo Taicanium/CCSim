@@ -1166,24 +1166,10 @@ return
 						if self.royals[fams[j].husb] ~= nil then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
 						if self.royals[fams[j].wife] ~= nil then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
 
-						local cSorted = {}
-						local brt = self.maxyears + 100
-						local earliest = -1
-						local numChil = #fams[j].chil
-						while #cSorted ~= numChil do
-							for k=1,#fams[j].chil do
-								local ch = self.royals[fams[j].chil[k]]
-								if ch.birth < brt then brt = ch.birth earliest = k end
-							end
-							
-							local ch = table.remove(fams[j].chil, earliest)
-							table.insert(cSorted, ch)
-						end
-						
-						for k=1,#cSorted do
-							if cSorted[k] ~= fams[j].husb then
-								if cSorted[k] ~= fams[j].wife then
-									msgout = msgout.."1 CHIL @I"..tostring(self.royals[cSorted[k]].index).."@\n"
+						for k=1,#fams[j].chil do
+							if fams[j].chil[k] ~= fams[j].husb then
+								if fams[j].chil[k] ~= fams[j].wife then
+									msgout = msgout.."1 CHIL @I"..tostring(self.royals[fams[j].chil[k]].index).."@\n"
 								end
 							end
 						end
