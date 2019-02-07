@@ -771,7 +771,7 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 						else
-							d = math.random(1, 200-age)
+							d = math.random(1, 400-(age*3))
 							if d < age then self:delete(parent, i) end
 						end
 
