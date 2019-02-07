@@ -340,6 +340,7 @@ return
 					newp.cfreedom = self.cbelief
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief
+					local belieftotal = newp.cfreedom + newp.efreedom + newp.pfreedom
 
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
