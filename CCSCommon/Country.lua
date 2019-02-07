@@ -772,7 +772,7 @@ return
 							self:delete(parent, i)
 						else
 							d = math.random(1, 200-age)
-							if d < self.age then self:delete(parent, i) end
+							if d < age then self:delete(parent, i) end
 						end
 
 						if j ~= nil then
