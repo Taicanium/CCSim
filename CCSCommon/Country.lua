@@ -720,7 +720,7 @@ return
 				if self.population < parent.popLimit then
 					self.birthrate = 3
 				else
-					self.birthrate = 150
+					self.birthrate = 100
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
