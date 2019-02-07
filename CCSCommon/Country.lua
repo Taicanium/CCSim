@@ -51,6 +51,8 @@ return
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
 					if #self.rulers > 0 then self.rulers[#self.rulers].To = parent.years end
+					
+					for i=1,#self.people do self.people[i].isruler = false end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
@@ -377,9 +379,7 @@ return
 
 				if #self.people > 1 then
 					local r = math.random(1, #self.people)
-					while self.people[r].isruler == true do
-						r = math.random(1, #self.people)
-					end
+					while self.people[r].isruler == true do r = math.random(1, #self.people) end
 					self:delete(parent, r)
 				end
 
@@ -445,6 +445,7 @@ return
 								if j.royalGenerations == 1 then j.royalSystem = parent.systems[self.system].name end
 								j.royalInfo.Gens = j.royalGenerations
 								j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
+								j.parentRuler = true
 								if self.people[newRuler].gender == "Female" then j.maternalLineTimes = 1 end
 							end
 						end
