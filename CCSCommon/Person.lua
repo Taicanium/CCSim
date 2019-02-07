@@ -284,7 +284,7 @@ return
 									if self.spouse.age < 75 then
 										if self.spouse.age > 14 then
 											local tmp = math.random(1, nl.birthrate)
-											if tmp == 2 then
+											if tmp == 5 then
 												self:dobirth(parent, nl)
 												self.spouse.recentbirth = true
 											end
@@ -298,7 +298,7 @@ return
 									if self.spouse.age < 60 then
 										if self.spouse.age > 14 then
 											local tmp = math.random(1, nl.birthrate)
-											if tmp == 2 then
+											if tmp == 5 then
 												self:dobirth(parent, nl)
 												self.spouse.recentbirth = true
 											end
