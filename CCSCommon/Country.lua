@@ -723,7 +723,7 @@ return
 					self.birthrate = 6
 					self.deathrate = 10000
 				else
-					self.birthrate = 200
+					self.birthrate = 1000
 					self.deathrate = 5000
 				end
 
