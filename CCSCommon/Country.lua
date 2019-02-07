@@ -781,18 +781,6 @@ return
 						end
 
 						if j ~= nil then
-							local beliefTotal = j.pbelief + j.ebelief + j.cbelief
-						
-							if #self.parties > 0 then
-								for k, l in pairs(self.parties) do
-									local partyTotal = l.pfreedom + l.efreedom + l.cfreedom
-									local diff = math.abs(beliefTotal - partyTotal)
-									if diff < 165 then l.popularity = l.popularity + ((100 - (diff / 3)) / #self.people) end
-									
-									if j.party == l.name then l.membership = l.membership + 1 end
-								end
-							end
-							
 							if j.military == true then self.military = self.military + 1 end
 							if j.isruler == true then self.rulerParty = j.party end
 						end
