@@ -377,7 +377,7 @@ return
 						end
 
 						local str1Factor = parent:strengthFactor(c1)
-						local str2Factor = parent:strengthFactor(c2)
+						local str2Factor = parent:strengthFactor(self.target)
 
 						local varistab = str1Factor - str2Factor
 
@@ -398,10 +398,10 @@ return
 						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
 						
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.abs(self.status)).."% "..c2.name
+						if self.status < 5 then statString = tostring(math.abs(self.status)).."% "..self.target.name
 						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% "..c1.name
 						else statString = "tossup" end
-						self.eString = c1.demonym.."-"..c2.demonym.." war ("..statString..")"
+						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
@@ -561,7 +561,7 @@ return
 						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
 						
-						self.eString = c1.demonym.."-"..c2.demonym.." alliance"
+						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 
 						return 0
 					end,
