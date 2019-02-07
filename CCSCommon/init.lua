@@ -327,7 +327,7 @@ return
 						self.target:event(parent, "War declared by "..c1.name)
 						self.status = 0 -- -100 is victory for the target; 100 is victory for the initiator.
 						self.status = self.status + parent:strengthFactor(c1)
-						self.status = self.status - parent:strengthFactor(c2)
+						self.status = self.status - parent:strengthFactor(self.target)
 					end,
 					doStep=function(self, parent, c1)
 						if self.target == nil then return -1 end
