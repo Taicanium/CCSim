@@ -28,13 +28,7 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 41 then -- Executed
-							for q=1,#c.people do
-								if c.people[q] ~= nil then
-									if c.people[q].isruler == true then
-										c:delete(parent, q)
-									end
-								end
-							end
+							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -225,7 +219,6 @@ return
 								for q=1,#c.people do
 									if c.people[q] ~= nil then
 										if c.people[q].isruler == true then
-											c.people[q].isruler = false
 											c:delete(parent, q)
 										end
 									end
@@ -1883,11 +1876,14 @@ return
 
 							for i=#c2.people,1,-1 do
 								if c2.people[i] ~= nil then
-									if c2.people[i].isruler == false then
-										if c2.people[i].region == rn.name then
+									if c2.people[i].region == rn.name then
+										if c2.people[i].isruler == false then
 											local p = table.remove(c2.people, i)
 											p.nationality = c1.name
 											table.insert(c1.people, p)
+										else
+											c2.people[i].region = ""
+											c2.people[i].city = ""
 										end
 									end
 								end
