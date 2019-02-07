@@ -771,12 +771,12 @@ return
 						self.averageAge = self.averageAge + j.age
 
 						local age = j.age
-						if age > 130 then
+						if age > 100 then
 							self:delete(parent, i)
 						else
 							if math.ceil(self.deathrate)-math.pow(age, 2) < 2 then self:delete(parent, i) else
-								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
-								if d == 1 then self:delete(parent, i) end
+								d = math.random(1, 200-age)
+								if d < self.age then self:delete(parent, i) end
 							end
 						end
 
