@@ -343,7 +343,6 @@ return
 
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
-					newp.membership = 1
 					self.party = newp.name
 					if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
 
@@ -358,7 +357,6 @@ return
 					if math.abs(pr.cfreedom - self.cbelief) > 35 then pmatch = false end
 					if pmatch == true then
 						self.party = pr.name
-						pr.membership = pr.membership + 1
 						if self.isruler == true then
 							nl.rulers[#nl.rulers].Party = self.party
 						end
@@ -367,7 +365,7 @@ return
 					local pi = nil
 					for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = nl.parties[i] end end
 					if pi ~= nil then
-						if tonumber(pi.popularity) ~= nil and tonumber(pi.membership) ~= nil then
+						if tonumber(pi.popularity) ~= nil then
 							for i, j in pairs(nl.parties) do if j.name ~= self.party then
 								pmatch = true
 								if math.abs(j.pfreedom - self.pbelief) > 50 then pmatch = false end
@@ -376,10 +374,7 @@ return
 								if pmatch == true then
 									local cc = math.random(1, 10 * math.ceil(pi.popularity) + 1)
 									if cc == 10 then
-										pi.membership = pi.membership - 1
-
 										self.party = j.name
-										j.membership = j.membership + 1
 										if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
 									end
 								end

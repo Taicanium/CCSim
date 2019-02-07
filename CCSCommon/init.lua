@@ -21,6 +21,7 @@ return
 					target=nil,
 					args=1,
 					inverse=false,
+					eString="",
 					performEvent=function(self, parent, c)
 						c:event(parent, "Coup d'Etat")
 
@@ -62,6 +63,7 @@ return
 					chance=5,
 					target=nil,
 					args=1,
+					eString="",
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
@@ -132,6 +134,7 @@ return
 					chance=3,
 					target=nil,
 					args=1,
+					eString="",
 					inverse=false,
 					status=0,
 					opIntervened = {},
@@ -140,9 +143,12 @@ return
 						c.civilWars = c.civilWars + 1
 						c:event(parent, "Beginning of "..parent:ordinal(c.civilWars).." civil war")
 						self.status = 0 -- -100 is victory for the opposition side; 100 is victory for the present government.
-						local strFactor = (1 / ((#c.people * 15) / c.strength)) * 100
-						self.status = self.status + (c.stability - 50)
-						self.status = self.status + (strFactor - 50)
+						self.status = self.status + parent:strengthFactor(c)
+						local statString = ""
+						if self.status < 5 then statString = tostring(math.abs(self.status)).."% opposition"
+						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% government"
+						else statString = "tossup" end
+						self.eString = parent:ordinal(civilWars).." "..c.demonym.." civil war ("..statString..")"
 						self.opIntervened = {}
 						self.govIntervened = {}
 					end,
@@ -174,18 +180,16 @@ return
 							end
 						end
 
-						local strFactor = (1 / ((#c.people * 15) / c.strength)) * 100
+						local strFactor = parent:strengthFactor(c)
 
-						local varistab = c.stability - 50
-						varistab = varistab + strFactor - 50
+						local varistab = strFactor
 
 						for i=1,#self.opIntervened do
 							for j, cp in pairs(parent.thisWorld.countries) do
 								if cp.name == self.opIntervened[i] then
-									local extFactor = (1 / ((#cp.people * 15) / cp.strength)) * 100
+									local extFactor = parent:strengthFactor(cp)
 
-									varistab = varistab - (cp.stability - 50)
-									varistab = varistab - (extFactor - 50)
+									if extFactor < 0 then varistab = varistab - (extFactor/10) end
 								end
 							end
 						end
@@ -193,15 +197,20 @@ return
 						for i=1,#self.govIntervened do
 							for j, cp in pairs(parent.thisWorld.countries) do
 								if cp.name == self.govIntervened[i] then
-									local extFactor = (1 / ((#cp.people * 15) / cp.strength)) * 100
+									local extFactor = parent:strengthFactor(cp)
 
-									varistab = varistab + (cp.stability - 50)
-									varistab = varistab + (extFactor - 50)
+									if extFactor > 0 then varistab = varistab + (extFactor/10) end
 								end
 							end
 						end
 
-						self.status = self.status + math.ceil(math.random(math.floor(varistab)-15,math.ceil(varistab)+15)/2)
+						self.status = self.status + math.ceil(math.random(math.floor(varistab),math.ceil(varistab))/2)
+						
+						local statString = ""
+						if self.status < 5 then statString = tostring(math.abs(self.status)).."% opposition"
+						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% government"
+						else statString = "tossup" end
+						self.eString = parent:ordinal(civilWars).." "..c.demonym.." civil war ("..statString..")"
 
 						if self.status <= -100 then return self:endEvent(parent, c) end
 						if self.status >= 100 then return self:endEvent(parent, c) end
@@ -317,9 +326,8 @@ return
 						c1:event(parent, "Declared war on "..self.target.name)
 						self.target:event(parent, "War declared by "..c1.name)
 						self.status = 0 -- -100 is victory for the target; 100 is victory for the initiator.
-						local strFactor = (1 / ((#c1.people * 15) / c1.strength)) * 100
-						self.status = self.status + (c1.stability - 50)
-						self.status = self.status + (strFactor - 50)
+						self.status = self.status + parent:strengthFactor(c1)
+						self.status = self.status - parent:strengthFactor(c2)
 					end,
 					doStep=function(self, parent, c1)
 						if self.target == nil then return -1 end
@@ -368,28 +376,32 @@ return
 							end
 						end
 
-						local strFactor = (1 / ((#c1.people * 15) / c1.strength)) * 100
+						local str1Factor = parent:strengthFactor(c1)
+						local str2Factor = parent:strengthFactor(c2)
 
-						local varistab = c1.stability - 50
-						varistab = varistab + strFactor - 50
+						local varistab = str1Factor - str2Factor
 
 						ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 						for i=1,#ao do
-							varistab = varistab + ao[i].stability - 50
-							local extFactor = (1 / ((#ao[i].people * 15) / ao[i].strength)) * 100
-							varistab = varistab + extFactor - 50
+							local extFactor = parent:strengthFactor(ao[i])
+							varistab = varistab + (extFactor/10)
 						end
 
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 						for i=1,#ao do
-							varistab = varistab - ao[i].stability - 50
-							local extFactor = (1 / ((#ao[i].people * 15) / ao[i].strength)) * 100
-							varistab = varistab - extFactor - 50
+							local extFactor = parent:strengthFactor(ao[i])
+							varistab = varistab - (extFactor/10)
 						end
 
-						self.status = self.status + math.ceil(math.random(math.floor(varistab)-15, math.ceil(varistab)+15)/2)
+						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
+						
+						local statString = ""
+						if self.status < 5 then statString = tostring(math.abs(self.status)).."% "..c2.name
+						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% "..c1.name
+						else statString = "tossup" end
+						self.eString = c1.demonym.."-"..c2.demonym.." war ("..statString..")"
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
@@ -517,7 +529,7 @@ return
 						end
 
 						if c1.relations[c2.name] ~= nil then
-							if c1.relations[c2.name] < 40 then
+							if c1.relations[c2.name] < 30 then
 								self.target = c2
 								return 0
 							end
@@ -540,7 +552,7 @@ return
 						if self.target == nil then return -1 end
 
 						if c1.relations[self.target.name] ~= nil then
-							if c1.relations[self.target.name] < 40 then
+							if c1.relations[self.target.name] < 35 then
 								local doEnd = math.random(1, 50)
 								if doEnd < 5 then return self:endEvent(parent, c1) end
 							end
@@ -548,6 +560,8 @@ return
 
 						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
+						
+						self.eString = c1.demonym.."-"..c2.demonym.." alliance"
 
 						return 0
 					end,
@@ -1498,70 +1512,25 @@ return
 					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
 
 					if self.showinfo == 1 then
-						local wars = {}
-						local alliances = {}
+						local currentEvents = {}
 
 						local cCount = 0
 
 						for i, cp in pairs(self.thisWorld.countries) do
 							if cCount <= 20 then
-								if cp.dfif[self.systems[cp.system].name] == true then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
-								else msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." "..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-								msg = msg.." - Population: "..cp.population.." - Current ruler: "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
+								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
+								msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
+								msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
 								cCount = cCount + 1
 							end
 						end
 
-						local totalC = 0
-						for i, cp in pairs(self.thisWorld.countries) do totalC = totalC + 1 end
-						if cCount < totalC then msg = msg.."[+"..tostring(totalC-cCount).." more]\n" end
+						if cCount < self.numCountries then msg = msg.."[+"..tostring(self.numCountries-cCount).." more]\n" end
 
-						msg = msg.."\nWars:"
-						local count = 0
+						msg = msg.."\nOngoing events:"
 
-						for i, cp in pairs(self.thisWorld.countries) do
-							for j=1,#cp.ongoing do
-								if cp.ongoing[j].name == "War" then
-									if cp.ongoing[j].target ~= nil then
-										found = false
-										for k=1,#wars do
-											if wars[k] == cp.ongoing[j].target.name.."-"..cp.name then found = true end
-										end
-										if found == false then
-											table.insert(wars, cp.name.."-"..cp.ongoing[j].target.name)
-											if count > 0 then msg = msg.."," end
-											msg = msg.." "..wars[#wars]
-											count = count + 1
-										end
-									end
-								end
-
-								if cp.ongoing[j].name == "Civil War" then
-									table.insert(wars, cp.name.." (civil)")
-									if count > 0 then msg = msg.."," end
-									msg = msg.." "..wars[#wars]
-									count = count + 1
-								end
-							end
-						end
-
-						msg = msg.."\n\nAlliances:"
-						count = 0
-
-						for i, cp in pairs(self.thisWorld.countries) do
-							for j=1,#cp.alliances do
-								found = false
-								for k=1,#alliances do
-									if alliances[k] == cp.alliances[j].."-"..cp.name.." " then found = true end
-								end
-								if found == false then
-									table.insert(alliances, cp.name.."-"..cp.alliances[j].." ")
-									if count > 0 then msg = msg.."," end
-									msg = msg.." "..alliances[#alliances]:sub(1, #alliances[#alliances] - 1)
-									count = count + 1
-								end
-							end
-						end
+						for i, cp in pairs(self.thisWorld.countries) do for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
+						for i=1,#currentEvents do msg = msg.."\n"..currentEvents[i] end
 					end
 
 					os.execute(self.clrcmd)
@@ -2268,6 +2237,12 @@ return
 				print("\nRemoved an additional "..tostring(removed).." individuals.")
 
 				return fams
+			end,
+			
+			strengthFactor = function(self, c)
+				local pop = 0
+				if c.rulerParty ~= "" then pop = c.parties[c.rulerParty].popularity - 50 end
+				return (pop + (c.stability - 50) + (((c.military / #c.people) * 100) - 50))
 			end
 		}
 

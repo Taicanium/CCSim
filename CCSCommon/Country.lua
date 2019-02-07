@@ -27,6 +27,7 @@ return
 				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
 				nl.stability = 50
 				nl.strength = 0
+				nl.military = 0
 				nl.population = 0
 				nl.ethnicities = {}
 				nl.majority = ""
@@ -34,6 +35,7 @@ return
 				nl.deathrate = 20000
 				nl.regions = {}
 				nl.parties = {}
+				nl.rulerParty = ""
 				nl.nodes = {}
 				nl.civilWars = 0
 				nl.capitalregion = ""
@@ -670,21 +672,6 @@ return
 					end
 				end
 
-				if #self.parties > 0 then
-					for i=#self.parties,1,-1 do
-						self.parties[i].popularity = math.floor(self.parties[i].popularity)
-					end
-
-					local largest = -1
-
-					for i=1,#self.parties do
-						if largest == -1 then largest = i end
-						if self.parties[i].membership > self.parties[largest].membership then largest = i end
-					end
-
-					if largest ~= -1 then self.parties[largest].leading = true end
-				end
-
 				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
@@ -730,6 +717,7 @@ return
 
 				self.population = #self.people
 				self.strength = 0
+				self.military = 0
 
 				if self.population < parent.popLimit then
 					self.birthrate = 6
@@ -791,24 +779,39 @@ return
 								if d > math.pow(age, 2) and d < age*5 then self:delete(parent, i) end
 							end
 						end
-
-						local belieftotal = j.pbelief + j.ebelief + j.cbelief
+						
+						local beliefTotal = j.pbelief + j.ebelief + j.cbelief
 
 						if j ~= nil then
 							if #self.parties > 0 then
 								for k, l in pairs(self.parties) do
-									local partytotal = l.pfreedom + l.efreedom + l.cfreedom
-									if math.abs(belieftotal - partytotal) < 100 then
-										l.popularity = l.popularity + ((100 - math.abs(belieftotal - partytotal)) / #self.people)
-									end
-
-									if j.party == l.name then
-										l.membership = l.membership + 1
-									end
+									local partyTotal = l.pfreedom + l.efreedom + l.cfreedom
+									local diff = math.abs(beliefTotal - partyTotal)
+									if diff < 165 then l.popularity = l.popularity + ((100 - (diff / 3)) / #self.people) end
+									
+									if j.party == l.name then l.membership = l.membership + 1 end
 								end
 							end
+							
+							if j.military == true then self.military = self.military + 1 end
+							if j.isruler == true then self.rulerParty = j.party end
 						end
 					end
+				end
+
+				if #self.parties > 0 then
+					for i=#self.parties,1,-1 do
+						self.parties[i].popularity = math.floor(self.parties[i].popularity)
+					end
+
+					local largest = -1
+
+					for i=1,#self.parties do
+						if largest == -1 then largest = i end
+						if self.parties[i].membership > self.parties[largest].membership then largest = i end
+					end
+
+					if largest ~= -1 then self.parties[largest].leading = true end
 				end
 
 				self.averageAge = self.averageAge / #self.people
