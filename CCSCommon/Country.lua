@@ -629,17 +629,19 @@ return
 						else newE:beginEvent(parent, self) end
 					else table.remove(self.ongoing, #self.ongoing) end
 				elseif parent.c_events[i].args == 2 then
-					local other = parent:randomChoice(parent.thisWorld.countries)
-					while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
+					if parent.numCountries > 1 then
+						local other = parent:randomChoice(parent.thisWorld.countries)
+						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 
-					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-					local newE = self.ongoing[#self.ongoing]
+						table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+						local newE = self.ongoing[#self.ongoing]
 
-					if newE.performEvent ~= nil then
-						if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
-						else newE:beginEvent(parent, self, other) end
-					else
-						parent:deepnil(table.remove(self.ongoing, #self.ongoing))
+						if newE.performEvent ~= nil then
+							if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+							else newE:beginEvent(parent, self, other) end
+						else
+							parent:deepnil(table.remove(self.ongoing, #self.ongoing))
+						end
 					end
 				end
 			end,

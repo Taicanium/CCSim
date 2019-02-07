@@ -36,7 +36,7 @@ return
 							end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
@@ -77,7 +77,7 @@ return
 							end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
@@ -223,7 +223,7 @@ return
 								end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
-								if #parent.thisWorld.countries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								local ruler = nil
 								for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 								local s = table.remove(c.people, ruler)

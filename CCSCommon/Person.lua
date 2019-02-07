@@ -311,83 +311,81 @@ return
 				end
 
 				self.recentbirth = false
+				
+				self.pbelief = self.pbelief + math.random(-2, 2)
+				self.ebelief = self.ebelief + math.random(-2, 2)
+				self.cbelief = self.cbelief + math.random(-2, 2)
+				
+				if self.pbelief < -100 then self.pbelief = -100 end
+				if self.pbelief > 100 then self.pbelief = 100 end
+				if self.ebelief < -100 then self.ebelief = -100 end
+				if self.ebelief > 100 then self.ebelief = 100 end
+				if self.cbelief < -100 then self.cbelief = -100 end
+				if self.cbelief > 100 then self.cbelief = 100 end
 
-				local belieftotal = self.pbelief + self.ebelief + self.cbelief
-
+				local pmatch = false
+				
 				if #nl.parties > 0 then
-					local pmatch = false
+					for i=1,#nl.parties do if pmatch == false then
+						pmatch = true
+						if math.abs(nl.parties[i].pfreedom - self.pbelief) > 35 then pmatch = false end
+						if math.abs(nl.parties[i].efreedom - self.ebelief) > 35 then pmatch = false end
+						if math.abs(nl.parties[i].cfreedom - self.cbelief) > 35 then pmatch = false end
+					end end
+				end
 
-					for i=1,#nl.parties do
-						local ptotal = nl.parties[i].cfreedom + nl.parties[i].pfreedom + nl.parties[i].efreedom
-						if math.abs(belieftotal - ptotal) < 125 then pmatch = true end
-					end
-
-					if pmatch == false then
-						local newp = Party:new()
-						local ni = nil
-						for i, cp in pairs(parent.thisWorld.countries) do if cp.name == nl.name then ni = cp end end
-						newp:makename(parent, ni)
-						newp.cfreedom = self.cbelief
-						newp.efreedom = self.ebelief
-						newp.pfreedom = self.pbelief
-
-						if math.abs(belieftotal) > 200 then newp.radical = true end
-
-						self.party = newp.name
-						newp.membership = 1
-
-						if self.isruler == true then
-							nl.rulers[#nl.rulers].Party = self.party
-						end
-
-						table.insert(nl.parties, newp)
-					end
-
-					if self.party == "" then
-						local pr = parent:randomChoice(nl.parties)
-						local partytotal = pr.pfreedom + pr.efreedom + pr.cfreedom
-						if math.abs(belieftotal - partytotal) < 125 then
-							self.party = pr.name
-							pr.membership = pr.membership + 1
-							if self.isruler == true then
-								nl.rulers[#nl.rulers].Party = self.party
-							end
-						end
-					else
-						local pi = nil
-						for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = nl.parties[i] end end
-						if pi ~= nil then
-							if tonumber(pi.popularity) ~= nil and tonumber(pi.membership) ~= nil then
-								local cc = math.random(1, 100 * math.ceil(pi.popularity) + 1)
-								if cc == 10 then
-									pi.membership = pi.membership - 1
-
-									local pr = parent:randomChoice(nl.parties)
-									local partytotal = pr.pfreedom + pr.efreedom + pr.cfreedom
-									if math.abs(belieftotal - partytotal) < 125 then
-										self.party = pr.name
-										pr.membership = pr.membership + 1
-										if self.isruler == true then
-											nl.rulers[#nl.rulers].Party = self.party
-										end
-									end
-								end
-							end
-						end
-					end
-				else
+				if pmatch == false then
 					local newp = Party:new()
 					newp:makename(parent, nl)
 					newp.cfreedom = self.cbelief
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief
 
-					if math.abs(belieftotal) > 200 then newp.radical = true end
+					if math.abs(belieftotal) > 225 then newp.radical = true end
 
-					self.party = newp.name
 					newp.membership = 1
+					self.party = newp.name
+					if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
 
 					table.insert(nl.parties, newp)
+				end
+				
+				if self.party == "" then
+					local pr = parent:randomChoice(nl.parties)
+					pmatch = true
+					if math.abs(pr.pfreedom - self.pbelief) > 35 then pmatch = false end
+					if math.abs(pr.efreedom - self.ebelief) > 35 then pmatch = false end
+					if math.abs(pr.cfreedom - self.cbelief) > 35 then pmatch = false end
+					if pmatch == true then
+						self.party = pr.name
+						pr.membership = pr.membership + 1
+						if self.isruler == true then
+							nl.rulers[#nl.rulers].Party = self.party
+						end
+					end
+				else
+					local pi = nil
+					for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = nl.parties[i] end end
+					if pi ~= nil then
+						if tonumber(pi.popularity) ~= nil and tonumber(pi.membership) ~= nil then
+							for i, j in pairs(nl.parties) do if j.name ~= self.party then
+								pmatch = true
+								if math.abs(j.pfreedom - self.pbelief) > 50 then pmatch = false end
+								if math.abs(j.efreedom - self.ebelief) > 50 then pmatch = false end
+								if math.abs(j.cfreedom - self.cbelief) > 50 then pmatch = false end
+								if pmatch == true then
+									local cc = math.random(1, 10 * math.ceil(pi.popularity) + 1)
+									if cc == 10 then
+										pi.membership = pi.membership - 1
+
+										self.party = j.name
+										j.membership = j.membership + 1
+										if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
+									end
+								end
+							end end
+						end
+					end
 				end
 
 				local movechance = math.random(1, 150)
