@@ -723,7 +723,7 @@ return
 					self.birthrate = 6
 					self.deathrate = 10000
 				else
-					self.birthrate = 100
+					self.birthrate = 200
 					self.deathrate = 5000
 				end
 
@@ -779,10 +779,10 @@ return
 								if d > math.pow(age, 2) and d < age*5 then self:delete(parent, i) end
 							end
 						end
-						
-						local beliefTotal = j.pbelief + j.ebelief + j.cbelief
 
 						if j ~= nil then
+							local beliefTotal = j.pbelief + j.ebelief + j.cbelief
+						
 							if #self.parties > 0 then
 								for k, l in pairs(self.parties) do
 									local partyTotal = l.pfreedom + l.efreedom + l.cfreedom

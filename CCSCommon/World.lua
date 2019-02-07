@@ -1093,13 +1093,13 @@ return
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.5 then
 						if parent.popLimit > 1000 then
-							parent.popLimit = math.floor(parent.popLimit - (100 * (f1 / 0.3)))
+							parent.popLimit = math.floor(parent.popLimit - (50 * (f1 * 2)))
 						end
 
 						if parent.popLimit < 1000 then parent.popLimit = 1000 end
 						if parent.popLimit == 1000 then table.insert(parent.disabled, "Independence") else for i=#parent.disabled,1,-1 do if parent.disabled[i] == "Independence" then table.remove(parent.disabled, i) end end end
 					elseif f1 < 0.25 then
-						if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit + (100 * (0.08 / f1))) end
+						if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
 						if parent.popLimit > 3000 then parent.popLimit = 3000 end
 					end
 				end
