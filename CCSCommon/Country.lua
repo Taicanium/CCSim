@@ -59,7 +59,6 @@ return
 							local closestGens = 10000000
 							local closestMats = 10000000
 							local closestAge = -1
-							local eldestChild = -1
 							local children = {}
 							local hasMale = false
 							local rString = ""
@@ -87,10 +86,10 @@ return
 										local psp = self.people[children[i]]
 										if psp.age >= closestAge then
 											if psp.gender == "Female" then if hasMale == false then
-												closest = i
+												closest = children[i]
 												closestAge = psp.age
 											end else
-												closest = i
+												closest = children[i]
 												closestAge = psp.age
 											end
 										end
@@ -101,7 +100,7 @@ return
 										if psp.royalGenerations <= closestGens then
 											if psp.maternalLineTimes <= closestMats then
 												if psp.age >= closestAge then
-													closest = i
+													closest = possibles[i]
 													closestGens = psp.royalGenerations
 													closestMats = psp.maternalLineTimes
 													closestAge = psp.age
