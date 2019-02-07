@@ -148,7 +148,7 @@ return
 						if self.status < 5 then statString = tostring(math.abs(self.status)).."% opposition"
 						elseif self.status > 5 then statString = tostring(math.abs(self.status)).."% government"
 						else statString = "tossup" end
-						self.eString = parent:ordinal(civilWars).." "..c.demonym.." civil war ("..statString..")"
+						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
 						self.opIntervened = {}
 						self.govIntervened = {}
 					end,
