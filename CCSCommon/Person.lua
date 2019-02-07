@@ -133,7 +133,7 @@ return
 					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
 				end end
 
-				if self.title == sys.ranks[#sys.ranks] then
+				if self.isruler == true or self.spouse.isruler == true then
 					nn.level = self.level - 1
 					nn.parentRuler = true
 				else
@@ -358,9 +358,7 @@ return
 					if math.abs(pi.cfreedom - self.cbelief) > 35 then pmatch = false end
 					if pmatch == true then
 						self.party = pi.name
-						if self.isruler == true then
-							nl.rulers[#nl.rulers].Party = self.party
-						end
+						if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
 					end
 				else
 					for i=1,#nl.parties do
@@ -392,8 +390,8 @@ return
 				if self.isruler == false then
 					for i, cp in pairs(parent.thisWorld.countries) do
 						if cp.name ~= nl.name then
-							local movechance = math.random(1, 35000)
-							if movechance == 17499 then
+							local movechance = math.random(1, 15000)
+							if movechance == 7499 then
 								for j=#nl.people,1,-1 do
 									if nl.people[j].name == self.name and nl.people[j].surname == self.surname and nl.people[j].birth == self.birth and nl.people[j].level == self.level then
 										local k = table.remove(nl.people, j)
