@@ -362,7 +362,7 @@ return
 							nl.rulers[#nl.rulers].Party = self.party
 						end
 					end
-				else
+				else if self.isruler == false then
 					local pi = nil
 					for i=1,#nl.parties do if nl.parties[i].name == self.party then pi = nl.parties[i] end end
 					if pi ~= nil then
@@ -382,7 +382,7 @@ return
 							end end
 						end
 					end
-				end
+				end end
 
 				local movechance = math.random(1, 150)
 				if movechance == 12 then
