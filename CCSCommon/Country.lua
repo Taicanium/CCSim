@@ -31,7 +31,7 @@ return
 				nl.population = 0
 				nl.ethnicities = {}
 				nl.majority = ""
-				nl.birthrate = 4
+				nl.birthrate = 3
 				nl.regions = {}
 				nl.parties = {}
 				nl.rulerParty = ""
@@ -50,9 +50,7 @@ return
 
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
-					if #self.rulers > 0 then
-						self.rulers[#self.rulers].To = parent.years
-					end
+					if #self.rulers > 0 then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
@@ -71,7 +69,8 @@ return
 							if sys.dynastic == true then
 								for i=1,#self.people do
 									if self.people[i].royalGenerations > 0 then
-										if self.people[i].age <= 40 then table.insert(possibles, i) end
+										if self.people[i].age <= self.averageAge + 25 then table.insert(possibles, i)
+										elseif self.people[i].royalGenerations == 1 then table.insert(possibles, i) end
 									end
 								end
 								
@@ -113,13 +112,14 @@ return
 								end
 
 								if closest == -1 then
-									self:setRuler(parent, math.random(1, #self.people))
+									local p = math.random(1, #self.people)
+									if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, math.random(1, #self.people)) end
 								else
 									self:setRuler(parent, closest)
 								end
 							else
-								local i = math.random(1, #self.people)
-								self:setRuler(parent, i)
+								local p = math.random(1, #self.people)
+								if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, math.random(1, #self.people)) end
 							end
 						end
 					end
@@ -719,9 +719,9 @@ return
 				self.military = 0
 
 				if self.population < parent.popLimit then
-					self.birthrate = 4
+					self.birthrate = 3
 				else
-					self.birthrate = 800
+					self.birthrate = 150
 				end
 
 				while math.floor(#self.people) > math.floor(math.floor(parent.popLimit) * 5) do
@@ -771,7 +771,7 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 						else
-							d = math.random(1, 2500-(age*3))
+							d = math.random(1, 3000-(age*3))
 							if d < age then self:delete(parent, i) end
 						end
 
