@@ -723,7 +723,7 @@ return
 					self.birthrate = 6
 					self.deathrate = 10000
 				else
-					self.birthrate = 1000
+					self.birthrate = 400
 					self.deathrate = 5000
 				end
 
@@ -776,7 +776,7 @@ return
 						else
 							if math.ceil(self.deathrate)-math.pow(age, 2) < 2 then self:delete(parent, i) else
 								d = math.random(1, math.ceil(self.deathrate)-math.pow(age, 2))
-								if d > math.pow(age, 2) and d < age*5 then self:delete(parent, i) end
+								if d == 1 then self:delete(parent, i) end
 							end
 						end
 
