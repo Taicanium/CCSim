@@ -493,15 +493,12 @@ return
 						parent.royals[newString].number = self.people[newRuler].number
 						parent.royals[newString].title = self.people[newRuler].title
 					end
+					
+					parent.royals[pString] = nil
 
 					for i, j in pairs(parent.royals) do if j.father == pString or j.mother == pString then
-						local cString = j.name.." "..j.surname.." "..tostring(j.birth).." "..j.birthplace.." "..j.gender
-
-						if self.people[newRuler].gender == "Male" then
-							if parent.royals[cString] ~= nil then parent.royals[cString].father = newString end
-						else
-							if parent.royals[cString] ~= nil then parent.royals[cString].mother = newString end
-						end
+						local asc = parent:getAscendants(parent.royals, parent:makeAscendant(self.people[newRuler]))
+						if self.people[newRuler].gender == "Male" then j.father = asc else j.mother = asc end
 					end end
 				end
 
