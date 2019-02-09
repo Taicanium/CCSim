@@ -334,8 +334,8 @@ return
 					local cEnd = self.demonym:sub(#self.demonym-1, #self.demonym)
 					local cBegin = self.demonym:sub(1, #self.demonym-2)
 					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
-					local c1 = cEnd[1]
-					local c2 = cEnd[2]
+					local c1 = cEnd:sub(1, 1)
+					local c2 = cEnd:sub(2, 2)
 					for i, j in pairs(parent.vowels) do if c1 == j then hasend = true elseif c2 == j then hasend = true end end
 					if hasend == false then
 						if c1 == "h" then self.demonym = cBegin..c2
