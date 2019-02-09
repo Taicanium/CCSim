@@ -378,15 +378,16 @@ return
 					end
 				end
 				
-				local t1 = _time() - t0
-				local benchAdjust = math.floor(t1*2)
+				local t1 = math.floor(_time() - t0)
+				local benchAdjust = 0
+				if t1 > 20 then benchAdjust = math.floor(t1) end
 				
 				if benchAdjust > 50 then benchAdjust = 50 end
 				
 				local r = math.floor(math.random(150-benchAdjust, 250-benchAdjust))
 				self.planetR = r
 
-				print("Constructing voxel planet with radius of "..tostring(r).." units...")
+				print("\nConstructing voxel planet with radius of "..tostring(r).." units...")
 
 				local rdone = 0
 
@@ -484,7 +485,7 @@ return
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
-							local chance = math.random(10, math.random(math.random(125, 725), math.random(750, 1950)))
+							local chance = math.random(10, math.random(math.random(525, 825), math.random(850, 1950)))
 							if chance > 975 then
 								local neighbors = self.planet[ox][oy][oz].neighbors
 
@@ -494,8 +495,8 @@ return
 									local ny = neighbors[nr][2]
 									local nz = neighbors[nr][3]
 									if self.planet[nx][ny][nz].land == true then
-										local nChance = math.random(1, math.random(2, 50))
-										if nChance > 40 then
+										local nChance = math.random(1, math.random(2, 40))
+										if nChance > 25 then
 											table.insert(oceanNodes, neighbors[nr])
 											wNodeCount = wNodeCount + 1
 										end
