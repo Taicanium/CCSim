@@ -437,7 +437,9 @@ return
 					local stop = false
 					local oceanNodes = {{x, y, z}}
 					wNodeCount = wNodeCount + 1
-					local maxsize = math.random(math.floor(#self.planetdefined / 95), math.ceil(#self.planetdefined / math.random(35, 7.5)))
+					local wMin = math.floor(#self.planetdefined / math.random(85, 125))
+					local wMax = math.ceil(#self.planetdefined / math.random(7.5, 35))
+					local maxsize = math.random(wMin, wMax)
 					if wNodeCount >= maxWNodes then stop = true else print("\nBody "..tostring(i).."/"..tostring(bodyCount)) end
 					while stop == false do
 						parent:rseed()
