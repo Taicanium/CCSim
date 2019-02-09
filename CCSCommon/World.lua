@@ -490,14 +490,15 @@ return
 							local neighbors = self.planet[ox][oy][oz].neighbors
 
 							if #neighbors > 0 then
+								parent:rseed()
 								local nr = parent:randomChoice(neighbors)
 								local nx = nr[1]
 								local ny = nr[2]
 								local nz = nr[3]
 								if self.planet[nx][ny][nz].land == true then
-									local nChance = math.random(10, math.random(35, 80))
-									if nChance > 35 then
-										table.insert(oceanNodes, neighbors[nr])
+									local nChance = math.random(10, math.random(55, 100))
+									if nChance > 55 then
+										table.insert(oceanNodes, nr)
 										self.planet[nx][ny][nz].land = false
 										wNodeCount = wNodeCount + 1
 									end
