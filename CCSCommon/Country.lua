@@ -440,17 +440,29 @@ return
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].number = namenum
 
+					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					
+					local tmpChildren = {}
 					for i, j in pairs(self.people[newRuler].children) do
+						tmpChildren[i] = j
+						self.people[newRuler].children[i] = nil
+					end
+					for i, j in pairs(tmpChildren) do
 						parent:setGensChildren(j, 1)
-						if j.royalGenerations == 1 then j.royalSystem = parent.systems[self.system].name end
+						j.royalSystem = parent.systems[self.system].name
 						j.royalInfo.Gens = j.royalGenerations
 						j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
 						j.parentRuler = true
 						if self.people[newRuler].gender == "Male" then j.father = parent:makeAscendant(self.people[newRuler])
-						else j.mother = parent:makeAscendant(self.people[newRuler]) j.maternalLineTimes = 1 end
+						else
+							j.mother = parent:makeAscendant(self.people[newRuler])
+							j.maternalLineTimes = 1
+						end
 					end
-
-					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					for i, j in pairs(tmpChildren) do
+						self.people[newRuler].children[i] = j
+						tmpChildren[i] = nil
+					end
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
@@ -463,8 +475,6 @@ return
 
 					if inf ~= nil then
 						parent.royals[newString] = inf
-						parent.royals[pString] = nil
-
 						parent.royals[newString].name = self.people[newRuler].name
 						parent.royals[newString].number = self.people[newRuler].number
 						parent.royals[newString].title = self.people[newRuler].title
