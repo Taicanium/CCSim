@@ -409,6 +409,7 @@ return
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = true -- if false, this node is water.
 								self.planet[x][y][z].neighbors = {}
+								self.planet[x][y][z].hasLandNeighbors = true
 
 								table.insert(self.planetdefined, {x, y, z})
 							end
@@ -485,7 +486,7 @@ return
 						local ox = wNode[1]
 						local oy = wNode[2]
 						local oz = wNode[3]
-						while self.planet[ox][oy][oz].land == false do
+						while self.planet[ox][oy][oz].hasLandNeighbors == false do
 							wNode = parent:randomChoice(oceanNodes)
 							ox = wNode[1]
 							oy = wNode[2]
@@ -507,6 +508,10 @@ return
 										table.insert(oceanNodes, nr)
 										self.planet[nx][ny][nz].land = false
 										wNodeCount = wNodeCount + 1
+										self.planet[ox][oy][oz].hasLandNeighbors = false
+										for q, b in pairs(self.planet[ox][oy][oz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[ox][oy][oz].hasLandNeighbors = true end end
+										self.planet[nx][ny][nz].hasLandNeighbors = false
+										for q, b in pairs(self.planet[nx][ny][nz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[nx][ny][nz].hasLandNeighbors = true end end
 									end
 								end
 							end
