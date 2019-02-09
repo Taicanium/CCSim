@@ -485,8 +485,8 @@ return
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
-							local chance = math.random(10, math.random(math.random(525, 825), math.random(850, 1950)))
-							if chance > 975 then
+							local chance = math.random(math.random(525, 825), math.random(850, 1950)))
+							if chance > 1250 then
 								local neighbors = self.planet[ox][oy][oz].neighbors
 
 								if #neighbors > 0 then
