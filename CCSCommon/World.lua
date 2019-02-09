@@ -484,8 +484,8 @@ return
 							local ox = oceanNodes[j][1]
 							local oy = oceanNodes[j][2]
 							local oz = oceanNodes[j][3]
-							local chance = math.random(10, math.random(500, math.random(750, 1250)))
-							if chance > 750 then
+							local chance = math.random(10, math.random(math.random(125, 725), math.random(750, 1950)))
+							if chance > 975 then
 								local neighbors = self.planet[ox][oy][oz].neighbors
 
 								if #neighbors > 0 then
@@ -494,8 +494,11 @@ return
 									local ny = neighbors[nr][2]
 									local nz = neighbors[nr][3]
 									if self.planet[nx][ny][nz].land == true then
-										table.insert(oceanNodes, neighbors[nr])
-										wNodeCount = wNodeCount + 1
+										local nChance = math.random(1, math.random(2, 50))
+										if nChance > 40 then
+											table.insert(oceanNodes, neighbors[nr])
+											wNodeCount = wNodeCount + 1
+										end
 									end
 									self.planet[nx][ny][nz].land = false
 								end
