@@ -1436,6 +1436,13 @@ return
 				if royals[fInd].father == "" then if person.father ~= nil then royals[fInd].father = self:getAscendants(royals, person.father) end end
 				if royals[fInd].mother == "" then if person.mother ~= nil then royals[fInd].mother = self:getAscendants(royals, person.mother) end end
 				if #royals[fInd].children ~= #person.children then
+					for i, j in pairs(royals[fInd].children) do
+						local found = false
+						local asc = self:getAscendants(royals, j)
+						for k, l in pairs(person.children) do if l == asc then found = true end end
+						if found == false then table.insert(person.children, asc) end
+					end
+				
 					for i, j in pairs(person.children) do
 						local found = false
 						local asc = self:getAscendants(royals, j)
