@@ -351,6 +351,7 @@ return
 				local bench = {}
 				
 				local t0 = _time()
+				local bdone = 0
 				
 				for x=-bRad,bRad do
 					for y=-bRad,bRad do
