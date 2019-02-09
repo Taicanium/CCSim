@@ -345,10 +345,49 @@ return
 
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
+				
+				print("Benchmarking...")
+				local bRad = 300
+				local bench = {}
+				
+				local t0 = _time()
+				
+				for x=-bRad,bRad do
+					for y=-bRad,bRad do
+						for z=-bRad,bRad do
+							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
+							if fsqrt < bRad+0.5 and fsqrt > bRad-0.5 then
+								if bench[x] == nil then bench[x] = {} end
+								if bench[x][y] == nil then bench[x][y] = {} end
+								bench[x][y][z] = {}
+								bench[x][y][z].x = x
+								bench[x][y][z].y = y
+								bench[x][y][z].z = z
+								bench[x][y][z].country = ""
+								bench[x][y][z].countryset = false
+								bench[x][y][z].region = ""
+								bench[x][y][z].regionset = false
+								bench[x][y][z].city = ""
+								bench[x][y][z].land = true -- if false, this node is water.
+								bench[x][y][z].neighbors = {}
+							end
+							bdone = bdone + 1
+							if math.fmod(bdone, 10000) == 0 then io.write("\r"..tostring(bdone).."/"..tostring(math.pow((bRad*2)+1, 3))) end
+						end
+					end
+				end
+				
+				local t1 = _time() - t0
+				
+				local benchAdjust = 0
+				if t1 > 5 then
+					for i=1,t1-5 do benchAdjust = benchAdjust + 25 end
+				end
+				if benchAdjust > 150 then benchAdjust = 150 end
 
 				print("Constructing voxel planet...")
 
-				local r = math.random(100, 150)
+				local r = math.random(250-benchAdjust, 350-benchAdjust)
 				self.planetR = r
 
 				local rdone = 0
@@ -375,7 +414,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone + 1
-							if math.fmod(rdone, 5000) == 0 then io.write("\r"..tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
+							if math.fmod(rdone, 10000) == 0 then io.write("\r"..tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
 						end
 					end
 				end
@@ -751,11 +790,11 @@ return
 					end
 				end
 
-				for i=1,#self.planetdefined,500 do
-					if i+499 <= #self.planetdefined then
+				for i=1,#self.planetdefined,250 do
+					if i+249 <= #self.planetdefined then
 						f:write(")\nx <- c(")
 
-						for j=i,i+499 do
+						for j=i,i+249 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -763,12 +802,12 @@ return
 								x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5)
 							end
 							f:write(x)
-							if j < i+499 then f:write(", ") end
+							if j < i+249 then f:write(", ") end
 						end
 
 						f:write(")\ny <- c(")
 
-						for j=i,i+499 do
+						for j=i,i+249 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -776,12 +815,12 @@ return
 								y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5)
 							end
 							f:write(y)
-							if j < i+499 then f:write(", ") end
+							if j < i+249 then f:write(", ") end
 						end
 
 						f:write(")\nz <- c(")
 
-						for j=i,i+499 do
+						for j=i,i+249 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -789,12 +828,12 @@ return
 								z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5)
 							end
 							f:write(z)
-							if j < i+499 then f:write(", ") end
+							if j < i+249 then f:write(", ") end
 						end
 
 						f:write(")\ncsc <- c(")
 
-						for j=i,i+499 do
+						for j=i,i+249 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -814,7 +853,7 @@ return
 									else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
-							if j < i+499 then f:write(", ") end
+							if j < i+249 then f:write(", ") end
 						end
 
 						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE)")
