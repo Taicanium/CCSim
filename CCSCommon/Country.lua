@@ -141,8 +141,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						if parent.ged == true then parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y])) end
-						if self.people[y].isruler == true then self.hasruler = -1 end
+						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
 						w = table.remove(self.people, y)
 						if w ~= nil then
 							w:destroy()
@@ -433,9 +432,6 @@ return
 						end
 					end
 
-					self.people[newRuler].isruler = true
-					self.hasruler = 0
-
 					if parent.systems[self.system].dynastic == true then
 						self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
 						self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
@@ -488,7 +484,10 @@ return
 						end end
 					end
 
+					self.hasruler = 0
+					self.people[newRuler].isruler = true
 					self.rulerage = self.people[newRuler].age
+					self.rulerParty = self.people[newRuler].party
 				end
 			end,
 
@@ -667,8 +666,6 @@ return
 				if self.stability < 1 then self.stability = 1 end
 
 				self.age = self.age + 1
-
-				self.hasruler = -1
 				self.averageAge = 0
 
 				if #self.parties > 0 then
@@ -764,17 +761,13 @@ return
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
+				self:checkRuler(parent)
+				self.hasruler = -1
+				
 				for i, j in pairs(self.people) do
 					if j ~= nil then j:update(parent, self) end
 
 					if j ~= nil then
-						if j.isruler == true then
-							self.hasruler = 0
-							self.rulerage = j.age
-						end
-
-						self.averageAge = self.averageAge + j.age
-
 						local age = j.age
 						if age > 100 then
 							self:delete(parent, i)
@@ -784,11 +777,18 @@ return
 						end
 
 						if j ~= nil then
+							self.averageAge = self.averageAge + j.age
 							if j.military == true then self.military = self.military + 1 end
-							if j.isruler == true then self.rulerParty = j.party end
+							if j.isruler == true then
+								self.hasruler = 0
+								self.rulerage = j.age
+								self.rulerParty = j.party
+							end
 						end
 					end
 				end
+				
+				self:checkRuler(parent)
 
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do
@@ -813,8 +813,6 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
-
-				self:checkRuler(parent)
 			end
 		}
 
