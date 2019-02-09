@@ -51,8 +51,6 @@ return
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
 					if #self.rulers > 0 then self.rulers[#self.rulers].To = parent.years end
-					
-					for i=1,#self.people do self.people[i].isruler = false end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
@@ -74,7 +72,7 @@ return
 										else if self.people[i].royalGenerations == 1 then table.insert(possibles, i) end end
 									end
 								end
-								
+
 								if #self.rulers > 0 then for i=1,#possibles do
 									local c = possibles[i]
 									local psp = self.people[c]
@@ -89,7 +87,7 @@ return
 										if psp.gender == "Male" then hasMale = true end
 									end
 								end end
-								
+
 								if #children > 0 then
 									for i=1,#children do
 										local c = children[i]
@@ -141,6 +139,7 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
+						self.people[y].chn = true
 						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
 						w = table.remove(self.people, y)
 						if w ~= nil then
@@ -400,95 +399,92 @@ return
 			end,
 
 			setRuler = function(self, parent, newRuler)
-				if self.hasruler == -1 then
-					self.people[newRuler].prevname = self.people[newRuler].name
-					self.people[newRuler].prevtitle = self.people[newRuler].title
+				for i=1,#self.people do self.people[i].isruler = false end
 
-					self.people[newRuler].level = #parent.systems[self.system].ranks
-					self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
+				self.people[newRuler].prevname = self.people[newRuler].name
+				self.people[newRuler].prevtitle = self.people[newRuler].title
 
-					parent:rseed()
+				self.people[newRuler].level = #parent.systems[self.system].ranks
+				self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
 
-					if self.people[newRuler].gender == "Female" then
-						self.people[newRuler].name = parent:randomChoice(self.frulernames)
+				parent:rseed()
 
-						if parent.systems[self.system].franks ~= nil then
-							self.people[newRuler].level = #parent.systems[self.system].franks
-							self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
-						end
-					else
-						self.people[newRuler].name = parent:randomChoice(self.rulernames)
+				if self.people[newRuler].gender == "Female" then
+					self.people[newRuler].name = parent:randomChoice(self.frulernames)
+
+					if parent.systems[self.system].franks ~= nil then
+						self.people[newRuler].level = #parent.systems[self.system].franks
+						self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
 					end
-
-					local namenum = 1
-
-					for i=1,#self.rulers do
-						if tonumber(self.rulers[i].From) >= self.founded then
-							if self.rulers[i].name == self.people[newRuler].name then
-								if self.rulers[i].title == self.people[newRuler].title then
-									namenum = namenum + 1
-								end
-							end
-						end
-					end
-
-					if parent.systems[self.system].dynastic == true then
-						self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
-						self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
-						self.people[newRuler].royalGenerations = 0
-						self.people[newRuler].maternalLineTimes = 0
-						self.people[newRuler].royalSystem = parent.systems[self.system].name
-						self.people[newRuler].number = namenum
-
-						for i, j in pairs(self.people[newRuler].children) do
-							if j.def == {} then
-								parent:setGensChildren(j, 1)
-								if j.royalGenerations == 1 then j.royalSystem = parent.systems[self.system].name end
-								j.royalInfo.Gens = j.royalGenerations
-								j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
-								j.parentRuler = true
-								if self.people[newRuler].gender == "Female" then j.maternalLineTimes = 1 end
-							end
-						end
-
-						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					else
-						table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					end
-
-					if parent.ged == true then
-						local pString = self.people[newRuler].prevname.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
-						local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
-
-						local inf = parent.royals[pString]
-						
-						if inf ~= nil then
-							parent.royals[newString] = inf
-							parent.royals[pString] = nil
-							
-							parent.royals[newString].name = self.people[newRuler].name
-							parent.royals[newString].number = self.people[newRuler].number
-							parent.royals[newString].title = self.people[newRuler].title
-						end
-
-						for i, j in pairs(parent.royals) do if j.father == pString or j.mother == pString then
-							local cString = j.name.." "..j.surname.." "..tostring(j.birth).." "..j.birthplace.." "..j.gender
-
-							if self.people[newRuler].gender == "Male" then
-								j.father = parent:makeAscendant(self.people[newRuler])
-								if parent.royals[cString] ~= nil then parent.royals[cString].father = newString end
-							else
-								j.mother = parent:makeAscendant(self.people[newRuler])
-								if parent.royals[cString] ~= nil then parent.royals[cString].mother = newString end
-							end
-						end end
-					end
-
-					self.hasruler = 0
-					self.people[newRuler].isruler = true
-					self.rulerage = self.people[newRuler].age
-					self.rulerParty = self.people[newRuler].party
+				else
+					self.people[newRuler].name = parent:randomChoice(self.rulernames)
 				end
+
+				local namenum = 1
+
+				for i=1,#self.rulers do
+					if tonumber(self.rulers[i].From) >= self.founded then
+						if self.rulers[i].name == self.people[newRuler].name then
+							if self.rulers[i].title == self.people[newRuler].title then
+								namenum = namenum + 1
+							end
+						end
+					end
+				end
+
+				if parent.systems[self.system].dynastic == true then
+					self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
+					self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
+					self.people[newRuler].royalGenerations = 0
+					self.people[newRuler].maternalLineTimes = 0
+					self.people[newRuler].royalSystem = parent.systems[self.system].name
+					self.people[newRuler].number = namenum
+
+					for i, j in pairs(self.people[newRuler].children) do
+						parent:setGensChildren(j, 1)
+						if j.royalGenerations == 1 then j.royalSystem = parent.systems[self.system].name end
+						j.royalInfo.Gens = j.royalGenerations
+						j.royalInfo.LastAncestor = parent:getRulerString(self.people[newRuler])
+						j.parentRuler = true
+						if self.people[newRuler].gender == "Male" then j.father = parent:makeAscendant(self.people[newRuler])
+						else j.mother = parent:makeAscendant(self.people[newRuler]) j.maternalLineTimes = 1 end
+					end
+
+					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+				else
+					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+				end
+
+				if parent.ged == true then
+					local pString = self.people[newRuler].prevname.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+					local newString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..tostring(self.people[newRuler].birth).." "..self.people[newRuler].birthplace.." "..self.people[newRuler].gender
+
+					local inf = parent.royals[pString]
+
+					if inf ~= nil then
+						parent.royals[newString] = inf
+						parent.royals[pString] = nil
+
+						parent.royals[newString].name = self.people[newRuler].name
+						parent.royals[newString].number = self.people[newRuler].number
+						parent.royals[newString].title = self.people[newRuler].title
+					end
+
+					for i, j in pairs(parent.royals) do if j.father == pString or j.mother == pString then
+						local cString = j.name.." "..j.surname.." "..tostring(j.birth).." "..j.birthplace.." "..j.gender
+
+						if self.people[newRuler].gender == "Male" then
+							if parent.royals[cString] ~= nil then parent.royals[cString].father = newString end
+						else
+							if parent.royals[cString] ~= nil then parent.royals[cString].mother = newString end
+						end
+					end end
+				end
+
+				self.hasruler = 0
+				self.people[newRuler].isruler = true
+				self.rulerage = self.people[newRuler].age
+				self.rulerParty = self.people[newRuler].party
 			end,
 
 			setTerritory = function(self, parent)
@@ -763,31 +759,49 @@ return
 
 				self:checkRuler(parent)
 				self.hasruler = -1
-				
-				for i, j in pairs(self.people) do
-					if j ~= nil then j:update(parent, self) end
 
-					if j ~= nil then
-						local age = j.age
+				for i, j in pairs(self.people) do
+					if j.chn == false then self.people[i]:update(parent, self) end
+
+					if j.chn == false then
+						local age = self.people[i].age
 						if age > 100 then
 							self:delete(parent, i)
 						else
 							d = math.random(1, 3000-(age*3))
 							if d < age then self:delete(parent, i) end
 						end
+					end
 
-						if j ~= nil then
-							self.averageAge = self.averageAge + j.age
-							if j.military == true then self.military = self.military + 1 end
-							if j.isruler == true then
-								self.hasruler = 0
-								self.rulerage = j.age
-								self.rulerParty = j.party
-							end
+					if j.chn == false and j.isruler == false then
+						local mChance = math.random(1, 35000)
+						if mChance == 3799 then
+							local cp = parent:randomChoice(parent.thisWorld.countries)
+							if #parent.thisWorld.countries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
+							j.region = ""
+							j.city = ""
+							j.nationality = cp.name
+							j.military = false
+							if j.spouse ~= nil then j.spouse = nil end
+							table.remove(self.people, i)
+							table.insert(cp.people, j)
+							for k, l in pairs(self.people) do l.chn = false end
 						end
 					end
+
+					if j.chn == false then
+						self.averageAge = self.averageAge + self.people[i].age
+						if self.people[i].military == true then self.military = self.military + 1 end
+						if self.people[i].isruler == true then
+							self.hasruler = 0
+							self.rulerage = self.people[i].age
+							self.rulerParty = self.people[i].party
+						end
+					end
+
+					j.chn = false
 				end
-				
+
 				self:checkRuler(parent)
 
 				if #self.parties > 0 then
