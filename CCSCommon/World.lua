@@ -347,7 +347,7 @@ return
 				parent:rseed()
 				
 				print("Benchmarking...")
-				local bRad = 300
+				local bRad = 200
 				local bench = {}
 				
 				local t0 = _time()
@@ -379,11 +379,11 @@ return
 				end
 				
 				local t1 = _time() - t0
-				local benchAdjust = t1*2
+				local benchAdjust = math.floor(t1*2)
 				
-				if benchAdjust > 150 then benchAdjust = 150 end
+				if benchAdjust > 50 then benchAdjust = 50 end
 				
-				local r = math.random(250-benchAdjust, 350-benchAdjust)
+				local r = math.floor(math.random(150-benchAdjust, 250-benchAdjust))
 				self.planetR = r
 
 				print("Constructing voxel planet with radius of "..tostring(r).." units...")
