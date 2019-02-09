@@ -481,27 +481,26 @@ return
 					if wNodeCount >= maxWNodes then stop = true else print("\nBody "..tostring(i).."/"..tostring(bodyCount)) end
 					while stop == false do
 						parent:rseed()
-						for j=1,#oceanNodes do
-							local ox = oceanNodes[j][1]
-							local oy = oceanNodes[j][2]
-							local oz = oceanNodes[j][3]
-							local chance = math.random(1150, math.random(1250, 1850))
-							if chance > 1200 then
-								local neighbors = self.planet[ox][oy][oz].neighbors
+						local wNode = parent:randomChoice(oceanNodes)
+						local ox = wNode[1]
+						local oy = wNode[2]
+						local oz = wNode[3]
+						local chance = math.random(1150, math.random(1250, 1850))
+						if chance > 1200 then
+							local neighbors = self.planet[ox][oy][oz].neighbors
 
-								if #neighbors > 0 then
-									local nr = math.random(1, #neighbors)
-									local nx = neighbors[nr][1]
-									local ny = neighbors[nr][2]
-									local nz = neighbors[nr][3]
-									if self.planet[nx][ny][nz].land == true then
-										local nChance = math.random(10, math.random(40, 60))
-										if nChance > 35 then
-											table.insert(oceanNodes, neighbors[nr])
-											wNodeCount = wNodeCount + 1
-										end
+							if #neighbors > 0 then
+								local nr = parent:randomChoice(neighbors)
+								local nx = nr[1]
+								local ny = nr[2]
+								local nz = nr[3]
+								if self.planet[nx][ny][nz].land == true then
+									local nChance = math.random(10, math.random(40, 60))
+									if nChance > 35 then
+										table.insert(oceanNodes, neighbors[nr])
+										self.planet[nx][ny][nz].land = false
+										wNodeCount = wNodeCount + 1
 									end
-									self.planet[nx][ny][nz].land = false
 								end
 							end
 						end
