@@ -485,6 +485,12 @@ return
 						local ox = wNode[1]
 						local oy = wNode[2]
 						local oz = wNode[3]
+						while self.planet[ox][oy][oz].land == false do
+							wNode = parent:randomChoice(oceanNodes)
+							ox = wNode[1]
+							oy = wNode[2]
+							oz = wNode[3]
+						end
 						local chance = math.random(1100, math.random(1200, 1850))
 						if chance > 1200 then
 							local neighbors = self.planet[ox][oy][oz].neighbors
