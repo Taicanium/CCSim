@@ -340,9 +340,7 @@ return
 					if hasend == false then
 						if c1 == "h" then self.demonym = cBegin..c2
 						elseif c2 == "h" then self.demonym = cBegin..c1
-						else
-							self.demonym = cBegin..c1 end
-						end
+						else self.demonym = cBegin..c1 end
 					end
 				end
 			end,
