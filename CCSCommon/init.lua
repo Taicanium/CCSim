@@ -45,6 +45,7 @@ return
 						end
 
 						c.hasruler = -1
+						c:checkRuler(parent)
 
 						c.stability = c.stability - 10
 						if c.stability < 1 then c.stability = 1 end
@@ -295,6 +296,7 @@ return
 					target=nil,
 					args=2,
 					status=0,
+					eString="",
 					inverse=true,
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Declared war on "..self.target.name)
@@ -302,6 +304,11 @@ return
 						self.status = 0 -- -100 is victory for the target; 100 is victory for the initiator.
 						self.status = self.status + parent:strengthFactor(c1)
 						self.status = self.status - parent:strengthFactor(self.target)
+						local statString = ""
+						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
+						else statString = "tossup" end
+						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 					end,
 					doStep=function(self, parent, c1)
 						if self.target == nil then return -1 end
@@ -518,6 +525,7 @@ return
 					target=nil,
 					args=2,
 					inverse=true,
+					eString="",
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Entered military alliance with "..self.target.name)
 						self.target:event(parent, "Entered military alliance with "..c1.name)
@@ -1407,7 +1415,7 @@ return
 
 				if fInd == nil then
 					fInd = pString
-					royals[fInd] = pTable
+					if self.ged == true then royals[fInd] = pTable end
 				end
 
 				if person.title ~= nil then if royals[fInd].title ~= person.title then
