@@ -27,7 +27,7 @@ return
 
 						parent:rseed()
 						local dchance = math.random(1, 100)
-						if dchance < 41 then -- Executed
+						if dchance < 26 then -- Executed
 							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
@@ -62,7 +62,6 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
-
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
 							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
@@ -191,7 +190,7 @@ return
 						end
 
 						self.status = self.status + math.ceil(math.random(math.floor(varistab),math.ceil(varistab))/2)
-						
+
 						local statString = ""
 						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
 						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% government"
@@ -377,7 +376,7 @@ return
 						end
 
 						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
-						
+
 						local statString = ""
 						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
 						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
@@ -542,7 +541,7 @@ return
 
 						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
-						
+
 						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 
 						return 0
@@ -2097,7 +2096,7 @@ return
 			end,
 
 			setGensChildren = function(self, t, v)
-				if t.def == {} then if t.royalGenerations > v or t.royalGenerations == -1 then t.royalGenerations = v end end
+				if t.royalGenerations > v or t.royalGenerations == -1 then t.royalGenerations = v end
 				if t.children ~= nil then for i, j in pairs(t.children) do self:setGensChildren(j, v+1) end end
 			end,
 
@@ -2207,7 +2206,7 @@ return
 
 				return fams
 			end,
-			
+
 			strengthFactor = function(self, c)
 				local pop = 0
 				if c.rulerParty ~= "" then if c.parties[c.rulerParty] ~= nil then pop = c.parties[c.rulerParty].popularity - 50 end end
