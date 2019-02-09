@@ -49,10 +49,7 @@ return
 
 			destroy = function(self)
 				self.def = nil -- See above.
-				self.ethnicity = nil
 				self.spouse = nil
-				self.royalInfo = nil
-				self.children = nil
 			end,
 
 			dobirth = function(self, parent, nl)
