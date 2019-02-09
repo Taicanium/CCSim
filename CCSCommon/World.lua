@@ -382,11 +382,11 @@ return
 				local benchAdjust = t1*2
 				
 				if benchAdjust > 150 then benchAdjust = 150 end
-
-				print("Constructing voxel planet...")
-
+				
 				local r = math.random(250-benchAdjust, 350-benchAdjust)
 				self.planetR = r
+
+				print("Constructing voxel planet with radius of "..tostring(r).." units...")
 
 				local rdone = 0
 
