@@ -523,8 +523,8 @@ return
 				local maxR = math.ceil(#self.nodes / 35)
 
 				while rCount > maxR do
-					local r = parent:randomChoice(self.regions)
-					parent:deepnil(r)
+					local r = parent:randomChoice(self.regions, true)
+					self.regions[r] = nil
 					rCount = 0
 					for l, m in pairs(self.regions) do rCount = rCount + 1 end
 				end
@@ -597,14 +597,15 @@ return
 					local maxC = math.ceil(#j.nodes / 25)
 
 					while cCount > maxC do
-						local r = parent:randomChoice(j.cities)
+						local c = parent:randomChoice(j.cities, true)
+						local r = j.cities[c]
 						local x = r.x
 						local y = r.y
 						local z = r.z
 						if r.x ~= nil and r.y ~= nil and r.z ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
-						parent:deepnil(r)
+						j.cities[c] = nil
 						cCount = 0
-						for m, n in pairs(j.cities) do cCount = cCount + 1 end
+						for k, l in pairs(j.cities) do cCount = cCount + 1 end
 					end
 				end
 
