@@ -6,6 +6,7 @@ return
 				setmetatable(n, self)
 
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
+				n.chn = false -- Another utility variable which indicates whether this person's position in the country 'people' array has changed since their last update.
 				n.name = ""
 				n.surname = ""
 				n.birth = 0
@@ -310,11 +311,11 @@ return
 				end
 
 				self.recentbirth = false
-				
+
 				self.pbelief = self.pbelief + math.random(-2, 2)
 				self.ebelief = self.ebelief + math.random(-2, 2)
 				self.cbelief = self.cbelief + math.random(-2, 2)
-				
+
 				if self.pbelief < -100 then self.pbelief = -100 end
 				if self.pbelief > 100 then self.pbelief = 100 end
 				if self.ebelief < -100 then self.ebelief = -100 end
@@ -348,7 +349,7 @@ return
 
 					table.insert(nl.parties, newp)
 				end
-				
+
 				if self.party == "" then
 					local pi = parent:randomChoice(nl.parties)
 					pmatch = true
@@ -384,31 +385,6 @@ return
 				if movechance == 12 then
 					self.region = ""
 					self.city = ""
-				end
-
-				if self.isruler == false then
-					for i, cp in pairs(parent.thisWorld.countries) do
-						if cp.name ~= nl.name then
-							local movechance = math.random(1, 15000)
-							if movechance == 7499 then
-								for j=#nl.people,1,-1 do
-									if nl.people[j].name == self.name and nl.people[j].surname == self.surname and nl.people[j].birth == self.birth and nl.people[j].level == self.level then
-										local k = table.remove(nl.people, j)
-										table.insert(cp.people, k)
-									end
-								end
-
-								if self.spouse ~= nil then
-									self.spouse = nil
-								end
-
-								self.region = ""
-								self.city = ""
-								self.military = false
-								self.nationality = cp.name
-							end
-						end
-					end
 				end
 
 				if self.military == true then
