@@ -375,7 +375,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone + 1
-							if math.fmod(rdone, 5000) == 0 then io.write("\r"..tostring(rdone).."/"..tostring(math.pow(r*2, 3))) end
+							if math.fmod(rdone, 5000) == 0 then io.write("\r"..tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
 						end
 					end
 				end
@@ -406,9 +406,9 @@ return
 
 				print("Defining bodies of water...")
 
-				local bodyCount = math.random(20, 35)
+				local bodyCount = math.random(25, 35)
 				local wNodeCount = 0
-				local maxWNodes = math.random(math.floor(#self.planetdefined / 1.65), math.ceil(#self.planetdefined / 1.425))
+				local maxWNodes = math.random(math.floor((#self.planetdefined * 5) / 10), math.ceil((#self.planetdefined * 7.5) / 10))
 
 				for i=1,bodyCount do
 					parent:rseed()
@@ -437,7 +437,7 @@ return
 					local stop = false
 					local oceanNodes = {{x, y, z}}
 					wNodeCount = wNodeCount + 1
-					local maxsize = math.random(math.ceil(#self.planetdefined / 75), math.floor(#self.planetdefined / math.random(50, 7.5)))
+					local maxsize = math.random(math.floor(#self.planetdefined / 95), math.ceil(#self.planetdefined / math.random(35, 7.5)))
 					if wNodeCount >= maxWNodes then stop = true else print("\nBody "..tostring(i).."/"..tostring(bodyCount)) end
 					while stop == false do
 						parent:rseed()
