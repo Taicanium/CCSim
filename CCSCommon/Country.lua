@@ -261,7 +261,7 @@ return
 
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name:sub(1, #self.name-1).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "y" then
-					split = self.name:sub(1, #self.name-1)
+					local split = self.name:sub(1, #self.name-1)
 					if split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
 					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "b" then self.demonym = split.."ian"
@@ -286,13 +286,14 @@ return
 				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name.."nian"
 				elseif self.name:sub(#self.name, #self.name) == "k" then self.demonym = self.name:sub(1, #self.name-1).."cian"
 				elseif self.name:sub(#self.name-3, #self.name) == "land" then
-					split = self.name:sub(1, #self.name-4)
+					local split = self.name:sub(1, #self.name-4)
 					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
 					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
 					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
+					elseif split:sub(#split, #split) == "g" then self.demonym = split.."lish"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
 					else self.demonym = split.."ish" end
 				else
@@ -311,24 +312,39 @@ return
 				for i=1,3 do
 					self.demonym = self.demonym:gsub("ii", "i")
 					self.demonym = self.demonym:gsub("aa", "a")
+					self.demonym = self.demonym:gsub("uu", "u")
+					self.demonym = self.demonym:gsub("yi", "i")
+					self.demonym = self.demonym:gsub("iy", "i")
+					self.demonym = self.demonym:gsub("ais", "is")
+					self.demonym = self.demonym:gsub("eis", "is")
+					self.demonym = self.demonym:gsub("iis", "is")
+					self.demonym = self.demonym:gsub("ois", "is")
+					self.demonym = self.demonym:gsub("uis", "is")
+					self.demonym = self.demonym:gsub("aia", "ia")
 					self.demonym = self.demonym:gsub("eia", "ia")
+					self.demonym = self.demonym:gsub("iia", "ia")
 					self.demonym = self.demonym:gsub("oia", "ia")
 					self.demonym = self.demonym:gsub("uia", "ia")
-					self.demonym = self.demonym:gsub("yi", "i")
-					self.demonym = self.demonym:gsub("eish", "ish")
-					self.demonym = self.demonym:gsub("uish", "ish")
-					self.demonym = self.demonym:gsub("aish", "ish")
-					self.demonym = self.demonym:gsub("iish", "ish")
-					self.demonym = self.demonym:gsub("oish", "ish")
-					self.demonym = self.demonym:gsub("eian", "ian")
-					self.demonym = self.demonym:gsub("iian", "ian")
-					self.demonym = self.demonym:gsub("uian", "ian")
-					self.demonym = self.demonym:gsub("aian", "ian")
-					self.demonym = self.demonym:gsub("oian", "ian")
 				end
-
-				if self.demonym:sub(#self.demonym, #self.demonym) == "j" then self.demonym = self.demonym:sub(1, #self.demonym-1) end
-				if self.demonym:sub(#self.demonym, #self.demonym) == "w" then self.demonym = self.demonym.."i" end
+				
+				local ends = {"ch", "rt", "gh", "ct", "rl", "rn", "rm", "rd", "rs", "lc", "ld", "ln", "lm", "ls", "sc", "nd", "nc", "st", "sh", "ds", "ck", "lg", "lk", "ng"}
+				local hasend = false
+				
+				while hasend == false do
+					local cEnd = self.demonym:sub(#self.demonym-1, #self.demonym)
+					local cBegin = self.demonym:sub(1, #self.demonym-2)
+					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
+					local c1 = cEnd[1]
+					local c2 = cEnd[2]
+					for i, j in pairs(parent.vowels) do if c1 == j then hasend = true elseif c2 == j then hasend = true end end
+					if hasend == false then
+						if c1 == "h" then self.demonym = cBegin..c2
+						elseif c2 == "h" then self.demonym = cBegin..c1
+						else
+							self.demonym = cBegin..c1 end
+						end
+					end
+				end
 			end,
 
 			set = function(self, parent)
