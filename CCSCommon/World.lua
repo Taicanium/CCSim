@@ -379,11 +379,8 @@ return
 				end
 				
 				local t1 = _time() - t0
+				local benchAdjust = t1*2
 				
-				local benchAdjust = 0
-				if t1 > 5 then
-					for i=1,t1-5 do benchAdjust = benchAdjust + 10 end
-				end
 				if benchAdjust > 150 then benchAdjust = 150 end
 
 				print("Constructing voxel planet...")
