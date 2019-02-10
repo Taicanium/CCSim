@@ -491,7 +491,7 @@ return
 
 						if #neighbors > 0 then
 							local nChance = math.random(10, math.random(55, 100))
-							if nChance > 80 then
+							if nChance > 45 then
 								local nr = parent:randomChoice(neighbors)
 								local nx = nr[1]
 								local ny = nr[2]
