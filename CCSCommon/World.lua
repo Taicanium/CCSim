@@ -475,6 +475,7 @@ return
 
 					local stop = false
 					local oceanNodes = {{x, y, z}}
+					local freeNodes = {{x, y, z}}
 					wNodeCount = wNodeCount + 1
 					local wMin = math.floor(#self.planetdefined / math.random(85, 125))
 					local wMax = math.ceil(#self.planetdefined / math.random(7.5, 35))
@@ -482,37 +483,27 @@ return
 					if wNodeCount >= maxWNodes then stop = true else print("\nBody "..tostring(i).."/"..tostring(bodyCount)) end
 					while stop == false do
 						parent:rseed()
-						local wNode = parent:randomChoice(oceanNodes)
-						local ox = wNode[1]
-						local oy = wNode[2]
-						local oz = wNode[3]
-						while self.planet[ox][oy][oz].hasLandNeighbors == false do
-							wNode = parent:randomChoice(oceanNodes)
-							ox = wNode[1]
-							oy = wNode[2]
-							oz = wNode[3]
-						end
-						local chance = math.random(1100, math.random(1200, 1850))
-						if chance > 1200 then
-							local neighbors = self.planet[ox][oy][oz].neighbors
+						local wNode = parent:randomChoice(freeNodes, true)
+						local ox = freeNodes[wNode][1]
+						local oy = freeNodes[wNode][2]
+						local oz = freeNodes[wNode][3]
+						local neighbors = self.planet[ox][oy][oz].neighbors
 
-							if #neighbors > 0 then
-								parent:rseed()
+						if #neighbors > 0 then
+							local nChance = math.random(10, math.random(55, 100))
+							if nChance > 80 then
 								local nr = parent:randomChoice(neighbors)
 								local nx = nr[1]
 								local ny = nr[2]
 								local nz = nr[3]
 								if self.planet[nx][ny][nz].land == true then
-									local nChance = math.random(10, math.random(55, 100))
-									if nChance > 55 then
-										table.insert(oceanNodes, nr)
-										self.planet[nx][ny][nz].land = false
-										wNodeCount = wNodeCount + 1
-										self.planet[ox][oy][oz].hasLandNeighbors = false
-										for q, b in pairs(self.planet[ox][oy][oz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[ox][oy][oz].hasLandNeighbors = true end end
-										self.planet[nx][ny][nz].hasLandNeighbors = false
-										for q, b in pairs(self.planet[nx][ny][nz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[nx][ny][nz].hasLandNeighbors = true end end
-									end
+									table.insert(oceanNodes, nr)
+									table.insert(freeNodes, nr)
+									self.planet[nx][ny][nz].land = false
+									wNodeCount = wNodeCount + 1
+									self.planet[ox][oy][oz].hasLandNeighbors = false
+									for q, b in pairs(self.planet[ox][oy][oz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[ox][oy][oz].hasLandNeighbors = true end end
+									if self.planet[ox][oy][oz].hasLandNeighbors == false then table.remove(freeNodes, wNode) end
 								end
 							end
 						end
