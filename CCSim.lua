@@ -22,7 +22,7 @@ function main()
 			CCSCommon.maxyears = tonumber(datin)
 		end
 
-		io.write(string.format("\nDo you want to show detailed info in the console (y/n)?\n Answering N may result in a slight speedup. > "))
+		io.write(string.format("\nDo you want to show detailed info in the console (y/n)?\nAnswering N may result in a slight speedup. > "))
 		datin = io.read()
 		datin = string.lower(datin)
 
@@ -33,7 +33,7 @@ function main()
 		datin = io.read()
 		CCSCommon.autosaveDur = tonumber(datin)
 		while CCSCommon.autosaveDur == nil do
-			io.write(string.format("\n Please enter a number. > "))
+			io.write(string.format("\nPlease enter a number. > "))
 			datin = io.read()
 
 			CCSCommon.autosaveDur = tonumber(datin)
