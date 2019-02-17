@@ -489,7 +489,8 @@ return
 					
 					local found = false
 					for i, j in pairs(self.planet[x][y][z].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
-					if found == false then table.remove(freeNodes, node) end
+					if found == false then table.remove(freeNodes, node)
+					elseif #self.planet[x][y][z].neighbors == 0 then table.remove(freeNodes, node)
 					
 					io.write("\r"..tostring(doneLand).."/"..tostring(maxLand))
 				end
