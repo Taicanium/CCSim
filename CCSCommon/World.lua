@@ -727,6 +727,8 @@ return
 
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
+				local planetSize = #self.planetdefined
+				
 				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
