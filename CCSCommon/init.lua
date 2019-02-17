@@ -1539,8 +1539,11 @@ return
 						else rtitle = "Empress" end
 					end
 				end
+				
+				local pGender = "M"
+				if person.gender == "Female" then pGender = "F" end
 
-				local t = {name=person.name, surname=person.surname, gender=person.gender:sub(1, 1), number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
+				local t = {name=person.name, surname=person.surname, gender=pGender, number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
 				if person.children ~= nil then for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end end
 				return t
 			end,
