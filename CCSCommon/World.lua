@@ -492,6 +492,8 @@ return
 					local found = false
 					for i, j in pairs(self.planet[x][y][z].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
 					if found == false then table.remove(freeNodes, node) end
+					
+					io.write("\r"..tostring(doneLand).."/"..tostring(maxLand))
 				end
 
 				print("\nRooting countries...")
