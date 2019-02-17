@@ -8,6 +8,7 @@ return
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
 				n.chn = false -- Another utility variable which indicates whether this person's position in the country 'people' array has changed since their last update.
 				n.name = ""
+				n.royalName = ""
 				n.surname = ""
 				n.birth = 0
 				n.age = 0
@@ -15,7 +16,6 @@ return
 				n.ethnicity = {}
 				n.nationality = ""
 				n.level = 2
-				n.prevname = ""
 				n.prevtitle = "Citizen"
 				n.title = "Citizen"
 				n.party = ""

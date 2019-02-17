@@ -347,7 +347,7 @@ return
 				parent:rseed()
 				
 				print("Benchmarking...")
-				local bRad = 200
+				local bRad = 175
 				local bench = {}
 				
 				local t0 = _time()
@@ -361,16 +361,6 @@ return
 								if bench[x] == nil then bench[x] = {} end
 								if bench[x][y] == nil then bench[x][y] = {} end
 								bench[x][y][z] = {}
-								bench[x][y][z].x = x
-								bench[x][y][z].y = y
-								bench[x][y][z].z = z
-								bench[x][y][z].country = ""
-								bench[x][y][z].countryset = false
-								bench[x][y][z].region = ""
-								bench[x][y][z].regionset = false
-								bench[x][y][z].city = ""
-								bench[x][y][z].land = true -- if false, this node is water.
-								bench[x][y][z].neighbors = {}
 							end
 							bdone = bdone + 1
 							if math.fmod(bdone, 10000) == 0 then io.write("\r"..tostring(bdone).."/"..tostring(math.pow((bRad*2)+1, 3))) end
@@ -379,12 +369,12 @@ return
 				end
 				
 				local t1 = math.floor(_time() - t0)
-				local benchAdjust = 0
-				if t1 > 20 then benchAdjust = math.floor(t1) end
+				local benchAdjust = -25
+				benchAdjust = t1
 				
 				if benchAdjust > 50 then benchAdjust = 50 end
 				
-				local r = math.floor(math.random(150-benchAdjust, 250-benchAdjust))
+				local r = math.floor(math.random(125-benchAdjust, 225-benchAdjust))
 				self.planetR = r
 
 				print("\nConstructing voxel planet with radius of "..tostring(r).." units...")
@@ -407,9 +397,9 @@ return
 								self.planet[x][y][z].region = ""
 								self.planet[x][y][z].regionset = false
 								self.planet[x][y][z].city = ""
-								self.planet[x][y][z].land = true -- if false, this node is water.
+								self.planet[x][y][z].land = false
 								self.planet[x][y][z].neighbors = {}
-								self.planet[x][y][z].hasLandNeighbors = true
+								self.planet[x][y][z].hasWaterNeighbors = false
 
 								table.insert(self.planetdefined, {x, y, z})
 							end
@@ -419,9 +409,11 @@ return
 					end
 				end
 
+				local planetSize = #self.planetdefined
+				
 				print("")
 
-				for i=1,#self.planetdefined do
+				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
@@ -442,95 +434,84 @@ return
 						end
 					end
 				end
+				
+				print("Defining land masses...")
+				
+				local maxLand = math.random(math.floor(planetSize/3), math.ceil(planetSize/2))
+				local continents = math.random(10, 15)
+				local doneNodes = {}
+				local freeNodes = {}
+				for i=1,continents do
+					local located = true
+				
+					local cSeed = parent:randomChoice(self.planetdefined)
 
-				print("Defining bodies of water...")
+					local x = cSeed[1]
+					local y = cSeed[2]
+					local z = cSeed[3]
 
-				local bodyCount = math.random(25, 35)
-				local wNodeCount = 0
-				local maxWNodes = math.random(math.floor((#self.planetdefined * 5) / 10), math.ceil((#self.planetdefined * 7.5) / 10))
-
-				for i=1,bodyCount do
-					parent:rseed()
-
-					local located = false
-
-					local rnd = math.random(1, #self.planetdefined)
-
-					local x = self.planetdefined[rnd][1]
-					local y = self.planetdefined[rnd][2]
-					local z = self.planetdefined[rnd][3]
-
+					if self.planet[x][y][z].land == true then located = false end
 					while located == false do
-						rnd = math.random(1, #self.planetdefined)
+						cSeed = parent:randomChoice(self.planetdefined)
 
-						x = self.planetdefined[rnd][1]
-						y = self.planetdefined[rnd][2]
-						z = self.planetdefined[rnd][3]
+						x = cSeed[1]
+						y = cSeed[2]
+						z = cSeed[3]
 
 						located = true
-						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
+						if self.planet[x][y][z].land == true then located = false end
 					end
+					
+					self.planet[x][y][z].land = true
+					table.insert(doneNodes, cSeed)
+					table.insert(freeNodes, cSeed)
+				end
+				local doneLand = continents
+				while doneLand < maxLand do
+					local node = parent:randomChoice(freeNodes, true)
 
-					self.planet[x][y][z].land = false
-
-					local stop = false
-					local oceanNodes = {{x, y, z}}
-					local freeNodes = {{x, y, z}}
-					wNodeCount = wNodeCount + 1
-					local wMin = math.floor(#self.planetdefined / math.random(85, 125))
-					local wMax = math.ceil(#self.planetdefined / math.random(7.5, 35))
-					local maxsize = math.random(wMin, wMax)
-					if wNodeCount >= maxWNodes then stop = true else print("\nBody "..tostring(i).."/"..tostring(bodyCount)) end
-					while stop == false do
-						parent:rseed()
-						local wNode = parent:randomChoice(freeNodes, true)
-						local ox = freeNodes[wNode][1]
-						local oy = freeNodes[wNode][2]
-						local oz = freeNodes[wNode][3]
-						local neighbors = self.planet[ox][oy][oz].neighbors
-
-						if #neighbors > 0 then
-							local nChance = math.random(10, math.random(55, 100))
-							if nChance > 45 then
-								local nr = parent:randomChoice(neighbors)
-								local nx = nr[1]
-								local ny = nr[2]
-								local nz = nr[3]
-								if self.planet[nx][ny][nz].land == true then
-									table.insert(oceanNodes, nr)
-									table.insert(freeNodes, nr)
-									self.planet[nx][ny][nz].land = false
-									wNodeCount = wNodeCount + 1
-									self.planet[ox][oy][oz].hasLandNeighbors = false
-									for q, b in pairs(self.planet[ox][oy][oz].neighbors) do if self.planet[b[1]][b[2]][b[3]].land == true then self.planet[ox][oy][oz].hasLandNeighbors = true end end
-									if self.planet[ox][oy][oz].hasLandNeighbors == false then table.remove(freeNodes, wNode) end
-								end
-							end
+					local x = freeNodes[node][1]
+					local y = freeNodes[node][2]
+					local z = freeNodes[node][3]
+					
+					if math.random(1, 5) == math.random(1, 5) then
+						local neighbor = parent:randomChoice(self.planet[x][y][z].neighbors)
+						local nx = neighbor[1]
+						local ny = neighbor[2]
+						local nz = neighbor[3]
+						if self.planet[nx][ny][nz].land == false then
+							self.planet[nx][ny][nz].land = true
+							doneLand = doneLand + 1
+							table.insert(doneNodes, neighbor)
+							local found = false
+							for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
+							if found == true then table.insert(freeNodes, neighbor) end
 						end
-
-						if #oceanNodes >= maxsize then stop = true end
-						if wNodeCount >= maxWNodes then stop = true end
-						io.write("\r"..tostring(#oceanNodes).."/"..tostring(maxsize)..", max "..tostring(maxWNodes-wNodeCount))
 					end
+					
+					local found = false
+					for i, j in pairs(self.planet[x][y][z].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
+					if found == false then table.remove(freeNodes, node) end
 				end
 
 				print("\nRooting countries...")
 
 				for i, cp in pairs(self.countries) do
-					local located = false
+					local located = true
 
-					local rnd = math.random(1, #self.planetdefined)
+					local rnd = parent:randomChoice(self.planetdefined)
 
-					local x = self.planetdefined[rnd][1]
-					local y = self.planetdefined[rnd][2]
-					local z = self.planetdefined[rnd][3]
+					local x = rnd[1]
+					local y = rnd[2]
+					local z = rnd[3]
 
+					if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
 					while located == false do
-						rnd = math.random(1, #self.planetdefined)
+						rnd = parent:randomChoice(self.planetdefined)
 
-						x = self.planetdefined[rnd][1]
-						y = self.planetdefined[rnd][2]
-						z = self.planetdefined[rnd][3]
+						x = rnd[1]
+						y = rnd[2]
+						z = rnd[3]
 
 						located = true
 						if self.planet[x][y][z].country ~= "" or self.planet[x][y][z].land == false then located = false end
@@ -548,7 +529,7 @@ return
 					allDefined = true
 					defined = 0
 
-					for i=1,#self.planetdefined do
+					for i=1,planetSize do
 						local x = self.planetdefined[i][1]
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
@@ -576,7 +557,7 @@ return
 						end
 					end
 
-					for i=1,#self.planetdefined do
+					for i=1,planetSize do
 						local x = self.planetdefined[i][1]
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
@@ -585,10 +566,10 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/#self.planetdefined*10000)/100).."    \t% done")
+					io.write("\r"..tostring(math.floor(defined/planetSize*10000)/100).."    \t% done")
 				end
 
-				for i=1,#self.planetdefined do
+				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
@@ -722,12 +703,12 @@ return
 
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
-				for i=1,#self.planetdefined do
+				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
 					f:write("\""..self.planet[x][y][z].country.."\"")
-					if i < #self.planetdefined then f:write(", ") end
+					if i < planetSize then f:write(", ") end
 				end
 
 				for i, cp in pairs(self.countries) do
@@ -794,8 +775,8 @@ return
 					end
 				end
 
-				for i=1,#self.planetdefined,250 do
-					if i+249 <= #self.planetdefined then
+				for i=1,planetSize,250 do
+					if i+249 <= planetSize then
 						f:write(")\nx <- c(")
 
 						for j=i,i+249 do
@@ -864,7 +845,7 @@ return
 					else
 						f:write(")\nx <- c(")
 
-						for j=i,#self.planetdefined do
+						for j=i,planetSize do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -872,12 +853,12 @@ return
 								x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5)
 							end
 							f:write(x)
-							if j < #self.planetdefined then f:write(", ") end
+							if j < planetSize then f:write(", ") end
 						end
 
 						f:write(")\ny <- c(")
 
-						for j=i,#self.planetdefined do
+						for j=i,planetSize do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -885,12 +866,12 @@ return
 								y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5)
 							end
 							f:write(y)
-							if j < #self.planetdefined then f:write(", ") end
+							if j < planetSize then f:write(", ") end
 						end
 
 						f:write(")\nz <- c(")
 
-						for j=i,#self.planetdefined do
+						for j=i,planetSize do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -898,12 +879,12 @@ return
 								z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5)
 							end
 							f:write(z)
-							if j < #self.planetdefined then f:write(", ") end
+							if j < planetSize then f:write(", ") end
 						end
 
 						f:write(")\ncsc <- c(")
 
-						for j=i,#self.planetdefined do
+						for j=i,planetSize do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -923,7 +904,7 @@ return
 									else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
-							if j < #self.planetdefined then f:write(", ") end
+							if j < planetSize then f:write(", ") end
 						end
 
 						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")

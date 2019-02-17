@@ -95,7 +95,7 @@ return
 								local newRuler = -1
 								for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
 								if c.people[newRuler].royalInfo.LastAncestor ~= "" then
-									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
+									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
 									c:event(parent, msg)
 								end
 							end
@@ -130,8 +130,8 @@ return
 						self.status = 0 -- -100 is victory for the opposition side; 100 is victory for the present government.
 						self.status = self.status + parent:strengthFactor(c)
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
-						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% government"
+						if self.status < 10 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
+						elseif self.status > 10 then statString = tostring(math.floor(math.abs(self.status))).."% government"
 						else statString = "tossup" end
 						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
 						self.opIntervened = {}
@@ -192,8 +192,8 @@ return
 						self.status = self.status + math.ceil(math.random(math.floor(varistab),math.ceil(varistab))/2)
 
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
-						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% government"
+						if self.status < 10 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
+						elseif self.status > 10 then statString = tostring(math.floor(math.abs(self.status))).."% government"
 						else statString = "tossup" end
 						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
 
@@ -246,7 +246,7 @@ return
 							if parent.systems[c.system].dynastic == true then
 								for i=1,#c.rulers do
 									if tonumber(c.rulers[i].From) >= c.founded then
-										if c.rulers[i].name == c.people[newRuler].name then
+										if c.rulers[i].name == c.people[newRuler].royalName then
 											if c.rulers[i].title == c.people[newRuler].title then
 												namenum = namenum + 1
 											end
@@ -254,7 +254,7 @@ return
 									end
 								end
 
-								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].prevname.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(namenum).." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -266,7 +266,7 @@ return
 									end
 								end
 							else
-								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].prevname.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..c.people[newRuler].surname.." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -304,8 +304,8 @@ return
 						self.status = self.status + parent:strengthFactor(c1)
 						self.status = self.status - parent:strengthFactor(self.target)
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
-						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
+						if self.status < 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status > 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
 						else statString = "tossup" end
 						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 					end,
@@ -378,8 +378,8 @@ return
 						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
 
 						local statString = ""
-						if self.status < 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
-						elseif self.status > 5 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
+						if self.status < 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status > 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
 						else statString = "tossup" end
 						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 
@@ -1106,11 +1106,13 @@ return
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
+						local jname = j.name
+						if j.royalName ~= "" then jname = j.royalName end
 						if j.death >= self.years then j.death = 0 end
-						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..j.name.." /"..j.surname.."/"
+						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
 						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
-						msgout = msgout.."\n2 GIVN "..j.name.."\n2 SURN "..j.surname.."\n"
+						msgout = msgout.."\n2 GIVN "..jname.."\n2 SURN "..j.surname.."\n"
 						if j.number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(j.number).."\n" end
 						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
 						if j.birth < 0 then msgout = msgout.." B.C." end
@@ -1385,6 +1387,7 @@ return
 				local fInd = nil
 				local pTable = {
 					name=person.name,
+					royalName=person.royalName,
 					surname=person.surname,
 					birth=person.birth,
 					death=person.death,
@@ -1405,9 +1408,10 @@ return
 				}
 
 				local pString = person.name.." "..person.surname.." "..tostring(person.birth).." "..person.birthplace.." "..person.gender
-
+				
 				if royals[pString] ~= nil then
 					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end
+					if person.royalName ~= nil then if person.royalName ~= "" then if royals[pString].royalName ~= person.royalName then royals[pString].royalName = person.royalName end end end
 					if person.deathplace ~= nil then if person.deathplace ~= "" then if royals[pString].deathplace ~= person.deathplace then royals[pString].deathplace = person.deathplace end end end
 					fInd = pString
 				end
@@ -1441,34 +1445,38 @@ return
 					royals[fInd].mother = "SCANNING"
 					royals[fInd].mother = self:getAscendants(royals, person.mother)
 				end end
-				if #royals[fInd].children ~= #person.children then
-					for i, j in pairs(royals[fInd].children) do
-						local found = false
-						for k, l in pairs(person.children) do if l == j then found = true end end
-						if found == false then table.insert(person.children, asc) end
-					end
 				
-					for i, j in pairs(person.children) do
-						local found = false
-						local asc = self:getAscendants(royals, j)
-						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
-						if found == false then table.insert(royals[fInd].children, asc) end
-					end
+				for i, j in pairs(royals[fInd].children) do
+					local found = false
+					for k, l in pairs(person.children) do if l == j then found = true end end
+					if found == false then table.insert(person.children, asc) end
+				end
+			
+				for i, j in pairs(person.children) do
+					local found = false
+					local asc = self:getAscendants(royals, j)
+					for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
+					if found == false then table.insert(royals[fInd].children, asc) end
 				end
 
 				return fInd
 			end,
 
 			getRulerString = function(self, data)
+				local rString = data.title.." "
 				if data then
+					if data.royalName then if data.royalName ~= "" then rString = rString..data.royalName.." " else rString = rString..data.name.." " end else rString = rString..data.name.." " end
+					
 					if data.Country then
-						if tonumber(data.number) ~= nil then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")")
-						else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")") end
-					elseif data.number then
-						if tonumber(data.number) ~= 0 then return string.format(data.title.." "..data.name.." "..self:roman(data.number).." ("..data.surname..") of "..data.nationality):gsub("()", ""):gsub("  ", " ")
-						else return string.format(data.title.." "..data.name.." "..self:roman(data.surname).." of "..data.nationality):gsub("  ", " ") end
-					else return "None" end
-				else return "None" end
+						if tonumber(data.number) ~= nil then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
+						else rString = rString..data.surname.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")" end
+					else
+						if tonumber(data.number) ~= 0 then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.nationality
+						else rString = rString..data.surname.." of "..data.nationality end
+					end
+				else rString = "None" end
+				
+				return rString
 			end,
 
 			loop = function(self)
@@ -1548,7 +1556,7 @@ return
 				local pGender = "M"
 				if person.gender == "Female" then pGender = "F" end
 
-				local t = {name=person.name, surname=person.surname, gender=pGender, number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
+				local t = {name=person.name, royalName=person.royalName, surname=person.surname, gender=pGender, number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
 				if person.children ~= nil then for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end end
 				return t
 			end,
