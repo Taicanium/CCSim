@@ -925,6 +925,106 @@ return
 			final = {},
 			thisWorld = nil,
 
+			
+			autoload = function(self)
+				print("Opening data file...")
+				local f = io.open("in_progress.dat", "r+b")
+				print("Reading data file...")
+
+				local jsonLoad = false
+
+				local stat = nil
+				local jTable = nil
+				
+				if jsonstatus then
+					local jData = f:read("*all")
+					print("Decoding JSON...")
+					stat, jTable = pcall(json.decode, jData)
+					if stat then jsonLoad = true
+					else print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
+				end
+
+				if jsonLoad == false then
+					jTable = self:loadtable(f)
+				end
+				
+				f:close()
+				f = nil
+
+				print("File closed.\nRestoring encoded recursive values...")
+
+				self:getRecursiveRefs(jTable, jTable)
+				self:getRecursiveRefs(self, jTable)
+				jTable = nil
+
+				print("Reconstructing metatables...")
+
+				setmetatable(self.thisWorld, require("CCSCommon.World")())
+				for i, j in pairs(self.thisWorld.countries) do
+					setmetatable(j, require("CCSCommon.Country")())
+					for k, l in pairs(j.people) do
+						setmetatable(l, require("CCSCommon.Person")())
+					end
+					for k, l in pairs(j.parties) do
+						setmetatable(l, require("CCSCommon.Party")())
+					end
+					for k, l in pairs(j.regions) do
+						setmetatable(l, require("CCSCommon.Region")())
+						for m, n in pairs(l.cities) do
+							setmetatable(n, require("CCSCommon.City")())
+						end
+					end
+				end
+			end,
+
+			autosave = function(self)
+				print("\nAutosaving...")
+
+				local f = io.open("in_progress.dat", "w+b")
+				if f then
+					print("Encoding recursive values...")
+					
+					for i, j in pairs(self.final) do
+						for k, l in pairs(self.thisWorld.countries) do
+							if j.name == l.name then self.final[i] = nil end
+						end
+					end
+					
+					local ids = {}
+					local tables = {}
+					self:setRecursiveIDs(self, 1)
+					self:setRecursiveRefs(self, ids, tables)
+
+					local jsonSaved = false
+
+					if jsonstatus then
+						print("Encoding JSON...")
+						local stat, jData = pcall(json.encode, self)
+						if stat then
+							print("Writing JSON...")
+							f:write(jData)
+							jsonSaved = true
+						else
+							print("Unable to encode JSON data! Falling back to native encoding.")
+						end
+					end
+
+					if jsonSaved == false then self:savetable(self, f) end
+
+					f:flush()
+					f:close()
+					f = nil
+
+					print("Restoring encoded recursive values...")
+
+					self:getRecursiveRefs(tables, tables)
+					self:getRecursiveRefs(self, tables)
+					tables = nil
+				else
+					print("Unable to open in_progress.dat for writing! Autosave not completed!")
+				end
+			end,
+			
 			checkAutoload = function(self)
 				local f = io.open("in_progress.dat", "r")
 				if f ~= nil then
@@ -937,7 +1037,7 @@ return
 					local res = io.read()
 
 					if res == "y" then
-						self.thisWorld:autoload(self)
+						self:autoload(self)
 
 						io.write(string.format("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > "))
 						res = io.read()
@@ -1002,7 +1102,7 @@ return
 				else dat = nil end
 			end,
 
-			finish = function(self, parent)
+			finish = function(self)
 				os.execute(self.clrcmd)
 				print("\nPrinting result...")
 
@@ -1462,6 +1562,41 @@ return
 				return fInd
 			end,
 
+			getfunctionvalues = function(self, fnname, fn, t)
+				local found = false
+				local exceptions = {"__index", "target"}
+
+				for i, j in pairs(t) do
+					if type(j) == "function" then
+						if string.dump(fn) == string.dump(j) then
+							local q = 1
+							while true do
+								local name = debug.getupvalue(j, q)
+								if not name then break end
+								debug.upvaluejoin(fn, q, j, q)
+								q = q + 1
+							end
+						end
+					elseif type(j) == "table" then
+						local isexception = false
+						for q=1,#exceptions do if exceptions[q] == tostring(i) then isexception = true end end
+						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
+					end
+				end
+			end,
+			
+			getRecursiveRefs = function(self, t, tables)
+				for k, l in pairs(tables) do if l.id ~= nil then
+					for i, j in pairs(t) do
+						if tostring(j) == tostring(l.id) then
+							t[i] = l
+						end
+					end
+					
+					l.id = nil
+				end end
+			end,
+			
 			getRulerString = function(self, data)
 				local rString = data.title.." "
 				if data then
@@ -1479,6 +1614,72 @@ return
 				return rString
 			end,
 
+			loadfunction = function(self, fnname, fndata)
+				local fn = loadstring(fndata)
+				if fn then self:getfunctionvalues(fnname, fn, self) return fn else return fndata end
+			end,
+			
+			loadtable = function(self, f)
+				local tableout = {}
+				local types = {"string", "number", "boolean", "table", "function"}
+
+				local slen = f:read(1)
+				local mt = f:read(tonumber(slen))
+
+				if mt ~= "nilmt" then
+					if mt == "World" then
+						setmetatable(tableout, World)
+					elseif mt == "Country" then
+						setmetatable(tableout, Country)
+					elseif mt == "Region" then
+						setmetatable(tableout, Region)
+					elseif mt == "City" then
+						setmetatable(tableout, City)
+					elseif mt == "Person" then
+						setmetatable(tableout, Person)
+					elseif mt == "Party" then
+						setmetatable(tableout, Party)
+					end
+				end
+
+				slen = f:read(1)
+				local iCount = f:read(tonumber(slen))
+
+				for i=1,iCount do
+					local itype = types[tonumber(f:read(1))]
+
+					slen = f:read(1)
+					slen = f:read(tonumber(slen))
+					local idata = f:read(tonumber(slen))
+
+					if itype == "number" then idata = tonumber(idata) end
+
+					local jtype = types[tonumber(f:read(1))]
+
+					if jtype == "table" then
+						tableout[idata] = self:loadtable(f)
+					elseif jtype == "function" then
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						local fndata = f:read(tonumber(slen))
+						tableout[idata] = self:loadfunction(idata, fndata)
+					elseif jtype == "boolean" then
+						local booldata = tonumber(f:read(1))
+						if booldata == 0 then tableout[idata] = false else tableout[idata] = true end
+					elseif jtype == "number" then
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						tableout[idata] = tonumber(f:read(tonumber(slen)))
+					else
+						slen = f:read(1)
+						slen = f:read(tonumber(slen))
+						tableout[idata] = f:read(tonumber(slen))
+					end
+				end
+
+				return tableout
+			end,
+			
 			loop = function(self)
 				local _running = true
 				local msg = ""
@@ -1873,6 +2074,40 @@ return
 				if doKeys then return index else return t[index] end
 			end,
 
+			setRecursiveIDs = function(self, t, i)
+				local id = i
+				if t.id == nil then
+					t.id = "ID"..tostring(id)
+					id = id - 1
+					for j, k in pairs(t) do
+						if type(k) == "table" then id = self:recursiveID(k, id) end
+					end
+				end
+				return id
+			end,
+			
+			setRecursiveRefs = function(self, t, taken, tables)
+				for i, j in pairs(t) do
+					if type(j) == "table" then
+						local found = false
+						
+						for k=1,#taken do
+							if taken[k] == j.id then
+								t[i] = j.id
+								found = true
+							end
+						end
+						
+						if found == false then
+							table.insert(taken, j.id)
+							self:setRecursiveRefs(j, taken, tables)
+							table.insert(tables, j)
+						end
+					end
+				end
+				table.insert(taken, t.id)
+			end,
+			
 			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 ~= nil and c2 ~= nil then
 					local rCount = 0
@@ -2104,6 +2339,57 @@ return
 				for i=3,s do math.random(100, 1000) end
 			end,
 
+			savetable = function(self, t, f)
+				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
+				local exceptions = {"__index"}
+
+				if t.mtname == nil then f:write("5nilmt") else
+					f:write(string.len(t.mtname))
+					f:write(t.mtname)
+				end
+
+				local iCount = 0
+				for i, j in pairs(t) do
+					found = false
+					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
+					if found == false then iCount = iCount + 1 end
+				end
+
+				f:write(string.len(tostring(iCount)))
+				f:write(tostring(iCount))
+
+				for i, j in pairs(t) do
+					local found = false
+					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
+					if found == false then 
+						local itype = types[type(i)]
+						f:write(itype)
+
+						f:write(string.len(tostring(string.len(i))))
+						f:write(string.len(tostring(i)))
+						f:write(tostring(i))
+
+						local jtype = type(j)
+						f:write(types[jtype])
+
+						if jtype == "table" then
+							self:savetable(j, f)
+						elseif jtype == "function" then
+							fndata = string.dump(j)
+							f:write(string.len(tostring(string.len(fndata))))
+							f:write(string.len(fndata))
+							f:write(fndata)
+						elseif jtype == "boolean" then
+							if j == false then f:write("0") else f:write("1") end
+						else
+							f:write(string.len(tostring(string.len(tostring(j)))))
+							f:write(string.len(tostring(j)))
+							f:write(tostring(j))
+						end
+					end
+				end
+			end,
+			
 			setGens = function(self, i, v, g)
 				local r = self.royals[i]
 				if r ~= nil then
