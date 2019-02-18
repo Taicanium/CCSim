@@ -326,10 +326,10 @@ return
 					self.demonym = self.demonym:gsub("oia", "ia")
 					self.demonym = self.demonym:gsub("uia", "ia")
 				end
-				
+
 				local ends = {"ch", "rt", "gh", "ct", "rl", "rn", "rm", "rd", "rs", "lc", "ld", "ln", "lm", "ls", "sc", "nd", "nc", "st", "sh", "ds", "ck", "lg", "lk", "ng"}
 				local hasend = false
-				
+
 				while hasend == false do
 					local cEnd = self.demonym:sub(#self.demonym-1, #self.demonym)
 					local cBegin = self.demonym:sub(1, #self.demonym-2)
@@ -454,7 +454,7 @@ return
 					self.people[newRuler].number = namenum
 
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					
+
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1) end
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
