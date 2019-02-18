@@ -993,7 +993,6 @@ return
 					local ids = {}
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
-					print("")
 					self:setRecursiveRefs(self, ids, tables)
 
 					local jsonSaved = false
@@ -2082,7 +2081,6 @@ return
 				local id = i
 				if t.id == nil then
 					t.id = "ID "..tostring(id)
-					io.write("\r"..t.id)
 					id = id + 1
 					for j, k in pairs(t) do
 						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
@@ -2096,17 +2094,16 @@ return
 					if type(j) == "table" then
 						local found = false
 						t[i] = j.id
-						for k=#taken,1,-1 do if taken[k] == j.id then found = true end end
+						if taken[j.id] == j.id then found = true end end
 
 						if found == false then
-							table.insert(taken, j.id)
-							io.write("\r"..tostring(#taken))
+							taken[j.id] = j.id
 							self:setRecursiveRefs(j, taken, tables)
 							tables[i] = j
 						end
 					end
 				end
-				table.insert(taken, t.id)
+				taken[t.id] = t.id
 			end,
 
 			RegionTransfer = function(self, c1, c2, r, conq)
