@@ -958,6 +958,7 @@ return
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(jTable)
 				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
+				for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				jTable = nil
 
 				print("Reconstructing metatables...")
@@ -1026,6 +1027,7 @@ return
 					self:getRecursiveIDs(tables)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
+					for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					tables = nil
 				else
 					print("Unable to open in_progress.dat for writing! Autosave not completed!")
