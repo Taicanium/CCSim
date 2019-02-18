@@ -994,6 +994,7 @@ return
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
 					self:setRecursiveRefs(self, ids, tables)
+					for i, j in pairs(self) do tables[i] = j end end
 
 					local jsonSaved = false
 
@@ -2099,10 +2100,11 @@ return
 						if found == false then
 							taken[j.id] = j.id
 							self:setRecursiveRefs(j, taken, tables)
-							tables[i] = j
+							tables[j.id] = j
 						end
 					end
 				end
+				tables[t.id] = t
 				taken[t.id] = t.id
 			end,
 
