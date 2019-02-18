@@ -954,7 +954,6 @@ return
 
 				self:getRecursiveRefs(jTable)
 				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
-
 				jTable = nil
 
 				print("Reconstructing metatables...")
