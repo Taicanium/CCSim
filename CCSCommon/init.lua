@@ -2095,7 +2095,7 @@ return
 					if type(j) == "table" then
 						local found = false
 						t[i] = j.id
-						if taken[j.id] == j.id then found = true end end
+						if taken[j.id] == j.id then found = true end
 
 						if found == false then
 							taken[j.id] = j.id
