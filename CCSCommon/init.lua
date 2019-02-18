@@ -993,6 +993,7 @@ return
 					local ids = {}
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
+					print("")
 					self:setRecursiveRefs(self, ids, tables)
 
 					local jsonSaved = false
@@ -1018,6 +1019,7 @@ return
 					print("Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(tables, tables)
+					print("")
 					self:getRecursiveRefs(self, tables)
 					tables = nil
 				else
@@ -1595,6 +1597,8 @@ return
 						end
 					end
 					
+					io.write("\r"..l.id)
+					
 					l.id = nil
 				end end
 			end,
@@ -2079,7 +2083,8 @@ return
 			setRecursiveIDs = function(self, t, i)
 				local id = i
 				if t.id == nil then
-					t.id = "ID"..tostring(id)
+					t.id = "ID "..tostring(id)
+					io.write("\r"..t.id)
 					id = id - 1
 					for j, k in pairs(t) do
 						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
@@ -2101,6 +2106,7 @@ return
 						end
 						
 						if found == false then
+							io.write("\r"..tostring(i))
 							table.insert(taken, j.id)
 							self:setRecursiveRefs(j, taken, tables)
 							table.insert(tables, j)
