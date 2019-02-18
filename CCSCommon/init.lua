@@ -952,7 +952,7 @@ return
 
 				print("File closed.\nRestoring encoded recursive values...")
 
-				self:getRecursiveRefs(jTable, jTable)
+				self:getRecursiveRefs(jTable)
 				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
 
 				jTable = nil
@@ -1018,7 +1018,7 @@ return
 
 					print("Restoring encoded recursive values...")
 
-					self:getRecursiveRefs(tables, tables)
+					self:getRecursiveRefs(tables)
 					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
 					tables = nil
 				else
@@ -1588,14 +1588,14 @@ return
 				end
 			end,
 
-			getRecursiveRefs = function(self, t, tables)
+			getRecursiveRefs = function(self, tables)
 				for k, l in pairs(tables) do if type(l) == "table" then if l.id ~= nil then
-					for i, j in pairs(t) do
-						if tostring(j) == tostring(l.id) then
-							t[i] = l
-						end
+					for i, j in pairs(l) do
+						local js = tostring(j)
+						if string.len(js) >= 3 then if js:sub(1, 3) == "ID " then
+							if tables[js] ~= nil then l[i] = tables[js] end
+						end end
 					end
-
 					l.id = nil
 				end end end
 			end,
