@@ -1589,16 +1589,15 @@ return
 			end,
 
 			getRecursiveRefs = function(self, t, tables)
-				for k, l in pairs(tables) do if l.id ~= nil then
+				for k, l in pairs(tables) do if type(l) == "table" then if l.id ~= nil then
 					for i, j in pairs(t) do
 						if tostring(j) == tostring(l.id) then
 							t[i] = l
 						end
 					end
 
-					io.write("\r"..l.id)
 					l.id = nil
-				end end
+				end end end
 			end,
 
 			getRulerString = function(self, data)
