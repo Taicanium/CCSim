@@ -1596,14 +1596,14 @@ return
 			end,
 
 			getRecursiveRefs = function(self, tables)
-				for i, j in pairs(tables) do
+				for i, j in pairs(tables) do if type(j) == "table" then
 					for k, l in pairs(j) do
 						if type(l) == "string" then
-							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if tables[l] ~= nil then j[k] = tables[l] end end end
+							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] ~= nil then j[k] = tables[l] end end end end
 							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
 						end
 					end
-				end
+				end end
 			end,
 
 			getRulerString = function(self, data)
