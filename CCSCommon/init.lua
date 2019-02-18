@@ -952,6 +952,8 @@ return
 				f = nil
 
 				print("File closed.\nRestoring encoded recursive values...")
+				
+				self.thisWorld = World:new()
 
 				self:getRecursiveRefs(jTable)
 				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
@@ -1019,6 +1021,7 @@ return
 					print("Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(tables)
+					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
 					tables = nil
 				else
@@ -1031,8 +1034,6 @@ return
 				if f ~= nil then
 					f:close()
 					f = nil
-
-					self.thisWorld = World:new()
 
 					io.write(string.format("\nAn in-progress run was detected. Load from last save point? (y/n) > "))
 					local res = io.read()
@@ -1589,15 +1590,14 @@ return
 			end,
 
 			getRecursiveRefs = function(self, tables)
-				for k, l in pairs(tables) do if type(l) == "table" then if l.id ~= nil then
-					for i, j in pairs(l) do
-						local js = tostring(j)
-						if string.len(js) >= 3 then if js:sub(1, 3) == "ID " then
-							if tables[js] ~= nil then l[i] = tables[js] end
-						end end
+				for i, j in pairs(tables) do
+					for k, l in pairs(j) do
+						if type(l) == "string" then
+							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if tables[l] ~= nil then j[k] = tables[l] end end end
+							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
+						end
 					end
-					l.id = nil
-				end end end
+				end
 			end,
 
 			getRulerString = function(self, data)
@@ -2101,6 +2101,9 @@ return
 							self:setRecursiveRefs(j, taken, tables)
 							tables[j.id] = j
 						end
+					elseif type(j) == "function" then
+						t[i] = string.dump(j)
+						t[i] = "FUNC "..t[i]
 					end
 				end
 				tables[t.id] = t
