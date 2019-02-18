@@ -1009,6 +1009,7 @@ return
 							f:write(jData)
 							jsonSaved = true
 						else
+							print(stat, jData)
 							print("Unable to encode JSON data! Falling back to native encoding.")
 						end
 					end
@@ -1600,7 +1601,7 @@ return
 					for k, l in pairs(j) do
 						if type(l) == "string" then
 							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] ~= nil then j[k] = tables[l] end end end end
-							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
+							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then print(k) j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
 						end
 					end
 				end end
