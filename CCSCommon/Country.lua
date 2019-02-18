@@ -624,7 +624,7 @@ return
 							if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 							else newE:beginEvent(parent, self, other) end
 						else
-							parent:deepnil(table.remove(self.ongoing, #self.ongoing))
+							table.remove(self.ongoing, #self.ongoing)
 						end
 					end
 				end
