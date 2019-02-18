@@ -956,6 +956,7 @@ return
 				self.thisWorld = World:new()
 
 				self:getRecursiveRefs(jTable)
+				self:getRecursiveIDs(jTable)
 				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
 				jTable = nil
 
@@ -1021,6 +1022,7 @@ return
 					print("Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(tables)
+					self:getRecursiveIDs(tables)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
 					tables = nil
@@ -1588,6 +1590,10 @@ return
 					end
 				end
 			end,
+			
+			getRecursiveIDs = function(self, tables)
+				for i, j in pairs(tables) do j.id = nil end
+			end,
 
 			getRecursiveRefs = function(self, tables)
 				for i, j in pairs(tables) do
@@ -2102,8 +2108,10 @@ return
 							tables[j.id] = j
 						end
 					elseif type(j) == "function" then
-						t[i] = string.dump(j)
-						t[i] = "FUNC "..t[i]
+						if t.id ~= "ID 1" then
+							t[i] = string.dump(j)
+							t[i] = "FUNC "..t[i]
+						end
 					end
 				end
 				tables[t.id] = t
