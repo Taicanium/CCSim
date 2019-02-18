@@ -1727,13 +1727,13 @@ return
 					self.years = self.years + 1
 
 					if self.autosaveDur ~= -1 then
-						if math.fmod(self.years, self.autosaveDur) == 1 and self.years > 2 then self.thisWorld:autosave(self) end
+						if math.fmod(self.years, self.autosaveDur) == 1 and self.years > 2 then self:autosave(self) end
 					end
 
 					if self.years > self.maxyears then
 						_running = false
 						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
-						-- self.thisWorld:autosave(self)
+						-- self:autosave(self)
 					end
 				end
 
