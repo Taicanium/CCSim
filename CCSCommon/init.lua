@@ -2085,7 +2085,7 @@ return
 				if t.id == nil then
 					t.id = "ID "..tostring(id)
 					io.write("\r"..t.id)
-					id = id - 1
+					id = id + 1
 					for j, k in pairs(t) do
 						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
 					end
@@ -2106,8 +2106,8 @@ return
 						end
 						
 						if found == false then
-							io.write("\r"..tostring(i))
 							table.insert(taken, j.id)
+							io.write("\r"..tostring(#taken))
 							self:setRecursiveRefs(j, taken, tables)
 							table.insert(tables, j)
 						end
