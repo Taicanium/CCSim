@@ -125,7 +125,7 @@ return
 				
 				print("Defining land masses...")
 				
-				local maxLand = math.random(math.floor(planetSize/3), math.ceil(planetSize/2))
+				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
 				local continents = math.random(10, 15)
 				local doneNodes = {}
 				local freeNodes = {}
