@@ -942,8 +942,9 @@ return
 					if stat then jsonLoad = true
 					else print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
 				end
-
+				
 				if jsonLoad == false then
+					f:seek("set")
 					jTable = self:loadtable(f)
 				end
 
