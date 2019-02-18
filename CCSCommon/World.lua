@@ -34,14 +34,14 @@ return
 
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
-				
+
 				print("Benchmarking...")
 				local bRad = 175
 				local bench = {}
-				
+
 				local t0 = _time()
 				local bdone = 0
-				
+
 				for x=-bRad,bRad do
 					for y=-bRad,bRad do
 						for z=-bRad,bRad do
@@ -56,13 +56,13 @@ return
 						end
 					end
 				end
-				
+
 				local t1 = math.floor(_time() - t0)
 				local benchAdjust = -25
 				benchAdjust = t1
-				
+
 				if benchAdjust > 50 then benchAdjust = 50 end
-				
+
 				local r = math.floor(math.random(125-benchAdjust, 225-benchAdjust))
 				self.planetR = r
 
@@ -98,7 +98,7 @@ return
 				end
 
 				local planetSize = #self.planetdefined
-				
+
 				print("")
 
 				for i=1,planetSize do
@@ -122,16 +122,16 @@ return
 						end
 					end
 				end
-				
+
 				print("Defining land masses...")
-				
+
 				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
 				local continents = math.random(10, 15)
 				local doneNodes = {}
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
-				
+
 					local cSeed = parent:randomChoice(self.planetdefined)
 
 					local x = cSeed[1]
@@ -149,7 +149,7 @@ return
 						located = true
 						if self.planet[x][y][z].land == true then located = false end
 					end
-					
+
 					self.planet[x][y][z].land = true
 					table.insert(doneNodes, cSeed)
 					table.insert(freeNodes, cSeed)
@@ -161,7 +161,7 @@ return
 					local x = freeNodes[node][1]
 					local y = freeNodes[node][2]
 					local z = freeNodes[node][3]
-					
+
 					if #self.planet[x][y][z].neighbors > 0 then
 						if math.random(1, 10) == math.random(1, 10) then
 							local neighbor = parent:randomChoice(self.planet[x][y][z].neighbors, true)
@@ -177,22 +177,22 @@ return
 							table.remove(self.planet[x][y][z].neighbors, neighbor)
 						end
 					end
-					
+
 					if #self.planet[x][y][z].neighbors == 0 then table.remove(freeNodes, node)
 					else
 						local found = false
 						for i, j in pairs(self.planet[x][y][z].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
 						if found == false then table.remove(freeNodes, node) end
 					end
-					
+
 					io.write("\r"..tostring(doneLand).."/"..tostring(maxLand))
 				end
-				
+
 				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
-					
+
 					self.planet[x][y][z].neighbors = {}
 
 					for dx=-1,1 do
@@ -333,7 +333,7 @@ return
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
 				local planetSize = #self.planetdefined
-				
+
 				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
 					local y = self.planetdefined[i][2]
