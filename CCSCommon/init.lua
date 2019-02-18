@@ -1516,47 +1516,49 @@ return
 					fInd = pString
 				end
 
-				if fInd == nil then
-					fInd = pString
-					if self.ged == true then royals[fInd] = pTable end
-				end
-
-				if person.title ~= nil then if royals[fInd].title ~= person.title then
-					if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[fInd].title = person.title end
-
-					local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
-					for k=1,#self.systems do
-						if royals[fInd].title == "King" then MorE = 0 end
-						if royals[fInd].title == "Queen" then MorE = 1 end
-						if royals[fInd].title == "Emperor" then MorE = 2 end
-						if royals[fInd].title == "Empress" then MorE = 3 end
-
-						if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
-						if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
+				if self.ged == true then
+					if fInd == nil then
+						fInd = pString
+						royals[fInd] = pTable
 					end
-					if MorE == -1 then royals[fInd].title = "" end
-				end end
 
-				if royals[fInd].father == "" then if person.father ~= nil then
-					royals[fInd].father = "SCANNING"
-					royals[fInd].father = self:getAscendants(royals, person.father)
-				end end
-				if royals[fInd].mother == "" then if person.mother ~= nil then
-					royals[fInd].mother = "SCANNING"
-					royals[fInd].mother = self:getAscendants(royals, person.mother)
-				end end
+					if person.title ~= nil then if royals[fInd].title ~= person.title then
+						if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[fInd].title = person.title end
+
+						local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
+						for k=1,#self.systems do
+							if royals[fInd].title == "King" then MorE = 0 end
+							if royals[fInd].title == "Queen" then MorE = 1 end
+							if royals[fInd].title == "Emperor" then MorE = 2 end
+							if royals[fInd].title == "Empress" then MorE = 3 end
+
+							if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
+							if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
+						end
+						if MorE == -1 then royals[fInd].title = "" end
+					end end
+
+					if royals[fInd].father == "" then if person.father ~= nil then
+						royals[fInd].father = "SCANNING"
+						royals[fInd].father = self:getAscendants(royals, person.father)
+					end end
+					if royals[fInd].mother == "" then if person.mother ~= nil then
+						royals[fInd].mother = "SCANNING"
+						royals[fInd].mother = self:getAscendants(royals, person.mother)
+					end end
+					
+					for i, j in pairs(royals[fInd].children) do
+						local found = false
+						for k, l in pairs(person.children) do if l == j then found = true end end
+						if found == false then table.insert(person.children, asc) end
+					end
 				
-				for i, j in pairs(royals[fInd].children) do
-					local found = false
-					for k, l in pairs(person.children) do if l == j then found = true end end
-					if found == false then table.insert(person.children, asc) end
-				end
-			
-				for i, j in pairs(person.children) do
-					local found = false
-					local asc = self:getAscendants(royals, j)
-					for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
-					if found == false then table.insert(royals[fInd].children, asc) end
+					for i, j in pairs(person.children) do
+						local found = false
+						local asc = self:getAscendants(royals, j)
+						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
+						if found == false then table.insert(royals[fInd].children, asc) end
+					end
 				end
 
 				return fInd
@@ -2080,7 +2082,7 @@ return
 					t.id = "ID"..tostring(id)
 					id = id - 1
 					for j, k in pairs(t) do
-						if type(k) == "table" then id = self:recursiveID(k, id) end
+						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
 					end
 				end
 				return id
