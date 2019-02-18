@@ -1592,7 +1592,7 @@ return
 			end,
 			
 			getRecursiveIDs = function(self, tables)
-				for i, j in pairs(tables) do j.id = nil end
+				for i, j in pairs(tables) do if type(j) == "table" then j.id = nil end end
 			end,
 
 			getRecursiveRefs = function(self, tables)
