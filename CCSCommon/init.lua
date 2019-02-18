@@ -994,7 +994,7 @@ return
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
 					self:setRecursiveRefs(self, ids, tables)
-					for i, j in pairs(self) do tables[i] = j end end
+					for i, j in pairs(self) do tables[i] = j end
 
 					local jsonSaved = false
 
