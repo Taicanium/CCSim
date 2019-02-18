@@ -473,18 +473,20 @@ return
 					local y = freeNodes[node][2]
 					local z = freeNodes[node][3]
 					
-					if math.random(1, 10) == math.random(1, 10) then
-						local neighbor = parent:randomChoice(self.planet[x][y][z].neighbors, true)
-						local nx = self.planet[x][y][z].neighbors[neighbor][1]
-						local ny = self.planet[x][y][z].neighbors[neighbor][2]
-						local nz = self.planet[x][y][z].neighbors[neighbor][3]
-						self.planet[nx][ny][nz].land = true
-						doneLand = doneLand + 1
-						table.insert(doneNodes, self.planet[x][y][z].neighbors[neighbor])
-						local found = false
-						for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
-						if found == true then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
-						table.remove(self.planet[x][y][z].neighbors, neighbor)
+					if #self.planet[x][y][z].neighbors > 0 then
+						if math.random(1, 10) == math.random(1, 10) then
+							local neighbor = parent:randomChoice(self.planet[x][y][z].neighbors, true)
+							local nx = self.planet[x][y][z].neighbors[neighbor][1]
+							local ny = self.planet[x][y][z].neighbors[neighbor][2]
+							local nz = self.planet[x][y][z].neighbors[neighbor][3]
+							self.planet[nx][ny][nz].land = true
+							doneLand = doneLand + 1
+							table.insert(doneNodes, self.planet[x][y][z].neighbors[neighbor])
+							local found = false
+							for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if self.planet[j[1]][j[2]][j[3]].land == false then found = true end end
+							if found == true then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
+							table.remove(self.planet[x][y][z].neighbors, neighbor)
+						end
 					end
 					
 					if #self.planet[x][y][z].neighbors == 0 then table.remove(freeNodes, node)
