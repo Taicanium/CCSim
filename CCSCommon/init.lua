@@ -925,7 +925,6 @@ return
 			final = {},
 			thisWorld = nil,
 
-			
 			autoload = function(self)
 				print("Opening data file...")
 				local f = io.open("in_progress.dat", "r+b")
@@ -935,7 +934,7 @@ return
 
 				local stat = nil
 				local jTable = nil
-				
+
 				if jsonstatus then
 					local jData = f:read("*all")
 					print("Decoding JSON...")
@@ -947,14 +946,15 @@ return
 				if jsonLoad == false then
 					jTable = self:loadtable(f)
 				end
-				
+
 				f:close()
 				f = nil
 
 				print("File closed.\nRestoring encoded recursive values...")
 
 				self:getRecursiveRefs(jTable, jTable)
-				self:getRecursiveRefs(self, jTable)
+				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
+
 				jTable = nil
 
 				print("Reconstructing metatables...")
@@ -983,13 +983,13 @@ return
 				local f = io.open("in_progress.dat", "w+b")
 				if f then
 					print("Encoding recursive values...")
-					
+
 					for i, j in pairs(self.final) do
 						for k, l in pairs(self.thisWorld.countries) do
 							if j.name == l.name then self.final[i] = nil end
 						end
 					end
-					
+
 					local ids = {}
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
@@ -1000,7 +1000,7 @@ return
 
 					if jsonstatus then
 						print("Encoding JSON...")
-						local stat, jData = pcall(json.encode, self)
+						local stat, jData = pcall(json.encode, tables)
 						if stat then
 							print("Writing JSON...")
 							f:write(jData)
@@ -1019,14 +1019,13 @@ return
 					print("Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(tables, tables)
-					print("")
-					self:getRecursiveRefs(self, tables)
+					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
 					tables = nil
 				else
 					print("Unable to open in_progress.dat for writing! Autosave not completed!")
 				end
 			end,
-			
+
 			checkAutoload = function(self)
 				local f = io.open("in_progress.dat", "r")
 				if f ~= nil then
@@ -1510,7 +1509,7 @@ return
 				}
 
 				local pString = person.name.." "..person.surname.." "..tostring(person.birth).." "..person.birthplace.." "..person.gender
-				
+
 				if royals[pString] ~= nil then
 					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end
 					if person.royalName ~= nil then if person.royalName ~= "" then if royals[pString].royalName ~= person.royalName then royals[pString].royalName = person.royalName end end end
@@ -1548,13 +1547,13 @@ return
 						royals[fInd].mother = "SCANNING"
 						royals[fInd].mother = self:getAscendants(royals, person.mother)
 					end end
-					
+
 					for i, j in pairs(royals[fInd].children) do
 						local found = false
 						for k, l in pairs(person.children) do if l == j then found = true end end
 						if found == false then table.insert(person.children, asc) end
 					end
-				
+
 					for i, j in pairs(person.children) do
 						local found = false
 						local asc = self:getAscendants(royals, j)
@@ -1588,7 +1587,7 @@ return
 					end
 				end
 			end,
-			
+
 			getRecursiveRefs = function(self, t, tables)
 				for k, l in pairs(tables) do if l.id ~= nil then
 					for i, j in pairs(t) do
@@ -1596,18 +1595,17 @@ return
 							t[i] = l
 						end
 					end
-					
+
 					io.write("\r"..l.id)
-					
 					l.id = nil
 				end end
 			end,
-			
+
 			getRulerString = function(self, data)
 				local rString = data.title.." "
 				if data then
 					if data.royalName then if data.royalName ~= "" then rString = rString..data.royalName.." " else rString = rString..data.name.." " end else rString = rString..data.name.." " end
-					
+
 					if data.Country then
 						if tonumber(data.number) ~= nil then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 						else rString = rString..data.surname.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")" end
@@ -1616,7 +1614,7 @@ return
 						else rString = rString..data.surname.." of "..data.nationality end
 					end
 				else rString = "None" end
-				
+
 				return rString
 			end,
 
@@ -1624,7 +1622,7 @@ return
 				local fn = loadstring(fndata)
 				if fn then self:getfunctionvalues(fnname, fn, self) return fn else return fndata end
 			end,
-			
+
 			loadtable = function(self, f)
 				local tableout = {}
 				local types = {"string", "number", "boolean", "table", "function"}
@@ -1685,7 +1683,7 @@ return
 
 				return tableout
 			end,
-			
+
 			loop = function(self)
 				local _running = true
 				local msg = ""
@@ -1759,7 +1757,7 @@ return
 						else rtitle = "Empress" end
 					end
 				end
-				
+
 				local pGender = "M"
 				if person.gender == "Female" then pGender = "F" end
 
@@ -2092,30 +2090,25 @@ return
 				end
 				return id
 			end,
-			
+
 			setRecursiveRefs = function(self, t, taken, tables)
 				for i, j in pairs(t) do
 					if type(j) == "table" then
 						local found = false
-						
-						for k=1,#taken do
-							if taken[k] == j.id then
-								t[i] = j.id
-								found = true
-							end
-						end
-						
+						t[i] = j.id
+						for k=#taken,1,-1 do if taken[k] == j.id then found = true end end
+
 						if found == false then
 							table.insert(taken, j.id)
 							io.write("\r"..tostring(#taken))
 							self:setRecursiveRefs(j, taken, tables)
-							table.insert(tables, j)
+							tables[i] = j
 						end
 					end
 				end
 				table.insert(taken, t.id)
 			end,
-			
+
 			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 ~= nil and c2 ~= nil then
 					local rCount = 0
@@ -2397,7 +2390,7 @@ return
 					end
 				end
 			end,
-			
+
 			setGens = function(self, i, v, g)
 				local r = self.royals[i]
 				if r ~= nil then
