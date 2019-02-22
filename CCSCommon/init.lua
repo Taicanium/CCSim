@@ -644,7 +644,7 @@ return
 										local retrieve = true
 										for k, l in pairs(j.events) do
 											if l.Event:match("Conquered") then conqYear = l.Year end
-											if conqYear ~= nil then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and l.Year ~= conqYear then retrieve = false end end
+											if conqYear ~= nil then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
 
 										if retrieve == true then
@@ -658,6 +658,8 @@ return
 											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
 											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
 										end
+										
+										parent.final[i] = nil
 									end
 								end
 
@@ -1127,19 +1129,24 @@ return
 					local pr = 1
 					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
 
-					for k=1,#cp.events do
+					for k=1,#cp.events do if pr == 1 then
 						if cp.events[k].Event:sub(1, 12) == "Independence" then
 							newc = true
 							pr = tonumber(cp.events[k].Year)
 						end
-					end
+					end end
 
 					if newc == true then
 						f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
+						local nextFound = false
 						for k=1,#cp.rulers do
 							if cp.rulers[k].To ~= "Current" then
 								if tonumber(cp.rulers[k].To) >= pr then
 									if tonumber(cp.rulers[k].From) < pr then
+										if nextFound == false then
+											nextFound = true
+											f:write("...\n")
+										end
 										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 										fr = k + 1
 										k = #cp.rulers + 1
