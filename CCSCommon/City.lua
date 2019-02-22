@@ -16,7 +16,7 @@ return
 			end,
 
 			makename = function(self, country, parent)
-				self.name = parent:name(true, 6)
+				self.name = parent:name(true)
 			end
 		}
 
