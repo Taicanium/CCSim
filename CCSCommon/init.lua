@@ -2417,7 +2417,9 @@ return
 								table.insert(j.mother.fams, fams[parentString])
 								table.insert(j.famc, fams[parentString])
 							else
-								table.insert(fams[parentString].chil, j)
+								local ind = 1
+								for k=1,#fams[parentString].chil do if tonumber(fams[parentString].chil[k].birth) <= tonumber(j.birth) then ind = k + 1 end end
+								table.insert(fams[parentString].chil, ind, j)
 								table.insert(j.famc, fams[parentString])
 							end
 						end end
