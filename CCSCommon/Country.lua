@@ -484,6 +484,7 @@ return
 						end
 					end
 				
+					self.people[newRuler].RoyalTitle = self.people[newRuler].title
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].maternalLineTimes = 0
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
