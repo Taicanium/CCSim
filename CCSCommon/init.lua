@@ -35,12 +35,6 @@ return
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
-							s.isruler = false
-							s.region = ""
-							s.city = ""
-							s.military = false
-							s.nationality = newC.name
-							if s.spouse ~= nil then s.spouse = nil end
 							newC:add(s)
 						end
 
@@ -71,12 +65,6 @@ return
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 							local s = table.remove(c.people, ruler)
-							s.isruler = false
-							s.region = ""
-							s.city = ""
-							s.military = false
-							s.nationality = newC.name
-							if s.spouse ~= nil then s.spouse = nil end
 							newC:add(s)
 						end
 
@@ -219,12 +207,6 @@ return
 								local ruler = nil
 								for q, r in pairs(c.people) do if r.isruler == true then ruler = q end end
 								local s = table.remove(c.people, ruler)
-								s.isruler = false
-								s.region = ""
-								s.city = ""
-								s.military = false
-								s.nationality = newC.name
-								if s.spouse ~= nil then s.spouse = nil end
 								newC:add(s)
 							end
 
