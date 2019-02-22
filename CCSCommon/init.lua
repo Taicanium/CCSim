@@ -1741,7 +1741,7 @@ return
 							eventsWritten = eventsWritten + 1
 						end
 						
-						if eventsWritten == 0 then msg = msg.."\nNone"
+						if eventsWritten == 0 then msg = msg.."\nNone" end
 					end
 
 					os.execute(self.clrcmd)
