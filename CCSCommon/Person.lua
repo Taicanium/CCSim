@@ -35,6 +35,8 @@ return
 				n.gIndex = 0
 				n.gString = ""
 				n.removed = false
+				n.fams = {}
+				n.famc = {}
 				n.gensSet = false
 				n.maternalLineTimes = -1
 				n.LastRoyalAncestor = ""
