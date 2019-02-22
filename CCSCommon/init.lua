@@ -1235,8 +1235,8 @@ return
 							end
 						end
 
-						for q, b in pairs(j.fams) do msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end
-						for q, b in pairs(j.famc) do msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end
+						for q, b in pairs(j.fams) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end
+						for q, b in pairs(j.famc) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end
 
 						msgout = msgout.."\n"
 
@@ -1251,16 +1251,18 @@ return
 
 					print("")
 
-					for j=1,#fams do
+					for j=1,#fams do if fams[j].husb.gIndex ~= 0 and fams[j].wife.gIndex ~= 0 then 
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if fams[j].husb ~= nil then msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb.gIndex).."@\n" end
-						if fams[j].wife ~= nil then msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife.gIndex).."@\n" end
+						msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb.gIndex).."@\n"
+						msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife.gIndex).."@\n"
 
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k].gString ~= fams[j].husb.gString then
 								if fams[j].chil[k].gString ~= fams[j].wife.gString then
-									msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k].gIndex).."@\n"
+									if fams[j].chil[k].gIndex ~= 0 then
+										msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k].gIndex).."@\n"
+									end
 								end
 							end
 						end
@@ -1269,7 +1271,7 @@ return
 
 						percentage = math.floor(j / #fams * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
-					end
+					end end
 
 					msgout = "0 TRLR\n"
 
