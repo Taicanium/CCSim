@@ -108,7 +108,7 @@ return
 										if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
 								else
-									if child.nationality ~= self.name then self:add(child) end
+									if child.nationality ~= self.name then self:add(parent, child) end
 									self:setRuler(parent, child.pIndex)
 								end
 							else
@@ -397,7 +397,7 @@ return
 					n.ethnicity = {[self.demonym]=100}
 					n.birthplace = self.name
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
-					self:add(n)
+					self:add(parent, n)
 				end
 
 				local rcount = math.random(3, 8)
@@ -445,7 +445,7 @@ return
 					n.ethnicity = {[self.demonym]=100}
 					n.birthplace = self.name
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
-					self:add(n)
+					self:add(parent, n)
 				end
 			end,
 
@@ -801,7 +801,7 @@ return
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
-							cp:add(self.people[i])
+							cp:add(parent, self.people[i])
 							for j=i,#self.people do self.people[j].pIndex = j end
 							chn = true
 						end
