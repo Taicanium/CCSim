@@ -160,7 +160,7 @@ return
 
 				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
 				
-				nl:add(nn)
+				nl:add(parent, nn)
 			end,
 
 			makename = function(self, parent, nl)
