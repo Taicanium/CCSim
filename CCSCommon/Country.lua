@@ -120,12 +120,9 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
+						table.insert(parent.royals, self.people[y])
 						w = table.remove(self.people, y)
-						if w ~= nil then
-							w:destroy()
-							w = nil
-						end
+						if w ~= nil then w:destroy() end
 					end
 				end
 			end,
@@ -478,8 +475,6 @@ return
 						end
 					end
 				
-					self.people[newRuler].royalInfo.Gens=self.people[newRuler].royalGenerations
-					self.people[newRuler].royalInfo.LastAncestor=self.people[newRuler].lastRoyalAncestor
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].maternalLineTimes = 0
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
@@ -487,6 +482,8 @@ return
 
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 
+					self.people[newRuler].gString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace.." "..tostring(self.people[newRuler].number)
+					
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1) end
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
