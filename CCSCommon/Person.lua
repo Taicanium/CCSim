@@ -6,7 +6,6 @@ return
 				setmetatable(n, self)
 
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
-				n.chn = false -- Another utility variable which indicates whether this person's position in the country 'people' array has changed since their last update.
 				n.name = ""
 				n.royalName = ""
 				n.surname = ""
@@ -32,6 +31,7 @@ return
 				n.birthplace = ""
 				n.deathplace = ""
 				n.death = 0
+				n.pIndex = 0
 				n.maternalLineTimes = -1
 				n.lastRoyalAncestor = ""
 				n.royalInfo = {Gens=-1, LastAncestor=""}
@@ -167,7 +167,6 @@ return
 				self.cbelief = math.random(-100, 100)
 
 				self.birth = parent.years
-				self.age = math.random(1, 30)
 				if self.title == "" then
 					self.level = 2
 					self.title = "Citizen"
@@ -182,7 +181,8 @@ return
 			end,
 
 			update = function(self, parent, nl)
-				self.age = self.age + 1
+				self.age = parent.years - self.birth
+				if self.birth <= -1 then self.age = self.age - 1 end
 
 				if self.birthplace == "" then self.birthplace = nl.name end
 				if self.surname == nil or self.surname == "" then self.surname = parent:name(true, 6) end

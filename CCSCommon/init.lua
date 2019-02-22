@@ -41,7 +41,7 @@ return
 							s.military = false
 							s.nationality = newC.name
 							if s.spouse ~= nil then s.spouse = nil end
-							table.insert(newC.people, s)
+							newC:add(s)
 						end
 
 						c.hasruler = -1
@@ -77,7 +77,7 @@ return
 							s.military = false
 							s.nationality = newC.name
 							if s.spouse ~= nil then s.spouse = nil end
-							table.insert(newC.people, s)
+							newC:add(s)
 						end
 
 						c.hasruler = -1
@@ -225,7 +225,7 @@ return
 								s.military = false
 								s.nationality = newC.name
 								if s.spouse ~= nil then s.spouse = nil end
-								table.insert(newC.people, s)
+								newC:add(s)
 							end
 
 							c.hasruler = -1
@@ -2165,7 +2165,7 @@ return
 										if c2.people[i].isruler == false then
 											local p = table.remove(c2.people, i)
 											p.nationality = c1.name
-											table.insert(c1.people, p)
+											c1:add(p)
 										else
 											c2.people[i].region = ""
 											c2.people[i].city = ""
