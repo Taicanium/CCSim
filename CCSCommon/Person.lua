@@ -164,8 +164,8 @@ return
 			end,
 
 			makename = function(self, parent, nl)
-				self.name = parent:name(true, 6)
-				self.surname = parent:name(true, 6)
+				self.name = parent:name(true)
+				self.surname = parent:name(true)
 
 				local r = math.random(1, 1000)
 				if r < 501 then self.gender = "Male" else self.gender = "Female" end
