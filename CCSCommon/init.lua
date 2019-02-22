@@ -1428,7 +1428,7 @@ return
 							cp.snt[self.systems[cp.system].name] = cp.snt[self.systems[cp.system].name] + 1
 						end
 
-						cp:makename(self)
+						cp:makename(self, 3)
 						cp:setPop(self, 500)
 
 						table.insert(self.final, cp)
@@ -1782,7 +1782,7 @@ return
 			name = function(self, personal, l)
 				local nom = ""
 				local length = 0
-				if l == nil then length = math.random(2, 4) else length = math.random(l - 1, l + 1) end
+				if l == nil then length = math.random(1, 3) else length = math.random(1, l) end
 
 				local taken = {}
 
