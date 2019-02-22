@@ -45,6 +45,15 @@ return
 			end,
 
 			add = function(self, n)
+				n.nationality = self.name
+				n.region = ""
+				n.city = ""
+				n.military = false
+				n.isruler = false
+				if n.spouse ~= nil then
+					n.spouse.spouse = nil
+					n.spouse = nil
+				end
 				table.insert(self.people, n)
 				n.pIndex = #self.people
 			end,
@@ -93,17 +102,7 @@ return
 										if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
 								else
-									if child.nationality ~= self.name then
-										table.remove(parent.thisWorld.countries[child.nationality].people, child.pIndex)
-										child.nationality = self.name
-										child.region = ""
-										child.city = ""
-										child.military = false
-										child.isruler = false
-										if child.spouse ~= nil then child.spouse = nil end
-										self:add(child)
-									end
-									
+									if child.nationality ~= self.name then self:add(table.remove(parent.thisWorld.countries[child.nationality].people, child.pIndex)) end
 									self:setRuler(parent, child.pIndex)
 								end
 							else
@@ -795,13 +794,7 @@ return
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
-							j.region = ""
-							j.city = ""
-							j.nationality = cp.name
-							j.military = false
-							if j.spouse ~= nil then j.spouse = nil end
-							table.remove(self.people, i)
-							cp:add(j)
+							cp:add(table.remove(self.people, i))
 							chn = true
 						end
 					end end
