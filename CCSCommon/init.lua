@@ -2389,7 +2389,8 @@ return
 
 				for i, j in pairs(self.royals) do
 					if j.removed == false then
-						if j.title ~= "King" and j.title ~= "Queen" and j.title ~= "Emperor" and j.title ~= "Empress" then j.title = "" end
+						j.title = j.RoyalTitle
+						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
 					
 						local found = nil
 						local chil = true
