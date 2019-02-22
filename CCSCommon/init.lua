@@ -2386,7 +2386,7 @@ return
 				print("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
 
 				count = 0
-				for i, j in pairs(self.royals) do count = count + 1 end
+				for i, j in pairs(self.royals) do if j.removed == false then count = count + 1 end end
 				oldCount = count
 				print("Linking "..tostring(count).." individuals...")
 
@@ -2421,10 +2421,10 @@ return
 								table.insert(j.famc, found)
 							end
 						end
+						
+						done = done + 1
+						io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 					end
-				
-					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 				end
 
 				return fams
