@@ -633,9 +633,10 @@ return
 
 								if parent.doR == true then newl:setTerritory(parent) end
 
-								newl.rulers = parent:deepcopy(c.rulers)
-								newl.rulernames = parent:deepcopy(c.rulernames)
-								newl.frulernames = parent:deepcopy(c.frulernames)
+								newl.rulers = {}
+								for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
+								for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
+								for i=1,#c.frulernames do newl.frulernames[i] = c.frulernames[i] end
 
 								for i, j in pairs(parent.final) do
 									if j.name == newl.name then
@@ -652,8 +653,10 @@ return
 												table.insert(newl.rulers, rIndex, l)
 												rIndex = rIndex + 1
 											end
-											for k, l in pairs(j.rulernames) do table.insert(newl.rulernames, l) end
-											for k, l in pairs(j.frulernames) do table.insert(newl.frulernames, l) end
+											newl.rulernames = {}
+											newl.frulernames = {}
+											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
+											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
 										end
 									end
 								end
@@ -1105,16 +1108,6 @@ return
 				end
 
 				return res
-			end,
-
-			deepnil = function(self, dat)
-				final_type = type(dat)
-				if final_type == "table" then
-					for final_key, final_value in pairs(dat) do
-						self:deepnil(dat[final_key])
-					end
-					dat = nil
-				else dat = nil end
 			end,
 
 			finish = function(self)
