@@ -255,8 +255,8 @@ return
 
 				for i=1,#parent.systems do
 					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
-					tf = math.random(2, 200)
-					if math.floor(tf/2) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
+					tf = math.random(1, 100)
+					if tf < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
 
 				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name:sub(1, #self.name-1).."ian"
