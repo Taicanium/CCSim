@@ -2403,7 +2403,7 @@ return
 								for l=1,#fams[k].chil do if fams[k].chil[l].gString == j.gString then found = k chil = false end end
 								if found ~= nil then k = 1 end
 							end
-						end
+						end end
 
 						if found == nil then
 							local doFam = false
