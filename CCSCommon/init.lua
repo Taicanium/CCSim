@@ -2048,7 +2048,7 @@ return
 								if c2.people[i] then
 									if c2.people[i].region == rn.name then
 										if c2.people[i].isruler == false then
-											c1:add(parent, c2.people[i])
+											c1:add(self, c2.people[i])
 										else
 											c2.people[i].region = ""
 											c2.people[i].city = ""
