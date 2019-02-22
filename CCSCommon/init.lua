@@ -85,11 +85,12 @@ return
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
 
-						c:checkRuler(parent)
-
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
+						
+						c:checkRuler(parent)
+						
 						if c.snt[parent.systems[c.system].name] > 1 then
 							if parent.systems[c.system].dynastic == true then
 								local newRuler = -1
@@ -232,12 +233,12 @@ return
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
 
+							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
+							
 							c:checkRuler(parent)
 
 							local newRuler = nil
-							for i=1,#c.people do
-								if c.people[i].isruler == true then newRuler = i end
-							end
+							for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
 
 							local namenum = 0
 							local prevtitle = ""
@@ -260,7 +261,6 @@ return
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
-								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
 										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
@@ -272,7 +272,6 @@ return
 							else
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
-								c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
 										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
