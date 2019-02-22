@@ -1723,7 +1723,8 @@ return
 						for i, cp in pairs(self.thisWorld.countries) do
 							if cCount <= 20 then
 								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
-								msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name]
+								local sysName = self.systems[cp.system].name
+								if cp.dfif[sysName] == true then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
 								msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
 								cCount = cCount + 1
 							end
