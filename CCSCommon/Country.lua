@@ -58,7 +58,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								local child = nil
-								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) ~= nil then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end
+								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) ~= nil then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
 								if child == nil then
 									local possibles = {}
