@@ -44,7 +44,13 @@ return
 				return nl
 			end,
 
-			add = function(self, n)
+			add = function(self, parent, n)
+				if n.nationality ~= self.name then
+					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then if parent.thisWorld.countries[n.nationality].people[n.pIndex] then if parent.thisWorld.countries[n.nationality].people[n.pIndex].gString == n.gString then
+						table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
+						for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+					end end end end
+				end
 				n.nationality = self.name
 				n.region = ""
 				n.city = ""
@@ -102,7 +108,7 @@ return
 										if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
 								else
-									if child.nationality ~= self.name then self:add(table.remove(parent.thisWorld.countries[child.nationality].people, child.pIndex)) end
+									if child.nationality ~= self.name then self:add(child) end
 									self:setRuler(parent, child.pIndex)
 								end
 							else
@@ -778,27 +784,30 @@ return
 					local age = self.people[i].age
 					if age > 100 then
 						self:delete(parent, i)
+						for j=i,#self.people do self.people[j].pIndex = j end
 						chn = true
 					else
 						d = math.random(1, 3000-(age*3))
 						if d < age then
 							self:delete(parent, i)
+							for j=i,#self.people do self.people[j].pIndex = j end
 							chn = true
 						end
 					end
-
+					
 					if chn == false then if self.people[i].isruler == false then
+						self.people[i].pIndex = i
 						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
-							cp:add(table.remove(self.people, i))
+							cp:add(self.people[i])
+							for j=i,#self.people do self.people[j].pIndex = j end
 							chn = true
 						end
 					end end
 
 					if chn == false then
-						self.people[i].pIndex = i
 						self.averageAge = self.averageAge + self.people[i].age
 						if self.people[i].military == true then self.military = self.military + 1 end
 						if self.people[i].isruler == true then
