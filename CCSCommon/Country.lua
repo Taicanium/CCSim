@@ -283,7 +283,7 @@ return
 					if self.name:sub(#self.name-2, #self.name) == "ius" then self.demonym = self.name:sub(1, #self.name-2).."an"
 					else self.demonym = self.name:sub(1, #self.name-2).."ian" end
 				elseif self.name:sub(#self.name, #self.name) == "i" then self.demonym = self.name.."an"
-				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name.."nian"
+				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name:sub(1, #self.name-1).."ian"
 				elseif self.name:sub(#self.name, #self.name) == "k" then self.demonym = self.name:sub(1, #self.name-1).."cian"
 				elseif self.name:sub(#self.name-3, #self.name) == "land" then
 					local split = self.name:sub(1, #self.name-4)
@@ -292,7 +292,7 @@ return
 					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
-					elseif split:sub(#split, #split) == "o" then self.demonym = split.."nian"
+					elseif split:sub(#split, #split) == "o" then self.demonym = split:sub(1, #split-1).."ian"
 					elseif split:sub(#split, #split) == "g" then self.demonym = split.."lish"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
 					else self.demonym = split.."ish" end
