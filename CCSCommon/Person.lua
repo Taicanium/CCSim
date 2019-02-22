@@ -203,7 +203,7 @@ return
 				if self.spouse then if self.spouse.def == nil then self.spouse = nil end end
 
 				if self.gender == "Male" or sys.dynastic == false then
-					if self.title ~= nil and self.level ~= nil then
+					if self.title and self.level then
 						self.title = sys.ranks[self.level]
 
 						if self.level < #sys.ranks - rankLim then
@@ -228,7 +228,7 @@ return
 
 					self.title = sys.ranks[self.level]
 				else
-					if self.title ~= nil and self.level ~= nil then
+					if self.title and self.level then
 						self.title = sys.franks[self.level]
 
 						if self.level < #sys.franks - rankLim then
@@ -254,7 +254,7 @@ return
 					self.title = sys.franks[self.level]
 				end
 
-				if self.spouse ~= nil then
+				if self.spouse then
 					if self.spouse.name == nil then self.spouse = nil end
 				end
 
@@ -274,7 +274,7 @@ return
 				end
 
 				if self.recentbirth == false then
-					if self.spouse ~= nil then
+					if self.spouse then
 						if self.gender == "Female" then
 							if self.age < 60 then
 								if self.age > 14 then
@@ -419,9 +419,9 @@ return
 					end
 				end
 
-				if nl.regions[self.region] ~= nil then
+				if nl.regions[self.region] then
 					nl.regions[self.region].population = nl.regions[self.region].population + 1
-					if nl.regions[self.region].cities[self.city] ~= nil then
+					if nl.regions[self.region].cities[self.city] then
 						nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population + 1
 					else self.city = "" end
 				else self.region = "" end
