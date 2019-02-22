@@ -28,13 +28,13 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 26 then -- Executed
-							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-							newC:add(parent, r)
+							if r then newC:add(parent, r) end
 						end
 
 						c.hasruler = -1
@@ -57,13 +57,13 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
-							for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-							newC:add(parent, r)
+							if r then newC:add(parent, r) end
 						end
 
 						c.hasruler = -1
@@ -133,7 +133,7 @@ return
 								for j=1,#self.opIntervened do if self.opIntervened[j] == cp.name then interv = true end end
 								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
 								if interv == false then
-									if cp.relations[c.name] ~= nil then
+									if cp.relations[c.name] then
 										if cp.relations[c.name] < 50 then
 											local intervene = math.random(1, math.floor(cp.relations[c.name])*4)
 											if intervene == 1 then
@@ -198,13 +198,13 @@ return
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
-								for q=1,#c.people do if c.people[q] ~= nil then if c.people[q].isruler == true then c:delete(parent, q) end end end
+								for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								local ruler = nil
 								for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-								newC:add(parent, r)
+								if r then newC:add(parent, r) end
 							end
 
 							c.hasruler = -1
@@ -221,7 +221,7 @@ return
 
 							local namenum = 0
 							local prevtitle = ""
-							if c.people[newRuler].prevtitle ~= nil then prevtitle = c.people[newRuler].prevtitle.." " end
+							if c.people[newRuler].prevtitle then prevtitle = c.people[newRuler].prevtitle.." " end
 
 							if prevtitle == "Homeless " then prevtitle = "" end
 							if prevtitle == "Citizen " then prevtitle = "" end
@@ -492,7 +492,7 @@ return
 							end
 						end
 
-						if c1.relations[c2.name] ~= nil then
+						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 30 then
 								self.target = c2
 								return 0
@@ -518,7 +518,7 @@ return
 					doStep=function(self, parent, c1)
 						if self.target == nil then return -1 end
 
-						if c1.relations[self.target.name] ~= nil then
+						if c1.relations[self.target.name] then
 							if c1.relations[self.target.name] < 35 then
 								local doEnd = math.random(1, 50)
 								if doEnd < 5 then return self:endEvent(parent, c1) end
@@ -560,7 +560,7 @@ return
 							if c2.alliances[i] == c1.name then return -1 end
 						end
 
-						if c1.relations[c2.name] ~= nil then
+						if c1.relations[c2.name] then
 							if c1.relations[c2.name] > 80 then
 								self.target = c2
 								table.insert(c2.alliances, c1.name)
@@ -621,7 +621,7 @@ return
 										local retrieve = true
 										for k, l in pairs(j.events) do
 											if l.Event:match("Conquered") then conqYear = l.Year end
-											if conqYear ~= nil then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
+											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
 
 										if retrieve == true then
@@ -687,7 +687,7 @@ return
 							if c2.alliances[i] == c1.name then return -1 end
 						end
 
-						if c1.relations[c2.name] ~= nil then
+						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 16 then
 								c1:event(parent, "Invaded "..c2.name)
 								c2:event(parent, "Invaded by "..c1.name)
@@ -732,7 +732,7 @@ return
 								if c2.alliances[i] == c1.name then return -1 end
 							end
 
-							if c1.relations[c2.name] ~= nil then
+							if c1.relations[c2.name] then
 								if c1.relations[c2.name] < 6 then
 									c1:event(parent, "Conquered "..c2.name)
 									c2:event(parent, "Conquered by "..c1.name)
@@ -820,7 +820,7 @@ return
 
 						if patron == false then
 							if c1.majority == c2.majority then
-								if c1.relations[c2.name] ~= nil then
+								if c1.relations[c2.name] then
 									if c1.relations[c2.name] > 60 then
 										c1:event(parent, "Annexed "..c2.name)
 										c2:event(parent, "Annexed by "..c1.name)
@@ -948,7 +948,7 @@ return
 
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(jTable)
-				for i, j in pairs(self) do if jTable[i] ~= nil then self[i] = jTable[i] end end
+				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				jTable = nil
 
@@ -1016,7 +1016,7 @@ return
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(tables)
 					self.thisWorld = World:new()
-					for i, j in pairs(self) do if tables[i] ~= nil then self[i] = tables[i] end end
+					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					tables = nil
 				else
@@ -1026,7 +1026,7 @@ return
 
 			checkAutoload = function(self)
 				local f = io.open("in_progress.dat", "r")
-				if f ~= nil then
+				if f then
 					f:close()
 					f = nil
 
@@ -1079,7 +1079,7 @@ return
 						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
 						if isexception == false then res[self:deepcopy(i)] = self:deepcopy(j) end
 					end
-					if getmetatable(obj) ~= nil then setmetatable(res, self:deepcopy(getmetatable(obj))) end
+					if getmetatable(obj) then setmetatable(res, self:deepcopy(getmetatable(obj))) end
 				elseif t == "function" then
 					res = self:fncopy(obj)
 				else
@@ -1413,7 +1413,7 @@ return
 				print("Constructing initial populations...\n")
 
 				for i, cp in pairs(self.thisWorld.countries) do
-					if cp ~= nil then
+					if cp then
 						if #cp.rulers > 0 then
 							cp.founded = tonumber(cp.rulers[1].From)
 							cp.age = self.years - cp.founded
@@ -1472,7 +1472,7 @@ return
 						if cp.name == country.alliances[i] then c3 = cp end
 					end
 
-					if c3 ~= nil then
+					if c3 then
 						for j=#c3.allyOngoing,1,-1 do
 							if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then
 								table.insert(acOut, c3)
@@ -1517,11 +1517,11 @@ return
 					local nJ = {}
 					for k, l in pairs(j) do
 						if type(l) == "string" then
-							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] ~= nil then j[k] = tables[l] end end end end
+							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] then j[k] = tables[l] end end end end
 							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
 						end
 						
-						if type(k) == "string" then if tonumber(k) ~= nil then revised = true nJ[tonumber(k)] = l end end
+						if type(k) == "string" then if tonumber(k) then revised = true nJ[tonumber(k)] = l end end
 					end
 					if revised == true then tables[i] = nJ end
 				end end
@@ -1533,7 +1533,7 @@ return
 					if data.royalName then if data.royalName ~= "" then rString = rString..data.royalName.." " else rString = rString..data.name.." " end else rString = rString..data.name.." " end
 
 					if data.Country then
-						if tonumber(data.number) ~= nil then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
+						if tonumber(data.number) then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 						else rString = rString..data.surname.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")" end
 					else
 						if tonumber(data.number) ~= 0 then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.nationality
@@ -2031,7 +2031,7 @@ return
 			end,
 
 			RegionTransfer = function(self, c1, c2, r, conq)
-				if c1 ~= nil and c2 ~= nil then
+				if c1 and c2 then
 					local rCount = 0
 					for i, j in pairs(c2.regions) do
 						rCount = rCount + 1
@@ -2041,11 +2041,11 @@ return
 					if conq == true then lim = 0 end
 
 					if rCount > lim then
-						if c2.regions[r] ~= nil then
+						if c2.regions[r] then
 							local rn = c2.regions[r]
 
 							for i=#c2.people,1,-1 do
-								if c2.people[i] ~= nil then
+								if c2.people[i] then
 									if c2.people[i].region == rn.name then
 										if c2.people[i].isruler == false then
 											c1:add(parent, c2.people[i])
@@ -2158,7 +2158,7 @@ return
 						if cp.name == country.alliances[i] then c3 = cp end
 					end
 
-					if c3 ~= nil then
+					if c3 then
 						for j=#c3.allyOngoing,1,-1 do
 							if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then
 								table.remove(c3.allyOngoing, j)
@@ -2311,7 +2311,7 @@ return
 			end,
 
 			setGens = function(self, i, v, g)
-				if i ~= nil then
+				if i then
 					local set = i.gensSet
 					i.gensSet = true
 					if set == false then
@@ -2330,7 +2330,7 @@ return
 					t.royalGenerations = v
 					t.LastRoyalAncestor = a
 				end
-				if t.children ~= nil then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
+				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
 			end,
 
 			sleep = function(self, t)
@@ -2385,7 +2385,7 @@ return
 						j.title = j.RoyalTitle
 						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
 						
-						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then
+						if j.father and j.mother then if j.father.removed == false and j.mother.removed == false then
 							local parentString = j.father.gString.."-"..j.mother.gString
 						
 							if fams[parentString] == nil then
@@ -2415,7 +2415,7 @@ return
 
 			strengthFactor = function(self, c)
 				local pop = 0
-				if c.rulerParty ~= "" then if c.parties[c.rulerParty] ~= nil then pop = c.parties[c.rulerParty].popularity - 50 end end
+				if c.rulerParty ~= "" then if c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity - 50 end end
 				return (pop + (c.stability - 50) + (((c.military / #c.people) * 100) - 50))
 			end
 		}
