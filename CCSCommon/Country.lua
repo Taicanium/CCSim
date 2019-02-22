@@ -437,7 +437,7 @@ return
 
 				for i=1,#self.rulers do
 					if tonumber(self.rulers[i].From) >= self.founded then
-						if self.rulers[i].royalName == self.people[newRuler].royalName then
+						if self.rulers[i].name == self.people[newRuler].royalName then
 							if self.rulers[i].title == self.people[newRuler].title then
 								namenum = namenum + 1
 							end
