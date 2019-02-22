@@ -239,17 +239,17 @@ return
 
 				if #self.rulernames < 1 then
 					for k=1,math.random(5, 9) do
-						table.insert(self.rulernames, parent:name(true, 7))
+						table.insert(self.rulernames, parent:name(true))
 					end
 
 					for k=1,math.random(5, 9) do
-						table.insert(self.frulernames, parent:name(true, 7))
+						table.insert(self.frulernames, parent:name(true))
 					end
 				end
 
 				if #self.frulernames < 1 then
 					for k=1,math.random(5, 9) do
-						table.insert(self.frulernames, parent:name(true, 7))
+						table.insert(self.frulernames, parent:name(true))
 					end
 				end
 
@@ -350,7 +350,7 @@ return
 
 				self.system = math.random(1, #parent.systems)
 				self.population = math.random(1000, 2000)
-				self:makename(parent)
+				self:makename(parent, 3)
 
 				for i=1,self.population do
 					local n = Person:new()
