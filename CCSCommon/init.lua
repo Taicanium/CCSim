@@ -84,9 +84,9 @@ return
 
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
-
-						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
+						
+						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 						
 						c:checkRuler(parent)
@@ -96,7 +96,7 @@ return
 								local newRuler = -1
 								for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
 								if c.people[newRuler].LastRoyalAncestor ~= "" then
-									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
+									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 									c:event(parent, msg)
 								end
 							end
@@ -232,7 +232,7 @@ return
 
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
-
+							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 							
 							c:checkRuler(parent)
@@ -260,22 +260,20 @@ return
 								end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
-								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
 										if c.people[newRuler].LastRoyalAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
 										end
 									end
 								end
 							else
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
-								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
 										if c.people[newRuler].LastRoyalAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
 										end
 									end
@@ -1218,6 +1216,13 @@ return
 						ind = ind + 1
 						ascCount = ascCount + 1
 					end end
+					local ind = 1
+					local fCount = 0
+					for i, j in pairs(fams) do if j.husb.gIndex ~= 0 and j.wife.gIndex ~= 0 then 
+						j.fIndex = ind
+						fCount = fCount + 1
+						ind = ind + 1
+					end end
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
@@ -1242,8 +1247,8 @@ return
 							end
 						end
 
-						for q, b in pairs(j.fams) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end end
-						for q, b in pairs(j.famc) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end end
+						for q, b in pairs(j.fams) do if b.fIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b.fIndex).."@" end end
+						for q, b in pairs(j.famc) do if b.fIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b.fIndex).."@" end end
 
 						msgout = msgout.."\n"
 
@@ -1255,20 +1260,20 @@ return
 					end
 
 					ged:flush()
-
 					print("")
+					local done = 0
+					
+					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
+						local msgout = "0 @F"..tostring(j.fIndex).."@ FAM\n"
 
-					for j=1,#fams do if fams[j].husb.gIndex ~= 0 and fams[j].wife.gIndex ~= 0 then 
-						local msgout = "0 @F"..tostring(j).."@ FAM\n"
+						msgout = msgout.."1 HUSB @I"..tostring(j.husb.gIndex).."@\n"
+						msgout = msgout.."1 WIFE @I"..tostring(j.wife.gIndex).."@\n"
 
-						msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb.gIndex).."@\n"
-						msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife.gIndex).."@\n"
-
-						for k=1,#fams[j].chil do
-							if fams[j].chil[k].gString ~= fams[j].husb.gString then
-								if fams[j].chil[k].gString ~= fams[j].wife.gString then
-									if fams[j].chil[k].gIndex ~= 0 then
-										msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k].gIndex).."@\n"
+						for k=1,#j.chil do
+							if j.chil[k].gString ~= j.husb.gString then
+								if j.chil[k].gString ~= j.wife.gString then
+									if j.chil[k].gIndex ~= 0 then
+										msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n"
 									end
 								end
 							end
@@ -1276,7 +1281,8 @@ return
 
 						ged:write(msgout)
 
-						percentage = math.floor(j / #fams * 10000)/100
+						done = done + 1
+						percentage = math.floor(done / fCount * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
 					end end
 
@@ -2342,9 +2348,12 @@ return
 				end
 			end,
 
-			setGensChildren = function(self, t, v)
-				if t.royalGenerations > v or t.royalGenerations == -1 then t.royalGenerations = v end
-				if t.children ~= nil then for i, j in pairs(t.children) do self:setGensChildren(j, v+1) end end
+			setGensChildren = function(self, t, v, a)
+				if t.royalGenerations > v or t.royalGenerations == -1 then
+					t.royalGenerations = v
+					t.LastRoyalAncestor = a
+				end
+				if t.children ~= nil then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
 			end,
 
 			sleep = function(self, t)
@@ -2399,35 +2408,19 @@ return
 						j.title = j.RoyalTitle
 						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
 					
-						local found = nil
-						local chil = true
-						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then 
-							for k=#fams,1,-1 do
-								if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end
-
-								for l=1,#fams[k].chil do if fams[k].chil[l].gString == j.gString then found = k chil = false end end
-								if found ~= nil then k = 1 end
+						local parentString = j.father.gString.."-"..j.mother.gString
+						
+						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then
+							if fams[parentString] == nil then
+								fams[parentString] = {fIndex=0, husb=j.father, wife=j.mother, chil={j}}
+								table.insert(j.father.fams, fams[parentString])
+								table.insert(j.mother.fams, fams[parentString])
+								table.insert(j.famc, fams[parentString])
+							else
+								table.insert(fams[parentString].chil, j)
+								table.insert(j.famc, fams[parentString])
 							end
 						end end
-
-						if found == nil then
-							local doFam = false
-							if j.father ~= nil then if j.father.removed == false then
-								if j.mother ~= nil then if j.mother.removed == false then doFam = true end end
-							end end
-							if doFam == true then
-								local fam = {husb=j.father, wife=j.mother, chil={j}}
-								table.insert(fams, fam)
-								table.insert(j.father.fams, #fams)
-								table.insert(j.mother.fams, #fams)
-								table.insert(j.famc, #fams)
-							end
-						else
-							if chil == true then
-								table.insert(fams[found].chil, j)
-								table.insert(j.famc, found)
-							end
-						end
 						
 						done = done + 1
 						io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
