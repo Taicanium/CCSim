@@ -326,8 +326,6 @@ return
 			recurseRoyalChildren = function(self, t)
 				local childrenByAge = {}
 				local childrenLiving = {}
-				print(t.children)
-				io.read()
 				if #t.children == 0 then return nil end
 				
 				local hasMale = false
@@ -376,9 +374,6 @@ return
 						end end end
 					end
 				end
-				
-				print(eldestLiving)
-				io.read()
 				
 				return eldestLiving
 			end,
