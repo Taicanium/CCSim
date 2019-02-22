@@ -17,6 +17,7 @@ return
 				n.level = 2
 				n.prevtitle = "Citizen"
 				n.title = "Citizen"
+				n.RoyalTitle = ""
 				n.party = ""
 				n.region = ""
 				n.city = ""
