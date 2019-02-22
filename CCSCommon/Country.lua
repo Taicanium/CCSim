@@ -330,16 +330,14 @@ return
 				
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
-					for j=1,#childrenByAge do
-						local found = false
+					local found = false
+					for j=1,#childrenByAge do if found == false then
 						if t.children[i].birth <= childrenByAge[j].birth then
 							table.insert(childrenByAge, j, t.children[i])
 							found = true
 						end
-						if found == false then
-							table.insert(childrenByAge, t.children[i])
-						end
-					end
+					end end
+					if found == false then table.insert(childrenByAge, t.children[i]) end
 				end
 				
 				local found = false
