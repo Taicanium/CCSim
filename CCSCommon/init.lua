@@ -536,6 +536,8 @@ return
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Entered military alliance with "..self.target.name)
 						self.target:event(parent, "Entered military alliance with "..c1.name)
+						
+						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 					end,
 					doStep=function(self, parent, c1)
 						if self.target == nil then return -1 end
