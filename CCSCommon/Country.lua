@@ -123,6 +123,7 @@ return
 						table.insert(parent.royals, self.people[y])
 						w = table.remove(self.people, y)
 						if w ~= nil then w:destroy() end
+						self.population = self.population - 1
 					end
 				end
 			end,
