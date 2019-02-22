@@ -2407,10 +2407,10 @@ return
 					if j.removed == false then
 						j.title = j.RoyalTitle
 						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
-					
-						local parentString = j.father.gString.."-"..j.mother.gString
 						
 						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then
+							local parentString = j.father.gString.."-"..j.mother.gString
+						
 							if fams[parentString] == nil then
 								fams[parentString] = {fIndex=0, husb=j.father, wife=j.mother, chil={j}}
 								table.insert(j.father.fams, fams[parentString])
