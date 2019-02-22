@@ -703,7 +703,7 @@ return
 						end
 
 						if parent.popLimit < 1000 then parent.popLimit = 1000 end
-						if parent.popLimit == 1000 then table.insert(parent.disabled, "Independence") else for i=#parent.disabled,1,-1 do if parent.disabled[i] == "Independence" then table.remove(parent.disabled, i) end end end
+						if f1 > 0.75 then parent.disabled["Independence"] = true else parent.disabled["Independence"] = false end
 					elseif f1 < 0.25 then
 						if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
 						if parent.popLimit > 3000 then parent.popLimit = 3000 end
