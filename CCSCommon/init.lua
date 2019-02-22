@@ -1265,8 +1265,8 @@ return
 						if fams[j].wife ~= nil then msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife.gIndex).."@\n" end
 
 						for k=1,#fams[j].chil do
-							if fams[j].chil[k] ~= fams[j].husb then
-								if fams[j].chil[k] ~= fams[j].wife then
+							if fams[j].chil[k].gString ~= fams[j].husb.gString then
+								if fams[j].chil[k].gString ~= fams[j].wife.gString then
 									msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k].gIndex).."@\n"
 								end
 							end
@@ -2396,11 +2396,13 @@ return
 					if j.removed == false then
 						local found = nil
 						local chil = true
-						for k=#fams,1,-1 do
-							if j.father ~= nil and j.mother ~= nil then if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end end
+						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then 
+							for k=#fams,1,-1 do
+								if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end
 
-							for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
-							if found ~= nil then k = 1 end
+								for l=1,#fams[k].chil do if fams[k].chil[l].gString == j.gString then found = k chil = false end end
+								if found ~= nil then k = 1 end
+							end
 						end
 
 						if found == nil then
