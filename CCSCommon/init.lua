@@ -2387,6 +2387,8 @@ return
 
 				for i, j in pairs(self.royals) do
 					if j.removed == false then
+						if j.title ~= "King" and j.title ~= "Queen" and j.title ~= "Emperor" and j.title ~= "Empress" then j.title = "" end
+					
 						local found = nil
 						local chil = true
 						if j.father ~= nil and j.mother ~= nil then if j.father.removed == false and j.mother.removed == false then 
@@ -2421,6 +2423,10 @@ return
 						io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 					end
 				end
+				
+				print("\nRemoving individuals not related to any other...")
+				
+				for i, j in pairs(self.royals) do if #j.fams == 0 and #j.famc == 0 then j.removed = true end end
 
 				return fams
 			end,
