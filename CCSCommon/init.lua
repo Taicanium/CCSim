@@ -2011,6 +2011,7 @@ return
 					nomlower = nomlower:gsub("fv", "v")
 					nomlower = nomlower:gsub("vf", "f")
 					nomlower = nomlower:gsub("vt", "t")
+					nomlower = nomlower:gsub("tv", "t")
 					nomlower = nomlower:gsub("aia", "ia")
 					nomlower = nomlower:gsub("eia", "ea")
 					nomlower = nomlower:gsub("oia", "ia")
