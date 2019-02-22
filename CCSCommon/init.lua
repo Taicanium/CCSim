@@ -2409,7 +2409,7 @@ return
 								if j.mother ~= nil then if j.mother.removed == false then doFam = true end end
 							end end
 							if doFam == true then
-								local fam = {husb=j.father, wife=j.mother, chil={i}}
+								local fam = {husb=j.father, wife=j.mother, chil={j}}
 								table.insert(fams, fam)
 								table.insert(j.father.fams, #fams)
 								table.insert(j.mother.fams, #fams)
@@ -2417,7 +2417,7 @@ return
 							end
 						else
 							if chil == true then
-								table.insert(fams[found].chil, i)
+								table.insert(fams[found].chil, j)
 								table.insert(j.famc, found)
 							end
 						end
