@@ -58,7 +58,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								local child = nil
-								for r=#self.rulers,1,-1 do if child == nil then child = self:recurseRoyalChildren(self.rulers[r]) end end
+								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) ~= nil then child = self:recurseRoyalChildren(self.rulers[r]) end end end
 
 								if child == nil then
 									local possibles = {}
@@ -325,10 +325,12 @@ return
 
 			recurseRoyalChildren = function(self, t)
 				local childrenByAge = {}
+				local childrenLiving = {}
 				print(t.children)
 				io.read()
 				if #t.children == 0 then return nil end
-				io.read()
+				
+				local hasMale = false
 				
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
@@ -338,32 +340,40 @@ return
 							table.insert(childrenByAge, j, t.children[i])
 							found = true
 						end
-						if found == false then table.insert(childrenByAge, t.children[i]) end
+						if found == false then
+							table.insert(childrenByAge, t.children[i])
+						end
 					end
 				end
-				
-				print(childrenByAge)
-				io.read()
 				
 				local found = false
 				local eldestLiving = nil
 				for i=1,#childrenByAge do if found == false then if childrenByAge[i].def ~= nil then if childrenByAge[i].isruler == false then
 					found = true
-					eldestLiving = childrenByAge[i]
+					table.insert(childrenLiving, childrenByAge[i])
+					if childrenByAge[i].gender == "Male" then hasMale = true end
 				end end end end
-				
-				print(eldestLiving)
-				io.read()
 				
 				if found == false then
 					for i=1,#childrenByAge do
 						if eldestLiving == nil then
-							local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
-							if nextLevel ~= nil then
-								found = true
-								eldestLiving = nextLevel
+							if hasMale == false then
+								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
+								if nextLevel ~= nil then eldestLiving = nextLevel end
+							elseif childrenByAge[i].gender == "Male" then
+								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
+								if nextLevel ~= nil then eldestLiving = nextLevel end
 							end
 						end
+					end
+				else
+					if hasMale == false then eldestLiving = childrenLiving[1]
+					else
+						local mFound = false
+						for i=1,#childrenLiving do if mFound == false then if childrenLiving[i].gender == "Male" then
+							eldestLiving = childrenLiving[i]
+							mFound = true
+						end end end
 					end
 				end
 				
