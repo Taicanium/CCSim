@@ -305,6 +305,7 @@ return
 					self.demonym = self.demonym:gsub("iia", "ia")
 					self.demonym = self.demonym:gsub("oia", "ia")
 					self.demonym = self.demonym:gsub("uia", "ia")
+					self.demonym = self.demonym:gsub("dby", "dy")
 				end
 
 				local ends = {"ch", "rt", "gh", "ct", "rl", "rn", "rm", "rd", "rs", "lc", "ld", "ln", "lm", "ls", "sc", "nd", "nc", "st", "sh", "ds", "ck", "lg", "lk", "ng"}
@@ -328,9 +329,9 @@ return
 			recurseRoyalChildren = function(self, t)
 				local childrenByAge = {}
 				print(t.children)
-				os.execute("pause")
+				io.read()
 				if #t.children == 0 then return nil end
-				os.execute("pause")
+				io.read()
 				
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
@@ -345,7 +346,7 @@ return
 				end
 				
 				print(childrenByAge)
-				os.execute("pause")
+				io.read()
 				
 				local found = false
 				local eldestLiving = nil
@@ -355,7 +356,7 @@ return
 				end end end end
 				
 				print(eldestLiving)
-				os.execute("pause")
+				io.read()
 				
 				if found == false then
 					for i=1,#childrenByAge do
