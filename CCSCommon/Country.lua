@@ -389,7 +389,6 @@ return
 					n.level = 2
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
-					n.nationality = self.name
 					n.birthplace = self.name
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(n)
@@ -438,7 +437,6 @@ return
 					n.level = 2
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
-					n.nationality = self.name
 					n.birthplace = self.name
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(n)
@@ -773,9 +771,9 @@ return
 
 				self.hasruler = -1
 
-				for i, j in pairs(self.people) do
-					self.people[i]:update(parent, self)
+				for i=1,#self.people do
 					local chn = false
+					self.people[i]:update(parent, self)
 					
 					local age = self.people[i].age
 					if age > 100 then
@@ -789,7 +787,7 @@ return
 						end
 					end
 
-					if chn == false then if j.isruler == false then
+					if chn == false then if self.people[i].isruler == false then
 						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
@@ -800,13 +798,13 @@ return
 					end end
 
 					if chn == false then
-						j.pIndex = i
-						self.averageAge = self.averageAge + j.age
-						if j.military == true then self.military = self.military + 1 end
-						if j.isruler == true then
+						self.people[i].pIndex = i
+						self.averageAge = self.averageAge + self.people[i].age
+						if self.people[i].military == true then self.military = self.military + 1 end
+						if self.people[i].isruler == true then
 							self.hasruler = 0
-							self.rulerage = j.age
-							self.rulerParty = j.party
+							self.rulerage = self.people[i].age
+							self.rulerParty = self.people[i].party
 						end
 					end
 				end
