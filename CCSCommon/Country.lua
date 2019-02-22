@@ -187,7 +187,8 @@ return
 
 				for i=1,#parent.c_events do
 					local isDisabled = false
-					for j=1,#parent.disabled do if parent.disabled[j] == parent.c_events[i].name then isDisabled = true end end
+					if parent.disabled[parent.c_events[i].name] == true then isDisabled = true end
+					if parent.disabled["!"..parent.c_events[i].name] == true then isDisabled = true end
 					if isDisabled == false then
 						local chance = math.floor(math.random(1, v))
 						if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
