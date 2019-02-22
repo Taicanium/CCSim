@@ -597,7 +597,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=5,
+					chance=6,
 					target=nil,
 					args=1,
 					inverse=false,
