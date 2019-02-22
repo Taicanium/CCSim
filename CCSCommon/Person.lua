@@ -32,9 +32,12 @@ return
 				n.deathplace = ""
 				n.death = 0
 				n.pIndex = 0
+				n.gIndex = 0
+				n.gString = ""
+				n.removed = false
+				n.gensSet = false
 				n.maternalLineTimes = -1
-				n.lastRoyalAncestor = ""
-				n.royalInfo = {Gens=-1, LastAncestor=""}
+				n.LastRoyalAncestor = ""
 				n.pbelief = 0
 				n.ebelief = 0
 				n.cbelief = 0
@@ -90,18 +93,18 @@ return
 						if self.spouse.royalGenerations < self.royalGenerations then
 							nn.royalGenerations = self.spouse.royalGenerations + 1
 							nn.royalSystem = self.spouse.royalSystem
-							nn.lastRoyalAncestor = self.spouse.lastRoyalAncestor
+							nn.LastRoyalAncestor = self.spouse.LastRoyalAncestor
 							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes + 1 end
 						else
 							nn.royalGenerations = self.royalGenerations + 1
 							nn.royalSystem = self.royalSystem
-							nn.lastRoyalAncestor = self.lastRoyalAncestor
+							nn.LastRoyalAncestor = self.LastRoyalAncestor
 							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
 						end
 					else
 						nn.royalGenerations = self.royalGenerations + 1
 						nn.royalSystem = self.royalSystem
-						nn.lastRoyalAncestor = self.lastRoyalAncestor
+						nn.LastRoyalAncestor = self.LastRoyalAncestor
 						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
 					end
 				end
@@ -110,16 +113,12 @@ return
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.royalSystem
 					local title = self.title
-					nn.lastRoyalAncestor = string.format(title.." "..self.name.." "..parent:roman(self.number).." of "..nl.name)
-					nn.royalInfo.Gens=nn.royalGenerations
-					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
+					nn.LastRoyalAncestor = string.format(title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
 				else if self.spouse.isruler == true then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.spouse.royalSystem
 					local title = self.spouse.title
-					nn.lastRoyalAncestor = string.format(title.." "..self.spouse.name.." "..parent:roman(self.spouse.number).." of "..nl.name)
-					nn.royalInfo.Gens=nn.royalGenerations
-					nn.royalInfo.LastAncestor=nn.lastRoyalAncestor
+					nn.LastRoyalAncestor = string.format(title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end end
 
 				if self.isruler == true or self.spouse.isruler == true then
@@ -152,6 +151,8 @@ return
 				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
 				else nn:SetFamily(self, self.spouse, parent) end
 
+				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
+				
 				nl:add(nn)
 			end,
 
@@ -176,8 +177,8 @@ return
 			SetFamily = function(self, father, mother, parent)
 				table.insert(father.children, self)
 				table.insert(mother.children, self)
-				self.father = parent:makeAscendant(father)
-				self.mother = parent:makeAscendant(mother)
+				self.father = father
+				self.mother = mother
 			end,
 
 			update = function(self, parent, nl)
