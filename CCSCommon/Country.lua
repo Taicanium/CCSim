@@ -140,7 +140,6 @@ return
 					if self.people[y] ~= nil then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
-						self.people[y].chn = true
 						parent:getAscendants(parent.royals, parent:makeAscendant(self.people[y]))
 						w = table.remove(self.people, y)
 						if w ~= nil then
@@ -738,27 +737,29 @@ return
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
-				self:checkRuler(parent)
 				self.hasruler = -1
 
 				for i, j in pairs(self.people) do
-					if j.chn == false then self.people[i]:update(parent, self) end
-
-					if j.chn == false then
-						local age = self.people[i].age
-						if age > 100 then
+					self.people[i]:update(parent, self)
+					local chn = false
+					
+					local age = self.people[i].age
+					if age > 100 then
+						self:delete(parent, i)
+						chn = true
+					else
+						d = math.random(1, 3000-(age*3))
+						if d < age then
 							self:delete(parent, i)
-						else
-							d = math.random(1, 3000-(age*3))
-							if d < age then self:delete(parent, i) end
+							chn = true
 						end
 					end
 
-					if j.chn == false and j.isruler == false then
-						local mChance = math.random(1, 35000)
+					if chn == false then if j.isruler == false then
+						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
-							if #parent.thisWorld.countries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
+							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 							j.region = ""
 							j.city = ""
 							j.nationality = cp.name
@@ -766,22 +767,22 @@ return
 							if j.spouse ~= nil then j.spouse = nil end
 							table.remove(self.people, i)
 							table.insert(cp.people, j)
-							for k, l in pairs(self.people) do l.chn = false end
+							chn = true
 						end
-					end
+					end end
 
-					if j.chn == false then
-						self.averageAge = self.averageAge + self.people[i].age
-						if self.people[i].military == true then self.military = self.military + 1 end
-						if self.people[i].isruler == true then
+					if chn == false then
+						self.averageAge = self.averageAge + j.age
+						if j.military == true then self.military = self.military + 1 end
+						if j.isruler == true then
 							self.hasruler = 0
-							self.rulerage = self.people[i].age
-							self.rulerParty = self.people[i].party
+							self.rulerage = j.age
+							self.rulerParty = j.party
 						end
 					end
-
-					j.chn = false
 				end
+				
+				self.averageAge = self.averageAge / #self.people
 
 				self:checkRuler(parent)
 
@@ -799,8 +800,6 @@ return
 
 					if largest ~= -1 then self.parties[largest].leading = true end
 				end
-
-				self.averageAge = self.averageAge / #self.people
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i] / #self.people) * 100 end
 
