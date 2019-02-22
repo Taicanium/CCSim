@@ -56,7 +56,7 @@ return
 				n.city = ""
 				n.military = false
 				n.isruler = false
-				if n.spouse ~= nil then
+				if n.spouse then
 					n.spouse.spouse = nil
 					n.spouse = nil
 				end
@@ -73,7 +73,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								local child = nil
-								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) ~= nil then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
+								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
 								if child == nil then
 									local possibles = {}
@@ -91,7 +91,7 @@ return
 								
 									for i=1,#possibles do
 										local psp = possibles[i]
-										if psp ~= nil then if psp.royalGenerations <= closestGens then
+										if psp then if psp.royalGenerations <= closestGens then
 											if psp.maternalLineTimes <= closestMats then
 												if psp.age >= closestAge then
 													closest = psp
@@ -121,20 +121,20 @@ return
 			end,
 
 			delete = function(self, parent, y)
-				if self.people ~= nil and #self.people > 0 then
-					if self.people[y] ~= nil then
+				if self.people then if #self.people > 0 then
+					if self.people[y] then
 						self.people[y].death = parent.years
 						self.people[y].deathplace = self.name
 						table.insert(parent.royals, self.people[y])
 						w = table.remove(self.people, y)
-						if w ~= nil then w:destroy() end
+						if w then w:destroy() end
 						self.population = self.population - 1
 					end
-				end
+				end end
 			end,
 
 			destroy = function(self, parent)
-				if self.people ~= nil then
+				if self.people then
 					for i=1,#self.people do
 						self:delete(parent, i)
 					end
@@ -161,18 +161,18 @@ return
 				if self.relations == nil then self.relations = {} end
 
 				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] ~= nil then
+					if self.ongoing[i] then
 						if self.ongoing[i].args > 1 then
 							local found = false
-							if self.ongoing[i].target ~= nil then if self.ongoing[i].target.name ~= nil then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end end
+							if self.ongoing[i].target then if self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end end
 							if found == false then table.remove(self.ongoing, i) end
 						end
 					end
 				end
 
 				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] ~= nil then
-						if self.ongoing[i].doStep ~= nil then
+					if self.ongoing[i] then
+						if self.ongoing[i].doStep then
 							local r = self.ongoing[i]:doStep(parent, self)
 							if r == -1 then
 								local ro = table.remove(self.ongoing, i)
@@ -347,7 +347,7 @@ return
 				
 				local found = false
 				local eldestLiving = nil
-				for i=1,#childrenByAge do if found == false then if childrenByAge[i].def ~= nil then if childrenByAge[i].isruler == false then
+				for i=1,#childrenByAge do if found == false then if childrenByAge[i].def then if childrenByAge[i].isruler == false then
 					found = true
 					table.insert(childrenLiving, childrenByAge[i])
 					if childrenByAge[i].gender == "Male" then hasMale = true end
@@ -358,10 +358,10 @@ return
 						if eldestLiving == nil then
 							if hasMale == false then
 								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
-								if nextLevel ~= nil then eldestLiving = nextLevel end
+								if nextLevel then eldestLiving = nextLevel end
 							elseif childrenByAge[i].gender == "Male" then
 								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
-								if nextLevel ~= nil then eldestLiving = nextLevel end
+								if nextLevel then eldestLiving = nextLevel end
 							end
 						end
 					end
@@ -462,7 +462,7 @@ return
 				if self.people[newRuler].gender == "Female" then
 					self.people[newRuler].royalName = parent:randomChoice(self.frulernames)
 
-					if parent.systems[self.system].franks ~= nil then
+					if parent.systems[self.system].franks then
 						self.people[newRuler].level = #parent.systems[self.system].franks
 						self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
 					end
@@ -609,7 +609,7 @@ return
 						local x = r.x
 						local y = r.y
 						local z = r.z
-						if r.x ~= nil and r.y ~= nil and r.z ~= nil then parent.thisWorld.planet[x][y][z].city = "" end
+						if r.x and r.y and r.z then parent.thisWorld.planet[x][y][z].city = "" end
 						j.cities[c] = nil
 						cCount = 0
 						for k, l in pairs(j.cities) do cCount = cCount + 1 end
@@ -646,7 +646,7 @@ return
 					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 					local newE = self.ongoing[#self.ongoing]
 
-					if newE.performEvent ~= nil then
+					if newE.performEvent then
 						if newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 						else newE:beginEvent(parent, self) end
 					else table.remove(self.ongoing, #self.ongoing) end
@@ -658,7 +658,7 @@ return
 						table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 						local newE = self.ongoing[#self.ongoing]
 
-						if newE.performEvent ~= nil then
+						if newE.performEvent then
 							if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
 							else newE:beginEvent(parent, self, other) end
 						else
@@ -759,9 +759,9 @@ return
 
 				if self.capitalcity == nil or self.regions[self.capitalregion].cities[self.capitalcity] == nil then
 					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities).name
-					if oldcap ~= nil then
-						if self.regions[oldreg] ~= nil then
-							if self.regions[oldreg].cities[oldcap] ~= nil then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
+					if oldcap then
+						if self.regions[oldreg] then
+							if self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
 						end
 					end
 				end
