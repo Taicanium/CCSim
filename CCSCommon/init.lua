@@ -1733,9 +1733,15 @@ return
 						if cCount < self.numCountries then msg = msg.."[+"..tostring(self.numCountries-cCount).." more]\n" end
 
 						msg = msg.."\nOngoing events:"
+						local eventsWritten = 0
 
 						for i, cp in pairs(self.thisWorld.countries) do for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
-						for i=1,#currentEvents do msg = msg.."\n"..currentEvents[i] end
+						for i=1,#currentEvents do
+							msg = msg.."\n"..currentEvents[i]
+							eventsWritten = eventsWritten + 1
+						end
+						
+						if eventsWritten == 0 then msg = msg.."\nNone"
 					end
 
 					os.execute(self.clrcmd)
