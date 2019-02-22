@@ -66,24 +66,16 @@ return
 				if self.royalGenerations ~= -1 and self.spouse.royalGenerations ~= -1 then
 					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
 						if self.surname ~= self.spouse.surname then
-							if self.royalGenerations > self.spouse.royalGenerations then nn.surname = self.surname.."-"..self.spouse.surname
-							elseif self.royalGenerations < self.spouse.royalGenerations then nn.surname = self.spouse.surname.."-"..self.surname
+							local surnames = {}
+						
+							if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+							elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
 							else
-								if self.gender == "Male" then nn.surname = self.surname.."-"..self.spouse.surname
-								else nn.surname = self.spouse.surname.."-"..self.surname end
+								if self.gender == "Male" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+								else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 							end
-
-							local cnt = 0
-							for dash in nn.surname:gmatch("%-") do cnt = cnt + 1 end
-							if cnt > 1 then
-								local ind = 1
-								local nsurn = ""
-								for x in nn.surname:gmatch("%a+%-") do
-									if ind == 2 then nsurn = nsurn.."-"..x ind = ind + 1 end
-									if ind == 1 then nsurn = nsurn..x ind = ind + 1 end
-								end
-								nn.surname = nsurn
-							end
+							
+							nn.surname = surnames[1].."-"..surnames[2]
 						end
 					end
 				end
