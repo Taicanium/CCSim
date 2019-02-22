@@ -77,8 +77,8 @@ return
 								if #self.rulers > 0 then for i=1,#possibles do
 									local c = possibles[i]
 									local psp = self.people[c]
-									local fString = psp.father.name.." "..psp.father.surname.." "..tostring(psp.father.number)
-									local mString = psp.mother.name.." "..psp.mother.surname.." "..tostring(psp.mother.number)
+									local fString = psp.father.royalName.." "..psp.father.surname.." "..tostring(psp.father.number)
+									local mString = psp.mother.royalName.." "..psp.mother.surname.." "..tostring(psp.mother.number)
 									if fString == rString then 
 										table.insert(children, c)
 										if psp.gender == "Male" then hasMale = true end
