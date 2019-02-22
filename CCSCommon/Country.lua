@@ -68,8 +68,9 @@ return
 							if sys.dynastic == true then
 								for i=1,#self.people do
 									if self.people[i].royalGenerations > 0 then
-										if self.people[i].age <= self.averageAge + 25 then table.insert(possibles, i)
-										else if self.people[i].royalGenerations == 1 then table.insert(possibles, i) end end
+										local poss = false
+										if self.people[i].royalGenerations == 1 then table.insert(possibles, i) poss = true end
+										if poss == false then if self.people[i].age <= self.averageAge + 25 then table.insert(possibles, i) end end
 									end
 								end
 
@@ -106,7 +107,7 @@ return
 									for i=1,#possibles do
 										local c = possibles[i]
 										local psp = self.people[c]
-										if psp.royalGenerations <= closestGens then
+										if psp ~= nil then if psp.royalGenerations <= closestGens then
 											if psp.maternalLineTimes <= closestMats then
 												if psp.age >= closestAge then
 													closest = c
@@ -115,7 +116,7 @@ return
 													closestAge = psp.age
 												end
 											end
-										end
+										end end
 									end
 								end
 
