@@ -395,6 +395,8 @@ return
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
 					n.nationality = self.name
+					n.birthplace = self.name
+					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(n)
 				end
 
@@ -442,6 +444,8 @@ return
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
 					n.nationality = self.name
+					n.birthplace = self.name
+					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(n)
 				end
 			end,
