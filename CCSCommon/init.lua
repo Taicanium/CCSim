@@ -2354,6 +2354,7 @@ return
 				local fams = {}
 				local oldCount = 0
 				local count = 0
+				local done = 0
 
 				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
 				count = oldCount
@@ -2369,6 +2370,7 @@ return
 
 				print("")
 				done = 0
+				local removed = 0
 
 				for i, j in pairs(self.royals) do
 					if j.royalGenerations == -1 or j.royalGenerations >= self.genLimit then
