@@ -2397,7 +2397,7 @@ return
 						local found = nil
 						local chil = true
 						for k=#fams,1,-1 do
-							if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end
+							if j.father ~= nil and j.mother ~= nil then if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end end
 
 							for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
 							if found ~= nil then k = 1 end
