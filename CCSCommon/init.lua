@@ -1782,7 +1782,7 @@ return
 			name = function(self, personal, l)
 				local nom = ""
 				local length = 0
-				if l == nil then length = math.random(2, 4) else length = math.random(1, l) end
+				if l == nil then length = math.random(2, 3) else length = math.random(1, l) end
 				
 				local taken = {}
 
