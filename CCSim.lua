@@ -7,6 +7,11 @@ function main()
 	if type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 	elseif type(clrarr) == "boolean" then if clrarr == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end end
 
+	for i, j in pairs(CCSCommon.c_events) do
+		CCSCommon.disabled[j.name] = false
+		CCSCommon.disabled["!"..j.name] = false
+	end
+	
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
