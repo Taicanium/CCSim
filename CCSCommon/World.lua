@@ -107,11 +107,11 @@ return
 					local z = self.planetdefined[i][3]
 
 					for dx=-1,1 do
-						if self.planet[x-dx] ~= nil then
+						if self.planet[x-dx] then
 							for dy=-1,1 do
-								if self.planet[x-dx][y-dy] ~= nil then
+								if self.planet[x-dx][y-dy] then
 									for dz=-1,1 do
-										if self.planet[x-dx][y-dy][z-dz] ~= nil then
+										if self.planet[x-dx][y-dy][z-dz] then
 											if x ~= dx or y ~= dy or z ~= dz then
 												table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz})
 											end
@@ -196,11 +196,11 @@ return
 					self.planet[x][y][z].neighbors = {}
 
 					for dx=-1,1 do
-						if self.planet[x-dx] ~= nil then
+						if self.planet[x-dx] then
 							for dy=-1,1 do
-								if self.planet[x-dx][y-dy] ~= nil then
+								if self.planet[x-dx][y-dy] then
 									for dz=-1,1 do
-										if self.planet[x-dx][y-dy][z-dz] ~= nil then
+										if self.planet[x-dx][y-dy][z-dz] then
 											if x ~= dx or y ~= dy or z ~= dz then
 												table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz})
 											end
@@ -309,9 +309,9 @@ return
 			end,
 
 			delete = function(self, parent, nz)
-				if nz ~= nil then
+				if nz then
 					for i, cp in pairs(self.countries) do
-						for j=#cp.ongoing,1,-1 do if cp.target ~= nil then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
+						for j=#cp.ongoing,1,-1 do if cp.target then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
 					end
 
 					self.cColors[nz.name] = nil
@@ -680,10 +680,10 @@ return
 
 				local f0 = _time()
 
-				for i, cp in pairs(self.countries) do if cp ~= nil then cp:update(parent) end end
+				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
 
 				for i, cp in pairs(self.countries) do
-					if cp ~= nil then
+					if cp then
 						cp:eventloop(parent)
 
 						if cp.population < 10 then
