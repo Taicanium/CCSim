@@ -326,21 +326,26 @@ return
 			end,
 
 			recurseRoyalChildren = function(self, t)
-				local children = {}
 				local childrenByAge = {}
+				print(t.children)
+				os.execute("pause")
 				if #t.children == 0 then return nil end
+				os.execute("pause")
 				
-				table.insert(childrenByAge, children[1])
-				for i=2,#children do
+				table.insert(childrenByAge, t.children[1])
+				for i=2,#t.children do
 					for j=1,#childrenByAge do
 						local found = false
-						if children[i].birth <= childrenByAge[j].birth then
-							table.insert(childrenByAge, j, children[i])
+						if t.children[i].birth <= childrenByAge[j].birth then
+							table.insert(childrenByAge, j, t.children[i])
 							found = true
 						end
-						if found == false then table.insert(childrenByAge, children[i]) end
+						if found == false then table.insert(childrenByAge, t.children[i]) end
 					end
 				end
+				
+				print(childrenByAge)
+				os.execute("pause")
 				
 				local found = false
 				local eldestLiving = nil
@@ -348,6 +353,9 @@ return
 					found = true
 					eldestLiving = childrenByAge[i]
 				end end end end
+				
+				print(eldestLiving)
+				os.execute("pause")
 				
 				if found == false then
 					for i=1,#childrenByAge do
