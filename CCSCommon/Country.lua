@@ -200,13 +200,10 @@ return
 					end
 				end
 
-				if revCount > 8 then
+				if revCount > 6 then
+					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
 					self:event(parent, "Collapsed")
-					for i, cp in pairs(parent.thisWorld.countries) do
-						if cp.name == self.name then
-							parent.thisWorld:delete(parent, cp)
-						end
-					end
+					parent.thisWorld:delete(parent, self)
 				end
 			end,
 
@@ -424,7 +421,7 @@ return
 
 				self.founded = parent.years
 
-				if self.snt[parent.systems[self.system].name] == nil or self.snt[parent.systems[self.system].name] == 0 then self.snt[parent.systems[self.system].name] = 1 end
+				if self.snt[parent.systems[self.system].name] == nil or self.snt[parent.systems[self.system].name] == 0 or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 1 end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 
@@ -495,7 +492,7 @@ return
 
 					self.people[newRuler].gString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace.." "..tostring(self.people[newRuler].number)
 					
-					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1) end
+					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, string.format(self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(self.people[newRuler].number).." of "..self.name)) end
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
@@ -674,7 +671,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do
-					if self.snt[parent.systems[i].name] == nil then self.snt[parent.systems[i].name] = 0 end
+					if self.snt[parent.systems[i].name] == nil or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end
 				end
 
 				self.stability = self.stability + math.random(-3, 3)
