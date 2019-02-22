@@ -1235,8 +1235,8 @@ return
 							end
 						end
 
-						for q, b in pairs(j.fams) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end
-						for q, b in pairs(j.famc) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end
+						for q, b in pairs(j.fams) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b).."@" end end
+						for q, b in pairs(j.famc) do if fams[b].husb.gIndex ~= 0 and fams[b].wife.gIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b).."@" end end
 
 						msgout = msgout.."\n"
 
