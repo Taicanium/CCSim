@@ -370,6 +370,9 @@ return
 					end
 				end
 				
+				print(eldestLiving)
+				io.read()
+				
 				return eldestLiving
 			end,
 			
