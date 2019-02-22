@@ -34,7 +34,7 @@ return
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-							newC:add(r)
+							newC:add(parent, r)
 						end
 
 						c.hasruler = -1
@@ -63,7 +63,7 @@ return
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
 							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-							newC:add(r)
+							newC:add(parent, r)
 						end
 
 						c.hasruler = -1
@@ -204,7 +204,7 @@ return
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								local ruler = nil
 								for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
-								newC:add(r)
+								newC:add(parent, r)
 							end
 
 							c.hasruler = -1
@@ -2048,7 +2048,7 @@ return
 								if c2.people[i] ~= nil then
 									if c2.people[i].region == rn.name then
 										if c2.people[i].isruler == false then
-											c1:add(c2.people[i])
+											c1:add(parent, c2.people[i])
 										else
 											c2.people[i].region = ""
 											c2.people[i].city = ""
