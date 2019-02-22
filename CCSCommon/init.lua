@@ -95,8 +95,8 @@ return
 							if parent.systems[c.system].dynastic == true then
 								local newRuler = -1
 								for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
-								if c.people[newRuler].royalInfo.LastAncestor ~= "" then
-									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
+								if c.people[newRuler].LastRoyalAncestor ~= "" then
+									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 									c:event(parent, msg)
 								end
 							end
@@ -263,8 +263,8 @@ return
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
-										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
+										if c.people[newRuler].LastRoyalAncestor ~= "" then
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
 										end
 									end
@@ -274,8 +274,8 @@ return
 								c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 								if c.snt[parent.systems[c.system].name] > 1 then
 									if parent.systems[c.system].dynastic == true then
-										if c.people[newRuler].royalInfo.LastAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalInfo.Gens, c.people[newRuler].gender).." of "..c.people[newRuler].royalInfo.LastAncestor
+										if c.people[newRuler].LastRoyalAncestor ~= "" then
+											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].name.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
 										end
 									end
@@ -1211,20 +1211,20 @@ return
 					local ascCount = 0
 					local sRoyals = {}
 					local ind = 1
-					for i, j in pairs(self.royals) do
-						j.index = ind
+					local finished = 0
+					for i, j in pairs(self.royals) do if j.removed == false then
+						j.gIndex = ind
 						sRoyals[ind] = j
 						ind = ind + 1
 						ascCount = ascCount + 1
-					end
-					local finished = 0
+					end end
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
 						local jname = j.name
 						if j.royalName ~= "" then jname = j.royalName end
 						if j.death >= self.years then j.death = 0 end
-						local msgout = "0 @I"..tostring(j.index).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
+						local msgout = "0 @I"..tostring(j.gIndex).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
 						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
 						msgout = msgout.."\n2 GIVN "..jname.."\n2 SURN "..j.surname.."\n"
@@ -1261,13 +1261,13 @@ return
 					for j=1,#fams do
 						local msgout = "0 @F"..tostring(j).."@ FAM\n"
 
-						if self.royals[fams[j].husb] ~= nil then msgout = msgout.."1 HUSB @I"..tostring(self.royals[fams[j].husb].index).."@\n" end
-						if self.royals[fams[j].wife] ~= nil then msgout = msgout.."1 WIFE @I"..tostring(self.royals[fams[j].wife].index).."@\n" end
+						if fams[j].husb ~= nil then msgout = msgout.."1 HUSB @I"..tostring(fams[j].husb.gIndex).."@\n" end
+						if fams[j].wife ~= nil then msgout = msgout.."1 WIFE @I"..tostring(fams[j].wife.gIndex).."@\n" end
 
 						for k=1,#fams[j].chil do
 							if fams[j].chil[k] ~= fams[j].husb then
 								if fams[j].chil[k] ~= fams[j].wife then
-									msgout = msgout.."1 CHIL @I"..tostring(self.royals[fams[j].chil[k]].index).."@\n"
+									msgout = msgout.."1 CHIL @I"..tostring(fams[j].chil[k].gIndex).."@\n"
 								end
 							end
 						end
@@ -1497,88 +1497,6 @@ return
 				return acOut
 			end,
 
-			getAscendants = function(self, royals, person)
-				local found = false
-				local fInd = nil
-				local pTable = {
-					name=person.name,
-					royalName=person.royalName,
-					surname=person.surname,
-					birth=person.birth,
-					death=person.death,
-					number=person.number,
-					gender=person.gender,
-					birthplace=person.birthplace,
-					deathplace=person.deathplace,
-					father="",
-					mother="",
-					title="",
-					ethnicity=person.ethnicity,
-					gens=person.gens,
-					gensSet=false,
-					children={},
-					fams={},
-					famc={},
-					index=0
-				}
-
-				local pString = person.name.." "..person.surname.." "..tostring(person.birth).." "..person.birthplace.." "..person.gender
-
-				if royals[pString] ~= nil then
-					if person.death ~= nil then if person.death ~= 0 then if royals[pString].death ~= person.death then royals[pString].death = person.death end end end
-					if person.royalName ~= nil then if person.royalName ~= "" then if royals[pString].royalName ~= person.royalName then royals[pString].royalName = person.royalName end end end
-					if person.deathplace ~= nil then if person.deathplace ~= "" then if royals[pString].deathplace ~= person.deathplace then royals[pString].deathplace = person.deathplace end end end
-					fInd = pString
-				end
-
-				if self.ged == true then
-					if fInd == nil then
-						fInd = pString
-						royals[fInd] = pTable
-					end
-
-					if person.title ~= nil then if royals[fInd].title ~= person.title then
-						if person.title == "King" or person.title == "Queen" or person.title == "Emperor" or person.title == "Empress" then royals[fInd].title = person.title end
-
-						local MorE = -1 -- 0 for Monarchy with male, 1 for Monarchy with female, 2 for Empire with male, 3 for Empire with female
-						for k=1,#self.systems do
-							if royals[fInd].title == "King" then MorE = 0 end
-							if royals[fInd].title == "Queen" then MorE = 1 end
-							if royals[fInd].title == "Emperor" then MorE = 2 end
-							if royals[fInd].title == "Empress" then MorE = 3 end
-
-							if royals[fInd].gender == "M" then if MorE == 1 then MorE = 0 end if MorE == 3 then MorE = 2 end end
-							if royals[fInd].gender == "F" then if MorE == 0 then MorE = 1 end if MorE == 2 then MorE = 3 end end
-						end
-						if MorE == -1 then royals[fInd].title = "" end
-					end end
-
-					if royals[fInd].father == "" then if person.father ~= nil then
-						royals[fInd].father = "SCANNING"
-						royals[fInd].father = self:getAscendants(royals, person.father)
-					end end
-					if royals[fInd].mother == "" then if person.mother ~= nil then
-						royals[fInd].mother = "SCANNING"
-						royals[fInd].mother = self:getAscendants(royals, person.mother)
-					end end
-
-					for i, j in pairs(royals[fInd].children) do
-						local found = false
-						for k, l in pairs(person.children) do if l == j then found = true end end
-						if found == false then table.insert(person.children, asc) end
-					end
-
-					for i, j in pairs(person.children) do
-						local found = false
-						local asc = self:getAscendants(royals, j)
-						for k, l in pairs(royals[fInd].children) do if l == asc then found = true end end
-						if found == false then table.insert(royals[fInd].children, asc) end
-					end
-				end
-
-				return fInd
-			end,
-
 			getfunctionvalues = function(self, fnname, fn, t)
 				local found = false
 				local exceptions = {"__index", "target"}
@@ -1772,26 +1690,6 @@ return
 				self:finish()
 
 				print("\nEnd Simulation!")
-			end,
-
-			makeAscendant = function(self, person)
-				local rtitle = person.title
-				if person.royalGenerations == 0 then
-					if person.royalSystem == "Monarchy" then
-						if person.gender == "Male" then rtitle = "King"
-						else rtitle = "Queen" end
-					elseif person.royalSystem == "Empire" then
-						if person.gender == "Male" then rtitle = "Emperor"
-						else rtitle = "Empress" end
-					end
-				end
-
-				local pGender = "M"
-				if person.gender == "Female" then pGender = "F" end
-
-				local t = {name=person.name, royalName=person.royalName, surname=person.surname, gender=pGender, number=person.number, birth=person.birth, birthplace=person.birthplace, death=person.death, deathplace=person.deathplace, father=person.father, mother=person.mother, title=rtitle, ethnicity=person.ethnicity, gens=person.royalGenerations, children={}, index=0}
-				if person.children ~= nil then for i, j in pairs(person.children) do table.insert(t.children, self:makeAscendant(j)) end end
-				return t
 			end,
 
 			name = function(self, personal, l)
@@ -2428,17 +2326,16 @@ return
 			end,
 
 			setGens = function(self, i, v, g)
-				local r = self.royals[i]
-				if r ~= nil then
-					local set = r.gensSet
-					r.gensSet = true
+				if i ~= nil then
+					local set = i.gensSet
+					i.gensSet = true
 					if set == false then
-						if r.gens == -1 then r.gens = v
-						elseif r.gens >= self.genLimit then r.gens = v end
-						if g < 1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end
-						else if r.gens < self.genLimit - 1 and r.gens > -1 then for j, k in pairs(r.children) do self:setGens(k, v, 1) end end end
-						self:setGens(r.father, v, 0)
-						self:setGens(r.mother, v, 0)
+						if i.royalGenerations == -1 then i.royalGenerations = v
+						elseif i.royalGenerations >= self.genLimit then i.royalGenerations = v end
+						if g < 1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end
+						else if i.royalGenerations < self.genLimit - 1 and i.royalGenerations > -1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end end end
+						self:setGens(i.father, v, 0)
+						self:setGens(i.mother, v, 0)
 					end
 				end
 			end,
@@ -2455,19 +2352,17 @@ return
 
 			sortAscendants = function(self)
 				local fams = {}
-				local removed = 0
 				local oldCount = 0
 				local count = 0
-				local done = 0
 
 				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
 				count = oldCount
 
 				for i, j in pairs(self.royals) do
-					if j.title == "King" or j.title == "Queen" or j.title == "Emperor" or j.title == "Empress" then j.gens = 0 end
-					if j.gens == 0 then self:setGens(j.father, -2, 0) end
-					if j.gens == 0 then self:setGens(j.mother, -2, 0) end
-					if j.gens == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
+					if j.number ~= 0 then j.royalGenerations = 0 end
+					if j.royalGenerations == 0 then self:setGens(j.father, -2, 0) end
+					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
+					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
@@ -2476,8 +2371,8 @@ return
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					if j.gens == -1 or j.gens >= self.genLimit then
-						self.royals[i] = nil
+					if j.royalGenerations == -1 or j.royalGenerations >= self.genLimit then
+						j.removed = true
 						removed = removed + 1
 					end
 
@@ -2496,61 +2391,39 @@ return
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					local found = nil
-					local chil = true
-					for k=#fams,1,-1 do
-						if fams[k].husb == j.father and fams[k].wife == j.mother then found = k end
+					if j.removed == false then
+						local found = nil
+						local chil = true
+						for k=#fams,1,-1 do
+							if fams[k].husb.gString == j.father.gString and fams[k].wife.gString == j.mother.gString then found = k end
 
-						for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
-						if found ~= nil then k = 1 end
-					end
-
-					if found == nil then
-						local doFam = false
-						if j.father ~= "" and j.mother ~= "" then if self.royals[j.father] ~= nil and self.royals[j.mother] ~= nil then doFam = true end end
-						if doFam == true then
-							local fam = {husb=j.father, wife=j.mother, chil={i}}
-							table.insert(fams, fam)
-							table.insert(self.royals[j.father].fams, #fams)
-							table.insert(self.royals[j.mother].fams, #fams)
-							table.insert(j.famc, #fams)
+							for l=1,#fams[k].chil do if fams[k].chil[l] == i then found = k chil = false end end
+							if found ~= nil then k = 1 end
 						end
-					else
-						if chil == true then
-							table.insert(fams[found].chil, i)
-							table.insert(j.famc, found)
+
+						if found == nil then
+							local doFam = false
+							if j.father ~= nil then if j.father.removed == false then
+								if j.mother ~= nil then if j.mother.removed == false then doFam = true end end
+							end end
+							if doFam == true then
+								local fam = {husb=j.father, wife=j.mother, chil={i}}
+								table.insert(fams, fam)
+								table.insert(j.father.fams, #fams)
+								table.insert(j.mother.fams, #fams)
+								table.insert(j.famc, #fams)
+							end
+						else
+							if chil == true then
+								table.insert(fams[found].chil, i)
+								table.insert(j.famc, found)
+							end
 						end
 					end
-
+				
 					done = done + 1
 					io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 				end
-
-				removed = 0
-				done = 0
-				count = 0
-				for i, j in pairs(self.royals) do count = count + 1 end
-				print("\nRemoving unrelated individuals...")
-
-				local rel = {}
-
-				for k=1,#fams do
-					rel[fams[k].husb] = 1
-					rel[fams[k].wife] = 1
-					for i, j in pairs(fams[k].chil) do rel[j] = 1 end
-				end
-
-				for i, j in pairs(self.royals) do
-					if rel[i] == nil then
-						self.royals[i] = nil
-						removed = removed + 1
-					end
-
-					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." scanned.")
-				end
-
-				print("\nRemoved an additional "..tostring(removed).." individuals.")
 
 				return fams
 			end,
