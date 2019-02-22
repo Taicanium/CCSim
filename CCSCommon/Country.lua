@@ -771,7 +771,7 @@ return
 
 				self.hasruler = -1
 
-				for i=1,#self.people do
+				for i=#self.people,1,-1 do
 					local chn = false
 					self.people[i]:update(parent, self)
 					
