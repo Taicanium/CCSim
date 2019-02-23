@@ -37,7 +37,7 @@ return
 							if r then newC:add(parent, r) end
 						end
 
-						for i=1,#self.people do self.people[i].pIndex = i end
+						for i=1,#c.people do c.people[i].pIndex = i end
 						c.hasruler = -1
 						c:checkRuler(parent)
 
@@ -67,7 +67,7 @@ return
 							if r then newC:add(parent, r) end
 						end
 
-						for i=1,#self.people do self.people[i].pIndex = i end
+						for i=1,#c.people do c.people[i].pIndex = i end
 						c.hasruler = -1
 
 						local oldsys = parent.systems[c.system].name
@@ -209,7 +209,7 @@ return
 								if r then newC:add(parent, r) end
 							end
 							
-							for i=1,#self.people do self.people[i].pIndex = i end
+							for i=1,#c.people do c.people[i].pIndex = i end
 							c.hasruler = -1
 
 							local oldsys = parent.systems[c.system].name
