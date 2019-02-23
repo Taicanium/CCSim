@@ -698,15 +698,15 @@ return
 
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.45 then
-						if parent.popLimit > 1000 then
+						if parent.popLimit > 1250 then
 							parent.popLimit = math.floor(parent.popLimit - (50 * (f1 * 2)))
 						end
 
-						if parent.popLimit < 1000 then parent.popLimit = 1000 end
+						if parent.popLimit < 1250 then parent.popLimit = 1250 end
 						if f1 > 0.75 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					elseif f1 < 0.25 then
-						if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
-						if parent.popLimit > 3000 then parent.popLimit = 3000 end
+						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
+						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
 			end
