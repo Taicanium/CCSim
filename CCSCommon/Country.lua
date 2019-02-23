@@ -82,9 +82,9 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic == true then
 								local child = nil
-								for r=#self.rulers,1,-1 do if child == nil then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
+								for r=#self.rulers,1,-1 do if not child then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
-								if child == nil then
+								if not child then
 									local possibles = {}
 									local closest = nil
 									local closestGens = 1000000
@@ -112,7 +112,7 @@ return
 										end end
 									end
 									
-									if closest == nil then
+									if not closest then
 										local p = math.random(1, #self.people)
 										if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
@@ -167,15 +167,15 @@ return
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
-				if self.ongoing == nil then self.ongoing = {} end
-				if self.relations == nil then self.relations = {} end
+				if not self.ongoing then self.ongoing = {} end
+				if not self.relations then self.relations = {} end
 
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] then
 						if self.ongoing[i].args > 1 then
 							local found = false
 							if self.ongoing[i].target then if self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end end
-							if found == false then table.remove(self.ongoing, i) end
+							if not found then table.remove(self.ongoing, i) end
 						end
 					end
 				end
@@ -199,7 +199,7 @@ return
 					local isDisabled = false
 					if parent.disabled[parent.c_events[i].name:lower()] == true then isDisabled = true end
 					if parent.disabled["!"..parent.c_events[i].name:lower()] == true then isDisabled = true end
-					if isDisabled == false then
+					if not isDisabled then
 						local chance = math.floor(math.random(1, v))
 						if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
 						if chance <= parent.c_events[i].chance then
@@ -322,14 +322,14 @@ return
 				local ends = {"ch", "rt", "gh", "ct", "rl", "rn", "rm", "rd", "rs", "lc", "ld", "ln", "lm", "ls", "sc", "nd", "nc", "st", "sh", "ds", "ck", "lg", "lk", "ng"}
 				local hasend = false
 
-				while hasend == false do
+				while not hasend do
 					local cEnd = self.demonym:sub(#self.demonym-1, #self.demonym)
 					local cBegin = self.demonym:sub(1, #self.demonym-2)
 					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
 					local c1 = cEnd:sub(1, 1)
 					local c2 = cEnd:sub(2, 2)
 					for i, j in pairs(parent.vowels) do if c1 == j then hasend = true elseif c2 == j then hasend = true end end
-					if hasend == false then
+					if not hasend then
 						if c1 == "h" then self.demonym = cBegin..c2
 						elseif c2 == "h" then self.demonym = cBegin..c1
 						else self.demonym = cBegin..c1 end
@@ -347,27 +347,27 @@ return
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
 					local found = false
-					for j=1,#childrenByAge do if found == false then
+					for j=1,#childrenByAge do if not found then
 						if t.children[i].birth <= childrenByAge[j].birth then
 							table.insert(childrenByAge, j, t.children[i])
 							found = true
 						end
 					end end
-					if found == false then table.insert(childrenByAge, t.children[i]) end
+					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
 				
 				local found = false
 				local eldestLiving = nil
-				for i=1,#childrenByAge do if found == false then if childrenByAge[i].def then if childrenByAge[i].isruler == false then
+				for i=1,#childrenByAge do if not found then if childrenByAge[i].def then if childrenByAge[i].isruler then
 					found = true
 					table.insert(childrenLiving, childrenByAge[i])
 					if childrenByAge[i].gender == "Male" then hasMale = true end
 				end end end end
 				
-				if found == false then
+				if not found then
 					for i=1,#childrenByAge do
-						if eldestLiving == nil then
-							if hasMale == false then
+						if not eldestLiving then
+							if not hasMale then
 								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
 								if nextLevel then eldestLiving = nextLevel end
 							elseif childrenByAge[i].gender == "Male" then
@@ -377,10 +377,10 @@ return
 						end
 					end
 				else
-					if hasMale == false then eldestLiving = childrenLiving[1]
+					if not hasMale then eldestLiving = childrenLiving[1]
 					else
 						local mFound = false
-						for i=1,#childrenLiving do if mFound == false then if childrenLiving[i].gender == "Male" then
+						for i=1,#childrenLiving do if not mFound then if childrenLiving[i].gender == "Male" then
 							eldestLiving = childrenLiving[i]
 							mFound = true
 						end end end
@@ -425,7 +425,7 @@ return
 
 				self.founded = parent.years
 
-				if self.snt[parent.systems[self.system].name] == nil or self.snt[parent.systems[self.system].name] == 0 or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 1 end
+				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == 0 or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 1 end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 
@@ -546,7 +546,7 @@ return
 					local z = 0
 
 					local found = false
-					while found == false do
+					while not found do
 						local pd = parent:randomChoice(self.nodes)
 						x = pd[1]
 						y = pd[2]
@@ -559,7 +559,7 @@ return
 
 				local allDefined = false
 
-				while allDefined == false do
+				while not allDefined do
 					allDefined = true
 					for i=1,#self.nodes do
 						local x = self.nodes[i][1]
@@ -574,7 +574,7 @@ return
 								local nz = neighbor[3]
 								if parent.thisWorld.planet[nx][ny][nz].region == "" then
 									allDefined = false
-									if parent.thisWorld.planet[x][y][z].regionset == false then
+									if not parent.thisWorld.planet[x][y][z].regionset then
 										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
@@ -622,7 +622,7 @@ return
 
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
-						if l.x == nil or l.y == nil or l.z == nil then
+						if not l.x or not l.y or not l.z then
 							local pd = parent:randomChoice(j.nodes)
 							local x = pd[1]
 							local y = pd[2]
@@ -676,7 +676,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do
-					if self.snt[parent.systems[i].name] == nil or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end
+					if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end
 				end
 
 				self.stability = self.stability + math.random(-3, 3)
@@ -707,7 +707,7 @@ return
 						end
 					end
 
-					if found == false then
+					if not found then
 						local ra = table.remove(self.alliances, i)
 						ra = nil
 					end
@@ -719,7 +719,7 @@ return
 						if cp.name == self.name then found = true end
 					end
 
-					if found == false then
+					if not found then
 						self.relations[i] = nil
 						i = nil
 					end
@@ -727,7 +727,7 @@ return
 
 				for i, cp in pairs(parent.thisWorld.countries) do
 					if cp.name ~= self.name then
-						if self.relations[cp.name] == nil then
+						if not self.relations[cp.name] then
 							self.relations[cp.name] = 40
 						end
 						local v = math.random(-4, 4)
@@ -754,14 +754,14 @@ return
 				local oldcap = nil
 				local oldreg = nil
 
-				if self.regions[self.capitalregion] == nil then
+				if not self.regions[self.capitalregion] then
 					oldreg = self.capitalregion
 					self.capitalregion = parent:randomChoice(self.regions).name
 					oldcap = self.capitalcity
 					self.capitalcity = nil
 				end
 
-				if self.capitalcity == nil or self.regions[self.capitalregion].cities[self.capitalcity] == nil then
+				if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
 					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities).name
 					if oldcap then
 						if self.regions[oldreg] then
@@ -799,7 +799,7 @@ return
 						end
 					end
 					
-					if chn == false then if self.people[i].isruler == false then
+					if not chn then if not self.people[i].isruler then
 						self.people[i].pIndex = i
 						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
@@ -811,7 +811,7 @@ return
 						end
 					end end
 
-					if chn == false then
+					if not chn then
 						self.averageAge = self.averageAge + self.people[i].age
 						if self.people[i].military == true then self.military = self.military + 1 end
 						if self.people[i].isruler == true then
