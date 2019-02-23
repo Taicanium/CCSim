@@ -134,7 +134,7 @@ return
 								local interv = false
 								for j=1,#self.opIntervened do if self.opIntervened[j] == cp.name then interv = true end end
 								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
-								if interv == false then
+								if not interv then
 									if cp.relations[c.name] then
 										if cp.relations[c.name] < 45 then
 											local intervene = math.random(1, cp.relations[c.name])
@@ -299,7 +299,7 @@ return
 						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
 					end,
 					doStep=function(self, parent, c1)
-						if self.target == nil then return -1 end
+						if not self.target then return -1 end
 
 						local ao = parent:getAllyOngoing(c1, self.target, self.name)
 						local ac = c1.alliances
@@ -310,7 +310,7 @@ return
 							if c3 then
 								local already = false
 								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if already == false then
+								if not already then
 									local ic = math.random(1, 25)
 									if ic == 10 then
 										table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
@@ -332,7 +332,7 @@ return
 							if c3 then
 								local already = false
 								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if already == false then
+								if not already then
 									local ic = math.random(1, 25)
 									if ic == 10 then
 										table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
@@ -474,7 +474,7 @@ return
 									local nz = neighbor[3]
 									local nnode = parent.thisWorld.planet[nx][ny][nz]
 									if nnode.country == c2.name then border = true end
-									if nnode.land == false then water[1] = 1 end
+									if not nnode.land then water[1] = 1 end
 								end
 							end
 
@@ -490,13 +490,11 @@ return
 									local nz = neighbor[3]
 									local nnode = parent.thisWorld.planet[nx][ny][nz]
 									if nnode.country == c1.name then border = true end
-									if nnode.land == false then water[2] = 1 end
+									if not nnode.land then water[2] = 1 end
 								end
 							end
 
-							if border == false then
-								if water[1] == nil or water[2] == nil then return -1 end
-							end
+							if not border then if not water[1] or not water[2] then return -1 end end
 						end
 
 						if c1.relations[c2.name] then
@@ -523,7 +521,7 @@ return
 						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 					end,
 					doStep=function(self, parent, c1)
-						if self.target == nil then return -1 end
+						if not self.target then return -1 end
 
 						if c1.relations[self.target.name] then
 							if c1.relations[self.target.name] < 35 then
@@ -606,7 +604,7 @@ return
 								c:event(parent, "Granted independence to "..newl.name)
 								newl:event(parent, "Independence from "..c.name)
 
-								for i=1,#c.people do if c.people[i].isruler == false then
+								for i=1,#c.people do if c.people[i] then if not c.people[i].isruler then
 									if c.people[i].region == newl.name then
 										local p = c.people[i]
 										newl:add(parent, p)
@@ -627,7 +625,7 @@ return
 
 								newl.founded = parent.years
 
-								if newl.snt[parent.systems[newl.system].name] == nil or newl.snt[parent.systems[newl.system].name] == 0 or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 1 end
+								if not newl.snt[parent.systems[newl.system].name] or newl.snt[parent.systems[newl.system].name] == 0 or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 1 end
 								newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name])
 
 								for i=1,#nc.nodes do
@@ -805,15 +803,15 @@ return
 
 						if cCount > 2 then
 							local oldcap = c.capitalcity
-							if oldcap == nil then oldcap = "" end
+							if not oldcap then oldcap = "" end
 							c.capitalregion = nil
 							c.capitalcity = nil
 
-							while c.capitalcity == nil do
+							while not c.capitalcity do
 								for i, j in pairs(c.regions) do
 									for k, l in pairs(j.cities) do
 										if l.name ~= oldcap then
-											if c.capitalcity == nil then
+											if not c.capitalcity then
 												local chance = math.random(1, 100)
 												if chance == 35 then
 													c.capitalregion = j.name
@@ -847,7 +845,7 @@ return
 						for i=1,#c2.rulers do if c2.rulers[i].Country == c1.name then patron = true end end
 						for i=1,#c1.rulers do if c1.rulers[i].Country == c2.name then patron = true end end
 
-						if patron == false then
+						if not patron then
 							if c1.majority == c2.majority then
 								if c1.relations[c2.name] then
 									if c1.relations[c2.name] > 60 then
@@ -963,7 +961,7 @@ return
 					else print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
 				end
 				
-				if jsonLoad == false then
+				if not jsonLoad then
 					f:seek("set")
 					jTable = self:loadtable(f)
 				end
@@ -1034,7 +1032,7 @@ return
 						end
 					end
 
-					if jsonSaved == false then self:savetable(self, f) end
+					if not jsonSaved then self:savetable(self, f) end
 
 					f:flush()
 					f:close()
@@ -1070,7 +1068,7 @@ return
 						if res == "y" then
 							io.write(string.format("\nYears to add to the current running time ("..tostring(self.maxyears)..") > "))
 							res = tonumber(io.read())
-							while res == nil do
+							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
 								res = tonumber(io.read())
 							end
@@ -1082,7 +1080,7 @@ return
 						if res == "y" then
 							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
 							res = tonumber(io.read())
-							while res == nil do
+							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
 								res = tonumber(io.read())
 							end
@@ -1106,7 +1104,7 @@ return
 					for i, j in pairs(obj) do
 						local isexception = false
 						for k=1,#exceptions do if exceptions[k] == tostring(i) then isexception = true end end
-						if isexception == false then res[self:deepcopy(i)] = self:deepcopy(j) end
+						if not isexception then res[self:deepcopy(i)] = self:deepcopy(j) end
 					end
 					if getmetatable(obj) then setmetatable(res, self:deepcopy(getmetatable(obj))) end
 				elseif t == "function" then
@@ -1149,7 +1147,7 @@ return
 							if cp.rulers[k].To ~= "Current" then
 								if tonumber(cp.rulers[k].To) >= pr then
 									if tonumber(cp.rulers[k].From) < pr then
-										if nextFound == false then
+										if not nextFound then
 											nextFound = true
 											f:write("...\n")
 										end
@@ -1218,7 +1216,7 @@ return
 					local sRoyals = {}
 					local ind = 1
 					local finished = 0
-					for i, j in pairs(self.royals) do if j.removed == false then
+					for i, j in pairs(self.royals) do if not j.removed then
 						j.gIndex = ind
 						sRoyals[ind] = j
 						ind = ind + 1
@@ -1330,9 +1328,9 @@ return
 				local fr = nil
 				local sysChange = true
 
-				while done == false do
+				while not done do
 					local l = f:read()
-					if l == nil then done = true
+					if not l then done = true
 					else
 						local mat = {}
 						for q in string.gmatch(l, "%S+") do
@@ -1428,7 +1426,7 @@ return
 							for i, cp in pairs(fc.frulernames) do
 								if cp == mat[2] then found = true end
 							end
-							if found == false then
+							if not found then
 								if gend == "Female" then
 									table.insert(fc.frulernames, mat[2])
 								else
@@ -1531,7 +1529,7 @@ return
 					elseif type(j) == "table" then
 						local isexception = false
 						for q=1,#exceptions do if exceptions[q] == tostring(i) then isexception = true end end
-						if isexception == false then self:getfunctionvalues(fnname, fn, j) end
+						if not isexception then self:getfunctionvalues(fnname, fn, j) end
 					end
 				end
 			end,
@@ -1711,7 +1709,7 @@ return
 			name = function(self, personal, l)
 				local nom = ""
 				local length = 0
-				if l == nil then length = math.random(2, 3) else length = math.random(1, l) end
+				if not l then length = math.random(2, 3) else length = math.random(1, l) end
 				
 				local taken = {}
 
@@ -1734,9 +1732,9 @@ return
 
 					for i=1,#self.consonants do if mid:sub(1, 1) == self.consonants[i] then mbwc = true end end
 
-					if istaken == false then
+					if not istaken then
 						if ieic == true then
-							if mbwc == false then
+							if not mbwc then
 								nom = nom..mid
 								groups = groups + 1
 								table.insert(taken, string.lower(mid))
@@ -1751,7 +1749,7 @@ return
 					end
 				end
 
-				if personal == false then
+				if not personal then
 					local ending = self:randomChoice(self.endgroups)
 					nom = nom..ending
 				end
@@ -1859,7 +1857,7 @@ return
 							end
 						end
 
-						if hasvowel == false then
+						if not hasvowel then
 							check = true
 
 							local newnom = ""
@@ -1999,7 +1997,7 @@ return
 
 			ordinal = function(self, n)
 				local tmp = tonumber(n)
-				if tmp == nil then return n end
+				if not tmp then return n end
 				local fin = ""
 
 				local ts = tostring(n)
@@ -2043,7 +2041,7 @@ return
 							for i=#c2.people,1,-1 do
 								if c2.people[i] then
 									if c2.people[i].region == rn.name then
-										if c2.people[i].isruler == false then
+										if not c2.people[i].isruler then
 											c1:add(self, c2.people[i])
 										else
 											c2.people[i].region = ""
@@ -2058,7 +2056,7 @@ return
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
 
-							if conq == false then
+							if not conq then
 								if c2.capitalregion == rn.name then
 									local msg = "Capital moved from "..c2.capitalcity.." to "
 
@@ -2168,7 +2166,7 @@ return
 
 			roman = function(self, n)
 				local tmp = tonumber(n)
-				if tmp == nil then return n end
+				if not tmp then return n end
 				local fin = ""
 
 				while tmp - 1000 > -1 do
@@ -2243,7 +2241,7 @@ return
 				self:sleep(0.002)
 				local tc = _time()
 				local n = tonumber(tostring(tc):reverse())
-				if n == nil then n = _time() end
+				if not n then n = _time() end
 				while n < 100000 do n = n * math.floor(math.random(8, 12)) end
 				while n > 100000000 do n = n / math.floor(math.random(8, 12)) end
 				math.randomseed(math.ceil(n))
@@ -2261,7 +2259,7 @@ return
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
 				local exceptions = {"__index"}
 
-				if t.mtname == nil then f:write("5nilmt") else
+				if not t.mtname then f:write("5nilmt") else
 					f:write(string.len(t.mtname))
 					f:write(t.mtname)
 				end
@@ -2270,7 +2268,7 @@ return
 				for i, j in pairs(t) do
 					found = false
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if found == false then iCount = iCount + 1 end
+					if not found then iCount = iCount + 1 end
 				end
 
 				f:write(string.len(tostring(iCount)))
@@ -2279,7 +2277,7 @@ return
 				for i, j in pairs(t) do
 					local found = false
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if found == false then 
+					if not found then 
 						local itype = types[type(i)]
 						f:write(itype)
 
@@ -2298,7 +2296,7 @@ return
 							f:write(string.len(fndata))
 							f:write(fndata)
 						elseif jtype == "boolean" then
-							if j == false then f:write("0") else f:write("1") end
+							if not j then f:write("0") else f:write("1") end
 						else
 							f:write(string.len(tostring(string.len(tostring(j)))))
 							f:write(string.len(tostring(j)))
@@ -2312,7 +2310,7 @@ return
 				if i then
 					local set = i.gensSet
 					i.gensSet = true
-					if set == false then
+					if not set then
 						if i.royalGenerations == -1 then i.royalGenerations = v
 						elseif i.royalGenerations >= self.genLimit then i.royalGenerations = v end
 						if g < 1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end
@@ -2333,7 +2331,7 @@ return
 
 			setRecursiveIDs = function(self, t, i)
 				local id = i
-				if t.id == nil then
+				if not t.id then
 					t.id = "ID "..tostring(id)
 					id = id + 1
 					for j, k in pairs(t) do
@@ -2350,7 +2348,7 @@ return
 						t[i] = j.id
 						if taken[j.id] == j.id then found = true end
 
-						if found == false then
+						if not found then
 							taken[j.id] = j.id
 							self:setRecursiveRefs(j, taken, tables)
 							tables[j.id] = j
@@ -2405,21 +2403,21 @@ return
 				print("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
 
 				count = 0
-				for i, j in pairs(self.royals) do if j.removed == false then count = count + 1 end end
+				for i, j in pairs(self.royals) do if not j.removed then count = count + 1 end end
 				oldCount = count
 				print("Linking "..tostring(count).." individuals...")
 
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					if j.removed == false then
+					if not j.removed then
 						j.title = j.RoyalTitle
 						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
 						
-						if j.father and j.mother then if j.father.removed == false and j.mother.removed == false then
+						if j.father and j.mother then if not j.father.removed and not j.mother.removed then
 							local parentString = j.father.gString.."-"..j.mother.gString
 						
-							if fams[parentString] == nil then
+							if not fams[parentString] then
 								fams[parentString] = {fIndex=0, husb=j.father, wife=j.mother, chil={j}}
 								table.insert(j.father.fams, fams[parentString])
 								table.insert(j.mother.fams, fams[parentString])
