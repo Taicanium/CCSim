@@ -114,7 +114,7 @@ return
 									
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
+										if self.people[p].age <= self.averageAge + 25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
@@ -123,7 +123,7 @@ return
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge + 25 then self:setRuler(parent, p) end
+								if self.people[p].age <= self.averageAge + 25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
 							end
 						end
 					end
