@@ -2,10 +2,10 @@ CCSCommon = require("CCSCommon")()
 
 function main()
 	local clrarr = os.execute("clear")
-	if clrarr == nil then CCSCommon.clrcmd = "cls"
-	else if type(clrarr) == "table" then clrarr = clrarr[1] end
-	if type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
-	elseif type(clrarr) == "boolean" then if clrarr == false then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end end
+	
+	if not clrarr then CCSCommon.clrcmd = "cls"
+	elseif type(clrarr) == "table" then if clrarr[1] ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
 
 	for i, j in pairs(CCSCommon.c_events) do
 		CCSCommon.disabled[j.name] = false
@@ -15,12 +15,12 @@ function main()
 	os.execute(CCSCommon.clrcmd)
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
-	if CCSCommon:checkAutoload() == false then
+	if not CCSCommon:checkAutoload() then
 		io.write(string.format("\nHow many years should the simulation run? > "))
 		local datin = io.read()
 
 		CCSCommon.maxyears = tonumber(datin)
-		while CCSCommon.maxyears == nil do
+		while not CCSCommon.maxyears do
 			io.write(string.format("\nPlease enter a number. > "))
 			datin = io.read()
 
@@ -37,7 +37,7 @@ function main()
 		io.write(string.format("\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > "))
 		datin = io.read()
 		CCSCommon.autosaveDur = tonumber(datin)
-		while CCSCommon.autosaveDur == nil do
+		while not CCSCommon.autosaveDur do
 			io.write(string.format("\nPlease enter a number. > "))
 			datin = io.read()
 
@@ -75,7 +75,7 @@ function main()
 				CCSCommon.thisWorld:add(nl)
 			end
 
-			if CCSCommon.doR == true then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
+			if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 		else
 			CCSCommon.doR = false
 			local done = nil
