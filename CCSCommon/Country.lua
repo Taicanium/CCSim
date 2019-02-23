@@ -676,7 +676,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do
-					if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 or self.snt[parent.systems[i].name] == 0 then self.snt[parent.systems[i].name] = 1 end
+					if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end
 				end
 
 				self.stability = self.stability + math.random(-3, 3)
