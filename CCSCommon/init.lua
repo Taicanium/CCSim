@@ -609,7 +609,7 @@ return
 										local p = c.people[i]
 										newl:add(parent, p)
 									end
-								end end
+								end end end
 								
 								for i=1,#newl.people do newl.people[i].pIndex = i end
 
