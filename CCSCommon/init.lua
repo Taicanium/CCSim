@@ -599,7 +599,7 @@ return
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
 								newl.name = nc.name
-								self:makename(parent, 3)
+								newl:makename(parent, 3)
 								
 								newl.system = math.random(1, #parent.systems)
 
