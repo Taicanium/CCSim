@@ -597,9 +597,6 @@ return
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
 								newl:set(parent)
-								
-								if not newl.snt[parent.systems[newl.system].name] or newl.snt[parent.systems[newl.system].name] == 0 or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 1 end
-								newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name])
 
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
@@ -633,15 +630,22 @@ return
 												table.insert(newl.rulers, rIndex, l)
 												rIndex = rIndex + 1
 											end
-											newl.rulernames = {}
-											newl.frulernames = {}
-											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
-											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
 										end
+										
+										newl.rulernames = {}
+										newl.frulernames = {}
+										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
+										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
+										
+										newl.snt = j.snt
 										
 										parent.final[i] = nil
 									end
 								end
+								
+								if not newl.snt[parent.systems[newl.system].name] or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 0 end
+								newl.snt[parent.systems[newl.system].name] = newl.snt[parent.systems[newl.system].name] + 1
+								newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name])
 
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
