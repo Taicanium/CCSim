@@ -596,35 +596,8 @@ return
 								local nc = parent:randomChoice(c.regions)
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
-								newl.name = nc.name
-								newl:makename(parent, 3)
+								newl:set(parent)
 								
-								newl.system = math.random(1, #parent.systems)
-
-								c:event(parent, "Granted independence to "..newl.name)
-								newl:event(parent, "Independence from "..c.name)
-
-								for i=1,#c.people do if c.people[i] then if not c.people[i].isruler then
-									if c.people[i].region == newl.name then
-										local p = c.people[i]
-										newl:add(parent, p)
-									end
-								end end end
-								
-								for i=1,#newl.people do newl.people[i].pIndex = i end
-
-								local rcount = math.random(3, 6)
-								for i=1,rcount do
-									local r = Region:new()
-									r:makename(newl, parent)
-									newl.regions[r.name] = r
-								end
-
-								newl.capitalregion = parent:randomChoice(newl.regions, true)
-								newl.capitalcity = parent:randomChoice(newl.regions[newl.capitalregion].cities, true)
-
-								newl.founded = parent.years
-
 								if not newl.snt[parent.systems[newl.system].name] or newl.snt[parent.systems[newl.system].name] == 0 or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 1 end
 								newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name])
 
