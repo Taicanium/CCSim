@@ -12,7 +12,7 @@ function main()
 		CCSCommon.disabled["!"..j.name] = false
 	end
 	
-	os.execute(CCSCommon.clrcmd)
+	CCSCommon:clearTerm()
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
 	if not CCSCommon:checkAutoload() then
