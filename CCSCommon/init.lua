@@ -1136,7 +1136,7 @@ return
 						end
 					end
 
-					for j=pr,self.maxyears do
+					for j=1,self.maxyears do
 						for k=1,#cp.events do
 							if tonumber(cp.events[k].Year) == j then
 								if cp.events[k].Event:sub(1, 10) == "Revolution" then
@@ -1146,7 +1146,7 @@ return
 						end
 
 						for k=1,#cp.rulers do
-							if tonumber(cp.rulers[k].From) == j then
+							if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then
 								f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 							end
 						end
@@ -1171,13 +1171,14 @@ return
 
 				if self.ged then
 					print("Sorting living individuals...")
-					local fCount = 0
-					local fIndex = 1
-					for i, j in pairs(self.thisWorld.countries) do fCount = fCount + 1 end
+					local cCount = 0
+					local cIndex = 1
+					local finished = 0
+					for i, j in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
 					for i, j in pairs(self.thisWorld.countries) do
-						io.write("\rCountry "..tostring(fIndex).."/"..tostring(fCount))
+						io.write("\rCountry "..tostring(cIndex).."/"..tostring(cCount))
 						j:destroy(self)
-						fIndex = fIndex + 1
+						cIndex = cIndex + 1
 					end
 
 					print("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
@@ -1190,7 +1191,6 @@ return
 
 					local sRoyals = {}
 					local ind = 1
-					local finished = 0
 					for i, j in pairs(self.royals) do if not j.removed then
 						j.gIndex = ind
 						sRoyals[ind] = j
@@ -1241,7 +1241,7 @@ return
 
 					ged:flush()
 					print("")
-					local done = 0
+					finished = 0
 					
 					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
 						local msgout = "0 @F"..tostring(j.fIndex).."@ FAM\n"
