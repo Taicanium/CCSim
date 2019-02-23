@@ -703,7 +703,7 @@ return
 						end
 
 						if parent.popLimit < 1000 then parent.popLimit = 1000 end
-						if f1 > 0.75 then parent.disabled["Independence"] = true else parent.disabled["Independence"] = false end
+						if f1 > 0.75 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					elseif f1 < 0.25 then
 						if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
 						if parent.popLimit > 3000 then parent.popLimit = 3000 end
