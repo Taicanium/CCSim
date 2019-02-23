@@ -80,7 +80,7 @@ return
 					if #self.people > 1 then
 						while self.hasruler == -1 do
 							local sys = parent.systems[self.system]
-							if sys.dynastic == true then
+							if sys.dynastic then
 								local child = nil
 								for r=#self.rulers,1,-1 do if not child then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then if self.rulers[r].title == self.rulers[#self.rulers].title then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
@@ -197,11 +197,11 @@ return
 
 				for i=1,#parent.c_events do
 					local isDisabled = false
-					if parent.disabled[parent.c_events[i].name:lower()] == true then isDisabled = true end
-					if parent.disabled["!"..parent.c_events[i].name:lower()] == true then isDisabled = true end
+					if parent.disabled[parent.c_events[i].name:lower()] then isDisabled = true end
+					if parent.disabled["!"..parent.c_events[i].name:lower()] then isDisabled = true end
 					if not isDisabled then
 						local chance = math.floor(math.random(1, v))
-						if parent.c_events[i].inverse == true then chance = math.floor(math.random(1, vi)) end
+						if parent.c_events[i].inverse then chance = math.floor(math.random(1, vi)) end
 						if chance <= parent.c_events[i].chance then
 							self:triggerEvent(parent, i)
 						end
@@ -474,7 +474,7 @@ return
 					self.people[newRuler].royalName = parent:randomChoice(self.rulernames)
 				end
 
-				if parent.systems[self.system].dynastic == true then
+				if parent.systems[self.system].dynastic then
 					local namenum = 1
 
 					for i=1,#self.rulers do
@@ -813,8 +813,8 @@ return
 
 					if not chn then
 						self.averageAge = self.averageAge + self.people[i].age
-						if self.people[i].military == true then self.military = self.military + 1 end
-						if self.people[i].isruler == true then
+						if self.people[i].military then self.military = self.military + 1 end
+						if self.people[i].isruler then
 							self.hasruler = 0
 							self.rulerage = self.people[i].age
 							self.rulerParty = self.people[i].party
