@@ -1128,8 +1128,6 @@ return
 									if not nextFound then
 										nextFound = true
 										f:write("...\n")
-										cp.rulers[k].OldTo = cp.rulers[k].To
-										cp.rulers[k].To = pr
 										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 										k = #cp.rulers + 1
 									end
@@ -1161,11 +1159,6 @@ return
 							end
 						end
 					end
-					
-					for k=1,#cp.rulers do if cp.rulers[k].OldTo then
-						cp.rulers[k].To = cp.rulers[k].OldTo
-						cp.rulers[k].OldTo = nil
-					end end
 
 					f:write("\n\n\n")
 					f:flush()
@@ -1218,7 +1211,7 @@ return
 						local jname = j.name
 						if j.royalName ~= "" then jname = j.royalName end
 						if j.death >= self.years then j.death = 0 end
-						local msgout = "0 @I"..tostring(j.gIndex).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
+						local msgout = "0 @I"..tostring(i).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
 						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
 						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
 						msgout = msgout.."\n2 GIVN "..jname.."\n2 SURN "..j.surname.."\n"
