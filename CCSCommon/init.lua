@@ -1261,8 +1261,8 @@ return
 
 						ged:write(msgout)
 
-						done = done + 1
-						percentage = math.floor(done / fCount * 10000)/100
+						finished = finished + 1
+						percentage = math.floor(finished / fCount * 10000)/100
 						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
 					end end
 
