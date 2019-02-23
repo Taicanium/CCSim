@@ -1107,7 +1107,6 @@ return
 
 				for i, cp in pairs(self.final) do
 					local newc = false
-					local fr = 1
 					local pr = 1
 					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
 
@@ -1122,17 +1121,16 @@ return
 						f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
 						local nextFound = false
 						for k=1,#cp.rulers do
-							if cp.rulers[k].To ~= "Current" then
-								if tonumber(cp.rulers[k].To) >= pr then
-									if tonumber(cp.rulers[k].From) < pr then
-										if not nextFound then
-											nextFound = true
-											f:write("...\n")
-										end
-										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
-										fr = k + 1
-										k = #cp.rulers + 1
+							if tonumber(cp.rulers[k].From) < pr then
+								if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
+									if not nextFound then
+										nextFound = true
+										f:write("...\n")
 									end
+									cp.rulers[k].OldTo = cp.rulers[k].To
+									cp.rulers[k].To = pr
+									f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
+									k = #cp.rulers + 1
 								end
 							end
 						end
@@ -1147,7 +1145,7 @@ return
 							end
 						end
 
-						for k=fr,#cp.rulers do
+						for k=1,#cp.rulers do
 							if tonumber(cp.rulers[k].From) == j then
 								f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
 							end
@@ -1161,6 +1159,8 @@ return
 							end
 						end
 					end
+					
+					for k=1,#cp.rulers do if cp.rulers[k].OldTo then cp.rulers[k].To = cp.rulers[k].OldTo end end
 
 					f:write("\n\n\n")
 					f:flush()
