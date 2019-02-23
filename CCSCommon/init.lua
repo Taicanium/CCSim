@@ -136,16 +136,16 @@ return
 								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
 								if interv == false then
 									if cp.relations[c.name] then
-										if cp.relations[c.name] < 50 then
-											local intervene = math.random(1, math.floor(cp.relations[c.name])*4)
-											if intervene == 1 then
+										if cp.relations[c.name] < 45 then
+											local intervene = math.random(1, cp.relations[c.name])
+											if intervene < 6 then
 												c:event(parent, "Intervention on the side of the opposition by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
 												table.insert(self.opIntervened, cp.name)
 											end
-										elseif cp.relations[c.name] > 50 then
-											local intervene = math.random(50, (150-math.floor(cp.relations[c.name]))*4)
-											if intervene == 50 then
+										elseif cp.relations[c.name] > 55 then
+											local intervene = math.random(50, 150-cp.relations[c.name])
+											if intervene < 56 then
 												c:event(parent, "Intervention on the side of the government by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
 												table.insert(self.govIntervened, cp.name)
@@ -156,27 +156,23 @@ return
 							end
 						end
 
-						local strFactor = parent:strengthFactor(c)
-
-						local varistab = strFactor
+						local varistab = parent:strengthFactor(c)
 
 						for i=1,#self.opIntervened do
-							for j, cp in pairs(parent.thisWorld.countries) do
-								if cp.name == self.opIntervened[i] then
-									local extFactor = parent:strengthFactor(cp)
+							local cp = parent.thisWorld.countries[self.opIntervened[i]]
+							if cp then
+								local extFactor = parent:strengthFactor(cp)
 
-									if extFactor < 0 then varistab = varistab - (extFactor/10) end
-								end
+								if extFactor < 0 then varistab = varistab - (extFactor/10) end
 							end
 						end
 
 						for i=1,#self.govIntervened do
-							for j, cp in pairs(parent.thisWorld.countries) do
-								if cp.name == self.govIntervened[i] then
-									local extFactor = parent:strengthFactor(cp)
+							local cp = parent.thisWorld.countries[self.govIntervened[i]]
+							if cp then
+								local extFactor = parent:strengthFactor(cp)
 
-									if extFactor > 0 then varistab = varistab + (extFactor/10) end
-								end
+								if extFactor > 0 then varistab = varistab + (extFactor/10) end
 							end
 						end
 
@@ -197,6 +193,14 @@ return
 					endEvent=function(self, parent, c)
 						if self.status >= 100 then -- Government victory
 							c:event(parent, "End of civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
+							for i=1,#self.opIntervened do
+								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								if opC then opC:event(parent, "Defeat with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
+							for i=1,#self.govIntervened do
+								local opC = parent.thisWorld.countries[self.govIntervened[i]]
+								if opC then opC:event(parent, "Victory with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
@@ -2418,7 +2422,7 @@ return
 			strengthFactor = function(self, c)
 				local pop = 0
 				if c.rulerParty ~= "" then if c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity - 50 end end
-				return (pop + (c.stability - 50) + (((c.military / #c.people) * 100) - 50))
+				return (pop + (c.stability - 50) + ((c.military / #c.people) * 100))
 			end
 		}
 
