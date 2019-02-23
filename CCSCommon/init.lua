@@ -1160,7 +1160,10 @@ return
 						end
 					end
 					
-					for k=1,#cp.rulers do if cp.rulers[k].OldTo then cp.rulers[k].To = cp.rulers[k].OldTo end end
+					for k=1,#cp.rulers do if cp.rulers[k].OldTo then
+						cp.rulers[k].To = cp.rulers[k].OldTo
+						cp.rulers[k].OldTo = nil
+					end end
 
 					f:write("\n\n\n")
 					f:flush()
