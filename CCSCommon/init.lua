@@ -881,7 +881,7 @@ return
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
 					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marquess", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship", "Domain"},
 					dynastic=true
 				},
 				{
@@ -906,7 +906,7 @@ return
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
-					formalities={"Empire", "Emirate", "Magistracy", "Imperium", "Supreme Crown"},
+					formalities={"Empire", "Emirate", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
 					dynastic=true
 				}
 			},
@@ -1997,39 +1997,6 @@ return
 				if doKeys then return index else return t[index] end
 			end,
 
-			setRecursiveIDs = function(self, t, i)
-				local id = i
-				if t.id == nil then
-					t.id = "ID "..tostring(id)
-					id = id + 1
-					for j, k in pairs(t) do
-						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
-					end
-				end
-				return id
-			end,
-
-			setRecursiveRefs = function(self, t, taken, tables)
-				for i, j in pairs(t) do
-					if type(j) == "table" then
-						local found = false
-						t[i] = j.id
-						if taken[j.id] == j.id then found = true end
-
-						if found == false then
-							taken[j.id] = j.id
-							self:setRecursiveRefs(j, taken, tables)
-							tables[j.id] = j
-						end
-					elseif type(j) == "function" then
-						if t.id ~= "ID 1" then
-							t[i] = string.dump(j)
-							t[i] = "FUNC "..t[i]
-						end
-					end
-				end
-			end,
-
 			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 and c2 then
 					local rCount = 0
@@ -2333,6 +2300,39 @@ return
 					t.LastRoyalAncestor = a
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
+			end,
+
+			setRecursiveIDs = function(self, t, i)
+				local id = i
+				if t.id == nil then
+					t.id = "ID "..tostring(id)
+					id = id + 1
+					for j, k in pairs(t) do
+						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
+					end
+				end
+				return id
+			end,
+
+			setRecursiveRefs = function(self, t, taken, tables)
+				for i, j in pairs(t) do
+					if type(j) == "table" then
+						local found = false
+						t[i] = j.id
+						if taken[j.id] == j.id then found = true end
+
+						if found == false then
+							taken[j.id] = j.id
+							self:setRecursiveRefs(j, taken, tables)
+							tables[j.id] = j
+						end
+					elseif type(j) == "function" then
+						if t.id ~= "ID 1" then
+							t[i] = string.dump(j)
+							t[i] = "FUNC "..t[i]
+						end
+					end
+				end
 			end,
 
 			sleep = function(self, t)
