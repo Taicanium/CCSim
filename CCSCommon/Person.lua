@@ -273,9 +273,9 @@ return
 				if not self.recentbirth then
 					if self.spouse then
 						if self.gender == "Female" then
-							if self.age < 60 then
+							if self.age < 55 then
 								if self.age > 14 then
-									if self.spouse.age < 75 then
+									if self.spouse.age < 65 then
 										if self.spouse.age > 14 then
 											local tmp = math.random(1, nl.birthrate)
 											if tmp == 2 then
@@ -287,9 +287,9 @@ return
 								end
 							end
 						else
-							if self.age < 75 then
+							if self.age < 65 then
 								if self.age > 14 then
-									if self.spouse.age < 60 then
+									if self.spouse.age < 55 then
 										if self.spouse.age > 14 then
 											local tmp = math.random(1, nl.birthrate)
 											if tmp == 5 then
