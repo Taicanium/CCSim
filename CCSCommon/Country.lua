@@ -75,7 +75,7 @@ return
 
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
-					if #self.rulers > 0 then self.rulers[#self.rulers].To = parent.years end
+					if #self.rulers > 0 then if self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
