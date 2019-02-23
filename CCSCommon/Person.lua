@@ -161,7 +161,7 @@ return
 				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
 				
 				nl:add(parent, nn)
-				for i=1,#self.people do self.people[i].pIndex = i end
+				for i=1,#nl.people do nl.people[i].pIndex = i end
 			end,
 
 			makename = function(self, parent, nl)
