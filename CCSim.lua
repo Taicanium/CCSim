@@ -72,7 +72,7 @@ function main()
 
 			for j=1,CCSCommon.numCountries do
 				local nl = Country:new()
-				nl:set(CCSCommon, j)
+				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
 			end
 
