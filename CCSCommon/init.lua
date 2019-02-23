@@ -37,6 +37,7 @@ return
 							if r then newC:add(parent, r) end
 						end
 
+						for i=1,#self.people do self.people[i].pIndex = i end
 						c.hasruler = -1
 						c:checkRuler(parent)
 
@@ -66,6 +67,7 @@ return
 							if r then newC:add(parent, r) end
 						end
 
+						for i=1,#self.people do self.people[i].pIndex = i end
 						c.hasruler = -1
 
 						local oldsys = parent.systems[c.system].name
@@ -206,7 +208,8 @@ return
 								for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
 								if r then newC:add(parent, r) end
 							end
-
+							
+							for i=1,#self.people do self.people[i].pIndex = i end
 							c.hasruler = -1
 
 							local oldsys = parent.systems[c.system].name
@@ -679,13 +682,8 @@ return
 					args=2,
 					inverse=true,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#c1.alliances do
-							if c1.alliances[i] == c2.name then return -1 end
-						end
-
-						for i=1,#c2.alliances do
-							if c2.alliances[i] == c1.name then return -1 end
-						end
+						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
+						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 16 then
@@ -698,6 +696,8 @@ return
 								if c2.stability < 1 then c2.stability = 1 end
 								c1:setPop(parent, math.floor(c1.population / 1.25))
 								c2:setPop(parent, math.floor(c2.population / 1.75))
+								for i=1,#c1.people do c1.people[i].pIndex = i end
+								for i=1,#c2.people do c2.people[i].pIndex = i end
 
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount + 1 end
@@ -2056,6 +2056,8 @@ return
 									end
 								end
 							end
+							
+							for i=1,#c2.people do c2.people[i].pIndex = i end
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
