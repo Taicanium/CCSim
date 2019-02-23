@@ -358,7 +358,7 @@ return
 				
 				local found = false
 				local eldestLiving = nil
-				for i=1,#childrenByAge do if not found then if childrenByAge[i].def then if childrenByAge[i].isruler then
+				for i=1,#childrenByAge do if not found then if childrenByAge[i].def then if not childrenByAge[i].isruler and childrenByAge[i].royalName == "" then
 					found = true
 					table.insert(childrenLiving, childrenByAge[i])
 					if childrenByAge[i].gender == "Male" then hasMale = true end
@@ -432,7 +432,7 @@ return
 			setPop = function(self, parent, u)
 				while self.population > u do
 					local r = math.random(1, #self.people)
-					while self.people[r].isruler == true do r = math.random(1, #self.people) end
+					while self.people[r].isruler do r = math.random(1, #self.people) end
 					self:delete(parent, r)
 				end
 
