@@ -1093,6 +1093,13 @@ return
 
 				return false
 			end,
+			
+			-- Some terminals will clear scrollback only if the command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
+			clearTerm = function(self)
+				os.execute(self.clrcmd)
+				os.execute(self.clrcmd)
+				os.execute(self.clrcmd)
+			end,
 
 			deepcopy = function(self, obj)
 				local res = nil
@@ -1117,15 +1124,13 @@ return
 			end,
 
 			finish = function(self)
-				os.execute(self.clrcmd)
+				self:clearTerm()
 				print("\nPrinting result...")
 
 				local f = io.open("output.txt", "w+")
 
 				local ged = nil
 				local fams = {}
-
-				os.execute(self.clrcmd)
 
 				for i, cp in pairs(self.final) do
 					local newc = false
@@ -1685,7 +1690,7 @@ return
 						if eventsWritten == 0 then msg = msg.."\nNone" end
 					end
 
-					os.execute(self.clrcmd)
+					self:clearTerm()
 					print(msg)
 
 					self.years = self.years + 1
