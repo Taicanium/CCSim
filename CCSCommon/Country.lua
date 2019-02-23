@@ -57,8 +57,18 @@ return
 				n.military = false
 				n.isruler = false
 				if n.spouse then
-					n.spouse.spouse = nil
-					n.spouse = nil
+					if n.spouse.nationality ~= self.name then
+						if parent.thisWorld.countries[n.spouse.nationality] then if parent.thisWorld.countries[n.spouse.nationality].people then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
+							table.remove(parent.thisWorld.countries[n.spouse.nationality].people, n.spouse.pIndex)
+							for i=n.spouse.pIndex,#parent.thisWorld.countries[n.spouse.nationality].people do parent.thisWorld.countries[n.spouse.nationality].people[i].pIndex = i end
+						end end end end
+					end
+					n.spouse.nationality = self.name
+					n.spouse.region = ""
+					n.spouse.city = ""
+					n.spouse.military = false
+					n.spouse.isruler = false
+					table.insert(self.people, n.spouse)
 				end
 				table.insert(self.people, n)
 			end,
@@ -403,26 +413,15 @@ return
 				
 				for i=1,#self.people do self.people[i].pIndex = i end
 
-				local rcount = math.random(3, 8)
+				local rcount = math.random(3, 6)
 				for i=1,rcount do
 					local r = Region:new()
 					r:makename(self, parent)
 					self.regions[r.name] = r
 				end
 
-				while self.capitalregion == "" do
-					for i, j in pairs(self.regions) do
-						local chance = math.random(1, 30)
-						if chance == 15 then self.capitalregion = j.name end
-					end
-				end
-
-				while self.capitalcity == "" do
-					for i, j in pairs(self.regions[self.capitalregion].cities) do
-						local chance = math.random(1, 30)
-						if chance == 15 then self.capitalcity = j.name end
-					end
-				end
+				self.capitalregion = parent:randomChoice(self.regions, true)
+				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 
 				self.founded = parent.years
 
