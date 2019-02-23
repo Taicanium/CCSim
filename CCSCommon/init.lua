@@ -28,12 +28,12 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 26 then -- Executed
-							for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
-							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
+							for q, r in pairs(c.people) do if r.isruler then ruler = r end end
 							if r then newC:add(parent, r) end
 						end
 
@@ -58,12 +58,12 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
-							for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							local ruler = nil
-							for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
+							for q, r in pairs(c.people) do if r.isruler then ruler = r end end
 							if r then newC:add(parent, r) end
 						end
 
@@ -80,9 +80,9 @@ return
 						c:checkRuler(parent)
 						
 						if c.snt[parent.systems[c.system].name] > 1 then
-							if parent.systems[c.system].dynastic == true then
+							if parent.systems[c.system].dynastic then
 								local newRuler = -1
-								for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
+								for i=1,#c.people do if c.people[i].isruler then newRuler = i end end
 								if c.people[newRuler].LastRoyalAncestor ~= "" then
 									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 									c:event(parent, msg)
@@ -204,12 +204,12 @@ return
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
-								for q=1,#c.people do if c.people[q] then if c.people[q].isruler == true then c:delete(parent, q) end end end
+								for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								local ruler = nil
-								for q, r in pairs(c.people) do if r.isruler == true then ruler = r end end
+								for q, r in pairs(c.people) do if r.isruler then ruler = r end end
 								if r then newC:add(parent, r) end
 							end
 							
@@ -224,7 +224,7 @@ return
 							c:checkRuler(parent)
 
 							local newRuler = nil
-							for i=1,#c.people do if c.people[i].isruler == true then newRuler = i end end
+							for i=1,#c.people do if c.people[i].isruler then newRuler = i end end
 
 							local namenum = 0
 							local prevtitle = ""
@@ -234,7 +234,7 @@ return
 							if prevtitle == "Citizen " then prevtitle = "" end
 							if prevtitle == "Mayor " then prevtitle = "" end
 
-							if parent.systems[c.system].dynastic == true then
+							if parent.systems[c.system].dynastic then
 								for i=1,#c.rulers do
 									if tonumber(c.rulers[i].From) >= c.founded then
 										if c.rulers[i].name == c.people[newRuler].royalName then
@@ -247,7 +247,7 @@ return
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								if c.snt[parent.systems[c.system].name] > 1 then
-									if parent.systems[c.system].dynastic == true then
+									if parent.systems[c.system].dynastic then
 										if c.people[newRuler].LastRoyalAncestor ~= "" then
 											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
@@ -257,7 +257,7 @@ return
 							else
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
 								if c.snt[parent.systems[c.system].name] > 1 then
-									if parent.systems[c.system].dynastic == true then
+									if parent.systems[c.system].dynastic then
 										if c.people[newRuler].LastRoyalAncestor ~= "" then
 											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].LastRoyalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
 											c:event(parent, msg)
@@ -459,7 +459,7 @@ return
 							if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end
 						end
 
-						if parent.doR == true then
+						if parent.doR then
 							local border = false
 							local water = {}
 							for i=1,#c1.nodes do
@@ -638,7 +638,7 @@ return
 									parent.thisWorld.planet[x][y][z].city = ""
 								end
 
-								if parent.doR == true then newl:setTerritory(parent) end
+								if parent.doR then newl:setTerritory(parent) end
 
 								newl.rulers = {}
 								for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
@@ -654,7 +654,7 @@ return
 											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
 
-										if retrieve == true then
+										if retrieve then
 											local rIndex = 1
 											for k, l in pairs(j.rulers) do
 												table.insert(newl.rulers, rIndex, l)
@@ -1140,7 +1140,7 @@ return
 						end
 					end end
 
-					if newc == true then
+					if newc then
 						f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
 						local nextFound = false
 						for k=1,#cp.rulers do
@@ -1193,7 +1193,7 @@ return
 
 				print("")
 
-				if self.ged == true then
+				if self.ged then
 					print("Sorting living individuals...")
 					local fCount = 0
 					local fIndex = 1
@@ -1380,7 +1380,7 @@ return
 							if mat[1] == "Emperor" then dynastic = true end
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
-							if dynastic == true then table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
+							if dynastic then table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
 							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], Country=fc.name, From=mat[4], To=mat[5]}) end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
@@ -1550,7 +1550,7 @@ return
 						
 						if type(k) == "string" then if tonumber(k) then revised = true nJ[tonumber(k)] = l end end
 					end
-					if revised == true then tables[i] = nJ end
+					if revised then tables[i] = nJ end
 				end end
 			end,
 
@@ -1665,7 +1665,7 @@ return
 							if cCount <= 20 then
 								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] == true then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
+								if cp.dfif[sysName] then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
 								msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
 								cCount = cCount + 1
 							end
@@ -1696,7 +1696,7 @@ return
 
 					if self.years > self.maxyears then
 						_running = false
-						if self.doR == true then self.thisWorld:rOutput(self, "final.r") end
+						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 						-- self:autosave(self)
 					end
 				end
@@ -1733,14 +1733,14 @@ return
 					for i=1,#self.consonants do if mid:sub(1, 1) == self.consonants[i] then mbwc = true end end
 
 					if not istaken then
-						if ieic == true then
+						if ieic then
 							if not mbwc then
 								nom = nom..mid
 								groups = groups + 1
 								table.insert(taken, string.lower(mid))
 							end
 						else
-							if mbwc == true then
+							if mbwc then
 								nom = nom..mid
 								groups = groups + 1
 								table.insert(taken, string.lower(mid))
@@ -2032,7 +2032,7 @@ return
 					end
 
 					local lim = 1
-					if conq == true then lim = 0 end
+					if conq then lim = 0 end
 
 					if rCount > lim then
 						if c2.regions[r] then
