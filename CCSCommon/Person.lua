@@ -116,26 +116,26 @@ return
 					end
 				end
 
-				if self.isruler == true then
+				if self.isruler then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.royalSystem
 					nn.LastRoyalGenerations = 1
 					nn.LastRoyalAncestor = string.format(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
-				else if self.spouse.isruler == true then
+				else if self.spouse.isruler then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.spouse.royalSystem
 					nn.LastRoyalGenerations = 1
 					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end end
 
-				if self.isruler == true or self.spouse.isruler == true then
+				if self.isruler or self.spouse.isruler then
 					nn.level = self.level - 1
 					nn.parentRuler = true
 				else
 					nn.level = self.level
 				end
 
-				if sys.dynastic == true then
+				if sys.dynastic then
 					if self.gender == "Female" then
 						if self.title == sys.franks[#sys.franks] then
 							nn.level = self.level - 1
@@ -143,12 +143,12 @@ return
 					end
 				end
 
-				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic == true then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
+				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
 
 				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
 
 				for i, j in pairs(self.spouse.ethnicity) do
-					if nn.ethnicity[i] == nil then nn.ethnicity[i] = 0 end
+					if not nn.ethnicity[i] then nn.ethnicity[i] = 0 end
 					nn.ethnicity[i] = nn.ethnicity[i] + j
 				end
 
@@ -194,16 +194,16 @@ return
 				if self.birth <= -1 then self.age = self.age - 1 end
 
 				if self.birthplace == "" then self.birthplace = nl.name end
-				if self.surname == nil or self.surname == "" then self.surname = parent:name(true, 6) end
+				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
 
 				local sys = parent.systems[nl.system]
 
 				local rankLim = 2
-				if sys.dynastic == false then rankLim = 1 end
+				if not sys.dynastic then rankLim = 1 end
 
-				if self.spouse then if self.spouse.def == nil then self.spouse = nil end end
+				if self.spouse then if not self.spouse.def then self.spouse = nil end end
 
-				if self.gender == "Male" or sys.dynastic == false then
+				if self.gender == "Male" or not sys.dynastic then
 					if self.title and self.level then
 						self.title = sys.ranks[self.level]
 
@@ -220,9 +220,9 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim end
-						if self.isruler == true then self.level = #sys.ranks end
+						if self.isruler then self.level = #sys.ranks end
 
-						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.ranks - 1 end
+						if self.parentRuler and sys.dynastic then self.level = #sys.ranks - 1 end
 					else
 						self.level = 2
 					end
@@ -245,9 +245,9 @@ return
 
 						if self.level < 1 then self.level = 1 end
 						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim end
-						if self.isruler == true then self.level = #sys.franks end
+						if self.isruler then self.level = #sys.franks end
 
-						if self.parentRuler == true and sys.dynastic == true then self.level = #sys.franks - 1 end
+						if self.parentRuler and sys.dynastic then self.level = #sys.franks - 1 end
 					else
 						self.level = 2
 					end
@@ -255,16 +255,12 @@ return
 					self.title = sys.franks[self.level]
 				end
 
-				if self.spouse then
-					if self.spouse.name == nil then self.spouse = nil end
-				end
-
-				if self.spouse == nil then
+				if not self.spouse then
 					if self.age > 15 then
 						local c = math.random(1, 8)
 						if c == 4 then
 							m = math.random(1, #nl.people)
-							if nl.people[m].spouse == nil then
+							if not nl.people[m].spouse then
 								if self.gender ~= nl.people[m].gender then
 									self.spouse = nl.people[m]
 									nl.people[m].spouse = self
@@ -274,7 +270,7 @@ return
 					end
 				end
 
-				if self.recentbirth == false then
+				if not self.recentbirth then
 					if self.spouse then
 						if self.gender == "Female" then
 							if self.age < 60 then
@@ -324,7 +320,7 @@ return
 				local pmatch = false
 				
 				if #nl.parties > 0 then
-					for i=1,#nl.parties do if pmatch == false then
+					for i=1,#nl.parties do if not pmatch then
 						pmatch = true
 						if math.abs(nl.parties[i].pfreedom - self.pbelief) > 35 then pmatch = false end
 						if math.abs(nl.parties[i].efreedom - self.ebelief) > 35 then pmatch = false end
@@ -332,7 +328,7 @@ return
 					end end
 				end
 
-				if pmatch == false then
+				if not pmatch then
 					local newp = Party:new()
 					newp:makename(parent, nl)
 					newp.cfreedom = self.cbelief
@@ -343,7 +339,7 @@ return
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
 					self.party = newp.name
-					if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
+					if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
 
 					table.insert(nl.parties, newp)
 				end
@@ -354,9 +350,9 @@ return
 					if math.abs(pi.pfreedom - self.pbelief) > 35 then pmatch = false end
 					if math.abs(pi.efreedom - self.ebelief) > 35 then pmatch = false end
 					if math.abs(pi.cfreedom - self.cbelief) > 35 then pmatch = false end
-					if pmatch == true then
+					if pmatch then
 						self.party = pi.name
-						if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
+						if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
 					end
 				else
 					for i=1,#nl.parties do
@@ -371,9 +367,9 @@ return
 							if math.abs(pi.pfreedom - self.pbelief) > 50 then pmatch = false end
 							if math.abs(pi.efreedom - self.ebelief) > 50 then pmatch = false end
 							if math.abs(pi.cfreedom - self.cbelief) > 50 then pmatch = false end
-							if pmatch == true then
+							if pmatch then
 								self.party = pi.name
-								if self.isruler == true then nl.rulers[#nl.rulers].Party = self.party end
+								if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
 							end
 						end
 					end
@@ -385,7 +381,7 @@ return
 					self.city = ""
 				end
 
-				if self.military == true then
+				if self.military then
 					self.militaryTraining = self.militaryTraining + 1
 					nl.strength = nl.strength + self.militaryTraining
 				else
@@ -403,16 +399,16 @@ return
 				if self.age > 65 then self.military = false end
 
 				for i, j in pairs(self.ethnicity) do
-					if nl.ethnicities[i] == nil then nl.ethnicities[i] = 0 end
+					if not nl.ethnicities[i] then nl.ethnicities[i] = 0 end
 					if self.ethnicity[i] >= 50 then nl.ethnicities[i] = nl.ethnicities[i] + 1 end
 				end
 
-				if self.region == "" or nl.regions[self.region] == nil then
+				if self.region == "" or not nl.regions[self.region] then
 					self.region = parent:randomChoice(nl.regions).name
 					self.city = ""
 				end
 
-				if self.city == "" or nl.regions[self.region].cities[self.city] then
+				if self.city == "" or not nl.regions[self.region].cities[self.city] then
 					self.city = parent:randomChoice(nl.regions[self.region].cities).name
 					if self.spouse then
 						self.spouse.region = self.region
