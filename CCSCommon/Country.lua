@@ -61,7 +61,6 @@ return
 					n.spouse = nil
 				end
 				table.insert(self.people, n)
-				n.pIndex = #self.people
 			end,
 
 			checkRuler = function(self, parent)
@@ -109,6 +108,7 @@ return
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
+									for i=1,#self.people do self.people[i].pIndex = i end
 									self:setRuler(parent, child.pIndex)
 								end
 							else
@@ -400,6 +400,8 @@ return
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(parent, n)
 				end
+				
+				for i=1,#self.people do self.people[i].pIndex = i end
 
 				local rcount = math.random(3, 8)
 				for i=1,rcount do
@@ -448,6 +450,8 @@ return
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(parent, n)
 				end
+				
+				for i=1,#self.people do self.people[i].pIndex = i end
 			end,
 
 			setRuler = function(self, parent, newRuler)
