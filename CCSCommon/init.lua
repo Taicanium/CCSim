@@ -596,8 +596,6 @@ return
 								local nc = parent:randomChoice(c.regions)
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
-								newl:set(parent)
-
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
 									local y = nc.nodes[i][2]
@@ -643,10 +641,10 @@ return
 									end
 								end
 								
-								if not newl.snt[parent.systems[newl.system].name] or newl.snt[parent.systems[newl.system].name] == -1 then newl.snt[parent.systems[newl.system].name] = 0 end
-								newl.snt[parent.systems[newl.system].name] = newl.snt[parent.systems[newl.system].name] + 1
-								newl:event(parent, "Establishment of the "..parent:ordinal(newl.snt[parent.systems[newl.system].name]).." "..newl.demonym.." "..newl.formalities[parent.systems[newl.system].name])
-
+								newl:event(parent, "Independence from "..c.name)
+								
+								newl:set(parent)
+								
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
 
