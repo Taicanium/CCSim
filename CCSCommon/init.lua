@@ -1130,11 +1130,11 @@ return
 									if not nextFound then
 										nextFound = true
 										f:write("...\n")
+										cp.rulers[k].OldTo = cp.rulers[k].To
+										cp.rulers[k].To = pr
+										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
+										k = #cp.rulers + 1
 									end
-									cp.rulers[k].OldTo = cp.rulers[k].To
-									cp.rulers[k].To = pr
-									f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
-									k = #cp.rulers + 1
 								end
 							end
 						end
