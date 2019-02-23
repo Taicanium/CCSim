@@ -289,14 +289,14 @@ return
 					else self.demonym = split.."ish" end
 				else
 					if self.name:sub(#self.name-1, #self.name) == "ia" then self.demonym = self.name.."n"
+					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
 					elseif self.name:sub(#self.name-1, #self.name) == "an" then self.demonym = self.name.."ese"
-					elseif self.name:sub(#self.name-1, #self.name) == "en" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-					elseif self.name:sub(#self.name-1, #self.name) == "un" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					elseif self.name:sub(#self.name-2, #self.name) == "iar" then self.demonym = self.name:sub(1, #self.name-1).."n"
 					elseif self.name:sub(#self.name-1, #self.name) == "ar" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					elseif self.name:sub(#self.name-2, #self.name) == "ium" then self.demonym = self.name:sub(1, #self.name-2).."an"
 					elseif self.name:sub(#self.name-1, #self.name) == "um" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
+					elseif self.name:sub(#self.name-1, #self.name) == "en" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					elseif self.name:sub(#self.name-1, #self.name) == "un" then self.demonym = self.name:sub(1, #self.name-2).."ian"
 					else self.demonym = self.name.."ian" end
 				end
 
