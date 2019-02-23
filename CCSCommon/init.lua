@@ -1316,7 +1316,7 @@ return
 						elseif mat[1] == "Disable" then
 							local sEvent = mat[2]
 							for q=3,#mat do sEvent = sEvent.." "..mat[q] end
-							self.disabled["!"..sEvent] = true
+							self.disabled["!"..sEvent:lower()] = true
 						elseif mat[1] == "C" then
 							local nl = Country:new()
 							nl.name = mat[2]
