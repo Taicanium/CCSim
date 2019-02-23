@@ -78,7 +78,16 @@ function main()
 			if CCSCommon.doR == true then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 		else
 			CCSCommon.doR = false
-			CCSCommon:fromFile(datin)
+			local done = nil
+			while not done do
+				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
+				done = true
+				if not i then
+					io.write("Unable to locate data file! Please try again.\nData > ")
+					datin = io.read()
+					done = nil
+				end
+			end
 		end
 	end
 
