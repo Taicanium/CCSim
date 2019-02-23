@@ -1945,6 +1945,18 @@ return
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
 					nomlower = nomlower:gsub("uia", "ia")
+					nomlower = nomlower:gsub("aie", "a")
+					nomlower = nomlower:gsub("eie", "e")
+					nomlower = nomlower:gsub("oie", "o")
+					nomlower = nomlower:gsub("uie", "u")
+					nomlower = nomlower:gsub("aio", "io")
+					nomlower = nomlower:gsub("eio", "io")
+					nomlower = nomlower:gsub("oio", "io")
+					nomlower = nomlower:gsub("uio", "io")
+					nomlower = nomlower:gsub("aiu", "a")
+					nomlower = nomlower:gsub("eiu", "e")
+					nomlower = nomlower:gsub("oiu", "o")
+					nomlower = nomlower:gsub("uiu", "u")
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
