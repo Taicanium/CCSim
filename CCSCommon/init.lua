@@ -1188,7 +1188,6 @@ return
 
 					print("")
 
-					local ascCount = 0
 					local sRoyals = {}
 					local ind = 1
 					local finished = 0
@@ -1196,14 +1195,13 @@ return
 						j.gIndex = ind
 						sRoyals[ind] = j
 						ind = ind + 1
-						ascCount = ascCount + 1
 					end end
-					local ind = 1
+					local fInd = 1
 					local fCount = 0
 					for i, j in pairs(fams) do if j.husb.gIndex ~= 0 and j.wife.gIndex ~= 0 then 
-						j.fIndex = ind
+						j.fIndex = fInd
 						fCount = fCount + 1
-						ind = ind + 1
+						fInd = fInd + 1
 					end end
 
 					for i=1,#sRoyals do
@@ -1237,7 +1235,7 @@ return
 						ged:write(msgout)
 
 						finished = finished + 1
-						percentage = math.floor(finished / ascCount * 10000)/100
+						percentage = math.floor(finished / #sRoyals * 10000)/100
 						io.write("\rWriting individuals...\t"..tostring(percentage).."    \t% done")
 					end
 
