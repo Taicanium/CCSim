@@ -1,11 +1,12 @@
 CCSCommon = require("CCSCommon")()
 
 function main()
+	CCSCommon.clrcmd = "clear"
 	local clrarr = os.execute("clear")
 	
 	if not clrarr then CCSCommon.clrcmd = "cls"
-	elseif type(clrarr) == "table" then if clrarr[1] ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
-	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end
+	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" end
+	elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not j then CCSCommon.clrcmd = "cls" end end end
 
 	for i, j in pairs(CCSCommon.c_events) do
 		CCSCommon.disabled[j.name] = false
