@@ -5,7 +5,7 @@ function main()
 	
 	if not clrarr then CCSCommon.clrcmd = "cls"
 	elseif type(clrarr) == "table" then if clrarr[1] ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
-	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end
+	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" else CCSCommon.clrcmd = "clear" end end
 
 	for i, j in pairs(CCSCommon.c_events) do
 		CCSCommon.disabled[j.name] = false
