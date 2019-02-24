@@ -599,7 +599,7 @@ return
 						local values = 0
 						for i, j in pairs(c.regions) do values = values + 1 end
 
-						if chance > 48 then
+						if chance > 40 then
 							if values > 1 then
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
@@ -652,6 +652,13 @@ return
 								
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
+								
+								for i=1,#c.people do if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end
+								for i=1,math.floor(#c.people/5) do
+									local p = parent:randomChoice(c.people)
+									while p.isruler do p = parent:randomChoice(c.people) end
+									newl:add(parent, p)
+								end
 								
 								newl:set(parent)
 								
