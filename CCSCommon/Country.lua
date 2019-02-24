@@ -69,8 +69,10 @@ return
 					n.spouse.military = false
 					n.spouse.isruler = false
 					table.insert(self.people, n.spouse)
+					self.population = self.population + 1
 				end
 				table.insert(self.people, n)
+				self.population = self.population + 1
 			end,
 
 			checkRuler = function(self, parent)
@@ -394,22 +396,9 @@ return
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				self.population = math.random(1000, 2000)
 				self:makename(parent, 3)
-
-				for i=1,self.population do
-					local n = Person:new()
-					n:makename(parent, self)
-					n.age = math.random(1, 20)
-					n.birth = parent.years - n.age
-					if n.birth < 1 then n.birth = n.birth - 1 end
-					n.level = 2
-					n.title = "Citizen"
-					n.ethnicity = {[self.demonym]=100}
-					n.birthplace = self.name
-					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
-					self:add(parent, n)
-				end
+				
+				if self.population <= 1 then self:setPop(parent, math.random(1000, 2000)) end
 				
 				for i=1,#self.people do self.people[i].pIndex = i end
 
