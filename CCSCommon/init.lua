@@ -213,6 +213,15 @@ return
 								if r then newC:add(parent, r) end
 							end
 							
+							for i=1,#self.opIntervened do
+								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
+							for i=1,#self.govIntervened do
+								local opC = parent.thisWorld.countries[self.govIntervened[i]]
+								if opC then opC:event(parent, "Defeat with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
+							
 							for i=1,#c.people do c.people[i].pIndex = i end
 							c.hasruler = -1
 
