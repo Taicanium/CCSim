@@ -651,6 +651,7 @@ return
 								end
 								
 								newl:event(parent, "Independence from "..c.name)
+								c:event(parent, "Granted independence to "..newl.name)
 								
 								newl:set(parent)
 								
