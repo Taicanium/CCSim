@@ -2000,6 +2000,7 @@ return
 					nomlower = nomlower:gsub("wj", "w")
 					nomlower = nomlower:gsub("pj", "p")
 					nomlower = nomlower:gsub("jt", "t")
+					nomlower = nomlower:gsub("jr", "dr")
 					nomlower = nomlower:gsub("eu", "e")
 					nomlower = nomlower:gsub("iu", "i")
 					nomlower = nomlower:gsub("ia", "a")
