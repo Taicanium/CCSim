@@ -684,10 +684,9 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then
 					if cp.population < 10 then
-							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
-							cp:event(parent, "Disappeared")
-							self:delete(parent, cp)
-						end
+						if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
+						cp:event(parent, "Disappeared")
+						self:delete(parent, cp)
 					end
 				end end
 				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
