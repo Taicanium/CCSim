@@ -87,9 +87,9 @@ return
 					end
 				end
 				
-				if self.royalGenerations >= 5 and self.spouse.royalGenerations >= 5 then
+				if self.royalGenerations >= parent.genLimit and self.spouse.royalGenerations >= parent.genLimit then
 					local modChance = math.random(1, 50000)
-					if modChance > 999 and modChance < 1006 then
+					if modChance > 999 and modChance < 1106 then
 						local ops = {{"d", "b"}, {"t", "d"}, {"th", "t"}, {"s", "th"}, {"p", "b"}, {"a", "e"}, {"e", "i"}, {"e", "o"}, {"sh", "s"}, {"g", "c"}, {"v", "f"}, {"ea", "e"}, {"er", "e"}, {"ei", "e"}, {"z", "s"}}
 						local op = parent:randomChoice(ops)
 						local o1 = parent:randomChoice(op, true)
