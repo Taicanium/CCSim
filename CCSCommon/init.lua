@@ -2005,6 +2005,7 @@ return
 					nomlower = nomlower:gsub("ia", "a")
 					nomlower = nomlower:gsub("ea", "a")
 					nomlower = nomlower:gsub("ai", "i")
+					nomlower = nomlower:gsub("ei", "i")
 					nomlower = nomlower:gsub("aia", "ia")
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
@@ -2058,6 +2059,7 @@ return
 							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "t" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
 							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "v" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
 							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "w" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)) == "ya" then nomlower = nomlower:sub(1, string.len(nomlower)-2).."ia" end
 							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "z" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
 						end
 					end
