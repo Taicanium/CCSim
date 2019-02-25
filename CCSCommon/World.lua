@@ -320,6 +320,8 @@ return
 
 					nz:destroy(parent)
 					nz = nil
+					
+					parent.numCountries = parent.numCountries - 1
 				end
 			end,
 
