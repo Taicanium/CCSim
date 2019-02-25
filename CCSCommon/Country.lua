@@ -237,6 +237,10 @@ return
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ic" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ec" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "es" then self.name = self.name:sub(1, string.len(self.name)-2).."a" end
+						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ay" then self.name = self.name:sub(1, string.len(self.name)-2).."any" end
+						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ey" then self.name = self.name:sub(1, string.len(self.name)-2).."eny" end
+						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "oy" then self.name = self.name:sub(1, string.len(self.name)-2).."ony" end
+						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "uy" then self.name = self.name:sub(1, string.len(self.name)-2).."uny" end
 					end
 					parent.final["SCANNING"] = nil
 				end
