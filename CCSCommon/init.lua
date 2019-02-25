@@ -1963,6 +1963,8 @@ return
 					nomlower = nomlower:gsub("ua", "a")
 					nomlower = nomlower:gsub("oe", "e")
 					nomlower = nomlower:gsub("pg", "g")
+					nomlower = nomlower:gsub("db", "b")
+					nomlower = nomlower:gsub("bd", "d")
 					nomlower = nomlower:gsub("ui", "i")
 					nomlower = nomlower:gsub("mt", "m")
 					nomlower = nomlower:gsub("lt", "l")
