@@ -736,7 +736,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=3,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=true,
