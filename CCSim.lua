@@ -74,6 +74,7 @@ function main()
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
+				CCSCommon:getAlphabeticalCountries()
 			end
 
 			if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
