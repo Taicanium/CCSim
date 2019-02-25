@@ -13,6 +13,7 @@ if socketstatus then _time = socket.gettime end
 return
 	function()
 		local CCSCommon = {
+			alpha = {},
 			autosaveDur = 100,
 			c_events = {
 				{
@@ -665,6 +666,7 @@ return
 								
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
+								parent:getAlphabeticalCountries()
 
 								c.stability = c.stability - math.random(3, 10)
 								if c.stability < 1 then c.stability = 1 end
@@ -1343,6 +1345,7 @@ return
 							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
 							nl.system = -1
 							self.thisWorld:add(nl)
+							self:getAlphabeticalCountries()
 							fc = nl
 						elseif mat[1] == "R" then
 							local r = Region:new()
@@ -1502,6 +1505,33 @@ return
 
 				return acOut
 			end,
+			
+			getAlphabeticalCountries = function(self)
+				local cKeys = {}
+				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
+				for i, cp in pairs(self.thisWorld.countries) do
+					if #cKeys ~= 0 then
+						local found = false
+						for j=1,#cKeys do if not found then
+							local ind = 1
+							local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+							local chr2 = alphaOrder[i:sub(ind, ind):lower()]
+							while chr2 == chr1 do
+								ind = ind + 1
+								chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+								chr2 = alphaOrder[i:sub(ind, ind):lower()]
+							end
+							if chr2 < chr1 then
+								table.insert(cKeys, j, i)
+								found = true
+							end
+						end end
+						if not found then table.insert(cKeys, i) end
+					else table.insert(cKeys, i) end
+				end
+				
+				self.alpha = cKeys
+			end,
 
 			getfunctionvalues = function(self, fnname, fn, t)
 				local found = false
@@ -1646,14 +1676,14 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = "Year "..self.years.." : "..self.numCountries.." countries\n\n"
+					msg = "Year "..self.years..": "..self.numCountries.." countries\n\n"
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
-
 						local cCount = 0
 
-						for i, cp in pairs(self.thisWorld.countries) do
+						for i=1,#self.alpha do
+							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cCount <= 20 then
 								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
 								local sysName = self.systems[cp.system].name
@@ -1663,12 +1693,16 @@ return
 							end
 						end
 
-						if cCount < self.numCountries then msg = msg.."[+"..tostring(self.numCountries-cCount).." more]\n" end
+						if cCount < self.numCountries then msg = msg.."[+ "..tostring(self.numCountries-cCount).." more]\n" end
 
 						msg = msg.."\nOngoing events:"
 						local eventsWritten = 0
 
-						for i, cp in pairs(self.thisWorld.countries) do for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
+						for i=1,#self.alpha do
+							local cp = self.thisWorld.countries[self.alpha[i]]
+							for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
+						end
+						
 						for i=1,#currentEvents do
 							msg = msg.."\n"..currentEvents[i]
 							eventsWritten = eventsWritten + 1
