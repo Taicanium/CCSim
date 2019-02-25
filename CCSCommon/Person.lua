@@ -87,14 +87,16 @@ return
 					end
 				end
 				
-				local modChance = math.random(1, 50000)
-				if modChance > 999 and modChance < 1006 then
-					local ops = {{"d", "b"}, {"t", "d"}, {"th", "t"}, {"s", "th"}, {"p", "b"}, {"a", "e"}, {"e", "i"}, {"e", "o"}, {"sh", "s"}, {"g", "c"}, {"v", "f"}, {"ea", "e"}, {"er", "e"}, {"ei", "e"}, {"z", "s"}}
-					local op = parent:randomChoice(ops)
-					local o1 = parent:randomChoice(op, true)
-					local o2 = 2
-					if o1 == 2 then o2 = 1 end
-					nn.surname = nn.surname:gsub(op[o1], op[o2], 1)
+				if self.royalGenerations >= 5 and self.spouse.royalGenerations >= 5 then
+					local modChance = math.random(1, 50000)
+					if modChance > 999 and modChance < 1006 then
+						local ops = {{"d", "b"}, {"t", "d"}, {"th", "t"}, {"s", "th"}, {"p", "b"}, {"a", "e"}, {"e", "i"}, {"e", "o"}, {"sh", "s"}, {"g", "c"}, {"v", "f"}, {"ea", "e"}, {"er", "e"}, {"ei", "e"}, {"z", "s"}}
+						local op = parent:randomChoice(ops)
+						local o1 = parent:randomChoice(op, true)
+						local o2 = 2
+						if o1 == 2 then o2 = 1 end
+						nn.surname = nn.surname:gsub(op[o1], op[o2], 1)
+					end
 				end
 
 				local sys = parent.systems[nl.system]
