@@ -9,8 +9,8 @@ function main()
 	elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not j then CCSCommon.clrcmd = "cls" end end end
 
 	for i, j in pairs(CCSCommon.c_events) do
-		CCSCommon.disabled[j.name] = false
-		CCSCommon.disabled["!"..j.name] = false
+		CCSCommon.disabled[j.name:lower()] = false
+		CCSCommon.disabled["!"..j.name:lower()] = false
 	end
 	
 	CCSCommon:clearTerm()
