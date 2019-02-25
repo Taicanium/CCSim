@@ -1822,89 +1822,79 @@ return
 				local check = true
 				while check == true do
 					check = false
+					local nomlower = string.lower(nomin)
 
-					for i=1,string.len(nomin)-1 do
-						if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+1, i+1)) then
-							check = true
-
+					for i=1,string.len(nomlower)-1 do
+						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+1, i+1)) then
 							local newnom = ""
 
 							for j=1,i do
-								newnom = newnom..nomin:sub(j, j)
+								newnom = newnom..nomlower:sub(j, j)
 							end
-							for j=i+2,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
+							for j=i+2,string.len(nomlower) do
+								newnom = newnom..nomlower:sub(j, j)
 							end
 
-							nomin = newnom
+							nomlower = newnom
 						end
 					end
 
-					for i=1,string.len(nomin)-3 do
-						if string.lower(nomin:sub(i, i+1)) == string.lower(nomin:sub(i+2, i+3)) then
-						check = true
+					for i=1,string.len(nomlower)-3 do
+						if string.lower(nomlower:sub(i, i+1)) == string.lower(nomlower:sub(i+2, i+3)) then
+							local newnom = ""
 
-						local newnom = ""
+							for j=1,i+1 do
+								newnom = newnom..nomlower:sub(j, j)
+							end
+							for j=i+4,string.len(nomlower) do
+								newnom = newnom..nomlower:sub(j, j)
+							end
 
-						for j=1,i+1 do
-							newnom = newnom..nomin:sub(j, j)
+							nomlower = newnom
 						end
-						for j=i+4,string.len(nomin) do
-							newnom = newnom..nomin:sub(j, j)
-						end
-
-						nomin = newnom
 					end
 
-					if string.lower(nomin:sub(i, i)) == string.lower(nomin:sub(i+2, i+2)) then
-						check = true
-
+					if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+2, i+2)) then
 						local newnom = ""
 
-						for j=1,i+1 do
-							newnom = newnom..nomin:sub(j, j)
-						end
+						for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
 
 						newnom = newnom..self:randomChoice(self.consonants)
 
-						for j=i+3,string.len(nomin) do newnom = newnom..nomin:sub(j, j) end
+						for j=i+3,string.len(nomlower) do newnom = newnom..nomlower:sub(j, j) end
 
-						nomin = newnom
-
-						end
+						nomlower = newnom
 					end
 
-					for i=1,string.len(nomin)-5 do
-						if string.lower(nomin:sub(i, i+2)) == string.lower(nomin:sub(i+3, i+5)) then
-							check = true
-
+					for i=1,string.len(nomlower)-5 do
+						if string.lower(nomlower:sub(i, i+2)) == string.lower(nomlower:sub(i+3, i+5)) then
 							local newnom = ""
 
 							for j=1,i+2 do
-								newnom = newnom..nomin:sub(j, j)
+								newnom = newnom..nomlower:sub(j, j)
 							end
 
-							for j=i+6,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
+							for j=i+6,string.len(nomlower) do
+								newnom = newnom..nomlower:sub(j, j)
 							end
 
-							nomin = newnom
+							nomlower = newnom
 						end
 					end
 
-					for i=1,string.len(nomin)-2 do
+					for i=1,string.len(nomlower)-2 do
 						local hasvowel = false
 
 						for j=i,i+2 do
 							for k=1,#self.vowels do
-								if string.lower(nomin:sub(j, j)) == self.vowels[k] then
+								if string.lower(nomlower:sub(j, j)) == self.vowels[k] then
 									hasvowel = true
 								end
 							end
 
 							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nomin:sub(j-1, j-1)) == 't' then
-									if string.lower(nomin:sub(j, j)) == 'h' then
+								if string.lower(nomlower:sub(j-1, j-1)) == 't' then
+									if string.lower(nomlower:sub(j, j)) == 'h' then
 										hasvowel = true
 									end
 								end
@@ -1912,25 +1902,21 @@ return
 						end
 
 						if not hasvowel then
-							check = true
-
 							local newnom = ""
 
 							for j=1,i+1 do
-								newnom = newnom..nomin:sub(j, j)
+								newnom = newnom..nomlower:sub(j, j)
 							end
 
 							newnom = newnom..self:randomChoice(self.vowels)
 
-							for j=i+3,string.len(nomin) do
-								newnom = newnom..nomin:sub(j, j)
+							for j=i+3,string.len(nomlower) do
+								newnom = newnom..nomlower:sub(j, j)
 							end
 
-							nomin = newnom
+							nomlower = newnom
 						end
 					end
-
-					local nomlower = string.lower(nomin)
 
 					nomlower = nomlower:gsub("aa", "a")
 					nomlower = nomlower:gsub("ee", "i")
@@ -2012,6 +1998,8 @@ return
 					nomlower = nomlower:gsub("wj", "w")
 					nomlower = nomlower:gsub("pj", "p")
 					nomlower = nomlower:gsub("jt", "t")
+					nomlower = nomlower:gsub("eu", "e")
+					nomlower = nomlower:gsub("iu", "i")
 					nomlower = nomlower:gsub("aia", "ia")
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
@@ -2074,8 +2062,6 @@ return
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, string.len(nomlower))
 				end
-
-				if nomin:sub(string.len(nomin)-2, string.len(nomin)) == "lan" then nomin = nomin.."d" end
 
 				return nomin
 			end,
