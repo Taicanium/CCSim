@@ -682,7 +682,7 @@ return
 
 				local f0 = _time()
 
-				for i, cp in pairs(self.countries do if cp then
+				for i, cp in pairs(self.countries) do if cp then
 					if cp.population < 10 then
 							if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
 							cp:event(parent, "Disappeared")
