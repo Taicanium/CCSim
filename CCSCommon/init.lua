@@ -1152,60 +1152,62 @@ return
 
 				for i=1,#cKeys do
 					local cp = self.final[cKeys[i]]
-					local newc = false
-					local pr = 1
-					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
+					if cp then
+						local newc = false
+						local pr = 1
+						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
 
-					for k=1,#cp.events do if pr == 1 then
-						if cp.events[k].Event:sub(1, 12) == "Independence" then
-							newc = true
-							pr = tonumber(cp.events[k].Year)
-						end
-					end end
+						for k=1,#cp.events do if pr == 1 then
+							if cp.events[k].Event:sub(1, 12) == "Independence" then
+								newc = true
+								pr = tonumber(cp.events[k].Year)
+							end
+						end end
 
-					if newc then
-						f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
-						local nextFound = false
-						for k=1,#cp.rulers do
-							if tonumber(cp.rulers[k].From) < pr then
-								if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
-									if not nextFound then
-										nextFound = true
-										f:write("...\n")
-										f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
-										k = #cp.rulers + 1
+						if newc then
+							f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
+							local nextFound = false
+							for k=1,#cp.rulers do
+								if tonumber(cp.rulers[k].From) < pr then
+									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
+										if not nextFound then
+											nextFound = true
+											f:write("...\n")
+											f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
+											k = #cp.rulers + 1
+										end
 									end
 								end
 							end
 						end
-					end
 
-					for j=1,self.maxyears do
-						for k=1,#cp.events do
-							if tonumber(cp.events[k].Year) == j then
-								if cp.events[k].Event:sub(1, 10) == "Revolution" then
-									f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
+						for j=1,self.maxyears do
+							for k=1,#cp.events do
+								if tonumber(cp.events[k].Year) == j then
+									if cp.events[k].Event:sub(1, 10) == "Revolution" then
+										f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
+									end
+								end
+							end
+
+							for k=1,#cp.rulers do
+								if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then
+									f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
+								end
+							end
+
+							for k=1,#cp.events do
+								if tonumber(cp.events[k].Year) == j then
+									if cp.events[k].Event:sub(1, 10) ~= "Revolution" then
+										f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
+									end
 								end
 							end
 						end
 
-						for k=1,#cp.rulers do
-							if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then
-								f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
-							end
-						end
-
-						for k=1,#cp.events do
-							if tonumber(cp.events[k].Year) == j then
-								if cp.events[k].Event:sub(1, 10) ~= "Revolution" then
-									f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
-								end
-							end
-						end
+						f:write("\n\n\n")
+						f:flush()
 					end
-
-					f:write("\n\n\n")
-					f:flush()
 				end
 
 				f:close()
@@ -1708,12 +1710,14 @@ return
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cCount <= 20 then
-								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
-								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-								msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
-								cCount = cCount + 1
+							if cp then
+								if cCount <= 20 then
+									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
+									local sysName = self.systems[cp.system].name
+									if cp.dfif[sysName] then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
+									msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
+									cCount = cCount + 1
+								end
 							end
 						end
 
@@ -1724,7 +1728,7 @@ return
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
-							for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
+							if cp then for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
 						end
 						
 						for i=1,#currentEvents do
