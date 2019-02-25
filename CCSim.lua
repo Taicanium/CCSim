@@ -59,34 +59,32 @@ function main()
 		CCSCommon.ged = false
 		if string.lower(datin) == "y" then CCSCommon.ged = true end
 
-		io.write(string.format("\nData > "))
-		datin = io.read()
+		local done = nil
+		while not done do
+			io.write(string.format("\nData > "))
+			datin = io.read()
+		
+			if string.lower(datin) == "random" then
+				CCSCommon.thisWorld = World:new()
 
-		if string.lower(datin) == "random" then
-			CCSCommon.thisWorld = World:new()
+				CCSCommon:rseed()
+				CCSCommon.numCountries = math.random(9, 12)
 
-			CCSCommon:rseed()
-			CCSCommon.numCountries = math.random(9, 12)
+				print("Defining countries...")
 
-			print("Defining countries...")
+				for j=1,CCSCommon.numCountries do
+					local nl = Country:new()
+					nl:set(CCSCommon)
+					CCSCommon.thisWorld:add(nl)
+					CCSCommon:getAlphabeticalCountries()
+				end
 
-			for j=1,CCSCommon.numCountries do
-				local nl = Country:new()
-				nl:set(CCSCommon)
-				CCSCommon.thisWorld:add(nl)
-				CCSCommon:getAlphabeticalCountries()
-			end
-
-			if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
-		else
-			CCSCommon.doR = false
-			local done = nil
-			while not done do
+				if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
+			else
 				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 				done = true
 				if not i then
-					io.write("Unable to locate data file! Please try again.\nData > ")
-					datin = io.read()
+					print("Unable to locate data file! Please try again.")
 					done = nil
 				end
 			end
