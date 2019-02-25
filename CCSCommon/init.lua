@@ -1126,8 +1126,32 @@ return
 
 				local ged = nil
 				local fams = {}
-
+				
+				local cKeys = {}
+				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
 				for i, cp in pairs(self.final) do
+					if #cKeys ~= 0 then
+						local found = false
+						for j=1,#cKeys do if not found then
+							local ind = 1
+							local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+							local chr2 = alphaOrder[i:sub(ind, ind):lower()]
+							while chr2 == chr1 do
+								ind = ind + 1
+								chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+								chr2 = alphaOrder[i:sub(ind, ind):lower()]
+							end
+							if chr2 < chr1 then
+								table.insert(cKeys, j, i)
+								found = true
+							end
+						end end
+						if not found then table.insert(cKeys, i) end
+					else table.insert(cKeys, i) end
+				end
+
+				for i=1,#cKeys do
+					local cp = self.final[cKeys[i]]
 					local newc = false
 					local pr = 1
 					f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
