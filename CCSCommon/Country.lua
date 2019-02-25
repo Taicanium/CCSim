@@ -438,7 +438,7 @@ return
 			setPop = function(self, parent, u)
 				while self.population > u do
 					local r = math.random(1, #self.people)
-					while self.people[r].isruler do r = math.random(1, #self.people) end
+					if #self.people > 1 then while self.people[r].isruler do r = math.random(1, #self.people) end end
 					self:delete(parent, r)
 				end
 
