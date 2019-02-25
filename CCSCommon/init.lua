@@ -1839,6 +1839,20 @@ return
 						end
 					end
 
+					for i=1,string.len(nomlower)-2 do
+						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+2, i+2)) then
+							local newnom = ""
+
+							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
+
+							newnom = newnom..self:randomChoice(self.consonants)
+
+							for j=i+3,string.len(nomlower) do newnom = newnom..nomlower:sub(j, j) end
+
+							nomlower = newnom
+						end
+					end
+
 					for i=1,string.len(nomlower)-3 do
 						if string.lower(nomlower:sub(i, i+1)) == string.lower(nomlower:sub(i+2, i+3)) then
 							local newnom = ""
@@ -1852,18 +1866,6 @@ return
 
 							nomlower = newnom
 						end
-					end
-
-					if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+2, i+2)) then
-						local newnom = ""
-
-						for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-
-						newnom = newnom..self:randomChoice(self.consonants)
-
-						for j=i+3,string.len(nomlower) do newnom = newnom..nomlower:sub(j, j) end
-
-						nomlower = newnom
 					end
 
 					for i=1,string.len(nomlower)-5 do
