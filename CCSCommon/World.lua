@@ -385,11 +385,11 @@ return
 						end
 
 						local rh = string.format("%x", r)
-						if string.len(rh) == 1 then rh = "0"..rh end
+						if rh:len() == 1 then rh = "0"..rh end
 						local gh = string.format("%x", g)
-						if string.len(gh) == 1 then gh = "0"..gh end
+						if gh:len() == 1 then gh = "0"..gh end
 						local bh = string.format("%x", b)
-						if string.len(bh) == 1 then bh = "0"..bh end
+						if bh:len() == 1 then bh = "0"..bh end
 
 						self.cColors[cp.name] = "#"..rh..gh..bh
 						self.cTriplets[cp.name] = {r, g, b}
@@ -660,11 +660,11 @@ return
 					local b = 255 - self.cTriplets[cp.name][3]
 
 					local rh = string.format("%x", r)
-					if string.len(rh) == 1 then rh = "0"..rh end
+					if rh:len() == 1 then rh = "0"..rh end
 					local gh = string.format("%x", g)
-					if string.len(gh) == 1 then gh = "0"..gh end
+					if gh:len() == 1 then gh = "0"..gh end
 					local bh = string.format("%x", b)
-					if string.len(bh) == 1 then bh = "0"..bh end
+					if bh:len() == 1 then bh = "0"..bh end
 
 					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
 				end
