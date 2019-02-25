@@ -716,8 +716,8 @@ return
 								if c1.stability < 1 then c1.stability = 1 end
 								c2.stability = c2.stability - 10
 								if c2.stability < 1 then c2.stability = 1 end
-								c1:setPop(parent, math.floor(c1.population / 1.25))
-								c2:setPop(parent, math.floor(c2.population / 1.75))
+								c1:setPop(parent, math.ceil(c1.population / 1.25))
+								c2:setPop(parent, math.ceil(c2.population / 1.75))
 								for i=1,#c1.people do c1.people[i].pIndex = i end
 								for i=1,#c2.people do c2.people[i].pIndex = i end
 
