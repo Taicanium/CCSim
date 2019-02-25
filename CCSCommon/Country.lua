@@ -241,6 +241,8 @@ return
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ey" then self.name = self.name:sub(1, string.len(self.name)-2).."eny" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "oy" then self.name = self.name:sub(1, string.len(self.name)-2).."ony" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "uy" then self.name = self.name:sub(1, string.len(self.name)-2).."uny" end
+						if self.name:sub(string.len(self.name), string.len(self.name)) == "b" then self.name = self.name.."ia" end
+						if self.name:sub(string.len(self.name), string.len(self.name)) == "g" then self.name = self.name.."ia" end
 					end
 					parent.final["SCANNING"] = nil
 				end
