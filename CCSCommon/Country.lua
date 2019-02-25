@@ -235,8 +235,8 @@ return
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ar" then self.name = self.name:sub(1, string.len(self.name)-2).."ania" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "is" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ic" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
+						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ec" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "es" then self.name = self.name:sub(1, string.len(self.name)-2).."a" end
-						self.name = parent:namecheck(self.name)
 					end
 					parent.final["SCANNING"] = nil
 				end
