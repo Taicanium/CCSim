@@ -653,7 +653,8 @@ return
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
 								
-								for i=#c.people,1,-1 do if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end
+								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def then if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end end
+								
 								for i=1,math.floor(#c.people/5) do
 									local p = parent:randomChoice(c.people)
 									while p.isruler do p = parent:randomChoice(c.people) end
