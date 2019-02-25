@@ -95,7 +95,7 @@ return
 						local o1 = parent:randomChoice(op, true)
 						local o2 = 2
 						if o1 == 2 then o2 = 1 end
-						nn.surname = nn.surname:gsub(op[o1], op[o2], 1)
+						nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
 					end
 				end
 
