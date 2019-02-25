@@ -589,7 +589,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=5,
+					chance=4,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -600,7 +600,7 @@ return
 						local values = 0
 						for i, j in pairs(c.regions) do values = values + 1 end
 
-						if chance > 44 then
+						if chance > 50 then
 							if values > 1 then
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
