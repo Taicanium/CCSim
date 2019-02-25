@@ -237,6 +237,7 @@ return
 						if self.name:sub(self.name:len()-1, self.name:len()) == "oy" then self.name = self.name:sub(1, self.name:len()-2).."ony" end
 						if self.name:sub(self.name:len()-1, self.name:len()) == "uy" then self.name = self.name:sub(1, self.name:len()-2).."uny" end
 						if self.name:sub(self.name:len()-1, self.name:len()) == "ya" then self.name = self.name:sub(1, self.name:len()-2).."ia" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "wy" then self.name = self.name:sub(1, self.name:len()-2).."wia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "b" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "c" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "d" then if self.name:sub(self.name:len()-3, self.name:len()) ~= "land" then self.name = self.name.."ia" end end
