@@ -971,7 +971,7 @@ return
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(jTable)
 				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
-				for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
+				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				jTable = nil
 
 				print("Reconstructing metatables...")
@@ -1039,7 +1039,7 @@ return
 					self:getRecursiveIDs(tables)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
-					for i, j in pairs(self) do if type(j) == "string" then if string.len(j) >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
+					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					tables = nil
 				else
 					print("Unable to open in_progress.dat for writing! Autosave not completed!")
@@ -1592,8 +1592,8 @@ return
 					local nJ = {}
 					for k, l in pairs(j) do
 						if type(l) == "string" then
-							if string.len(l) >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] then j[k] = tables[l] end end end end
-							if string.len(l) >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, string.len(l))) end end
+							if l:len() >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] then j[k] = tables[l] end end end end
+							if l:len() >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, l:len())) end end
 						end
 						
 						if type(k) == "string" then if tonumber(k) then revised = true nJ[tonumber(k)] = l end end
@@ -1810,7 +1810,7 @@ return
 
 				nom = self:namecheck(nom)
 
-				if string.len(nom) == 1 then
+				if nom:len() == 1 then
 					nom = nom..string.lower(self:randomChoice(self.vowels))
 				end
 
@@ -1824,14 +1824,14 @@ return
 					check = false
 					local nomlower = string.lower(nomin)
 
-					for i=1,string.len(nomlower)-1 do
+					for i=1,nomlower:len()-1 do
 						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+1, i+1)) then
 							local newnom = ""
 
 							for j=1,i do
 								newnom = newnom..nomlower:sub(j, j)
 							end
-							for j=i+2,string.len(nomlower) do
+							for j=i+2,nomlower:len() do
 								newnom = newnom..nomlower:sub(j, j)
 							end
 
@@ -1839,7 +1839,7 @@ return
 						end
 					end
 
-					for i=1,string.len(nomlower)-2 do
+					for i=1,nomlower:len()-2 do
 						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+2, i+2)) then
 							local newnom = ""
 
@@ -1847,20 +1847,20 @@ return
 
 							newnom = newnom..self:randomChoice(self.consonants)
 
-							for j=i+3,string.len(nomlower) do newnom = newnom..nomlower:sub(j, j) end
+							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
 
 							nomlower = newnom
 						end
 					end
 
-					for i=1,string.len(nomlower)-3 do
+					for i=1,nomlower:len()-3 do
 						if string.lower(nomlower:sub(i, i+1)) == string.lower(nomlower:sub(i+2, i+3)) then
 							local newnom = ""
 
 							for j=1,i+1 do
 								newnom = newnom..nomlower:sub(j, j)
 							end
-							for j=i+4,string.len(nomlower) do
+							for j=i+4,nomlower:len() do
 								newnom = newnom..nomlower:sub(j, j)
 							end
 
@@ -1868,7 +1868,7 @@ return
 						end
 					end
 
-					for i=1,string.len(nomlower)-5 do
+					for i=1,nomlower:len()-5 do
 						if string.lower(nomlower:sub(i, i+2)) == string.lower(nomlower:sub(i+3, i+5)) then
 							local newnom = ""
 
@@ -1876,7 +1876,7 @@ return
 								newnom = newnom..nomlower:sub(j, j)
 							end
 
-							for j=i+6,string.len(nomlower) do
+							for j=i+6,nomlower:len() do
 								newnom = newnom..nomlower:sub(j, j)
 							end
 
@@ -1884,7 +1884,7 @@ return
 						end
 					end
 
-					for i=1,string.len(nomlower)-2 do
+					for i=1,nomlower:len()-2 do
 						local hasvowel = false
 
 						for j=i,i+2 do
@@ -1912,7 +1912,7 @@ return
 
 							newnom = newnom..self:randomChoice(self.vowels)
 
-							for j=i+3,string.len(nomlower) do
+							for j=i+3,nomlower:len() do
 								newnom = newnom..nomlower:sub(j, j)
 							end
 
@@ -2026,49 +2026,48 @@ return
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
-							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, string.len(nomlower)) end
-							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, string.len(nomlower)) end
+							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
 						end
 
-						if nomlower:sub(string.len(nomlower), string.len(nomlower)) == self.consonants[j] then
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "b" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "c" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "d" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "f" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "g" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "h" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "j" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "k" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "m" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "n" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "p" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "r" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "s" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "t" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "v" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "w" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)) == "ya" then nomlower = nomlower:sub(1, string.len(nomlower)-2).."ia" end
-							if nomlower:sub(string.len(nomlower)-1, string.len(nomlower)-1) == "z" then nomlower = nomlower:sub(1, string.len(nomlower)-1) end
+						if nomlower:sub(nomlower:len(), nomlower:len()) == self.consonants[j] then
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "b" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "c" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "d" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "f" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "g" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "h" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "k" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "m" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "n" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "p" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "r" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "s" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "t" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
 
 					if nomlower ~= string.lower(nomin) then check = true end
 
 					nomin = string.upper(nomlower:sub(1, 1))
-					nomin = nomin..nomlower:sub(2, string.len(nomlower))
+					nomin = nomin..nomlower:sub(2, nomlower:len())
 				end
 
 				return nomin
@@ -2339,7 +2338,7 @@ return
 				local exceptions = {"__index"}
 
 				if not t.mtname then f:write("5nilmt") else
-					f:write(string.len(t.mtname))
+					f:write(t.mtname:len())
 					f:write(t.mtname)
 				end
 
@@ -2350,7 +2349,7 @@ return
 					if not found then iCount = iCount + 1 end
 				end
 
-				f:write(string.len(tostring(iCount)))
+				f:write(tostring(iCount):len())
 				f:write(tostring(iCount))
 
 				for i, j in pairs(t) do
@@ -2360,8 +2359,8 @@ return
 						local itype = types[type(i)]
 						f:write(itype)
 
-						f:write(string.len(tostring(string.len(i))))
-						f:write(string.len(tostring(i)))
+						f:write(tostring(i:len()):len())
+						f:write(tostring(i):len())
 						f:write(tostring(i))
 
 						local jtype = type(j)
@@ -2371,14 +2370,14 @@ return
 							self:savetable(j, f)
 						elseif jtype == "function" then
 							fndata = string.dump(j)
-							f:write(string.len(tostring(string.len(fndata))))
-							f:write(string.len(fndata))
+							f:write(tostring(fndata:len()):len())
+							f:write(fndata:len())
 							f:write(fndata)
 						elseif jtype == "boolean" then
 							if not j then f:write("0") else f:write("1") end
 						else
-							f:write(string.len(tostring(string.len(tostring(j)))))
-							f:write(string.len(tostring(j)))
+							f:write(tostring(tostring(j):len()):len())
+							f:write(tostring(j):len())
 							f:write(tostring(j))
 						end
 					end
