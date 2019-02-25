@@ -230,7 +230,7 @@ return
 					self.name = "SCANNING"
 					parent.final["SCANNING"] = true
 					while parent.final[self.name] do
-						self.name = parent:name(false) end
+						self.name = parent:name(false)
 						if self.name:sub(string.len(self.name)-2, string.len(self.name)) == "lan" then self.name = self.name.."d" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ar" then self.name = self.name:sub(1, string.len(self.name)-2).."ania" end
 						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "is" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
