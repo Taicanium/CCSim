@@ -600,7 +600,7 @@ return
 						local values = 0
 						for i, j in pairs(c.regions) do values = values + 1 end
 
-						if chance > 40 then
+						if chance > 44 then
 							if values > 1 then
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
