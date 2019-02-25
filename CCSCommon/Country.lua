@@ -229,6 +229,11 @@ return
 				if self.name == "" or self.name == nil then
 					self.name = parent:name(false)
 					while parent.final[self.name] do self.name = parent:name(false) end
+					if self.name:sub(string.len(self.name)-2, string.len(self.name)) == "lan" then self.name = self.name.."d" end
+					if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ar" then self.name = self.name:sub(1, string.len(self.name)-2).."ania" end
+					if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "is" then self.name = self.name.."ia" end
+					if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ic" then self.name = self.name:sub(1, string.len(self.name)-2).."ia" end
+					if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "es" then self.name = self.name:sub(1, string.len(self.name)-2).."a" end
 				end
 
 				if #self.rulernames < 1 then
