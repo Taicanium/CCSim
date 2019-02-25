@@ -231,31 +231,32 @@ return
 					parent.final["SCANNING"] = true
 					while parent.final[self.name] do
 						self.name = parent:name(false)
-						if self.name:sub(string.len(self.name)-2, string.len(self.name)) == "lan" then self.name = self.name.."d" end
-						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ay" then self.name = self.name:sub(1, string.len(self.name)-2).."any" end
-						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "ey" then self.name = self.name:sub(1, string.len(self.name)-2).."eny" end
-						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "oy" then self.name = self.name:sub(1, string.len(self.name)-2).."ony" end
-						if self.name:sub(string.len(self.name)-1, string.len(self.name)) == "uy" then self.name = self.name:sub(1, string.len(self.name)-2).."uny" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "b" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "c" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "d" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "f" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "g" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "i" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "j" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "k" then self.name = self.name:sub(1, string.len(self.name)-1).."cia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "l" then self.name = self.name.."y" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "m" then self.name = self.name.."y" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "n" then self.name = self.name.."y" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "o" then self.name = self.name.."nia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "p" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "r" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "s" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "t" then self.name = self.name.."ia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "u" then self.name = self.name.."nia" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "v" then self.name = self.name.."y" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "w" then self.name = self.name.."y" end
-						if self.name:sub(string.len(self.name), string.len(self.name)) == "z" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len()-2, self.name:len()) == "lan" then self.name = self.name.."d" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ay" then self.name = self.name:sub(1, self.name:len()-2).."any" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ey" then self.name = self.name:sub(1, self.name:len()-2).."eny" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "oy" then self.name = self.name:sub(1, self.name:len()-2).."ony" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "uy" then self.name = self.name:sub(1, self.name:len()-2).."uny" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ya" then self.name = self.name:sub(1, self.name:len()-2).."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "b" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "c" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "d" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "f" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "g" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "i" then self.name = self.name.."a" end
+						if self.name:sub(self.name:len(), self.name:len()) == "j" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "k" then self.name = self.name:sub(1, self.name:len()-1).."cia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "l" then self.name = self.name.."y" end
+						if self.name:sub(self.name:len(), self.name:len()) == "m" then self.name = self.name.."y" end
+						if self.name:sub(self.name:len(), self.name:len()) == "n" then self.name = self.name.."y" end
+						if self.name:sub(self.name:len(), self.name:len()) == "o" then self.name = self.name.."nia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "p" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "r" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "s" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "t" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "u" then self.name = self.name.."nia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "v" then self.name = self.name.."y" end
+						if self.name:sub(self.name:len(), self.name:len()) == "w" then self.name = self.name.."y" end
+						if self.name:sub(self.name:len(), self.name:len()) == "z" then self.name = self.name.."ia" end
 					end
 					parent.final["SCANNING"] = nil
 				end
@@ -719,7 +720,7 @@ return
 
 					for j, cp in pairs(parent.thisWorld.countries) do
 						local nr = cp.name
-						if string.len(ar) >= string.len(nr) then
+						if ar:len() >= nr:len() then
 							if ar:sub(1, #nr) == nr then
 								found = true
 							end
