@@ -231,6 +231,10 @@ return
 					parent.final["SCANNING"] = true
 					while parent.final[self.name] do
 						self.name = parent:name(false)
+						if self.name:sub(self.name:len()-4, self.name:len()) == "sicia" then self.name = self.name:sub(1, self.name:len()-5).."scia" end
+						if self.name:sub(self.name:len()-4, self.name:len()) == "shicia" then self.name = self.name:sub(1, self.name:len()-5).."scia" end
+						if self.name:sub(self.name:len()-4, self.name:len()) == "zicia" then self.name = self.name:sub(1, self.name:len()-5).."zcia" end
+						if self.name:sub(self.name:len()-4, self.name:len()) == "zhicia" then self.name = self.name:sub(1, self.name:len()-5).."zcia" end
 						if self.name:sub(self.name:len()-2, self.name:len()) == "lan" then self.name = self.name.."d" end
 						if self.name:sub(self.name:len()-1, self.name:len()) == "ay" then self.name = self.name:sub(1, self.name:len()-2).."any" end
 						if self.name:sub(self.name:len()-1, self.name:len()) == "ey" then self.name = self.name:sub(1, self.name:len()-2).."eny" end
