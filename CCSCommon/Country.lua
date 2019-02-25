@@ -228,6 +228,7 @@ return
 			makename = function(self, parent)
 				if self.name == "" or self.name == nil then
 					self.name = parent:name(false)
+					while parent.final[self.name] do self.name = parent:name(false) end
 				end
 
 				if #self.rulernames < 1 then
