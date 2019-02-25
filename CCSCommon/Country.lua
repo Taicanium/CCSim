@@ -300,6 +300,7 @@ return
 					elseif split:sub(#split, #split) == "o" then self.demonym = split.."n"
 					elseif split:sub(#split, #split) == "u" then self.demonym = split.."n"
 					elseif split:sub(#split, #split) == "l" then self.demonym = split.."ish"
+					elseif split:sub(#split, #split) == "w" then self.demonym = split.."ian"
 					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
 					else self.demonym = split end
 				elseif self.name:sub(#self.name, #self.name) == "e" then self.demonym = self.name:sub(1, #self.name-1).."ish"
