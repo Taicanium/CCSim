@@ -80,6 +80,8 @@ function main()
 				end
 
 				if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
+				
+				done = true
 			else
 				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 				done = true
