@@ -239,7 +239,7 @@ return
 						if self.name:sub(self.name:len(), self.name:len()) == "f" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "g" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "i" then self.name = self.name.."a" end
-						if self.name:sub(self.name:len(), self.name:len()) == "j" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len(), self.name:len()) == "j" then self.name = self.name:sub(1, self.name:len()-1).."ria" end
 						if self.name:sub(self.name:len(), self.name:len()) == "k" then self.name = self.name:sub(1, self.name:len()-1).."cia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "l" then self.name = self.name.."y" end
 						if self.name:sub(self.name:len(), self.name:len()) == "m" then self.name = self.name.."y" end
