@@ -589,6 +589,8 @@ return
 								local newl = Country:new()
 								local nc = parent:randomChoice(c.regions)
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
+								
+								newl.name = nc.name
 
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
@@ -604,8 +606,13 @@ return
 
 								newl.rulers = {}
 								for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
+								
 								for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
+								table.remove(newl.rulernames, math.random(1, #newl.rulernames))
+								table.insert(newl.rulernames, parent:name(true))
 								for i=1,#c.frulernames do newl.frulernames[i] = c.frulernames[i] end
+								table.remove(newl.frulernames, math.random(1, #newl.frulernames))
+								table.insert(newl.frulernames, parent:name(true))
 
 								for i, j in pairs(parent.final) do
 									if j.name == newl.name then

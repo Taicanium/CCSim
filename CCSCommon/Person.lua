@@ -266,8 +266,18 @@ return
 						local c = math.random(1, 8)
 						if c == 4 then
 							m = math.random(1, #nl.people)
-							if not nl.people[m].spouse then
-								if self.gender ~= nl.people[m].gender then
+							if not nl.people[m].spouse and self.gender ~= nl.people[m].gender then
+								local found = false
+								if self.surname == nl.people[m].surname then found = true end
+								if not found then for i, j in pairs(self.children) do
+									if j.gString == nl.people[m].gString then found = true end
+									if j.surname == nl.people[m].surname then found = true end
+								end end
+								if not found then for i, j in pairs(nl.people[m].children) do
+									if j.gString == self.gString then found = true end
+									if j.surname == self.surname then found = true end
+								end end
+								if not found then
 									self.spouse = nl.people[m]
 									nl.people[m].spouse = self
 								end
