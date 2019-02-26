@@ -74,19 +74,19 @@ return
 					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
 						if self.surname ~= self.spouse.surname then
 							local surnames = {}
-						
+
 							if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 							elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
 							else
 								if self.gender == "Male" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 								else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 							end
-							
+
 							nn.surname = surnames[1].."-"..surnames[2]
 						end
 					end
 				end
-				
+
 				if self.royalGenerations >= parent.genLimit and self.spouse.royalGenerations >= parent.genLimit then
 					local modChance = math.random(1, 50000)
 					if modChance > 999 and modChance < 1106 then
@@ -147,13 +147,7 @@ return
 					nn.level = self.level
 				end
 
-				if sys.dynastic then
-					if self.gender == "Female" then
-						if self.title == sys.franks[#sys.franks] then
-							nn.level = self.level - 1
-						end
-					end
-				end
+				if sys.dynastic then if self.gender == "Female" then if self.title == sys.franks[#sys.franks] then nn.level = self.level - 1 end end end
 
 				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
 
@@ -171,7 +165,7 @@ return
 				else nn:SetFamily(self, self.spouse, parent) end
 
 				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
-				
+
 				nl:add(parent, nn)
 				for i=1,#nl.people do nl.people[i].pIndex = i end
 			end,

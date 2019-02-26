@@ -106,21 +106,7 @@ return
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
 
-					for dx=-1,1 do
-						if self.planet[x-dx] then
-							for dy=-1,1 do
-								if self.planet[x-dx][y-dy] then
-									for dz=-1,1 do
-										if self.planet[x-dx][y-dy][z-dz] then
-											if x ~= dx or y ~= dy or z ~= dz then
-												table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz})
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
 				print("Defining land masses...")
@@ -195,21 +181,7 @@ return
 
 					self.planet[x][y][z].neighbors = {}
 
-					for dx=-1,1 do
-						if self.planet[x-dx] then
-							for dy=-1,1 do
-								if self.planet[x-dx][y-dy] then
-									for dz=-1,1 do
-										if self.planet[x-dx][y-dy][z-dz] then
-											if x ~= dx or y ~= dy or z ~= dz then
-												table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz})
-											end
-										end
-									end
-								end
-							end
-						end
-					end
+					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
 				print("\nRooting countries...")
@@ -310,9 +282,7 @@ return
 
 			delete = function(self, parent, nz)
 				if nz then
-					for i, cp in pairs(self.countries) do
-						for j=#cp.ongoing,1,-1 do if cp.target then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
-					end
+					for i, cp in pairs(self.countries) do for j=#cp.ongoing,1,-1 do if cp.target then if cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end end
 
 					self.cColors[nz.name] = nil
 					self.cTriplets[nz.name] = nil
@@ -320,7 +290,7 @@ return
 
 					nz:destroy(parent)
 					nz = nil
-					
+
 					parent.numCountries = parent.numCountries - 1
 				end
 			end,
@@ -416,9 +386,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5) end
 							f:write(x)
 							if j < i+249 then f:write(", ") end
 						end
@@ -429,9 +397,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5) end
 							f:write(y)
 							if j < i+249 then f:write(", ") end
 						end
@@ -442,9 +408,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5) end
 							f:write(z)
 							if j < i+249 then f:write(", ") end
 						end
@@ -456,15 +420,7 @@ return
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							local isCity = false
-							for j=1,#cCoords do
-								if x == cCoords[j][1] then
-									if y == cCoords[j][2] then
-										if z == cCoords[j][3] then
-											isCity = true
-										end
-									end
-								end
-							end
+							for j=1,#cCoords do if x == cCoords[j][1] then if y == cCoords[j][2] then if z == cCoords[j][3] then isCity = true end end end end
 							if isCity then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land then
 									if self.planet[x][y][z].country ~= "" then if self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
@@ -482,9 +438,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5) end
 							f:write(x)
 							if j < planetSize then f:write(", ") end
 						end
@@ -495,9 +449,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5) end
 							f:write(y)
 							if j < planetSize then f:write(", ") end
 						end
@@ -508,9 +460,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then
-								z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5)
-							end
+							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5) end
 							f:write(z)
 							if j < planetSize then f:write(", ") end
 						end
@@ -522,15 +472,7 @@ return
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							local isCity = false
-							for j=1,#cCoords do
-								if x == cCoords[j][1] then
-									if y == cCoords[j][2] then
-										if z == cCoords[j][3] then
-											isCity = true
-										end
-									end
-								end
-							end
+							for j=1,#cCoords do if x == cCoords[j][1] then if y == cCoords[j][2] then if z == cCoords[j][3] then isCity = true end end end end
 							if isCity then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land then
 									if self.planet[x][y][z].country ~= "" then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"")
@@ -617,17 +559,11 @@ return
 					local avgY = 0
 					local avgZ = 0
 
-					for j=1,#cp.nodes do
-						avgX = avgX + cp.nodes[j][1]
-					end
+					for j=1,#cp.nodes do avgX = avgX + cp.nodes[j][1] end
 
-					for j=1,#cp.nodes do
-						avgY = avgY + cp.nodes[j][2]
-					end
+					for j=1,#cp.nodes do avgY = avgY + cp.nodes[j][2] end
 
-					for j=1,#cp.nodes do
-						avgZ = avgZ + cp.nodes[j][3]
-					end
+					for j=1,#cp.nodes do avgZ = avgZ + cp.nodes[j][3] end
 
 					avgX = math.floor(avgX / #cp.nodes)
 					avgY = math.floor(avgY / #cp.nodes)
@@ -696,9 +632,7 @@ return
 
 				if parent.years > parent.startyear + 1 then
 					if f1 > 0.75 then
-						if parent.popLimit > 1250 then
-							parent.popLimit = math.floor(parent.popLimit - (50 * (f1 * 2)))
-						end
+						if parent.popLimit > 1250 then parent.popLimit = math.floor(parent.popLimit - (50 * (f1 * 2))) end
 
 						if parent.popLimit < 1250 then parent.popLimit = 1250 end
 						if parent.numCountries >= 12 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end

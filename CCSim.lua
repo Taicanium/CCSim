@@ -3,7 +3,7 @@ CCSCommon = require("CCSCommon")()
 function main()
 	CCSCommon.clrcmd = "clear"
 	local clrarr = os.execute("clear")
-	
+
 	if not clrarr then CCSCommon.clrcmd = "cls"
 	elseif type(clrarr) == "number" then if clrarr ~= 0 then CCSCommon.clrcmd = "cls" end
 	elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not j then CCSCommon.clrcmd = "cls" end end end
@@ -12,7 +12,7 @@ function main()
 		CCSCommon.disabled[j.name:lower()] = false
 		CCSCommon.disabled["!"..j.name:lower()] = false
 	end
-	
+
 	CCSCommon:clearTerm()
 	io.write(string.format("\n\n\tCCSIM : Compact Country Simulator\n\n"))
 
@@ -63,7 +63,7 @@ function main()
 		while not done do
 			io.write(string.format("\nData > "))
 			datin = io.read()
-		
+
 			if string.lower(datin) == "random" then
 				CCSCommon.thisWorld = World:new()
 
@@ -80,7 +80,6 @@ function main()
 				end
 
 				if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
-				
 				done = true
 			else
 				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)

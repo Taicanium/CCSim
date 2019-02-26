@@ -74,12 +74,12 @@ return
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
 						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
-						
+
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
-						
+
 						c:checkRuler(parent)
-						
+
 						if c.snt[parent.systems[c.system].name] > 1 then
 							if parent.systems[c.system].dynastic then
 								local newRuler = -1
@@ -213,7 +213,7 @@ return
 								for q, r in pairs(c.people) do if r.isruler then ruler = r end end
 								if r then newC:add(parent, r) end
 							end
-							
+
 							for i=1,#self.opIntervened do
 								local opC = parent.thisWorld.countries[self.opIntervened[i]]
 								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
@@ -222,7 +222,7 @@ return
 								local opC = parent.thisWorld.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Defeat with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
-							
+
 							for i=1,#c.people do c.people[i].pIndex = i end
 							c.hasruler = -1
 
@@ -230,7 +230,7 @@ return
 							c.system = math.random(1, #parent.systems)
 							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
-							
+
 							c:checkRuler(parent)
 
 							local newRuler = nil
@@ -245,15 +245,7 @@ return
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do
-									if tonumber(c.rulers[i].From) >= c.founded then
-										if c.rulers[i].name == c.people[newRuler].royalName then
-											if c.rulers[i].title == c.people[newRuler].title then
-												namenum = namenum + 1
-											end
-										end
-									end
-								end
+								for i=1,#c.rulers do if tonumber(c.rulers[i].From) >= c.founded then if c.rulers[i].name == c.people[newRuler].royalName then if c.rulers[i].title == c.people[newRuler].title then namenum = namenum + 1 end end end end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -280,9 +272,7 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c)
-						for i=1,#c.ongoing - 1 do
-							if c.ongoing[i].name == self.name then return -1 end
-						end
+						for i=1,#c.ongoing - 1 do if c.ongoing[i].name == self.name then return -1 end end
 						return 0
 					end
 				},
@@ -465,9 +455,7 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#c1.ongoing - 1 do
-							if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end
-						end
+						for i=1,#c1.ongoing - 1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
 
 						if parent.doR then
 							local border = false
@@ -527,7 +515,7 @@ return
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Entered military alliance with "..self.target.name)
 						self.target:event(parent, "Entered military alliance with "..c1.name)
-						
+
 						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 					end,
 					doStep=function(self, parent, c1)
@@ -568,12 +556,8 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#c1.alliances do
-							if c1.alliances[i] == c2.name then return -1 end
-						end
-						for i=1,#c2.alliances do
-							if c2.alliances[i] == c1.name then return -1 end
-						end
+						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
+						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] > 80 then
@@ -639,31 +623,31 @@ return
 												rIndex = rIndex + 1
 											end
 										end
-										
+
 										newl.rulernames = {}
 										newl.frulernames = {}
 										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
 										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
-										
+
 										newl.snt = j.snt
-										
+
 										parent.final[i] = nil
 									end
 								end
-								
+
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
-								
+
 								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def then if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end end
-								
+
 								for i=1,math.floor(#c.people/5) do
 									local p = parent:randomChoice(c.people)
 									while p.isruler do p = parent:randomChoice(c.people) end
 									newl:add(parent, p)
 								end
-								
+
 								newl:set(parent)
-								
+
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
 								parent:getAlphabeticalCountries()
@@ -746,13 +730,9 @@ return
 						local subchance = math.random(1, 100)
 
 						if subchance < 50 then
-							for i=1,#c1.alliances do
-								if c1.alliances[i] == c2.name then return -1 end
-							end
+							for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 
-							for i=1,#c2.alliances do
-								if c2.alliances[i] == c1.name then return -1 end
-							end
+							for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 							if c1.relations[c2.name] then
 								if c1.relations[c2.name] < 6 then
@@ -770,13 +750,9 @@ return
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
-									if #c2.rulers > 0 then
-										c2.rulers[#c2.rulers].To = parent.years
-									end
+									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
-									for i, j in pairs(c2.regions) do
-										parent:RegionTransfer(c1, c2, j.name, true)
-									end
+									for i, j in pairs(c2.regions) do parent:RegionTransfer(c1, c2, j.name, true) end
 
 									parent.thisWorld:delete(parent, c2)
 								end
@@ -858,13 +834,9 @@ return
 
 										c1.stability = c1.stability - 5
 										if c1.stability < 1 then c1.stability = 1 end
-										if #c2.rulers > 0 then
-											c2.rulers[#c2.rulers].To = parent.years
-										end
+										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
-										for i, j in pairs(c2.regions) do
-											parent:RegionTransfer(c1, c2, j.name, true)
-										end
+										for i, j in pairs(c2.regions) do parent:RegionTransfer(c1, c2, j.name, true) end
 
 										parent.thisWorld:delete(parent, c2)
 									end
@@ -955,7 +927,7 @@ return
 					if stat then jsonLoad = true
 					else print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
 				end
-				
+
 				if not jsonLoad then
 					f:seek("set")
 					jTable = self:loadtable(f)
@@ -965,7 +937,7 @@ return
 				f = nil
 
 				print("File closed.\nRestoring encoded recursive values...")
-				
+
 				self.thisWorld = World:new()
 
 				self:getRecursiveRefs(jTable)
@@ -979,17 +951,11 @@ return
 				setmetatable(self.thisWorld, require("CCSCommon.World")())
 				for i, j in pairs(self.thisWorld.countries) do
 					setmetatable(j, require("CCSCommon.Country")())
-					for k, l in pairs(j.people) do
-						setmetatable(l, require("CCSCommon.Person")())
-					end
-					for k, l in pairs(j.parties) do
-						setmetatable(l, require("CCSCommon.Party")())
-					end
+					for k, l in pairs(j.people) do setmetatable(l, require("CCSCommon.Person")()) end
+					for k, l in pairs(j.parties) do setmetatable(l, require("CCSCommon.Party")()) end
 					for k, l in pairs(j.regions) do
 						setmetatable(l, require("CCSCommon.Region")())
-						for m, n in pairs(l.cities) do
-							setmetatable(n, require("CCSCommon.City")())
-						end
+						for m, n in pairs(l.cities) do setmetatable(n, require("CCSCommon.City")()) end
 					end
 				end
 			end,
@@ -1084,7 +1050,7 @@ return
 
 				return false
 			end,
-			
+
 			-- Some terminals will clear scrollback only if the command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
 			clearTerm = function(self)
 				os.execute(self.clrcmd)
@@ -1122,7 +1088,7 @@ return
 
 				local ged = nil
 				local fams = {}
-				
+
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
 				for i, j in pairs(self.final) do
@@ -1179,27 +1145,11 @@ return
 						end
 
 						for j=1,self.maxyears do
-							for k=1,#cp.events do
-								if tonumber(cp.events[k].Year) == j then
-									if cp.events[k].Event:sub(1, 10) == "Revolution" then
-										f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
-									end
-								end
-							end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j then if cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end end
 
-							for k=1,#cp.rulers do
-								if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then
-									f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
-								end
-							end
+							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n")) end end
 
-							for k=1,#cp.events do
-								if tonumber(cp.events[k].Year) == j then
-									if cp.events[k].Event:sub(1, 10) ~= "Revolution" then
-										f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n"))
-									end
-								end
-							end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j then if cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end end
 						end
 
 						f:write("\n\n\n")
@@ -1285,22 +1235,14 @@ return
 					ged:flush()
 					print("")
 					finished = 0
-					
+
 					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
 						local msgout = "0 @F"..tostring(j.fIndex).."@ FAM\n"
 
 						msgout = msgout.."1 HUSB @I"..tostring(j.husb.gIndex).."@\n"
 						msgout = msgout.."1 WIFE @I"..tostring(j.wife.gIndex).."@\n"
 
-						for k=1,#j.chil do
-							if j.chil[k].gString ~= j.husb.gString then
-								if j.chil[k].gString ~= j.wife.gString then
-									if j.chil[k].gIndex ~= 0 then
-										msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n"
-									end
-								end
-							end
-						end
+						for k=1,#j.chil do if j.chil[k].gString ~= j.husb.gString then if j.chil[k].gString ~= j.wife.gString then if j.chil[k].gIndex ~= 0 then msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n" end end end end
 
 						ged:write(msgout)
 
@@ -1324,9 +1266,7 @@ return
 				i = 1
 				while true do
 					name = debug.getupvalue(fn, i)
-					if not name then
-						break
-					end
+					if not name then break end
 					debug.upvaluejoin(cloned, i, fn, i)
 					i = i + 1
 				end
@@ -1335,7 +1275,7 @@ return
 
 			fromFile = function(self, datin)
 				self.doR = false
-			
+
 				print("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
@@ -1352,9 +1292,7 @@ return
 					if not l then done = true
 					else
 						local mat = {}
-						for q in string.gmatch(l, "%S+") do
-							table.insert(mat, tostring(q))
-						end
+						for q in string.gmatch(l, "%S+") do table.insert(mat, tostring(q)) end
 						if mat[1] == "Year" then
 							self.startyear = tonumber(mat[2])
 							self.years = tonumber(mat[2])
@@ -1440,12 +1378,8 @@ return
 								gend = "Female"
 							end
 							local found = false
-							for i, cp in pairs(fc.rulernames) do
-								if cp == mat[2] then found = true end
-							end
-							for i, cp in pairs(fc.frulernames) do
-								if cp == mat[2] then found = true end
-							end
+							for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
+							for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end
 							if not found then
 								if gend == "Female" then
 									table.insert(fc.frulernames, mat[2])
@@ -1515,22 +1449,14 @@ return
 				local ac = #country.alliances
 				for i=1,ac do
 					local c3 = nil
-					for j, cp in pairs(self.thisWorld.countries) do
-						if cp.name == country.alliances[i] then c3 = cp end
-					end
+					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 
-					if c3 then
-						for j=#c3.allyOngoing,1,-1 do
-							if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then
-								table.insert(acOut, c3)
-							end
-						end
-					end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
 				return acOut
 			end,
-			
+
 			getAlphabeticalCountries = function(self)
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
@@ -1554,7 +1480,7 @@ return
 						if not found then table.insert(cKeys, i) end
 					else table.insert(cKeys, i) end
 				end
-				
+
 				self.alpha = cKeys
 			end,
 
@@ -1580,7 +1506,7 @@ return
 					end
 				end
 			end,
-			
+
 			getRecursiveIDs = function(self, tables)
 				for i, j in pairs(tables) do if type(j) == "table" then j.id = nil end end
 			end,
@@ -1594,7 +1520,7 @@ return
 							if l:len() >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] then j[k] = tables[l] end end end end
 							if l:len() >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, l:len())) end end
 						end
-						
+
 						if type(k) == "string" then if tonumber(k) then revised = true nJ[tonumber(k)] = l end end
 					end
 					if revised then tables[i] = nJ end
@@ -1641,9 +1567,7 @@ return
 						setmetatable(tableout, City)
 					elseif mt == "Person" then
 						setmetatable(tableout, Person)
-					elseif mt == "Party" then
-						setmetatable(tableout, Party)
-					end
+					elseif mt == "Party" then setmetatable(tableout, Party) end
 				end
 
 				slen = f:read(1)
@@ -1726,12 +1650,12 @@ return
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
 						end
-						
+
 						for i=1,#currentEvents do
 							msg = msg.."\n"..currentEvents[i]
 							eventsWritten = eventsWritten + 1
 						end
-						
+
 						if eventsWritten == 0 then msg = msg.."\nNone" end
 					end
 
@@ -1740,9 +1664,7 @@ return
 
 					self.years = self.years + 1
 
-					if self.autosaveDur ~= -1 then
-						if math.fmod(self.years, self.autosaveDur) == 1 and self.years > 2 then self:autosave(self) end
-					end
+					if self.autosaveDur ~= -1 then if math.fmod(self.years, self.autosaveDur) == 1 and self.years > 2 then self:autosave(self) end end
 
 					if self.years > self.maxyears then
 						_running = false
@@ -1760,20 +1682,18 @@ return
 				local nom = ""
 				local length = 0
 				if not l then length = math.random(2, 3) else length = math.random(1, l) end
-				
+
 				local taken = {}
 
 				nom = self:randomChoice(self.initialgroups)
 				table.insert(taken, string.lower(nom))
-				
+
 				local groups = 1
 
 				while groups < length do
 					local ieic = false -- initial ends in consonant
 					local mbwc = false -- middle begins with consonant
-					for i=1,#self.consonants do
-						if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end
-					end
+					for i=1,#self.consonants do if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end end
 
 					local mid = self:randomChoice(self.middlegroups)
 					local istaken = false
@@ -1806,9 +1726,7 @@ return
 
 				nom = self:namecheck(nom)
 
-				if nom:len() == 1 then
-					nom = nom..string.lower(self:randomChoice(self.vowels))
-				end
+				if nom:len() == 1 then nom = nom..string.lower(self:randomChoice(self.vowels)) end
 
 				return nom
 			end,
@@ -1824,12 +1742,8 @@ return
 						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+1, i+1)) then
 							local newnom = ""
 
-							for j=1,i do
-								newnom = newnom..nomlower:sub(j, j)
-							end
-							for j=i+2,nomlower:len() do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=1,i do newnom = newnom..nomlower:sub(j, j) end
+							for j=i+2,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
 
 							nomlower = newnom
 						end
@@ -1853,12 +1767,8 @@ return
 						if string.lower(nomlower:sub(i, i+1)) == string.lower(nomlower:sub(i+2, i+3)) then
 							local newnom = ""
 
-							for j=1,i+1 do
-								newnom = newnom..nomlower:sub(j, j)
-							end
-							for j=i+4,nomlower:len() do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
+							for j=i+4,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
 
 							nomlower = newnom
 						end
@@ -1868,13 +1778,9 @@ return
 						if string.lower(nomlower:sub(i, i+2)) == string.lower(nomlower:sub(i+3, i+5)) then
 							local newnom = ""
 
-							for j=1,i+2 do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=1,i+2 do newnom = newnom..nomlower:sub(j, j) end
 
-							for j=i+6,nomlower:len() do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=i+6,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
 
 							nomlower = newnom
 						end
@@ -1884,33 +1790,21 @@ return
 						local hasvowel = false
 
 						for j=i,i+2 do
-							for k=1,#self.vowels do
-								if string.lower(nomlower:sub(j, j)) == self.vowels[k] then
-									hasvowel = true
-								end
-							end
+							for k=1,#self.vowels do if string.lower(nomlower:sub(j, j)) == self.vowels[k] then hasvowel = true end end
 
 							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nomlower:sub(j-1, j-1)) == 't' then
-									if string.lower(nomlower:sub(j, j)) == 'h' then
-										hasvowel = true
-									end
-								end
+								if string.lower(nomlower:sub(j-1, j-1)) == 't' then if string.lower(nomlower:sub(j, j)) == 'h' then hasvowel = true end end
 							end
 						end
 
 						if not hasvowel then
 							local newnom = ""
 
-							for j=1,i+1 do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
 
 							newnom = newnom..self:randomChoice(self.vowels)
 
-							for j=i+3,nomlower:len() do
-								newnom = newnom..nomlower:sub(j, j)
-							end
+							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
 
 							nomlower = newnom
 						end
@@ -2104,9 +1998,7 @@ return
 			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 and c2 then
 					local rCount = 0
-					for i, j in pairs(c2.regions) do
-						rCount = rCount + 1
-					end
+					for i, j in pairs(c2.regions) do rCount = rCount + 1 end
 
 					local lim = 1
 					if conq then lim = 0 end
@@ -2127,7 +2019,7 @@ return
 									end
 								end
 							end
-							
+
 							for i=1,#c2.people do c2.people[i].pIndex = i end
 
 							c1.regions[rn.name] = rn
@@ -2227,17 +2119,9 @@ return
 				local ac = #country.alliances
 				for i=1,ac do
 					local c3 = nil
-					for j, cp in pairs(self.thisWorld.countries) do
-						if cp.name == country.alliances[i] then c3 = cp end
-					end
+					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 
-					if c3 then
-						for j=#c3.allyOngoing,1,-1 do
-							if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then
-								table.remove(c3.allyOngoing, j)
-							end
-						end
-					end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.remove(c3.allyOngoing, j) end end end
 				end
 			end,
 
@@ -2411,9 +2295,7 @@ return
 				if not t.id then
 					t.id = "ID "..tostring(id)
 					id = id + 1
-					for j, k in pairs(t) do
-						if type(k) == "table" then id = self:setRecursiveIDs(k, id) end
-					end
+					for j, k in pairs(t) do if type(k) == "table" then id = self:setRecursiveIDs(k, id) end end
 				end
 				return id
 			end,
@@ -2490,10 +2372,10 @@ return
 					if not j.removed then
 						j.title = j.RoyalTitle
 						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
-						
+
 						if j.father and j.mother then if not j.father.removed and not j.mother.removed then
 							local parentString = j.father.gString.."-"..j.mother.gString
-						
+
 							if not fams[parentString] then
 								fams[parentString] = {fIndex=0, husb=j.father, wife=j.mother, chil={j}}
 								table.insert(j.father.fams, fams[parentString])
@@ -2506,14 +2388,14 @@ return
 								table.insert(j.famc, fams[parentString])
 							end
 						end end
-						
+
 						done = done + 1
 						io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
 					end
 				end
-				
+
 				print("\nRemoving individuals not related to any other...")
-				
+
 				for i, j in pairs(self.royals) do if #j.fams == 0 and #j.famc == 0 then j.removed = true end end
 
 				return fams
