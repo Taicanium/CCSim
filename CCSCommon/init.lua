@@ -2003,6 +2003,7 @@ return
 					nomlower = nomlower:gsub("ea", "a")
 					nomlower = nomlower:gsub("ai", "i")
 					nomlower = nomlower:gsub("ei", "i")
+					nomlower = nomlower:gsub("ie", "i")
 					nomlower = nomlower:gsub("aia", "ia")
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
