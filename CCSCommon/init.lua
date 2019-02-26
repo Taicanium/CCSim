@@ -1001,11 +1001,7 @@ return
 				if f then
 					print("Encoding recursive values...")
 
-					for i, j in pairs(self.final) do
-						for k, l in pairs(self.thisWorld.countries) do
-							if j.name == l.name then self.final[i] = nil end
-						end
-					end
+					for i, j in pairs(self.final) do for k, l in pairs(self.thisWorld.countries) do if j.name == l.name then self.final[i] = nil end end end
 
 					local ids = {}
 					local tables = {}
@@ -1129,29 +1125,30 @@ return
 				
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
-				for i, cp in pairs(self.final) do
+				for i, j in pairs(self.final) do
 					if #cKeys ~= 0 then
 						local found = false
-						for j=1,#cKeys do if not found then
+						for k=1,#cKeys do if cKeys[k] then if not found then
 							local ind = 1
-							local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-							local chr2 = alphaOrder[i:sub(ind, ind):lower()]
+							local chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
+							local chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
 							while chr2 == chr1 do
 								ind = ind + 1
-								chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-								chr2 = alphaOrder[i:sub(ind, ind):lower()]
+								chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
+								chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
 							end
 							if chr2 < chr1 then
-								table.insert(cKeys, j, i)
+								table.insert(cKeys, k, j.name)
 								found = true
 							end
-						end end
-						if not found then table.insert(cKeys, i) end
-					else table.insert(cKeys, i) end
+						end end end
+						if not found then table.insert(cKeys, j.name) end
+					else table.insert(cKeys, j.name) end
 				end
 
 				for i=1,#cKeys do
-					local cp = self.final[cKeys[i]]
+					local cp = nil
+					for j, k in pairs(self.final) do if k.name == cKeys[i] then cp = k end end
 					if cp then
 						local newc = false
 						local pr = 1
@@ -1697,10 +1694,7 @@ return
 					self.thisWorld:update(self)
 
 					for i, cp in pairs(self.thisWorld.countries) do
-						for j, k in pairs(self.final) do
-							if k.name == cp.name then self.final[j] = nil end
-						end
-
+						for j, k in pairs(self.final) do if k.name == cp.name then self.final[j] = nil end end
 						table.insert(self.final, cp)
 					end
 
