@@ -2004,6 +2004,8 @@ return
 					nomlower = nomlower:gsub("ai", "i")
 					nomlower = nomlower:gsub("ei", "i")
 					nomlower = nomlower:gsub("ie", "i")
+					nomlower = nomlower:gsub("ao", "o")
+					nomlower = nomlower:gsub("oi", "i")
 					nomlower = nomlower:gsub("aia", "ia")
 					nomlower = nomlower:gsub("eia", "ia")
 					nomlower = nomlower:gsub("oia", "ia")
