@@ -682,6 +682,8 @@ return
 										end
 									end
 								end
+								
+								c:checkRuler(parent)
 							end
 						end
 
