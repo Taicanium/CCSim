@@ -18,42 +18,42 @@ function main()
 
 	if not CCSCommon:checkAutoload() then
 		printf(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
-		local datin = io.read()
+		local datin = readl()
 
 		CCSCommon.maxyears = tonumber(datin)
 		while not CCSCommon.maxyears do
 			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
-			datin = io.read()
+			datin = readl()
 
 			CCSCommon.maxyears = tonumber(datin)
 		end
 
 		printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\nAnswering N may result in a slight speedup. > ")
-		datin = io.read()
+		datin = readl()
 		datin = string.lower(datin)
 
 		CCSCommon.showinfo = 0
 		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
 		printf(CCSCommon.stdscr, "\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > ")
-		datin = io.read()
+		datin = readl()
 		CCSCommon.autosaveDur = tonumber(datin)
 		while not CCSCommon.autosaveDur do
 			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
-			datin = io.read()
+			datin = readl()
 
 			CCSCommon.autosaveDur = tonumber(datin)
 		end
 
 		printf(CCSCommon.stdscr, "\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
-		datin = io.read()
+		datin = readl()
 		datin = string.lower(datin)
 
 		CCSCommon.doR = false
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 
 		printf(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
-		datin = io.read()
+		datin = readl()
 		datin = string.lower(datin)
 
 		CCSCommon.ged = false
@@ -62,7 +62,7 @@ function main()
 		local done = nil
 		while not done do
 			printf(CCSCommon.stdscr, "\nData > ")
-			datin = io.read()
+			datin = readl()
 
 			if string.lower(datin) == "random" then
 				CCSCommon.thisWorld = World:new()
