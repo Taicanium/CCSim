@@ -350,12 +350,8 @@ return
 					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
 					local c1 = cEnd:sub(1, 1)
 					local c2 = cEnd:sub(2, 2)
-					for i, j in pairs(parent.vowels) do if c1 == j then hasend = true elseif c2 == j then hasend = true end end
-					if not hasend then
-						if c1 == "h" then self.demonym = cBegin..c2
-						elseif c2 == "h" then self.demonym = cBegin..c1
-						else self.demonym = cBegin..c1 end
-					end
+					for i, j in pairs(parent.vowels) do if c1:lower() == j:lower() then hasend = true elseif c2:lower() == j:lower() then hasend = true end end
+					if not hasend then self.demonym = self.demonym.."ian" end
 				end
 			end,
 
