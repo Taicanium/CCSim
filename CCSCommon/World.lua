@@ -52,7 +52,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone + 1
-							if math.fmod(bdone, 10000) == 0 then io.write("\r"..tostring(bdone).."/"..tostring(math.pow((bRad*2)+1, 3))) end
+							if math.fmod(bdone, 10000) == 0 then printl(tostring(bdone).."/"..tostring(math.pow((bRad*2)+1, 3))) end
 						end
 					end
 				end
@@ -92,7 +92,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone + 1
-							if math.fmod(rdone, 10000) == 0 then io.write("\r"..tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
+							if math.fmod(rdone, 10000) == 0 then printl(tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
 						end
 					end
 				end
@@ -171,7 +171,7 @@ return
 						if not found then table.remove(freeNodes, node) end
 					end
 
-					io.write("\r"..tostring(doneLand).."/"..tostring(maxLand))
+					printl(tostring(doneLand).."/"..tostring(maxLand))
 				end
 
 				for i=1,planetSize do
@@ -256,7 +256,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					io.write("\r"..tostring(math.floor(defined/planetSize*10000)/100).."    \t% done")
+					printl(tostring(math.floor(defined/planetSize*10000)/100).."% done    ")
 				end
 
 				for i=1,planetSize do
