@@ -1725,7 +1725,7 @@ return
 						for i=1,#currentEvents do
 							if eCount <= eLimit then msg = msg.."\n"..currentEvents[i] end
 							eCount = eCount + 1
-						end end
+						end
 						
 						if eCount < #currentEvents then msg = msg.."\n[+"..tostring(#currentEvents-eCount).." more]"
 						elseif eCount == 0 then msg = msg.."\nNone" end
