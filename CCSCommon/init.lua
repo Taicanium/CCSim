@@ -15,13 +15,17 @@ printf = print
 printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
+		stdscr:refresh()
 		stdscr:clrtoeol()
 		print(string.format(fmt, ...))
+		stdscr:refresh()
 	end
 	printl = function(stdscr, fmt, ...)
+		stdscr:refresh()
 		stdscr:clrtoeol()
 		io.write(string.format(fmt, ...))
 		stdscr:scrl(1)
+		stdscr:refresh()
 	end
 end
 
@@ -1051,10 +1055,10 @@ return
 						local loaded = self:autoload(self)
 						if not loaded then return false end
 
-						io.write(string.format("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > "))
+						io.write(string.format("\nThis simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
 						res = io.read()
 						if res == "y" then
-							io.write(string.format("\nYears to add to the current running time ("..tostring(self.maxyears)..") > "))
+							io.write(string.format("\nYears to add to the current running time (%d) > ", self.maxyears))
 							res = tonumber(io.read())
 							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
@@ -1063,7 +1067,7 @@ return
 							self.maxyears = self.maxyears + res
 						end
 
-						io.write(string.format("\nDo you want to change the autosave interval, currently every "..tostring(self.autosaveDur).." years (y/n)? > "))
+						io.write(string.format("\nDo you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
 						res = io.read()
 						if res == "y" then
 							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
@@ -1213,7 +1217,7 @@ return
 					local finished = 0
 					for i, j in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
 					for i, j in pairs(self.thisWorld.countries) do
-						printl("Country "..tostring(cIndex).."/"..tostring(cCount))
+						printl("Country %d/%d", cIndex, cCount)
 						j:destroy(self)
 						cIndex = cIndex + 1
 					end
@@ -1273,7 +1277,7 @@ return
 
 						finished = finished + 1
 						percentage = math.floor(finished / #sRoyals * 10000)/100
-						printl("Writing individuals..."..tostring(percentage).."% done    ")
+						printl("Writing individuals...%d%% done", percentage)
 					end
 
 					ged:flush()
@@ -1292,7 +1296,7 @@ return
 
 						finished = finished + 1
 						percentage = math.floor(finished / fCount * 10000)/100
-						printl("Writing families...\t"..tostring(percentage).."% done    ")
+						printl("Writing families...%d%% done", percentage)
 					end end
 
 					msgout = "0 TRLR\n"
@@ -2405,7 +2409,7 @@ return
 					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
 					done = done + 1
-					printl(tostring(done).."/"..tostring(count).." sorted.")
+					printl("%d/%d sorted.", done, count)
 				end
 
 				printf("")
@@ -2419,16 +2423,16 @@ return
 					end
 
 					done = done + 1
-					printl(tostring(done).."/"..tostring(count).." filtered.")
+					printl("%d/%d filtered.", done, count)
 				end
 
 				printf("")
-				printf("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
+				printf("\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 
 				count = 0
 				for i, j in pairs(self.royals) do if not j.removed then count = count + 1 end end
 				oldCount = count
-				printf("Linking "..tostring(count).." individuals...")
+				printf("Linking %d individuals...", count)
 
 				done = 0
 
@@ -2454,7 +2458,7 @@ return
 						end end
 
 						done = done + 1
-						printl(tostring(done).."/"..tostring(count).." linked.")
+						printl("%d/%d linked.", done, count)
 					end
 				end
 
