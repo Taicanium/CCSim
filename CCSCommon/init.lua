@@ -619,7 +619,10 @@ return
 										local conqYear = nil
 										local retrieve = true
 										for k, l in pairs(j.events) do
-											if l.Event:match("Conquered") then conqYear = l.Year end
+											if l.Event:match("Conquered") then if not conqYear or l.Year > conqYear then
+												conqYear = l.Year
+												retrieve = true
+											end
 											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
 
