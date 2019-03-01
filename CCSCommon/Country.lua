@@ -701,18 +701,15 @@ return
 					end
 				end
 
-				for i, l in pairs(self.relations) do
+				for i, j in pairs(self.relations) do
 					local found = false
-					for j, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
-					if not found then
-						self.relations[i] = nil
-						i = nil
-					end
+					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
+					if not found then self.relations[i] = nil end
 				end
 
 				for i, cp in pairs(parent.thisWorld.countries) do
 					if cp.name ~= self.name then
-						if not self.relations[cp.name] then self.relations[cp.name] = 40 end
+						if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 						local v = math.random(-4, 4)
 						self.relations[cp.name] = self.relations[cp.name] + v
 						if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
@@ -727,20 +724,20 @@ return
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 75 end
 
-				while math.floor(#self.people) > math.floor(parent.popLimit * 5) do self:delete(parent, parent:randomChoice(self.people, true)) end
+				while math.floor(#self.people) > math.floor(parent.popLimit * 3) do self:delete(parent, parent:randomChoice(self.people, true)) end
 
 				local oldcap = nil
 				local oldreg = nil
 
 				if not self.regions[self.capitalregion] then
 					oldreg = self.capitalregion
-					self.capitalregion = parent:randomChoice(self.regions).name
+					self.capitalregion = parent:randomChoice(self.regions, true)
 					oldcap = self.capitalcity
 					self.capitalcity = nil
 				end
 
 				if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
-					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities).name
+					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 					if oldcap then if self.regions[oldreg] then if self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end end end
 				end
 
@@ -789,10 +786,10 @@ return
 						end
 					end
 				end
+				
+				self:checkRuler(parent)
 
 				self.averageAge = self.averageAge / #self.people
-
-				self:checkRuler(parent)
 
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
