@@ -35,7 +35,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 
-				printf("Benchmarking...")
+				printf(parent.stdscr, "Benchmarking...")
 				local bRad = 175
 				local bench = {}
 
@@ -52,7 +52,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone + 1
-							if math.fmod(bdone, 10000) == 0 then printl("%d/%d", bDone, math.pow((bRad*2)+1, 3)) end
+							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", bDone, math.pow((bRad*2)+1, 3)) end
 						end
 					end
 				end
@@ -66,7 +66,7 @@ return
 				local r = math.floor(math.random(125-benchAdjust, 225-benchAdjust))
 				self.planetR = r
 
-				printf("\nConstructing voxel planet with radius of %d units...", r)
+				printf(parent.stdscr, "\nConstructing voxel planet with radius of %d units...", r)
 
 				local rdone = 0
 
@@ -92,14 +92,14 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone + 1
-							if math.fmod(rdone, 10000) == 0 then printl("%d/%d", rdone, math.pow((r*2)+1, 3)) end
+							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", rdone, math.pow((r*2)+1, 3)) end
 						end
 					end
 				end
 
 				local planetSize = #self.planetdefined
 
-				printf("")
+				printf(parent.stdscr, "")
 
 				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
@@ -109,7 +109,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf("Defining land masses...")
+				printf(parent.stdscr, "Defining land masses...")
 
 				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
 				local continents = math.random(10, 15)
@@ -171,7 +171,7 @@ return
 						if not found then table.remove(freeNodes, node) end
 					end
 
-					printl("%d/%d", doneLand, maxLand)
+					printl(parent.stdscr, "%d/%d", doneLand, maxLand)
 				end
 
 				for i=1,planetSize do
@@ -184,7 +184,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf("\nRooting countries...")
+				printf(parent.stdscr, "\nRooting countries...")
 
 				for i, cp in pairs(self.countries) do
 					local located = true
@@ -210,7 +210,7 @@ return
 					self.planet[x][y][z].country = cp.name
 				end
 
-				printf("Setting territories...")
+				printf(parent.stdscr, "Setting territories...")
 
 				local allDefined = false
 				local defined = 0
@@ -256,7 +256,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					printl("%d%% done", math.floor(defined/planetSize*10000)/100)
+					printl(parent.stdscr, "%d%% done", math.floor(defined/planetSize*10000)/100)
 				end
 
 				for i=1,planetSize do
@@ -267,12 +267,12 @@ return
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
-				printf("\nDefining regional boundaries...")
+				printf(parent.stdscr, "\nDefining regional boundaries...")
 
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
-					printf("Country %d/%d", ci, parent.numCountries)
+					printf(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
 					ci = ci + 1
 					cp:setTerritory(parent)
 				end
@@ -296,7 +296,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				printf("Writing R data...")
+				printf(parent.stdscr, "Writing R data...")
 
 				local ci = 1
 
