@@ -52,7 +52,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone + 1
-							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", bDone, math.pow((bRad*2)+1, 3)) end
+							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", bdone, math.pow((bRad*2)+1, 3)) end
 						end
 					end
 				end
