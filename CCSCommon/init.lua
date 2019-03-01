@@ -714,8 +714,6 @@ return
 								if c2.stability < 1 then c2.stability = 1 end
 								c1:setPop(parent, math.ceil(c1.population / 1.25))
 								c2:setPop(parent, math.ceil(c2.population / 1.75))
-								for i=1,#c1.people do c1.people[i].pIndex = i end
-								for i=1,#c2.people do c2.people[i].pIndex = i end
 
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount + 1 end
@@ -2050,8 +2048,6 @@ return
 									end
 								end
 							end
-
-							for i=1,#c2.people do c2.people[i].pIndex = i end
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
