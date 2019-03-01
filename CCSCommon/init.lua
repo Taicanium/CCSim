@@ -13,6 +13,7 @@ if socketstatus then _time = socket.gettime end
 
 printf = print
 printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
+printp = function(fmt, ...) io.write(string.format("\n"..fmt, ...)) end
 readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
@@ -31,6 +32,16 @@ if cursesstatus then
 		stdscr:clrtoeol()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
+		stdscr:refresh()
+	end
+	printp = function(stdscr, fmt, ...)
+		stdscr:refresh()
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
+		stdscr:clrtoeol()
+		local str = string.format(fmt, ...)
+		stdscr:addstr(str)
+		stdscr:move(y, str:len()+1)
 		stdscr:refresh()
 	end
 	readl = function(stdscr) return stdscr:getstr() end
@@ -1055,32 +1066,32 @@ return
 					f:close()
 					f = nil
 
-					io.write(string.format("\nAn in-progress run was detected. Load from last save point? (y/n) > "))
+					printp("An in-progress run was detected. Load from last save point? (y/n) > ")
 					local res = readl(self.stdscr)
 
 					if res == "y" then
 						local loaded = self:autoload(self)
 						if not loaded then return false end
 
-						io.write(string.format("\nThis simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
+						printp("This simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
 						res = readl(self.stdscr)
 						if res == "y" then
-							io.write(string.format("\nYears to add to the current running time (%d) > ", self.maxyears))
+							printp("Years to add to the current running time (%d) > ", self.maxyears))
 							res = tonumber(readl(self.stdscr))
 							while not res do
-								io.write(string.format("\nPlease enter a number. > "))
+								printp("Please enter a number. > ")
 								res = tonumber(readl(self.stdscr))
 							end
 							self.maxyears = self.maxyears + res
 						end
 
-						io.write(string.format("\nDo you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
+						printp("Do you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
 						res = readl(self.stdscr)
 						if res == "y" then
-							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
+							printp("What would you like the new autosave interval to be? > ")
 							res = tonumber(readl(self.stdscr))
 							while not res do
-								io.write(string.format("\nPlease enter a number. > "))
+								printp("Please enter a number. > ")
 								res = tonumber(readl(self.stdscr))
 							end
 							self.autosaveDur = res
