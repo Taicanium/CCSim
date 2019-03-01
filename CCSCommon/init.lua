@@ -12,7 +12,18 @@ _time = os.clock
 if socketstatus then _time = socket.gettime end
 
 printf = print
-if cursesstatus then printf = function(fmt, ...) return print(string.format(fmt, ...)) end end
+printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
+if cursesstatus then
+	printf = function(stdscr, fmt, ...)
+		stdscr:clrtoeol()
+		print(string.format(fmt, ...))
+	end
+	printl = function(stdscr, fmt, ...)
+		stdscr:clrtoeol()
+		io.write(string.format(fmt, ...))
+		stdscr:scrl(1)
+	end
+end
 
 return
 	function()
@@ -1078,7 +1089,7 @@ return
 					self.stdscr = curses.initscr()
 					curses.cbreak()
 					curses.echo(false)
-					curses.nl(false)
+					curses.nl(true)
 				end
 			
 				if cursesstatus then self.stdscr:clear()
@@ -1202,7 +1213,7 @@ return
 					local finished = 0
 					for i, j in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
 					for i, j in pairs(self.thisWorld.countries) do
-						io.write("\rCountry "..tostring(cIndex).."/"..tostring(cCount))
+						printl("Country "..tostring(cIndex).."/"..tostring(cCount))
 						j:destroy(self)
 						cIndex = cIndex + 1
 					end
@@ -1262,7 +1273,7 @@ return
 
 						finished = finished + 1
 						percentage = math.floor(finished / #sRoyals * 10000)/100
-						io.write("\rWriting individuals...\t"..tostring(percentage).."    \t% done")
+						printl("Writing individuals..."..tostring(percentage).."% done    ")
 					end
 
 					ged:flush()
@@ -1281,7 +1292,7 @@ return
 
 						finished = finished + 1
 						percentage = math.floor(finished / fCount * 10000)/100
-						io.write("\rWriting families...\t"..tostring(percentage).."    \t% done")
+						printl("Writing families...\t"..tostring(percentage).."% done    ")
 					end end
 
 					msgout = "0 TRLR\n"
@@ -1673,19 +1684,25 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = "Year "..self.years..": "..self.numCountries.." countries\n\n"
+					msg = "Year "..self.years..": "..self.numCountries.." countries\n"
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
-						local eventsWritten = 0
 						local cCount = 0
+						local cLimit = 14
+						local eCount = 0
+						local eLimit = 4
+						if cursesstatus then
+							cLimit = math.floor(self.stdscr:lines() / 2)
+							eLimit = (self.stdscr:lines() - cLimit) - 5
+						end
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then
 								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
 							
-								if cCount <= 20 then
+								if cCount <= cLimit then
 									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
 									local sysName = self.systems[cp.system].name
 									if cp.dfif[sysName] then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
@@ -1699,12 +1716,12 @@ return
 
 						msg = msg.."\nOngoing events:"
 
-						for i=1,#currentEvents do
+						for i=1,#currentEvents do if eCount <= eLimit then
 							msg = msg.."\n"..currentEvents[i]
-							eventsWritten = eventsWritten + 1
-						end
+							eCount = eCount + 1
+						end end
 
-						if eventsWritten == 0 then msg = msg.."\nNone" end
+						if eCount == 0 then msg = msg.."\nNone" end
 					end
 
 					self:clearTerm()
@@ -2388,7 +2405,7 @@ return
 					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
+					printl(tostring(done).."/"..tostring(count).." sorted.")
 				end
 
 				printf("")
@@ -2402,7 +2419,7 @@ return
 					end
 
 					done = done + 1
-					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
+					printl(tostring(done).."/"..tostring(count).." filtered.")
 				end
 
 				printf("")
@@ -2437,7 +2454,7 @@ return
 						end end
 
 						done = done + 1
-						io.write("\r"..tostring(done).."/"..tostring(count).." linked.")
+						printl(tostring(done).."/"..tostring(count).." linked.")
 					end
 				end
 
