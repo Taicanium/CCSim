@@ -25,7 +25,7 @@ function main()
 			printp(CCSCommon.stdscr, "Please enter a number. > ")
 			datin = readl(CCSCommon.stdscr)
 
-			CCSCommon.maxyears = tonumber(datin)
+			CCSCommon.maxyears = tonumber(datin) + 1 -- We start at year 1.
 		end
 
 		printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?")
