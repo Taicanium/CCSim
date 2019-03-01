@@ -14,45 +14,47 @@ function main()
 	end
 
 	CCSCommon:clearTerm()
-	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n\n")
+	printf(CCSCommon.stdscr, "\n\tCCSIM : Compact Country Simulator\n")
 
 	if not CCSCommon:checkAutoload() then
-		printf(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
+		printp(CCSCommon.stdscr, "How many years should the simulation run? > ")
 		local datin = readl(CCSCommon.stdscr)
 
 		CCSCommon.maxyears = tonumber(datin)
 		while not CCSCommon.maxyears do
-			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
+			printp(CCSCommon.stdscr, "Please enter a number. > ")
 			datin = readl(CCSCommon.stdscr)
 
 			CCSCommon.maxyears = tonumber(datin)
 		end
 
-		printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\nAnswering N may result in a slight speedup. > ")
+		printf(CCSCommon.stdscr, "Do you want to show detailed info in the console (y/n)?")
+		printp(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
 		datin = readl(CCSCommon.stdscr)
 		datin = string.lower(datin)
 
 		CCSCommon.showinfo = 0
 		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
-		printf(CCSCommon.stdscr, "\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > ")
+		printf(CCSCommon.stdscr, "How often do you want the world data to be autosaved?")
+		printp(CCSCommon.stdscr, "Enter a number of years, or -1 for never. > ")
 		datin = readl(CCSCommon.stdscr)
 		CCSCommon.autosaveDur = tonumber(datin)
 		while not CCSCommon.autosaveDur do
-			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
+			printp(CCSCommon.stdscr, "Please enter a number. > ")
 			datin = readl(CCSCommon.stdscr)
 
 			CCSCommon.autosaveDur = tonumber(datin)
 		end
 
-		printf(CCSCommon.stdscr, "\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
+		printp(CCSCommon.stdscr, "Do you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
 		datin = readl(CCSCommon.stdscr)
 		datin = string.lower(datin)
 
 		CCSCommon.doR = false
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 
-		printf(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+		printp(CCSCommon.stdscr, "Do you want to produce a GEDCOM file for royal lines (y/n)? > ")
 		datin = readl(CCSCommon.stdscr)
 		datin = string.lower(datin)
 
@@ -61,7 +63,7 @@ function main()
 
 		local done = nil
 		while not done do
-			printf(CCSCommon.stdscr, "\nData > ")
+			printp(CCSCommon.stdscr, "Data > ")
 			datin = readl(CCSCommon.stdscr)
 
 			if string.lower(datin) == "random" then
