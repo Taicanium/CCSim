@@ -93,6 +93,8 @@ function main()
 	end
 
 	CCSCommon:loop()
+	
+	os.exit(0)
 end
 
 main()
