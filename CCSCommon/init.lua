@@ -13,6 +13,7 @@ if socketstatus then _time = socket.gettime end
 
 printf = print
 printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
+readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
 		stdscr:refresh()
@@ -27,6 +28,7 @@ if cursesstatus then
 		stdscr:scrl(1)
 		stdscr:refresh()
 	end
+	readl = function(stdscr) return stdscr:getstr() end
 end
 
 return
@@ -1049,32 +1051,32 @@ return
 					f = nil
 
 					io.write(string.format("\nAn in-progress run was detected. Load from last save point? (y/n) > "))
-					local res = io.read()
+					local res = readl()
 
 					if res == "y" then
 						local loaded = self:autoload(self)
 						if not loaded then return false end
 
 						io.write(string.format("\nThis simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
-						res = io.read()
+						res = readl()
 						if res == "y" then
 							io.write(string.format("\nYears to add to the current running time (%d) > ", self.maxyears))
-							res = tonumber(io.read())
+							res = tonumber(readl())
 							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
-								res = tonumber(io.read())
+								res = tonumber(readl())
 							end
 							self.maxyears = self.maxyears + res
 						end
 
 						io.write(string.format("\nDo you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
-						res = io.read()
+						res = readl()
 						if res == "y" then
 							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
-							res = tonumber(io.read())
+							res = tonumber(readl())
 							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
-								res = tonumber(io.read())
+								res = tonumber(readl())
 							end
 							self.autosaveDur = res
 						end
@@ -1091,7 +1093,7 @@ return
 			clearTerm = function(self)
 				if not self.stdscr and cursesstatus then
 					self.stdscr = curses.initscr()
-					curses.cbreak()
+					curses.cbreak(false)
 					curses.echo(true)
 					curses.nl(true)
 				end
