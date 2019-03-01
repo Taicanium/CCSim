@@ -17,19 +17,20 @@ readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
 		stdscr:refresh()
-		stdscr:move(stdscr:getyx()[1], 0)
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
 		stdscr:clrtoeol()
-		print(string.format(fmt, ...))
-		stdscr:move(stdscr:getyx()[1], 0)
+		stdscr:addstr(string.format(fmt, ...))
+		stdscr:move(y+1, 0)
 		stdscr:refresh()
 	end
 	printl = function(stdscr, fmt, ...)
 		stdscr:refresh()
-		stdscr:move(stdscr:getyx()[1], 0)
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
 		stdscr:clrtoeol()
-		io.write(string.format(fmt, ...))
-		stdscr:scrl(1)
-		stdscr:move(stdscr:getyx()[1], 0)
+		stdscr:addstr(string.format(fmt, ...))
+		stdscr:move(y, 0)
 		stdscr:refresh()
 	end
 	readl = function(stdscr) return stdscr:getstr() end
@@ -1104,7 +1105,7 @@ return
 			
 				if cursesstatus then
 					self.stdscr:clear()
-					self.stdscr:move(1, 1)
+					self.stdscr:move(0, 0)
 				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
 
