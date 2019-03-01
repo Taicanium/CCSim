@@ -816,7 +816,7 @@ return
 				},
 				{
 					name="Annex",
-					chance=4,
+					chance=6,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -829,7 +829,7 @@ return
 						if not patron then
 							if c1.majority == c2.majority then
 								if c1.relations[c2.name] then
-									if c1.relations[c2.name] > 60 then
+									if c1.relations[c2.name] > 85 then
 										c1:event(parent, "Annexed "..c2.name)
 										c2:event(parent, "Annexed by "..c1.name)
 
