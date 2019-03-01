@@ -356,10 +356,11 @@ return
 			end,
 
 			recurseRoyalChildren = function(self, t)
+				if not t.children then return nil end
+				if #t.children == 0 then return nil end
+				
 				local childrenByAge = {}
 				local childrenLiving = {}
-				if #t.children == 0 then return nil end
-
 				local hasMale = false
 
 				table.insert(childrenByAge, t.children[1])
