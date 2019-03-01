@@ -1755,7 +1755,7 @@ return
 						end
 						
 						if eCount < #currentEvents then printf(self.stdscr, "[+%d more]", #currentEvents-eCount)
-						elseif eCount == 0 then printf("None") end
+						elseif eCount == 0 then printf(self.stdscr, "None") end
 					end
 
 					self.years = self.years + 1
