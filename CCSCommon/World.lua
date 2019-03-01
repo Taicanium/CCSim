@@ -158,7 +158,7 @@ return
 							end
 							local found = false
 							for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then found = true end end
-							if found then table.insert(freeNodes, self.planet[nx][ny][nz].neighbors[neighbor]) end
+							if found then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
 							table.remove(self.planet[x][y][z].neighbors, neighbor)
 						end
 					end
