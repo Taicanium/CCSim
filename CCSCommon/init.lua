@@ -1092,14 +1092,14 @@ return
 				if not self.stdscr and cursesstatus then
 					self.stdscr = curses.initscr()
 					curses.cbreak()
-					curses.echo(false)
+					curses.echo(true)
 					curses.nl(true)
 				end
 			
 				if cursesstatus then
 					self.stdscr:clear()
 					self.stdscr:move(1, 1)
-				else for i=1,3 do os.execute(self.clrcmd) end
+				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
 
 			deepcopy = function(self, obj)
