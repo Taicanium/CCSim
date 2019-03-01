@@ -17,15 +17,19 @@ readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
 		stdscr:refresh()
+		stdscr:move(stdscr:getyx()[1], 0)
 		stdscr:clrtoeol()
 		print(string.format(fmt, ...))
+		stdscr:move(stdscr:getyx()[1], 0)
 		stdscr:refresh()
 	end
 	printl = function(stdscr, fmt, ...)
 		stdscr:refresh()
+		stdscr:move(stdscr:getyx()[1], 0)
 		stdscr:clrtoeol()
 		io.write(string.format(fmt, ...))
 		stdscr:scrl(1)
+		stdscr:move(stdscr:getyx()[1], 0)
 		stdscr:refresh()
 	end
 	readl = function(stdscr) return stdscr:getstr() end
@@ -1051,32 +1055,32 @@ return
 					f = nil
 
 					io.write(string.format("\nAn in-progress run was detected. Load from last save point? (y/n) > "))
-					local res = readl()
+					local res = readl(self.stdscr)
 
 					if res == "y" then
 						local loaded = self:autoload(self)
 						if not loaded then return false end
 
 						io.write(string.format("\nThis simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
-						res = readl()
+						res = readl(self.stdscr)
 						if res == "y" then
 							io.write(string.format("\nYears to add to the current running time (%d) > ", self.maxyears))
-							res = tonumber(readl())
+							res = tonumber(readl(self.stdscr))
 							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
-								res = tonumber(readl())
+								res = tonumber(readl(self.stdscr))
 							end
 							self.maxyears = self.maxyears + res
 						end
 
 						io.write(string.format("\nDo you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
-						res = readl()
+						res = readl(self.stdscr)
 						if res == "y" then
 							io.write(string.format("\nWhat would you like the new autosave interval to be? > "))
-							res = tonumber(readl())
+							res = tonumber(readl(self.stdscr))
 							while not res do
 								io.write(string.format("\nPlease enter a number. > "))
-								res = tonumber(readl())
+								res = tonumber(readl(self.stdscr))
 							end
 							self.autosaveDur = res
 						end
