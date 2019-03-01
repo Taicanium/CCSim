@@ -14,22 +14,23 @@ if socketstatus then _time = socket.gettime end
 printf = print
 printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
 printp = function(fmt, ...) io.write(string.format("\n"..fmt, ...)) end
+printc = function(fmt, ...) io.write(string.format(fmt, ...)) end
 readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtoeol()
+		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
-		stdscr:move(y+1, 0)
+		stdscr:addstr("\n")
 		stdscr:refresh()
 	end
 	printl = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtoeol()
+		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
@@ -38,10 +39,15 @@ if cursesstatus then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		local str = string.format(fmt, ...)
-		stdscr:addstr(str)
-		stdscr:move(y, str:len()+1)
+		stdscr:clrtobot()
+		stdscr:addstr(string.format(fmt, ...))
+		stdscr:refresh()
+	end
+	printc = function(stdscr, fmt, ...)
+		stdscr:refresh()
+		local y, x = stdscr:getyx()
+		stdscr:clrtobot()
+		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	end
 	readl = function(stdscr) return stdscr:getstr() end
@@ -1112,11 +1118,13 @@ return
 					curses.cbreak(false)
 					curses.echo(true)
 					curses.nl(true)
+					self.stdscr:refresh()
 				end
 			
 				if cursesstatus then
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
+					self.stdscr:refresh()
 				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
 
@@ -1696,7 +1704,6 @@ return
 
 			loop = function(self)
 				local _running = true
-				local msg = ""
 
 				printf(self.stdscr, "\nBegin Simulation!")
 
@@ -1708,7 +1715,9 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = "Year "..self.years..": "..self.numCountries.." countries\n"
+					self:clearTerm()
+					
+					printf(self.stdscr, "Year %d: %d countries\n", self.years, self.numCountries)
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
@@ -1717,8 +1726,8 @@ return
 						local eCount = 0
 						local eLimit = 4
 						if cursesstatus then
-							cLimit = math.floor(self.stdscr:lines() / 2)
-							eLimit = (self.stdscr:lines() - cLimit) - 5
+							cLimit = math.floor(curses:lines() / 2)
+							eLimit = (curses:lines() - cLimit) - 5
 						end
 
 						for i=1,#self.alpha do
@@ -1727,30 +1736,27 @@ return
 								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
 							
 								if cCount <= cLimit then
-									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
+									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, self:ordinal(cp.snt[self.systems[cp.system].name]).." ") end
 									local sysName = self.systems[cp.system].name
-									if cp.dfif[sysName] then msg = msg..cp.demonym.." "..cp.formalities[self.systems[cp.system].name] else msg = msg..cp.formalities[self.systems[cp.system].name].." of "..cp.name end
-									msg = msg.." - Population "..cp.population.." - "..self:getRulerString(cp.rulers[#cp.rulers]).."\n"
+									if cp.dfif[sysName] then printc(self.stdscr, "%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else printc(self.stdscr, "%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
+									printc(self.stdscr, " - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
 									cCount = cCount + 1
 								end
 							end
 						end
 
-						if cCount < self.numCountries then msg = msg.."[+"..tostring(self.numCountries-cCount).." more]\n" end
+						if cCount < self.numCountries then printf(self.stdscr, "[+%d more]", self.numCountries-cCount) end
 
-						msg = msg.."\nOngoing events:"
+						printf(self.stdscr, "\nOngoing events:")
 
 						for i=1,#currentEvents do
-							if eCount <= eLimit then msg = msg.."\n"..currentEvents[i] end
+							if eCount <= eLimit then printf(self.stdscr, currentEvents[i]) end
 							eCount = eCount + 1
 						end
 						
-						if eCount < #currentEvents then msg = msg.."\n[+"..tostring(#currentEvents-eCount).." more]"
-						elseif eCount == 0 then msg = msg.."\nNone" end
+						if eCount < #currentEvents then printf(self.stdscr, "[+%d more]", #currentEvents-eCount)
+						elseif eCount == 0 then printf("None") end
 					end
-
-					self:clearTerm()
-					printf(self.stdscr, msg)
 
 					self.years = self.years + 1
 
