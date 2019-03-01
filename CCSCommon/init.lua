@@ -1482,7 +1482,13 @@ return
 								chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
 								chr2 = alphaOrder[i:sub(ind, ind):lower()]
 							end
-							if chr2 < chr1 then
+							if not chr1 then
+								table.insert(cKeys, j+1, i)
+								found = true
+							elseif not chr2 then
+								table.insert(cKeys, j, i)
+								found = true
+							elseif chr2 < chr1 then
 								table.insert(cKeys, j, i)
 								found = true
 							end
