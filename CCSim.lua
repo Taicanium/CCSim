@@ -85,7 +85,7 @@ function main()
 				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 				done = true
 				if not i then
-					print("Unable to locate data file! Please try again.")
+					print(i, j, "Unable to load data file! Please try again.")
 					done = nil
 				end
 			end
