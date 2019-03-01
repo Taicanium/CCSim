@@ -1063,11 +1063,9 @@ return
 				return false
 			end,
 
-			-- Some terminals will clear scrollback only if the command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
+			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
 			clearTerm = function(self)
-				os.execute(self.clrcmd)
-				os.execute(self.clrcmd)
-				os.execute(self.clrcmd)
+				for i=1,3 do os.execute(self.clrcmd) end
 			end,
 
 			deepcopy = function(self, obj)
