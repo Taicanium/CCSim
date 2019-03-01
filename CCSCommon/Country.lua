@@ -46,10 +46,11 @@ return
 
 			add = function(self, parent, n)
 				if n.nationality ~= self.name then
-					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then if parent.thisWorld.countries[n.nationality].people[n.pIndex] then if parent.thisWorld.countries[n.nationality].people[n.pIndex].gString == n.gString then
+					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then
+						for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
 						table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
 						for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
-					end end end end
+					end end
 				end
 				n.nationality = self.name
 				n.region = ""
@@ -675,7 +676,6 @@ return
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
-				self.age = self.age + 1
 				self.averageAge = 0
 
 				if #self.parties > 0 then
@@ -760,25 +760,21 @@ return
 					local age = self.people[i].age
 					if age > 100 then
 						self:delete(parent, i)
-						for j=i,#self.people do self.people[j].pIndex = j end
 						chn = true
 					else
 						d = math.random(1, 3000-(age*3))
 						if d < age then
 							self:delete(parent, i)
-							for j=i,#self.people do self.people[j].pIndex = j end
 							chn = true
 						end
 					end
 
 					if not chn then if not self.people[i].isruler then
-						self.people[i].pIndex = i
 						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 							cp:add(parent, self.people[i])
-							for j=i,#self.people do self.people[j].pIndex = j end
 							chn = true
 						end
 					end end
@@ -817,6 +813,8 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
+				
+				self.age = self.age + 1
 			end
 		}
 
