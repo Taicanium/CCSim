@@ -1115,7 +1115,13 @@ return
 								chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
 								chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
 							end
-							if chr2 < chr1 then
+							if not chr1 then
+								table.insert(cKeys, k+1, j.name)
+								found = true
+							elseif not chr2 then
+								table.insert(cKeys, k, j.name)
+								found = true
+							elseif chr2 < chr1 then
 								table.insert(cKeys, k, j.name)
 								found = true
 							end
@@ -1471,36 +1477,38 @@ return
 			end,
 
 			getAlphabeticalCountries = function(self)
-				local cKeys = {}
-				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
-				for i, cp in pairs(self.thisWorld.countries) do
-					if #cKeys ~= 0 then
-						local found = false
-						for j=1,#cKeys do if not found then
-							local ind = 1
-							local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-							local chr2 = alphaOrder[i:sub(ind, ind):lower()]
-							while chr2 == chr1 do
-								ind = ind + 1
-								chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-								chr2 = alphaOrder[i:sub(ind, ind):lower()]
-							end
-							if not chr1 then
-								table.insert(cKeys, j+1, i)
-								found = true
-							elseif not chr2 then
-								table.insert(cKeys, j, i)
-								found = true
-							elseif chr2 < chr1 then
-								table.insert(cKeys, j, i)
-								found = true
-							end
-						end end
-						if not found then table.insert(cKeys, i) end
-					else table.insert(cKeys, i) end
-				end
+				if self.showinfo == 1 then
+					local cKeys = {}
+					local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
+					for i, cp in pairs(self.thisWorld.countries) do
+						if #cKeys ~= 0 then
+							local found = false
+							for j=1,#cKeys do if not found then
+								local ind = 1
+								local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+								local chr2 = alphaOrder[i:sub(ind, ind):lower()]
+								while chr2 == chr1 do
+									ind = ind + 1
+									chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+									chr2 = alphaOrder[i:sub(ind, ind):lower()]
+								end
+								if not chr1 then
+									table.insert(cKeys, j+1, i)
+									found = true
+								elseif not chr2 then
+									table.insert(cKeys, j, i)
+									found = true
+								elseif chr2 < chr1 then
+									table.insert(cKeys, j, i)
+									found = true
+								end
+							end end
+							if not found then table.insert(cKeys, i) end
+						else table.insert(cKeys, i) end
+					end
 
-				self.alpha = cKeys
+					self.alpha = cKeys
+				end
 			end,
 
 			getfunctionvalues = function(self, fnname, fn, t)
@@ -1649,11 +1657,14 @@ return
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
+						local eventsWritten = 0
 						local cCount = 0
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then
+								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
+							
 								if cCount <= 20 then
 									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..self:ordinal(cp.snt[self.systems[cp.system].name]).." " end
 									local sysName = self.systems[cp.system].name
@@ -1667,12 +1678,6 @@ return
 						if cCount < self.numCountries then msg = msg.."[+ "..tostring(self.numCountries-cCount).." more]\n" end
 
 						msg = msg.."\nOngoing events:"
-						local eventsWritten = 0
-
-						for i=1,#self.alpha do
-							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cp then for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end end
-						end
 
 						for i=1,#currentEvents do
 							msg = msg.."\n"..currentEvents[i]
