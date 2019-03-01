@@ -35,7 +35,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 
-				print("Benchmarking...")
+				printf("Benchmarking...")
 				local bRad = 175
 				local bench = {}
 
@@ -66,7 +66,7 @@ return
 				local r = math.floor(math.random(125-benchAdjust, 225-benchAdjust))
 				self.planetR = r
 
-				print("\nConstructing voxel planet with radius of "..tostring(r).." units...")
+				printf("\nConstructing voxel planet with radius of "..tostring(r).." units...")
 
 				local rdone = 0
 
@@ -99,7 +99,7 @@ return
 
 				local planetSize = #self.planetdefined
 
-				print("")
+				printf("")
 
 				for i=1,planetSize do
 					local x = self.planetdefined[i][1]
@@ -109,7 +109,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				print("Defining land masses...")
+				printf("Defining land masses...")
 
 				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
 				local continents = math.random(10, 15)
@@ -184,7 +184,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				print("\nRooting countries...")
+				printf("\nRooting countries...")
 
 				for i, cp in pairs(self.countries) do
 					local located = true
@@ -210,7 +210,7 @@ return
 					self.planet[x][y][z].country = cp.name
 				end
 
-				print("Setting territories...")
+				printf("Setting territories...")
 
 				local allDefined = false
 				local defined = 0
@@ -267,12 +267,12 @@ return
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
-				print("\nDefining regional boundaries...")
+				printf("\nDefining regional boundaries...")
 
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
-					print("Country "..tostring(ci).."/"..tostring(parent.numCountries))
+					printf("Country "..tostring(ci).."/"..tostring(parent.numCountries))
 					ci = ci + 1
 					cp:setTerritory(parent)
 				end
@@ -296,7 +296,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				print("Writing R data...")
+				printf("Writing R data...")
 
 				local ci = 1
 
