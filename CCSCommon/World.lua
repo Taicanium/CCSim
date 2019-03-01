@@ -52,7 +52,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone + 1
-							if math.fmod(bdone, 10000) == 0 then printl(tostring(bdone).."/"..tostring(math.pow((bRad*2)+1, 3))) end
+							if math.fmod(bdone, 10000) == 0 then printl("%d/%d", bDone, math.pow((bRad*2)+1, 3)) end
 						end
 					end
 				end
@@ -66,7 +66,7 @@ return
 				local r = math.floor(math.random(125-benchAdjust, 225-benchAdjust))
 				self.planetR = r
 
-				printf("\nConstructing voxel planet with radius of "..tostring(r).." units...")
+				printf("\nConstructing voxel planet with radius of %d units...", r)
 
 				local rdone = 0
 
@@ -92,7 +92,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone + 1
-							if math.fmod(rdone, 10000) == 0 then printl(tostring(rdone).."/"..tostring(math.pow((r*2)+1, 3))) end
+							if math.fmod(rdone, 10000) == 0 then printl("%d/%d", rdone, math.pow((r*2)+1, 3)) end
 						end
 					end
 				end
@@ -171,7 +171,7 @@ return
 						if not found then table.remove(freeNodes, node) end
 					end
 
-					printl(tostring(doneLand).."/"..tostring(maxLand))
+					printl("%d/%d", doneLand, maxLand)
 				end
 
 				for i=1,planetSize do
@@ -256,7 +256,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					printl(tostring(math.floor(defined/planetSize*10000)/100).."% done    ")
+					printl("%d%% done", math.floor(defined/planetSize*10000)/100)
 				end
 
 				for i=1,planetSize do
@@ -272,7 +272,7 @@ return
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
-					printf("Country "..tostring(ci).."/"..tostring(parent.numCountries))
+					printf("Country %d/%d", ci, parent.numCountries)
 					ci = ci + 1
 					cp:setTerritory(parent)
 				end
