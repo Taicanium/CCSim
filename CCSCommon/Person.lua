@@ -60,10 +60,10 @@ return
 			end,
 
 			dobirth = function(self, parent, nl)
-				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end end
+				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
 				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
 				
-				if self.spouse.gender == "Male" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end end
+				if self.spouse.gender == "Male" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end
 				elseif self.spouse.gender == "Female" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
 			
 				local nn = Person:new()
