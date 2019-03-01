@@ -1,4 +1,5 @@
 socketstatus, socket = pcall(require, "socket")
+cursesstatus, curses = pcall(require, "curses")
 
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
@@ -9,6 +10,9 @@ World = require("CCSCommon.World")()
 
 _time = os.clock
 if socketstatus then _time = socket.gettime end
+
+printf = print
+if cursesstatus then printf = function(fmt, ...) return print(string.format(fmt, ...)) end end
 
 return
 	function()
@@ -880,6 +884,7 @@ return
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
+			stdscr = nil,
 			systems = {
 				{
 					name="Monarchy",
@@ -921,9 +926,9 @@ return
 			thisWorld = nil,
 
 			autoload = function(self)
-				print("Opening data file...")
+				printf("Opening data file...")
 				local f = io.open("in_progress.dat", "r+b")
-				print("Reading data file...")
+				printf("Reading data file...")
 
 				local jsonLoad = false
 
@@ -932,23 +937,23 @@ return
 
 				if jsonstatus then
 					local jData = f:read("*all")
-					print("Decoding JSON...")
+					printf("Decoding JSON...")
 					stat, jTable = pcall(json.decode, jData)
 					if stat then jsonLoad = true
-					else print("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
+					else printf("Saved data does not appear to be in valid JSON format! Attempting to read as native encoding.") end
 				end
 
 				if not jsonLoad then
 					f:seek("set")
 					stat, jTable = pcall(self.loadtable, self, f)
-					if not stat then print("Unable to load saved data! Exiting.") end
+					if not stat then printf("Unable to load saved data! Exiting.") end
 					return nil
 				end
 
 				f:close()
 				f = nil
 
-				print("File closed.\nRestoring encoded recursive values...")
+				printf("File closed.\nRestoring encoded recursive values...")
 
 				self.thisWorld = World:new()
 
@@ -958,7 +963,7 @@ return
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				jTable = nil
 
-				print("Reconstructing metatables...")
+				printf("Reconstructing metatables...")
 
 				setmetatable(self.thisWorld, require("CCSCommon.World")())
 				for i, j in pairs(self.thisWorld.countries) do
@@ -975,11 +980,11 @@ return
 			end,
 
 			autosave = function(self)
-				print("\nAutosaving...")
+				printf("\nAutosaving...")
 
 				local f = io.open("in_progress.dat", "w+b")
 				if f then
-					print("Encoding recursive values...")
+					printf("Encoding recursive values...")
 
 					for i, j in pairs(self.final) do for k, l in pairs(self.thisWorld.countries) do if j.name == l.name then self.final[i] = nil end end end
 
@@ -992,14 +997,14 @@ return
 					local jsonSaved = false
 
 					if jsonstatus then
-						print("Encoding JSON...")
+						printf("Encoding JSON...")
 						local stat, jData = pcall(json.encode, tables)
 						if stat then
-							print("Writing JSON...")
+							printf("Writing JSON...")
 							f:write(jData)
 							jsonSaved = true
 						else
-							print("Unable to encode JSON data! Falling back to native encoding.")
+							printf("Unable to encode JSON data! Falling back to native encoding.")
 						end
 					end
 
@@ -1009,7 +1014,7 @@ return
 					f:close()
 					f = nil
 
-					print("Restoring encoded recursive values...")
+					printf("Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(tables)
@@ -1018,7 +1023,7 @@ return
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					tables = nil
 				else
-					print("Unable to open in_progress.dat for writing! Autosave not completed!")
+					printf("Unable to open in_progress.dat for writing! Autosave not completed!")
 				end
 			end,
 
@@ -1067,8 +1072,17 @@ return
 			end,
 
 			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
+			-- All of this assuming we don't have Curses, of course.
 			clearTerm = function(self)
-				for i=1,3 do os.execute(self.clrcmd) end
+				if not self.stdscr and cursesstatus then
+					self.stdscr = curses.initscr()
+					curses.cbreak()
+					curses.echo(false)
+					curses.nl(false)
+				end
+			
+				if cursesstatus then self.stdscr:clear()
+				else for i=1,3 do os.execute(self.clrcmd) end
 			end,
 
 			deepcopy = function(self, obj)
@@ -1095,7 +1109,7 @@ return
 
 			finish = function(self)
 				self:clearTerm()
-				print("\nPrinting result...")
+				printf("\nPrinting result...")
 
 				local f = io.open("output.txt", "w+")
 
@@ -1179,10 +1193,10 @@ return
 				f:close()
 				f = nil
 
-				print("")
+				printf("")
 
 				if self.ged then
-					print("Sorting living individuals...")
+					printf("Sorting living individuals...")
 					local cCount = 0
 					local cIndex = 1
 					local finished = 0
@@ -1193,13 +1207,13 @@ return
 						cIndex = cIndex + 1
 					end
 
-					print("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
+					printf("\nFiltering duplicate or irrelevant individuals. This might take a moment...")
 					local fams = self:sortAscendants()
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
-					print("")
+					printf("")
 
 					local sRoyals = {}
 					local ind = 1
@@ -1252,7 +1266,7 @@ return
 					end
 
 					ged:flush()
-					print("")
+					printf("")
 					finished = 0
 
 					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
@@ -1295,12 +1309,12 @@ return
 			fromFile = function(self, datin)
 				self.doR = false
 
-				print("Opening data file...")
+				printf("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
 				self.thisWorld = World:new()
 
-				print("Reading data file...")
+				printf("Reading data file...")
 
 				local fc = nil
 				local fr = nil
@@ -1416,7 +1430,7 @@ return
 				
 				self:getAlphabeticalCountries()
 				
-				print("Constructing initial populations...\n")
+				printf("Constructing initial populations...\n")
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
@@ -1649,7 +1663,7 @@ return
 				local _running = true
 				local msg = ""
 
-				print("\nBegin Simulation!")
+				printf("\nBegin Simulation!")
 
 				while _running do
 					self.thisWorld:update(self)
@@ -1694,7 +1708,7 @@ return
 					end
 
 					self:clearTerm()
-					print(msg)
+					printf(msg)
 
 					self.years = self.years + 1
 
@@ -1709,7 +1723,7 @@ return
 
 				self:finish()
 
-				print("\nEnd Simulation!")
+				printf("\nEnd Simulation!")
 			end,
 
 			name = function(self, personal, l)
@@ -2376,7 +2390,7 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." sorted.")
 				end
 
-				print("")
+				printf("")
 				done = 0
 				local removed = 0
 
@@ -2390,13 +2404,13 @@ return
 					io.write("\r"..tostring(done).."/"..tostring(count).." filtered.")
 				end
 
-				print("")
-				print("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
+				printf("")
+				printf("\nTrimmed "..tostring(removed).." irrelevant individuals, out of "..tostring(oldCount)..".")
 
 				count = 0
 				for i, j in pairs(self.royals) do if not j.removed then count = count + 1 end end
 				oldCount = count
-				print("Linking "..tostring(count).." individuals...")
+				printf("Linking "..tostring(count).." individuals...")
 
 				done = 0
 
@@ -2426,7 +2440,7 @@ return
 					end
 				end
 
-				print("\nRemoving individuals not related to any other...")
+				printf("\nRemoving individuals not related to any other...")
 
 				for i, j in pairs(self.royals) do if #j.fams == 0 and #j.famc == 0 then j.removed = true end end
 
