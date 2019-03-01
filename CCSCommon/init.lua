@@ -622,7 +622,7 @@ return
 											if l.Event:match("Conquered") then if not conqYear or l.Year > conqYear then
 												conqYear = l.Year
 												retrieve = true
-											end
+											end end
 											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
 
@@ -632,16 +632,16 @@ return
 												table.insert(newl.rulers, rIndex, l)
 												rIndex = rIndex + 1
 											end
+											
+											newl.rulernames = {}
+											newl.frulernames = {}
+											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
+											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
+
+											newl.snt = j.snt
+
+											parent.final[i] = nil
 										end
-
-										newl.rulernames = {}
-										newl.frulernames = {}
-										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
-										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
-
-										newl.snt = j.snt
-
-										parent.final[i] = nil
 									end
 								end
 
