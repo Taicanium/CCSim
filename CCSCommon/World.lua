@@ -113,7 +113,6 @@ return
 
 				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
 				local continents = math.random(10, 15)
-				local doneNodes = {}
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
@@ -137,7 +136,6 @@ return
 					end
 
 					self.planet[x][y][z].land = true
-					table.insert(doneNodes, cSeed)
 					table.insert(freeNodes, cSeed)
 				end
 				local doneLand = continents
@@ -154,12 +152,13 @@ return
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
-							self.planet[nx][ny][nz].land = true
-							doneLand = doneLand + 1
-							table.insert(doneNodes, self.planet[x][y][z].neighbors[neighbor])
+							if not self.planet[nx][ny][nz].land then
+								self.planet[nx][ny][nz].land = true
+								doneLand = doneLand + 1
+							end
 							local found = false
 							for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then found = true end end
-							if found then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
+							if found then table.insert(freeNodes, self.planet[nx][ny][nz].neighbors[neighbor]) end
 							table.remove(self.planet[x][y][z].neighbors, neighbor)
 						end
 					end
@@ -171,7 +170,7 @@ return
 						if not found then table.remove(freeNodes, node) end
 					end
 
-					printl(parent.stdscr, "%d/%d", doneLand, maxLand)
+					if math.fmod(doneLand, 1000) == 0 then printl(parent.stdscr, "%d/%d", doneLand, maxLand) end
 				end
 
 				for i=1,planetSize do
