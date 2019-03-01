@@ -1724,6 +1724,7 @@ return
 				self:finish()
 
 				printf("\nEnd Simulation!")
+				curses.endwin()
 			end,
 
 			name = function(self, personal, l)
