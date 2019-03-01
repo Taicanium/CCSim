@@ -1727,7 +1727,7 @@ return
 							eCount = eCount + 1
 						end end
 						
-						if eCount < #currentEvents then msg = msg.."\n[+"..tostring(#currentEvents-eCount).." more]" end
+						if eCount < #currentEvents then msg = msg.."\n[+"..tostring(#currentEvents-eCount).." more]"
 						elseif eCount == 0 then msg = msg.."\nNone" end
 					end
 
