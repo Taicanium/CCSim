@@ -1346,8 +1346,8 @@ return
 							if mat[1] == "Emperor" then dynastic = true end
 							if mat[1] == "Queen" then dynastic = true end
 							if mat[1] == "Empress" then dynastic = true end
-							if dynastic then table.insert(fc.rulers, {title=mat[1], name=mat[2], surname="", number=tostring(number), Country=fc.name, From=mat[3], To=mat[4]})
-							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], Country=fc.name, From=mat[4], To=mat[5]}) end
+							if dynastic then table.insert(fc.rulers, {title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
+							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
 								fc.system = 1
@@ -1544,17 +1544,21 @@ return
 			end,
 
 			getRulerString = function(self, data)
-				local rString = data.title.." "
+				local rString = ""
 				if data then
-					if data.royalName then if data.royalName ~= "" then rString = rString..data.royalName.." " else rString = rString..data.name.." " end else rString = rString..data.name.." " end
+					rString = data.title
+					
+					if data.royalName then if data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end else rString = rString.." "..data.name end
 
-					if data.Country then
-						if tonumber(data.number) then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
-						else rString = rString..data.surname.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")" end
+					if tonumber(data.number) and tonumber(data.number) ~= 0 then
+						rString = rString.." "..self:roman(data.number)
+						if data.surname then rString = rString.." ("..data.surname..")" end
 					else
-						if tonumber(data.number) ~= 0 then rString = rString..self:roman(data.number).." ("..data.surname..") of "..data.nationality
-						else rString = rString..data.surname.." of "..data.nationality end
+						if data.surname then rString = rString.." "..data.surname end
 					end
+					
+					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
+					else rString = rString.." of "..data.nationality end
 				else rString = "None" end
 
 				return rString
