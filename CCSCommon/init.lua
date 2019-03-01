@@ -1066,32 +1066,32 @@ return
 					f:close()
 					f = nil
 
-					printp("An in-progress run was detected. Load from last save point? (y/n) > ")
+					printp(self.stdscr, "An in-progress run was detected. Load from last save point? (y/n) > ")
 					local res = readl(self.stdscr)
 
 					if res == "y" then
 						local loaded = self:autoload(self)
 						if not loaded then return false end
 
-						printp("This simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years))
+						printp(self.stdscr, "This simulation will run for %d more years. Do you want to change the running time (y/n)? > ", self.maxyears - self.years)
 						res = readl(self.stdscr)
 						if res == "y" then
-							printp("Years to add to the current running time (%d) > ", self.maxyears))
+							printp(self.stdscr, "Years to add to the current running time (%d) > ", self.maxyears)
 							res = tonumber(readl(self.stdscr))
 							while not res do
-								printp("Please enter a number. > ")
+								printp(self.stdscr, "Please enter a number. > ")
 								res = tonumber(readl(self.stdscr))
 							end
 							self.maxyears = self.maxyears + res
 						end
 
-						printp("Do you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur))
+						printp(self.stdscr, "Do you want to change the autosave interval, currently every %d years (y/n)? > ", self.autosaveDur)
 						res = readl(self.stdscr)
 						if res == "y" then
-							printp("What would you like the new autosave interval to be? > ")
+							printp(self.stdscr, "What would you like the new autosave interval to be? > ")
 							res = tonumber(readl(self.stdscr))
 							while not res do
-								printp("Please enter a number. > ")
+								printp(self.stdscr, "Please enter a number. > ")
 								res = tonumber(readl(self.stdscr))
 							end
 							self.autosaveDur = res
