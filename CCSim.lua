@@ -14,45 +14,45 @@ function main()
 	end
 
 	CCSCommon:clearTerm()
-	printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
+	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n\n")
 
 	if not CCSCommon:checkAutoload() then
-		printf("\nHow many years should the simulation run? > ")
+		printf(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
 		local datin = io.read()
 
 		CCSCommon.maxyears = tonumber(datin)
 		while not CCSCommon.maxyears do
-			printf("\nPlease enter a number. > ")
+			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
 			datin = io.read()
 
 			CCSCommon.maxyears = tonumber(datin)
 		end
 
-		printf("\nDo you want to show detailed info in the console (y/n)?\nAnswering N may result in a slight speedup. > ")
+		printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\nAnswering N may result in a slight speedup. > ")
 		datin = io.read()
 		datin = string.lower(datin)
 
 		CCSCommon.showinfo = 0
 		if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
-		printf("\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > ")
+		printf(CCSCommon.stdscr, "\nHow often do you want the world data to be autosaved?\nEnter a number of years, or -1 for never. > ")
 		datin = io.read()
 		CCSCommon.autosaveDur = tonumber(datin)
 		while not CCSCommon.autosaveDur do
-			printf("\nPlease enter a number. > ")
+			printf(CCSCommon.stdscr, "\nPlease enter a number. > ")
 			datin = io.read()
 
 			CCSCommon.autosaveDur = tonumber(datin)
 		end
 
-		printf("\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
+		printf(CCSCommon.stdscr, "\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
 		datin = io.read()
 		datin = string.lower(datin)
 
 		CCSCommon.doR = false
 		if string.lower(datin) == "y" then CCSCommon.doR = true end
 
-		printf("\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+		printf(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
 		datin = io.read()
 		datin = string.lower(datin)
 
@@ -61,7 +61,7 @@ function main()
 
 		local done = nil
 		while not done do
-			printf("\nData > ")
+			printf(CCSCommon.stdscr, "\nData > ")
 			datin = io.read()
 
 			if string.lower(datin) == "random" then
@@ -70,7 +70,7 @@ function main()
 				CCSCommon:rseed()
 				CCSCommon.numCountries = math.random(9, 12)
 
-				printf("Defining countries...")
+				printf(CCSCommon.stdscr, "Defining countries...")
 
 				for j=1,CCSCommon.numCountries do
 					local nl = Country:new()
@@ -85,7 +85,7 @@ function main()
 				local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 				done = true
 				if not i then
-					printf(i, j, "Unable to load data file! Please try again.")
+					printf(CCSCommon.stdscr, i, j, "Unable to load data file! Please try again.")
 					done = nil
 				end
 			end
