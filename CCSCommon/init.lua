@@ -1718,16 +1718,17 @@ return
 							end
 						end
 
-						if cCount < self.numCountries then msg = msg.."[+ "..tostring(self.numCountries-cCount).." more]\n" end
+						if cCount < self.numCountries then msg = msg.."[+"..tostring(self.numCountries-cCount).." more]\n" end
 
 						msg = msg.."\nOngoing events:"
 
-						for i=1,#currentEvents do if eCount <= eLimit then
-							msg = msg.."\n"..currentEvents[i]
+						for i=1,#currentEvents do
+							if eCount <= eLimit then msg = msg.."\n"..currentEvents[i] end
 							eCount = eCount + 1
 						end end
-
-						if eCount == 0 then msg = msg.."\nNone" end
+						
+						if eCount < #currentEvents then msg = msg.."\n[+"..tostring(#currentEvents-eCount).." more]" end
+						elseif eCount == 0 then msg = msg.."\nNone" end
 					end
 
 					self:clearTerm()
