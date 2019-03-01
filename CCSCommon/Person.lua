@@ -60,15 +60,17 @@ return
 			end,
 
 			dobirth = function(self, parent, nl)
+				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end end
+				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
+				
+				if self.spouse.gender == "Male" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end end
+				elseif self.spouse.gender == "Female" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
+			
 				local nn = Person:new()
-
 				nn:makename(parent, nl)
 
-				if self.gender == "Male" then
-					nn.surname = self.surname
-				else
-					nn.surname = self.spouse.surname
-				end
+				if self.gender == "Male" then nn.surname = self.surname
+				else nn.surname = self.spouse.surname end
 
 				if self.royalGenerations ~= -1 and self.spouse.royalGenerations ~= -1 then
 					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
@@ -143,16 +145,11 @@ return
 				if self.isruler or self.spouse.isruler then
 					nn.level = self.level - 1
 					nn.parentRuler = true
-				else
-					nn.level = self.level
-				end
+				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
-				if sys.dynastic then if self.gender == "Female" then if self.title == sys.franks[#sys.franks] then nn.level = self.level - 1 end end end
-
-				if nn.gender == "Male" then nn.title = sys.ranks[nn.level] else if sys.dynastic then nn.title = sys.franks[nn.level] else nn.title = sys.ranks[nn.level] end end
+				if nn.gender == "Male" or not sys.dynastic then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
 
 				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
-
 				for i, j in pairs(self.spouse.ethnicity) do
 					if not nn.ethnicity[i] then nn.ethnicity[i] = 0 end
 					nn.ethnicity[i] = nn.ethnicity[i] + j
@@ -167,7 +164,6 @@ return
 				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
 
 				nl:add(parent, nn)
-				for i=1,#nl.people do nl.people[i].pIndex = i end
 			end,
 
 			makename = function(self, parent, nl)
@@ -207,7 +203,7 @@ return
 				local rankLim = 2
 				if not sys.dynastic then rankLim = 1 end
 
-				if self.spouse then if not self.spouse.def then self.spouse = nil end end
+				if self.spouse and not self.spouse.def then self.spouse = nil end
 
 				if self.gender == "Male" or not sys.dynastic then
 					if self.title and self.level then
@@ -229,9 +225,7 @@ return
 						if self.isruler then self.level = #sys.ranks end
 
 						if self.parentRuler and sys.dynastic then self.level = #sys.ranks - 1 end
-					else
-						self.level = 2
-					end
+					else self.level = 2 end
 
 					self.title = sys.ranks[self.level]
 				else
@@ -254,9 +248,7 @@ return
 						if self.isruler then self.level = #sys.franks end
 
 						if self.parentRuler and sys.dynastic then self.level = #sys.franks - 1 end
-					else
-						self.level = 2
-					end
+					else self.level = 2 end
 
 					self.title = sys.franks[self.level]
 				end
@@ -288,34 +280,10 @@ return
 
 				if not self.recentbirth then
 					if self.spouse then
-						if self.gender == "Female" then
-							if self.age < 55 then
-								if self.age > 14 then
-									if self.spouse.age < 65 then
-										if self.spouse.age > 14 then
-											local tmp = math.random(1, nl.birthrate)
-											if tmp == 2 then
-												self:dobirth(parent, nl)
-												self.spouse.recentbirth = true
-											end
-										end
-									end
-								end
-							end
-						else
-							if self.age < 65 then
-								if self.age > 14 then
-									if self.spouse.age < 55 then
-										if self.spouse.age > 14 then
-											local tmp = math.random(1, nl.birthrate)
-											if tmp == 5 then
-												self:dobirth(parent, nl)
-												self.spouse.recentbirth = true
-											end
-										end
-									end
-								end
-							end
+						local tmp = math.random(1, nl.birthrate)
+						if tmp == 2 then
+							self:dobirth(parent, nl)
+							self.spouse.recentbirth = true
 						end
 					end
 				end
@@ -401,7 +369,7 @@ return
 					self.militaryTraining = self.militaryTraining + 1
 					nl.strength = nl.strength + self.militaryTraining
 				else
-					if self.age < 32 then
+					if self.age < 35 then
 						local joinChance = math.random(1, 250)
 						local threshold = 5
 						for j=1,#nl.ongoing do if nl.ongoing[j].name == "War" then threshold = 25 end end
@@ -413,19 +381,26 @@ return
 				end
 
 				if self.age > 65 then self.military = false end
+				local lEth = parent:randomChoice(self.ethnicity, true)
+				local lEthVal = self.ethnicity[lEth]
 
 				for i, j in pairs(self.ethnicity) do
 					if not nl.ethnicities[i] then nl.ethnicities[i] = 0 end
-					if self.ethnicity[i] >= 50 then nl.ethnicities[i] = nl.ethnicities[i] + 1 end
+					if j >= lEthVal then
+						lEth = i
+						lEthVal = j
+					end
 				end
+				
+				for i, j in pairs(self.ethnicity) do if j >= lEthVal then nl.ethnicities[i] = nl.ethnicities[i] + 1 end end
 
 				if self.region == "" or not nl.regions[self.region] then
-					self.region = parent:randomChoice(nl.regions).name
+					self.region = parent:randomChoice(nl.regions, true)
 					self.city = ""
 				end
 
 				if self.city == "" or not nl.regions[self.region].cities[self.city] then
-					self.city = parent:randomChoice(nl.regions[self.region].cities).name
+					self.city = parent:randomChoice(nl.regions[self.region].cities, true)
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
