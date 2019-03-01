@@ -1349,6 +1349,11 @@ return
 							local gend = "Male"
 							local to = self.years
 							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] then number = number + 1 end end end end
+							if mat[1] == "Prime" then if mat[2] == "Minister" then
+								mat[1] = "Prime Minister"
+								for i=2,#mat-1 do mat[i] = mat[i+1] end
+								mat[#mat] = nil
+							end end
 							if mat[1] == "King" then dynastic = true end
 							if mat[1] == "Emperor" then dynastic = true end
 							if mat[1] == "Queen" then dynastic = true end
@@ -1365,7 +1370,7 @@ return
 								fc.system = 2
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
 							end
-							if mat[1] == "Speaker" then
+							if mat[1] == "Prime Minister" then
 								local oldsystem = fc.system
 								fc.system = 3
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
