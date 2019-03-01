@@ -14,7 +14,7 @@ function main()
 	end
 
 	CCSCommon:clearTerm()
-	printf(CCSCommon.stdscr, "\n\tCCSIM : Compact Country Simulator\n")
+	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
 
 	if not CCSCommon:checkAutoload() then
 		printp(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
