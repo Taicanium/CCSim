@@ -940,7 +940,9 @@ return
 
 				if not jsonLoad then
 					f:seek("set")
-					jTable = self:loadtable(f)
+					stat, jTable = pcall(self.loadtable, self, f)
+					if not stat then print("Unable to load saved data! Exiting.") end
+					return nil
 				end
 
 				f:close()
@@ -968,6 +970,8 @@ return
 						for m, n in pairs(l.cities) do setmetatable(n, require("CCSCommon.City")()) end
 					end
 				end
+				
+				return true
 			end,
 
 			autosave = function(self)
@@ -1028,7 +1032,8 @@ return
 					local res = io.read()
 
 					if res == "y" then
-						self:autoload(self)
+						local loaded = self:autoload(self)
+						if not loaded then return false end
 
 						io.write(string.format("\nThis simulation will run for "..tostring(self.maxyears - self.years).." more years. Do you want to change the running time (y/n)? > "))
 						res = io.read()
