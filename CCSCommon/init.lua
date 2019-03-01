@@ -1290,7 +1290,7 @@ return
 				local done = false
 				self.thisWorld = World:new()
 
-				print("Reading data...")
+				print("Reading data file...")
 
 				local fc = nil
 				local fr = nil
@@ -1317,7 +1317,6 @@ return
 							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
 							nl.system = -1
 							self.thisWorld:add(nl)
-							self:getAlphabeticalCountries()
 							fc = nl
 						elseif mat[1] == "R" then
 							local r = Region:new()
@@ -1399,7 +1398,9 @@ return
 						end
 					end
 				end
-
+				
+				self:getAlphabeticalCountries()
+				
 				print("Constructing initial populations...\n")
 
 				for i, cp in pairs(self.thisWorld.countries) do
