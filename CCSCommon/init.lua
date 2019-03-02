@@ -47,7 +47,8 @@ if cursesstatus then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(fmt, ...))
+		local str = string.format(fmt, ...)
+		if x + str:len() < curses.cols() then stdscr:addstr(str) end
 		stdscr:refresh()
 	end
 	readl = function(stdscr) return stdscr:getstr() end
