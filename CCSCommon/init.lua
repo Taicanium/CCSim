@@ -1474,6 +1474,10 @@ return
 				self:getAlphabeticalCountries()
 				
 				printf(self.stdscr, "Constructing initial populations...\n")
+				local cCount = 0
+				local cDone = 0
+				
+				for i, cp in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
@@ -1492,6 +1496,9 @@ return
 
 						table.insert(self.final, cp)
 					end
+					
+					cDone = cDone + 1
+					printl(self.stdscr, "Country %d/%d", cDone, cCount)
 				end
 
 				self.thisWorld.fromFile = true
@@ -1503,24 +1510,13 @@ return
 				if n > 1 then
 					if n > 2 then
 						if n > 3 then
-							if n > 4 then
-								msgout = tostring(n - 2).."-times-great-grand"
-								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-							else
-								msgout = "great-great-grand"
-								if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-							end
-						else
-							msgout = "great-grand"
-							if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-						end
-					else
-						msgout = "grand"
-						if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-					end
-				else
-					if gen == "Male" then msgout = "son" else msgout = "daughter" end
+							if n > 4 then msgout = tostring(n-2).."-times-great-grand"
+							else msgout = "great-great-grand" end
+						else msgout = "great-grand" end
+					else msgout = "grand" end
 				end
+				
+				if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
 
 				return msgout
 			end,
