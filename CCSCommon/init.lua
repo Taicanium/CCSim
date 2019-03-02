@@ -1724,7 +1724,7 @@ return
 						local eLimit = 4
 						if cursesstatus then
 							cLimit = math.floor(curses:lines() / 2)
-							eLimit = (curses:lines() - cLimit) - 6
+							eLimit = (curses:lines() - cLimit) - 9
 						end
 
 						for i=1,#self.alpha do
