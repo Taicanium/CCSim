@@ -11,11 +11,22 @@ World = require("CCSCommon.World")()
 _time = os.clock
 if socketstatus then _time = socket.gettime end
 
-printf = print
-printl = function(stdscr, fmt, ...) io.write(string.format("\r"..fmt, ...)) end
-printp = function(stdscr, fmt, ...) io.write(string.format("\n"..fmt, ...)) end
+printf = function(stdscr, fmt, ...) print(string.format(fmt, ...)) end
+
+printl = function(stdscr, fmt, ...)
+	io.write(string.format("\r"))
+	io.write(string.format(fmt, ...))
+end
+
+printp = function(stdscr, fmt, ...)
+	io.write(string.format("\n"))
+	io.write(string.format(fmt, ...))
+end
+
 printc = function(stdscr, fmt, ...) io.write(string.format(fmt, ...)) end
+
 readl = function() return io.read() end
+
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
 		stdscr:refresh()
@@ -26,6 +37,7 @@ if cursesstatus then
 		stdscr:addstr("\n")
 		stdscr:refresh()
 	end
+	
 	printl = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
@@ -35,6 +47,7 @@ if cursesstatus then
 		stdscr:move(y, 0)
 		stdscr:refresh()
 	end
+	
 	printp = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
@@ -43,6 +56,7 @@ if cursesstatus then
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	end
+	
 	printc = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
@@ -51,6 +65,7 @@ if cursesstatus then
 		if x + str:len() < curses:cols() then stdscr:addstr(str) end
 		stdscr:refresh()
 	end
+	
 	readl = function(stdscr) return stdscr:getstr() end
 end
 
