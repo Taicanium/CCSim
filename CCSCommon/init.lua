@@ -12,9 +12,9 @@ _time = os.clock
 if socketstatus then _time = socket.gettime end
 
 printf = print
-printl = function(fmt, ...) io.write(string.format("\r"..fmt, ...)) end
-printp = function(fmt, ...) io.write(string.format("\n"..fmt, ...)) end
-printc = function(fmt, ...) io.write(string.format(fmt, ...)) end
+printl = function(stdscr, fmt, ...) io.write(string.format("\r"..fmt, ...)) end
+printp = function(stdscr, fmt, ...) io.write(string.format("\n"..fmt, ...)) end
+printc = function(stdscr, fmt, ...) io.write(string.format(fmt, ...)) end
 readl = function() io.read() end
 if cursesstatus then
 	printf = function(stdscr, fmt, ...)
