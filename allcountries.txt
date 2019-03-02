@@ -674,7 +674,7 @@ C Peru
 R Lima
 P Lima
 C Philippines
-R Metro Manila
+R Manila
 P Manila
 S Quezon City
 R Mindanao
