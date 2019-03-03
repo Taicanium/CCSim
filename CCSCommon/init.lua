@@ -1628,17 +1628,27 @@ return
 			end,
 
 			getRecursiveRefs = function(self, t, tables)
-				if type(t) == "table" then for k, l in pairs(t) do
-					if type(t[k]) == "string" then
-						if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then t[k] = tables[l]
-						elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then t[k] = self:loadfunction(k, l:sub(6, l:len())) end
-					end
-					
-					if type(t[k]) == "table" and t[k].id then
-						t[k].id = nil
-						self:getRecursiveRefs(t[k], tables)
-					end
-				end end
+				local finished = false
+				while not finished do
+					finished = true
+					if type(t) == "table" then for k, l in pairs(t) do
+						if type(t[k]) == "string" then
+							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
+								t[k] = tables[l]
+								finished = false
+							elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then
+								t[k] = self:loadfunction(k, l:sub(6, l:len()))
+								finished = false
+							end
+						end
+						
+						if type(t[k]) == "table" and not t[k].recursed then
+							t[k].recursed = true
+							self:getRecursiveRefs(t[k], tables)
+							t[k].recursed = nil
+						end
+					end end
+				end
 			end,
 
 			getRulerString = function(self, data)
@@ -2425,8 +2435,8 @@ return
 						t[i] = j.id
 						if getmetatable(j) then setmetatable(j, nil) end
 
-						if taken[j.id] ~= j.id then
-							taken[j.id] = j.id
+						if not taken[j.id] then
+							taken[j.id] = true
 							tables[j.id] = j
 							self:setRecursiveRefs(j, taken, tables)
 						end
