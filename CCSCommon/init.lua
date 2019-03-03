@@ -2420,7 +2420,7 @@ return
 						end
 					elseif type(j) == "function" then
 						if t.id ~= "ID 1" then
-							t[i] = string.dump(j)
+							t[i] = tostring(string.dump(j))
 							t[i] = "FUNC "..t[i]
 						end
 					end
