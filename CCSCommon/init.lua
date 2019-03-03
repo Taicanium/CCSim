@@ -2429,7 +2429,7 @@ return
 				for i, j in pairs(t) do
 					if type(j) == "table" then
 						t[i] = j.id
-						if getmetatable(j) then setmetatable(j, nil)
+						if getmetatable(j) then setmetatable(j, nil) end
 
 						if taken[j.id] ~= j.id then
 							taken[j.id] = j.id
