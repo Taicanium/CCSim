@@ -999,9 +999,12 @@ return
 				end
 
 				if not jsonLoad then
-					f:seek("set")
+					f:close()
+					f = nil
+					f = io.open("in_progress.dat", "r+b")
 					stat, jTable = pcall(self.loadtable, self, f)
-					if not stat then printf(self.stdscr, "Unable to load saved data! Exiting.") end
+					if stat then printf(self.stdscr, "Success!")
+					else printf(self.stdscr, "Unable to load saved data! Exiting.") end
 					return nil
 				end
 
@@ -1045,6 +1048,8 @@ return
 					
 					local ids = {}
 					local tables = {}
+					local scr = self.stdscr
+					self.stdscr = nil
 					self:setRecursiveIDs(self, 1)
 					self:setRecursiveRefs(self, ids, tables)
 					for i, j in pairs(self) do if type(j) ~= "function" then tables[i] = j end end
@@ -1052,9 +1057,7 @@ return
 					local jsonSaved = false
 
 					if jsonstatus then
-						printf(self.stdscr, "Encoding JSON...")
-						local scr = self.stdscr
-						self.stdscr = nil
+						printf(scr, "Encoding JSON...")
 						local stat, jData = pcall(json.encode, tables)
 						if stat then
 							printf(scr, "Writing JSON...")
@@ -1063,10 +1066,11 @@ return
 						else
 							printf(scr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
 						end
-						self.stdscr = scr
-						scr = nil
 					end
 
+					self.stdscr = scr
+					scr = nil
+					
 					if not jsonSaved then self:savetable(self, f) end
 
 					f:flush()
