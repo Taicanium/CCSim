@@ -1649,7 +1649,7 @@ return
 						end
 					end end
 					
-					if type(t) == "table" then for k, l in pairs(t) do t[k].recursed = nil end end
+					if type(t) == "table" then for k, l in pairs(t) do if type(t[k]) == "table" then t[k].recursed = nil end end end
 				end
 			end,
 
