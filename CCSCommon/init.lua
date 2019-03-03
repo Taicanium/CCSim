@@ -1016,7 +1016,6 @@ return
 				self.thisWorld = World:new()
 
 				self:getRecursiveRefs(self, jTable)
-				self:getRecursiveIDs(jTable)
 				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
@@ -1079,7 +1078,6 @@ return
 					printf(self.stdscr, "Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(self, tables)
-					self:getRecursiveIDs(tables)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
@@ -1629,10 +1627,6 @@ return
 				end
 			end,
 
-			getRecursiveIDs = function(self, tables)
-				for i, j in pairs(tables) do if type(j) == "table" then j.id = nil end end
-			end,
-
 			getRecursiveRefs = function(self, t, tables)
 				if type(t) == "table" then for k, l in pairs(t) do
 					if type(t[k]) == "string" then
@@ -1640,7 +1634,10 @@ return
 						elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then t[k] = self:loadfunction(k, l:sub(6, l:len())) end
 					end
 					
-					if type(t[k]) == "table" then self:getRecursiveRefs(t[k], tables) end
+					if type(t[k]) == "table" and t[k].id then
+						t[k].id = nil
+						self:getRecursiveRefs(t[k], tables)
+					end
 				end end
 			end,
 
