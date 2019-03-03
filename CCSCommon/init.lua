@@ -1057,11 +1057,11 @@ return
 						self.stdscr = nil
 						local stat, jData = pcall(json.encode, tables)
 						if stat then
-							printf(self.stdscr, "Writing JSON...")
+							printf(scr, "Writing JSON...")
 							f:write(jData)
 							jsonSaved = true
 						else
-							printf(self.stdscr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
+							printf(scr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
 						end
 						self.stdscr = scr
 						scr = nil
