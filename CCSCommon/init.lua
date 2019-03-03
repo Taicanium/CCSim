@@ -1631,6 +1631,7 @@ return
 				local finished = false
 				while not finished do
 					finished = true
+					
 					if type(t) == "table" then for k, l in pairs(t) do
 						if type(t[k]) == "string" then
 							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
@@ -1645,9 +1646,10 @@ return
 						if type(t[k]) == "table" and not t[k].recursed then
 							t[k].recursed = true
 							self:getRecursiveRefs(t[k], tables)
-							t[k].recursed = nil
 						end
 					end end
+					
+					if type(t) == "table" then for k, l in pairs(t) do t[k].recursed = nil end end
 				end
 			end,
 
