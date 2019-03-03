@@ -1165,7 +1165,7 @@ return
 			deepcopy = function(self, obj)
 				local res = nil
 				local t = type(obj)
-				local exceptions = {"spouse", "__index"}
+				local exceptions = {"spouse", "target", "__index"}
 
 				if t == "table" then
 					res = {}
@@ -1606,7 +1606,7 @@ return
 
 			getfunctionvalues = function(self, fnname, fn, t)
 				local found = false
-				local exceptions = {"__index", "target"}
+				local exceptions = {"__index", "target", "spouse", "children"}
 
 				for i, j in pairs(t) do
 					if type(j) == "function" then
