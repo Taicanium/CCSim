@@ -1020,14 +1020,14 @@ return
 
 				printf(self.stdscr, "Reconstructing metatables...")
 
-				setmetatable(self.thisWorld, require("CCSCommon.World")())
+				setmetatable(self.thisWorld, World)
 				for i, j in pairs(self.thisWorld.countries) do
-					setmetatable(j, require("CCSCommon.Country")())
-					for k, l in pairs(j.people) do setmetatable(l, require("CCSCommon.Person")()) end
-					for k, l in pairs(j.parties) do setmetatable(l, require("CCSCommon.Party")()) end
+					setmetatable(j, Country)
+					for k, l in pairs(j.people) do setmetatable(l, Person) end
+					for k, l in pairs(j.parties) do setmetatable(l, Party) end
 					for k, l in pairs(j.regions) do
-						setmetatable(l, require("CCSCommon.Region")())
-						for m, n in pairs(l.cities) do setmetatable(n, require("CCSCommon.City")()) end
+						setmetatable(l, Region)
+						for m, n in pairs(l.cities) do setmetatable(n, City) end
 					end
 				end
 				
@@ -1042,7 +1042,7 @@ return
 					printf(self.stdscr, "Encoding recursive values...")
 
 					for i, j in pairs(self.final) do for k, l in pairs(self.thisWorld.countries) do if j.name == l.name then self.final[i] = nil end end end
-
+					
 					local ids = {}
 					local tables = {}
 					self:setRecursiveIDs(self, 1)
@@ -1053,6 +1053,8 @@ return
 
 					if jsonstatus then
 						printf(self.stdscr, "Encoding JSON...")
+						local scr = self.stdscr
+						self.stdscr = nil
 						local stat, jData = pcall(json.encode, tables)
 						if stat then
 							printf(self.stdscr, "Writing JSON...")
@@ -1061,6 +1063,8 @@ return
 						else
 							printf(self.stdscr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
 						end
+						self.stdscr = scr
+						scr = nil
 					end
 
 					if not jsonSaved then self:savetable(self, f) end
@@ -1077,6 +1081,19 @@ return
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					tables = nil
+
+					printf(self.stdscr, "Reconstructing metatables...")
+
+					setmetatable(self.thisWorld, World)
+					for i, j in pairs(self.thisWorld.countries) do
+						setmetatable(j, Country)
+						for k, l in pairs(j.people) do setmetatable(l, Person) end
+						for k, l in pairs(j.parties) do setmetatable(l, Party) end
+						for k, l in pairs(j.regions) do
+							setmetatable(l, Region)
+							for m, n in pairs(l.cities) do setmetatable(n, City) end
+						end
+					end
 				else
 					printf(self.stdscr, "Unable to open in_progress.dat for writing! Autosave not completed!")
 				end
@@ -2326,7 +2343,7 @@ return
 
 			savetable = function(self, t, f)
 				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
-				local exceptions = {"__index"}
+				local exceptions = {"__index", "stdscr"}
 
 				if not t.mtname then f:write("5nilmt") else
 					f:write(t.mtname:len())
@@ -2412,6 +2429,7 @@ return
 				for i, j in pairs(t) do
 					if type(j) == "table" then
 						t[i] = j.id
+						if getmetatable(j) then setmetatable(j, nil)
 
 						if taken[j.id] ~= j.id then
 							taken[j.id] = j.id
