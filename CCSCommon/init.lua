@@ -1024,7 +1024,7 @@ return
 				for i, j in pairs(self.thisWorld.countries) do
 					setmetatable(j, Country)
 					for k, l in pairs(j.people) do setmetatable(l, Person) end
-					for k, l in pairs(j.parties) do setmetatable(l Party) end
+					for k, l in pairs(j.parties) do setmetatable(l, Party) end
 					for k, l in pairs(j.regions) do
 						setmetatable(l, Region)
 						for m, n in pairs(l.cities) do setmetatable(n, City) end
@@ -1088,7 +1088,7 @@ return
 					for i, j in pairs(self.thisWorld.countries) do
 						setmetatable(j, Country)
 						for k, l in pairs(j.people) do setmetatable(l, Person) end
-						for k, l in pairs(j.parties) do setmetatable(l Party) end
+						for k, l in pairs(j.parties) do setmetatable(l, Party) end
 						for k, l in pairs(j.regions) do
 							setmetatable(l, Region)
 							for m, n in pairs(l.cities) do setmetatable(n, City) end
