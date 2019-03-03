@@ -1020,34 +1020,14 @@ return
 				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
-				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
-				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
-
 				setmetatable(self.thisWorld, World)
-				for i, j in pairs(self.thisWorld.countries) do if type(j) == "string" then self.thisWorld.countries[i] = jTable[j] end end
-				
 				for i, j in pairs(self.thisWorld.countries) do
 					setmetatable(j, Country)
-					for k, l in pairs(j.people) do
-						if type(l) == "string" then j.people[k] = jTable[l] end
-						setmetatable(j.people[k], Person)
-					end
-					
-					for k, l in pairs(j.parties) do
-						if type(l) == "string" then j.parties[k] = jTable[l] end
-						setmetatable(j.parties[k], Party)
-					end
-					
-					for k, l in pairs(j.ongoing) do if type(l) == "string" then j.ongoing[k] = jTable[l] end end
-					
+					for k, l in pairs(j.people) do setmetatable(l, Person) end
+					for k, l in pairs(j.parties) do setmetatable(l Party) end
 					for k, l in pairs(j.regions) do
-						if type(l) == "string" then j.regions[k] = jTable[l] end
-						setmetatable(j.regions[k], Region)
-						
-						for m, n in pairs(j.regions[k].cities) do
-							if type(l) == "string" then j.regions[k].cities[m] = jTable[n] end
-							setmetatable(j.regions[k].cities[m], City)
-						end
+						setmetatable(l, Region)
+						for m, n in pairs(l.cities) do setmetatable(n, City) end
 					end
 				end
 				
@@ -1103,32 +1083,15 @@ return
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
-
+				
 					setmetatable(self.thisWorld, World)
-					for i, j in pairs(self.thisWorld.countries) do if type(j) == "string" then self.thisWorld.countries[i] = tables[j] end end
-					
 					for i, j in pairs(self.thisWorld.countries) do
 						setmetatable(j, Country)
-						for k, l in pairs(j.people) do
-							if type(l) == "string" then j.people[k] = tables[l] end
-							setmetatable(j.people[k], Person)
-						end
-						
-						for k, l in pairs(j.parties) do
-							if type(l) == "string" then j.parties[k] = tables[l] end
-							setmetatable(j.parties[k], Party)
-						end
-						
-						for k, l in pairs(j.ongoing) do if type(l) == "string" then j.ongoing[k] = tables[l] end end
-						
+						for k, l in pairs(j.people) do setmetatable(l, Person) end
+						for k, l in pairs(j.parties) do setmetatable(l Party) end
 						for k, l in pairs(j.regions) do
-							if type(l) == "string" then j.regions[k] = tables[l] end
-							setmetatable(j.regions[k], Region)
-							
-							for m, n in pairs(j.regions[k].cities) do
-								if type(l) == "string" then j.regions[k].cities[m] = tables[n] end
-								setmetatable(j.regions[k].cities[m], City)
-							end
+							setmetatable(l, Region)
+							for m, n in pairs(l.cities) do setmetatable(n, City) end
 						end
 					end
 					
@@ -1671,12 +1634,10 @@ return
 			end,
 
 			getRecursiveRefs = function(self, tables)
-				for i, j in pairs(tables) do
-					if type(j) == "string" then
-						if j:len() >= 3 and j:sub(1, 3) == "ID " and tostring(i) ~= "id" and tables[j] then tables[i] = tables[j]
-						elseif j:len() >= 5 and j:sub(1, 5) == "FUNC " then tables[i] = self:loadfunction(i, j:sub(6, j:len())) end
-					elseif type(j) == "table" then self:getRecursiveRefs(j, tables) end
-				end
+				for i, j in pairs(tables) do if type(j) == "table" then for k, l in pairs(j) do if type(l) == "string" then
+					if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then tables[k] = tables[l]
+					elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then tables[k] = self:loadfunction(k, l:sub(6, l:len())) end
+				end end end end
 			end,
 
 			getRulerString = function(self, data)
