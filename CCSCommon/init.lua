@@ -1616,16 +1616,17 @@ return
 			getRecursiveRefs = function(self, tables)
 				for i, j in pairs(tables) do if type(j) == "table" then
 					local revised = false
-					local nJ = {}
 					for k, l in pairs(j) do
 						if type(l) == "string" then
-							if l:len() >= 3 then if l:sub(1, 3) == "ID " then if k ~= "id" then if tables[l] then j[k] = tables[l] end end end end
-							if l:len() >= 5 then if l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, l:len())) end end
+							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then j[k] = tables[l]
+							elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then j[k] = self:loadfunction(k, l:sub(6, l:len())) end
 						end
 
-						if type(k) == "string" then if tonumber(k) then revised = true nJ[tonumber(k)] = l end end
+						if type(k) == "string" then if tonumber(k) then
+							j[tonumber(k)] = j[k]
+							j[k] = nil
+						end end
 					end
-					if revised then tables[i] = nJ end
 				end end
 			end,
 
@@ -2410,11 +2411,9 @@ return
 			setRecursiveRefs = function(self, t, taken, tables)
 				for i, j in pairs(t) do
 					if type(j) == "table" then
-						local found = false
 						t[i] = j.id
-						if taken[j.id] == j.id then found = true end
 
-						if not found then
+						if taken[j.id] ~= j.id then
 							taken[j.id] = j.id
 							self:setRecursiveRefs(j, taken, tables)
 							tables[j.id] = j
