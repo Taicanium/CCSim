@@ -1059,7 +1059,7 @@ return
 							f:write(jData)
 							jsonSaved = true
 						else
-							printf(self.stdscr, stat, jData, "\nUnable to encode JSON data! Falling back to native encoding.")
+							printf(self.stdscr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
 						end
 					end
 
