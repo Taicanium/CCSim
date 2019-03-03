@@ -1636,7 +1636,6 @@ return
 
 			getRecursiveRefs = function(self, tables)
 				for i, j in pairs(tables) do if type(j) == "table" then
-					local revised = false
 					for k, l in pairs(j) do
 						if type(l) == "string" then
 							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then j[k] = tables[l]
@@ -1648,6 +1647,9 @@ return
 							j[k] = nil
 						end end
 					end
+				elseif type(j) == "string" then
+					if j:len() >= 3 and j:sub(1, 3) == "ID " and tostring(i) ~= "id" and tables[j] then tables[i] = tables[j]
+					elseif j:len() >= 5 and j:sub(1, 5) == "FUNC " then tables[i] = self:loadfunction(i, j:sub(6, j:len())) end
 				end end
 			end,
 
@@ -2437,8 +2439,8 @@ return
 
 						if taken[j.id] ~= j.id then
 							taken[j.id] = j.id
-							self:setRecursiveRefs(j, taken, tables)
 							tables[j.id] = j
+							self:setRecursiveRefs(j, taken, tables)
 						end
 					elseif type(j) == "function" then
 						if t.id ~= "ID 1" then
