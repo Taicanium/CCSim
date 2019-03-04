@@ -1651,6 +1651,17 @@ return
 							end
 						end
 					end
+					
+					for i, t in pairs(tables) do
+						if type(t) == "table" then
+							for j, k in pairs(t) do
+								if type(j) == "string" and tonumber(j) then
+									t[tonumber(j)] = k
+									t[j] = nil
+								end
+							end
+						end
+					end
 				end
 			end,
 			
