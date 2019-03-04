@@ -86,7 +86,6 @@ function main()
 	CCSCommon:loop()
 
 	CCSCommon = nil
-	if cursesstatus then curses.endwin() end
 end
 
 main()
