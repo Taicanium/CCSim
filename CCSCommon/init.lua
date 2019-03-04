@@ -1650,7 +1650,6 @@ return
 						if type(t[k]) == "table" and not t[k].recursed then
 							t[k].recursed = true
 							subchanged = self:getRecursiveRefs(t[k], tables)
-							finished = finished or subchanged
 							t[k].recursed = nil
 						end
 					end end
