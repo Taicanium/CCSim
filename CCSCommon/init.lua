@@ -1629,6 +1629,8 @@ return
 
 			getRecursiveRefs = function(self, t, tables)
 				local finished = false
+				local changed = false
+				local subchanged = false
 				while not finished do
 					finished = true
 					
@@ -1636,20 +1638,25 @@ return
 						if type(t[k]) == "string" then
 							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
 								t[k] = tables[l]
+								changed = true
 								finished = false
 							elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then
 								t[k] = self:loadfunction(k, l:sub(6, l:len()))
+								changed = true
 								finished = false
 							end
 						end
 						
 						if type(t[k]) == "table" and not t[k].recursed then
 							t[k].recursed = true
-							self:getRecursiveRefs(t[k], tables)
+							subchanged = self:getRecursiveRefs(t[k], tables)
+							finished = finished or subchanged
 							t[k].recursed = nil
 						end
 					end end
 				end
+				
+				return changed or subchanged
 			end,
 
 			getRulerString = function(self, data)
