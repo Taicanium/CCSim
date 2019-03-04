@@ -1016,6 +1016,7 @@ return
 				self.thisWorld = World:new()
 
 				self:getRecursiveRefs(self, jTable)
+				self:getRecursiveIDs(self)
 				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
@@ -1078,6 +1079,7 @@ return
 					printf(self.stdscr, "Restoring encoded recursive values...")
 
 					self:getRecursiveRefs(self, tables)
+					self:getRecursiveIDs(self)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
@@ -1627,36 +1629,49 @@ return
 				end
 			end,
 
-			getRecursiveRefs = function(self, t, tables)
+			getRecursiveRefs = function(self, tables)
 				local finished = false
-				local changed = false
-				local subchanged = false
 				while not finished do
 					finished = true
 					
-					if type(t) == "table" then for k, l in pairs(t) do
-						if type(t[k]) == "string" then
-							if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
-								t[k] = tables[l]
-								changed = true
+					for i, t in pairs(tables) do
+						if type(t) == "table" then
+							for k, l in pairs(t) do
+								if type(t[k]) == "string" then
+									if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
+										t[k] = tables[l]
+										finished = false
+									elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then
+										t[k] = self:loadfunction(k, l:sub(6, l:len()))
+										finished = false
+									end
+								end
+								
+								if type(t[k]) == "table" and not t[k].recursed then
+									t[k].recursed = true
+									self:getRecursiveRefs(t[k], tables)
+									t[k].recursed = nil
+								end
+							end
+						elseif type(t) == "string" then
+							if t:len() >= 3 and t:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[t] then
+								tables[i] = tables[t]
 								finished = false
-							elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then
-								t[k] = self:loadfunction(k, l:sub(6, l:len()))
-								changed = true
+							elseif t:len() >= 5 and t:sub(1, 5) == "FUNC " then
+								tables[i] = self:loadfunction(k, t:sub(6, t:len()))
 								finished = false
 							end
 						end
-						
-						if type(t[k]) == "table" and not t[k].recursed then
-							t[k].recursed = true
-							subchanged = self:getRecursiveRefs(t[k], tables)
-							if subchanged then finished = false end
-							t[k].recursed = nil
-						end
-					end end
+					end
 				end
-				
-				return changed or subchanged
+			end,
+			
+			getRecursiveIDs = function(self, t)
+				t.id = nil
+				for i, j in pairs(t) do if type(j) == "table" then if j.id then
+					j.id = nil
+					self:getRecursiveIDs(j)
+				end end end
 			end,
 
 			getRulerString = function(self, data)
