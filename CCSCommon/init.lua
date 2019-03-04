@@ -978,7 +978,7 @@ return
 			years = 1,
 			yearstorun = 0,
 			final = {},
-			thisWorld = nil,
+			thisWorld = {},
 
 			autoload = function(self)
 				printf(self.stdscr, "Opening data file...")
@@ -1015,7 +1015,7 @@ return
 
 				self.thisWorld = World:new()
 
-				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
+				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
 			
@@ -1075,7 +1075,7 @@ return
 
 					printf(self.stdscr, "File closed.\nRestoring encoded recursive values...")
 
-					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
+					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
 				
@@ -2443,12 +2443,21 @@ return
 			setRecursiveRefs = function(self, t, tables)
 				for i, j in pairs(t) do
 					if type(j) == "table" then
-						t[i] = j.id
 						if getmetatable(j) then setmetatable(j, nil) end
-
-						if not tables[j.id] then
-							tables[j.id] = j
-							self:setRecursiveRefs(j, tables)
+						if t.id == "ID 1" then
+							t[i] = i
+							
+							if not tables[i] then
+								tables[i] = j
+								self:setRecursiveRefs(j, tables)
+							end
+						else
+							t[i] = j.id
+							
+							if not tables[j.id] then
+								tables[j.id] = j
+								self:setRecursiveRefs(j, tables)
+							end
 						end
 					elseif type(j) == "function" then
 						if t.id ~= "ID 1" then
