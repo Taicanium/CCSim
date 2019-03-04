@@ -234,11 +234,11 @@ return
 							end
 						end
 
-						self.status = self.status + math.ceil(math.random(math.floor(varistab),math.ceil(varistab))/2)
+						self.status = self.status + math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
 
 						local statString = ""
-						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% opposition"
-						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% government"
+						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."%% opposition"
+						elseif self.status >= 10 then statString = tostring(math.abs(math.floor(self.status))).."%% government"
 						else statString = "tossup" end
 						if self.status <= -100 then statString = "opposition victory"
 						elseif self.status >= 100 then statString = "government victory" end
@@ -421,7 +421,7 @@ return
 							varistab = varistab - (extFactor/10)
 						end
 
-						self.status = self.status + math.ceil(math.random(math.floor(varistab), math.ceil(varistab))/2)
+						self.status = self.status + math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
 
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
