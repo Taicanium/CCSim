@@ -1017,6 +1017,7 @@ return
 
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
+				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
 				setmetatable(self.thisWorld, World)
@@ -1049,6 +1050,7 @@ return
 					self.stdscr = nil
 					self:setRecursiveIDs(self, 1)
 					self:setRecursiveRefs(self, tables)
+					for i, j in pairs(self) do if type(j) ~= "function" then tables[i] = j end end
 
 					local jsonSaved = false
 
@@ -1078,6 +1080,7 @@ return
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
 					self.thisWorld = World:new()
+					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 				
 					setmetatable(self.thisWorld, World)
