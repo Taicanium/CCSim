@@ -1018,7 +1018,7 @@ return
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
-				
+			
 				setmetatable(self.thisWorld, World)
 				for i, j in pairs(self.thisWorld.countries) do
 					setmetatable(j, Country)
@@ -1063,17 +1063,17 @@ return
 							printf(scr, "%s, %s\nUnable to encode JSON data! Falling back to native encoding.", tostring(stat), tostring(jData))
 						end
 					end
-
-					self.stdscr = scr
-					scr = nil
 					
 					if not jsonSaved then self:savetable(self, f) end
+					
+					self.stdscr = scr
+					scr = nil
 
 					f:flush()
 					f:close()
 					f = nil
 
-					printf(self.stdscr, "Restoring encoded recursive values...")
+					printf(self.stdscr, "File closed.\nRestoring encoded recursive values...")
 
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					self:getRecursiveRefs(tables)
@@ -1102,7 +1102,7 @@ return
 					f:close()
 					f = nil
 
-					printp(self.stdscr, "An in-progress run was detected. Load from last save point? (y/n) > ")
+					printp(self.stdscr, "\nAn in-progress run was detected. Load from last save point? (y/n) > ")
 					local res = readl(self.stdscr)
 
 					if res == "y" then
