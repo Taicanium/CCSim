@@ -1644,6 +1644,7 @@ return
 						end
 						
 						if type(t[k]) == "table" and not t[k].recursed then
+							finished = false
 							t[k].recursed = true
 							self:getRecursiveRefs(t[k], tables)
 							t[k].recursed = nil
