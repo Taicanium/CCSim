@@ -1017,7 +1017,6 @@ return
 
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
-				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
 				setmetatable(self.thisWorld, World)
@@ -1045,13 +1044,11 @@ return
 
 					for i, j in pairs(self.final) do for k, l in pairs(self.thisWorld.countries) do if j.name == l.name then self.final[i] = nil end end end
 					
-					local ids = {}
 					local tables = {}
 					local scr = self.stdscr
 					self.stdscr = nil
 					self:setRecursiveIDs(self, 1)
-					self:setRecursiveRefs(self, ids, tables)
-					for i, j in pairs(self) do if type(j) ~= "function" then tables[i] = j end end
+					self:setRecursiveRefs(self, tables)
 
 					local jsonSaved = false
 
@@ -1081,7 +1078,6 @@ return
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
 					self.thisWorld = World:new()
-					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 				
 					setmetatable(self.thisWorld, World)
@@ -1095,7 +1091,6 @@ return
 						end
 					end
 					
-					ids = nil
 					tables = nil
 				else
 					printf(self.stdscr, "Unable to open in_progress.dat for writing! Autosave not completed!")
