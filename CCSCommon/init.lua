@@ -1077,7 +1077,6 @@ return
 
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
-					self.thisWorld = World:new()
 					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 				
 					setmetatable(self.thisWorld, World)
