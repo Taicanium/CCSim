@@ -1015,7 +1015,7 @@ return
 
 				self.thisWorld = World:new()
 
-				self:getRecursiveRefs(self, jTable)
+				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
 				for i, j in pairs(self) do if jTable[i] then self[i] = jTable[i] end end
 				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
@@ -1078,7 +1078,7 @@ return
 
 					printf(self.stdscr, "Restoring encoded recursive values...")
 
-					self:getRecursiveRefs(self, tables)
+					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
 					self.thisWorld = World:new()
 					for i, j in pairs(self) do if tables[i] then self[i] = tables[i] end end
