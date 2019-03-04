@@ -2446,16 +2446,15 @@ return
 				return id
 			end,
 
-			setRecursiveRefs = function(self, t, taken, tables)
+			setRecursiveRefs = function(self, t, tables)
 				for i, j in pairs(t) do
 					if type(j) == "table" then
 						t[i] = j.id
 						if getmetatable(j) then setmetatable(j, nil) end
 
-						if not taken[j.id] then
-							taken[j.id] = true
+						if not tables[j.id] then
 							tables[j.id] = j
-							self:setRecursiveRefs(j, taken, tables)
+							self:setRecursiveRefs(j, tables)
 						end
 					elseif type(j) == "function" then
 						if t.id ~= "ID 1" then
