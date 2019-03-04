@@ -84,8 +84,10 @@ function main()
 	end
 
 	CCSCommon:loop()
-	
-	os.exit(0)
+
+	CCSCommon = nil
+	if cursesstatus then curses.endwin() end
 end
 
 main()
+os.exit(0)
