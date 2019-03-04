@@ -1015,9 +1015,9 @@ return
 
 				self.thisWorld = World:new()
 
+				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				self:getRecursiveRefs(jTable)
 				self:getRecursiveIDs(self)
-				for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = jTable[j] end end end end
 				
 				setmetatable(self.thisWorld, World)
 				for i, j in pairs(self.thisWorld.countries) do
@@ -1075,9 +1075,9 @@ return
 
 					printf(self.stdscr, "Restoring encoded recursive values...")
 
+					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 					self:getRecursiveRefs(tables)
 					self:getRecursiveIDs(self)
-					for i, j in pairs(self) do if type(j) == "string" then if j:len() >= 3 then if j:sub(1, 3) == "ID " then self[i] = tables[j] end end end end
 				
 					setmetatable(self.thisWorld, World)
 					for i, j in pairs(self.thisWorld.countries) do
