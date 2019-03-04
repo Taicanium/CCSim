@@ -1054,7 +1054,7 @@ return
 
 					if jsonstatus then
 						printf(scr, "Encoding JSON...")
-						local stat, jData = pcall(json.encode, tables)
+						local stat, jData = pcall(json.encode_pretty, tables)
 						if stat then
 							printf(scr, "Writing JSON...")
 							f:write(jData)
@@ -1652,16 +1652,16 @@ return
 						end
 					end
 					
-					for i, t in pairs(tables) do
-						if type(t) == "table" then
-							for j, k in pairs(t) do
-								if type(j) == "string" and tonumber(j) then
-									t[tonumber(j)] = k
-									t[j] = nil
-								end
-							end
+					for i, t in pairs(tables) do if type(t) == "table" then
+						local t2 = {}
+						
+						for j, k in pairs(t) do
+							if type(j) ~= "number" and tonumber(j) then t2[tonumber(j)] = k
+							else t2[j] = k end
 						end
-					end
+						
+						tables[i] = t2
+					end end
 				end
 			end,
 			
