@@ -1054,7 +1054,7 @@ return
 
 					if jsonstatus then
 						printf(scr, "Encoding JSON...")
-						local stat, jData = pcall(json.encode_pretty, tables)
+						local stat, jData = pcall(json.encode, tables)
 						if stat then
 							printf(scr, "Writing JSON...")
 							f:write(jData)
