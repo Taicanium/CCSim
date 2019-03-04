@@ -11,24 +11,8 @@ World = require("CCSCommon.World")()
 _time = os.clock
 if socketstatus then _time = socket.gettime end
 
-printf = function(stdscr, fmt, ...) print(string.format(fmt, ...)) end
-
-printl = function(stdscr, fmt, ...)
-	io.write(string.format("\r"))
-	io.write(string.format(fmt, ...))
-end
-
-printp = function(stdscr, fmt, ...)
-	io.write(string.format("\n"))
-	io.write(string.format(fmt, ...))
-end
-
-printc = function(stdscr, fmt, ...) io.write(string.format(fmt, ...)) end
-
-readl = function() return io.read() end
-
-if cursesstatus then
-	printf = function(stdscr, fmt, ...)
+printf = function(stdscr, fmt, ...)
+	if stdscr then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
@@ -36,9 +20,11 @@ if cursesstatus then
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
-	end
-	
-	printl = function(stdscr, fmt, ...)
+	else print(string.format(fmt, ...)) end
+end
+
+printl = function(stdscr, fmt, ...)
+	if stdscr then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
@@ -46,34 +32,46 @@ if cursesstatus then
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
+	else
+		io.write("\r")
+		io.write(string.format(fmt, ...))
 	end
-	
-	printp = function(stdscr, fmt, ...)
+end
+
+printp = function(stdscr, fmt, ...)
+	if stdscr then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
+	else
+		io.write("\n")
+		io.write(string.format(fmt, ...))
 	end
-	
-	printc = function(stdscr, fmt, ...)
+end
+
+printc = function(stdscr, fmt, ...)
+	if stdscr then
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
-		if x + str:len() < curses:cols() then stdscr:addstr(str) end
+		if x + str:len() < curses:cols() then stdscr:addstr(str) elseif x + 3 < curses:cols() then stdscr:addstr("...") end
 		stdscr:refresh()
-	end
-	
-	readl = function(stdscr) return stdscr:getstr() end
+	else io.write(string.format(fmt, ...)) end
+end
+
+readl = function(stdscr)
+	if stdscr then return stdscr:getstr()
+	else return io.read() end
 end
 
 return
 	function()
 		local CCSCommon = {
 			alpha = {},
-			autosaveDur = 100,
 			c_events = {
 				{
 					name="Coup d'Etat",
@@ -1665,7 +1663,6 @@ return
 				self:finish()
 
 				printf(self.stdscr, "\nEnd Simulation!")
-				curses.endwin()
 			end,
 
 			name = function(self, personal, l)
