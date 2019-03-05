@@ -594,14 +594,14 @@ return
 						c1:event(parent, "Military alliance severed with "..self.target.name)
 						self.target:event(parent, "Military alliance severed with "..c1.name)
 
-						for i=#self.target.alliances,1 do
+						for i=#self.target.alliances,1,-1 do
 							if self.target.alliances[i] == c1.name then
 								table.remove(self.target.alliances, i)
 								i = 0
 							end
 						end
 
-						for i=#c1.alliances,1 do
+						for i=#c1.alliances,1,-1 do
 							if c1.alliances[i] == self.target.name then
 								table.remove(c1.alliances, i)
 								i = 0
@@ -718,7 +718,7 @@ return
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
 
-								for i=#c.people,1 do if c.people[i] and c.people[i].def then if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end end
+								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def then if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end end
 
 								for i=1,math.floor(#c.people/5) do
 									local p = parent:randomChoice(c.people)
@@ -822,7 +822,7 @@ return
 									local newr = Region:new()
 									newr.name = c2.name
 									
-									for i=#c2.people,1 do
+									for i=#c2.people,1,-1 do
 										c2.people[i].region = c2.name
 										c2.people[i].nationality = c1.name
 										c2.people[i].military = false
@@ -842,7 +842,7 @@ return
 									
 									for i=1,#c1.people do c1.people[i].pIndex = i end
 									
-									for i=#c2.nodes,1 do
+									for i=#c2.nodes,1,-1 do
 										local x = c2.nodes[i][1]
 										local y = c2.nodes[i][2]
 										local z = c2.nodes[i][3]
@@ -929,7 +929,7 @@ return
 										local newr = Region:new()
 										newr.name = c2.name
 										
-										for i=#c2.people,1 do
+										for i=#c2.people,1,-1 do
 											c2.people[i].region = c2.name
 											c2.people[i].nationality = c1.name
 											c2.people[i].military = false
@@ -949,7 +949,7 @@ return
 										
 										for i=1,#c1.people do c1.people[i].pIndex = i end
 										
-										for i=#c2.nodes,1 do
+										for i=#c2.nodes,1,-1 do
 											local x = c2.nodes[i][1]
 											local y = c2.nodes[i][2]
 											local z = c2.nodes[i][3]
@@ -1456,7 +1456,7 @@ return
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 
-					if c3 then for j=#c3.allyOngoing,1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
 				return acOut
@@ -2055,7 +2055,7 @@ return
 						if c2.regions[r] then
 							local rn = c2.regions[r]
 
-							for i=#c2.people,1 do
+							for i=#c2.people,1,-1 do
 								if c2.people[i] then
 									if c2.people[i].region == rn.name then
 										if not c2.people[i].isruler then
@@ -2167,7 +2167,7 @@ return
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 
-					if c3 then for j=#c3.allyOngoing,1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.remove(c3.allyOngoing, j) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.remove(c3.allyOngoing, j) end end end
 				end
 			end,
 
