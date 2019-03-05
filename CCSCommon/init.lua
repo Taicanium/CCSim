@@ -17,10 +17,10 @@ printf = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(string.format(tostring(fmt), ...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
-	else print(string.format(fmt, ...)) end
+	else print(string.format(tostring(fmt), ...)) end
 end
 
 printl = function(stdscr, fmt, ...)
@@ -29,12 +29,12 @@ printl = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(string.format(tostring(fmt), ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
 	else
 		io.write("\r")
-		io.write(string.format(fmt, ...))
+		io.write(string.format(tostring(fmt), ...))
 	end
 end
 
@@ -44,11 +44,11 @@ printp = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(string.format(tostring(fmt), ...))
 		stdscr:refresh()
 	else
 		io.write("\n")
-		io.write(string.format(fmt, ...))
+		io.write(string.format(tostring(fmt), ...))
 	end
 end
 
@@ -57,10 +57,10 @@ printc = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
-		local str = string.format(fmt, ...)
+		local str = string.format(tostring(fmt), ...)
 		if x + str:len() < curses:cols() then stdscr:addstr(str) elseif x + 3 < curses:cols() then stdscr:addstr("...") end
 		stdscr:refresh()
-	else io.write(string.format(fmt, ...)) end
+	else io.write(string.format(tostring(fmt), ...)) end
 end
 
 readl = function(stdscr)
