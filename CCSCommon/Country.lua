@@ -57,6 +57,7 @@ return
 				n.city = ""
 				n.military = false
 				n.isruler = false
+				n.parentRuler = false
 				if n.spouse then
 					if n.spouse.nationality ~= self.name then
 						if parent.thisWorld.countries[n.spouse.nationality] then if parent.thisWorld.countries[n.spouse.nationality].people then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
