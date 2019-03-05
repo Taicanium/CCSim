@@ -86,7 +86,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic then
 								local child = nil
-								for r=#self.rulers,1 do if not child then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
+								for r=#self.rulers,1,-1 do if not child then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
 								if not child then
 									local possibles = {}
@@ -153,7 +153,7 @@ return
 					self.people = nil
 				end
 
-				for i=#self.ongoing,1 do table.remove(self.ongoing, i) end
+				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
@@ -172,7 +172,7 @@ return
 				if not self.ongoing then self.ongoing = {} end
 				if not self.relations then self.relations = {} end
 
-				for i=#self.ongoing,1 do
+				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] then
 						if self.ongoing[i].args > 1 then
 							local found = false
@@ -182,7 +182,7 @@ return
 					end
 				end
 
-				for i=#self.ongoing,1 do
+				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] then
 						if self.ongoing[i].doStep then
 							local r = self.ongoing[i]:doStep(parent, self)
@@ -600,7 +600,7 @@ return
 					end
 				end
 				
-				for i=#self.nodes,1 do
+				for i=#self.nodes,1,-1 do
 					local x = self.nodes[i][1]
 					local y = self.nodes[i][2]
 					local z = self.nodes[i][3]
@@ -714,7 +714,7 @@ return
 					end
 				end
 
-				for i=#self.alliances,1 do
+				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
 
@@ -778,7 +778,7 @@ return
 
 				self.hasruler = -1
 
-				for i=#self.people,1 do
+				for i=#self.people,1,-1 do
 					local chn = false
 					self.people[i]:update(parent, self)
 
@@ -820,7 +820,7 @@ return
 				self.averageAge = self.averageAge / #self.people
 
 				if #self.parties > 0 then
-					for i=#self.parties,1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
+					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
 
 					local largest = -1
 
