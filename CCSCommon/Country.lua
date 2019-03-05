@@ -538,12 +538,12 @@ return
 				
 				for i, j in pairs(self.regions) do
 					local found = false
-					for i=1,#self.nodes do
-						local x = self.nodes[i][1]
-						local y = self.nodes[i][2]
-						local z = self.nodes[i][3]
+					for k=1,#self.nodes do
+						local x = self.nodes[k][1]
+						local y = self.nodes[k][2]
+						local z = self.nodes[k][3]
 						if parent.thisWorld.planet[x][y][z].region == j.name then found = true end
-						if found then i = #self.nodes + 1 end
+						if found then k = #self.nodes + 1 end
 					end
 					
 					if not found then
@@ -560,7 +560,7 @@ return
 							if parent.thisWorld.planet[x][y][z].region == "" then sFound = true end
 						end
 
-						parent.thisWorld.planet[x][y][z].region = j.name
+						parent.thisWorld.planet[x][y][z].region = i
 						table.insert(j.nodes, {x, y, z})
 					end
 				end
