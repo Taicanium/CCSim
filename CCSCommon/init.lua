@@ -657,8 +657,6 @@ return
 									parent.thisWorld.planet[x][y][z].city = ""
 								end
 
-								if parent.doR then newl:setTerritory(parent) end
-
 								newl.rulers = {}
 								for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
 								
@@ -669,6 +667,8 @@ return
 								table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 								table.insert(newl.frulernames, parent:name(true))
 
+								local retrieved = false
+								
 								for i, j in pairs(parent.final) do
 									if j.name == newl.name then
 										local conqYear = nil
@@ -680,25 +680,43 @@ return
 											end end
 											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
 										end
+										
+										local found = parent.years
+										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
+										newl.founded = found
 
 										if retrieve then
+											retrieved = true
 											local rIndex = 1
 											for k, l in pairs(j.rulers) do
 												table.insert(newl.rulers, rIndex, l)
 												rIndex = rIndex + 1
 											end
 											
+											newl.snt = j.snt
+											
 											newl.rulernames = {}
 											newl.frulernames = {}
 											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
 											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
-
-											newl.snt = j.snt
+											
+											for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
+											
+											for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
+												local x = l[1]
+												local y = l[2]
+												local z = l[3]
+												self.thisWorld.planet[x][y][z].country = newl.name
+												self.thisWorld.planet[x][y][z].region = j.name
+												table.insert(newl.nodes, {x, y, z})
+											end end
 
 											parent.final[i] = nil
 										end
 									end
 								end
+								
+								if not retrieved and parent.doR then newl:setTerritory(parent) end
 
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
@@ -796,7 +814,6 @@ return
 
 						if subchance < 50 then
 							for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
-
 							for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 							if c1.relations[c2.name] then
@@ -804,20 +821,43 @@ return
 									c1:event(parent, "Conquered "..c2.name)
 									c2:event(parent, "Conquered by "..c1.name)
 
+									local newr = Region:new()
+									newr.name = c2.name
+									
+									for i=#c2.people,1,-1 do
+										c2.people[i].region = c2.name
+										c2.people[i].nationality = c1.name
+										c2.people[i].military = false
+										c2.people[i].isruler = false
+										c2.people[i].level = 2
+										c2.people[i].title = "Citizen"
+										c2.people[i].parentRuler = false
+										table.insert(c1.people, table.remove(c2.people, i))
+									end
+									
+									c2.people = nil
+									
+									for i, j in pairs(c2.regions) do
+										table.insert(newr.subregions, j)
+										for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
+									end
+									
+									for i=1,#c1.people do c1.people[i].pIndex = i end
+									
 									for i=#c2.nodes,1,-1 do
 										local x = c2.nodes[i][1]
 										local y = c2.nodes[i][2]
 										local z = c2.nodes[i][3]
-
 										parent.thisWorld.planet[x][y][z].country = c1.name
+										parent.thisWorld.planet[x][y][z].region = c2.name
 										table.insert(c1.nodes, {x, y, z})
+										table.insert(newr.nodes, {x, y, z})
+										c2.nodes[i] = nil
 									end
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-
-									for i, j in pairs(c2.regions) do parent:RegionTransfer(c1, c2, j.name, true) end
 
 									parent.thisWorld:delete(parent, c2)
 								end
