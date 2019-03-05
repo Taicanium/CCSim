@@ -715,8 +715,6 @@ return
 										end
 									end
 								end
-								
-								if not retrieved and parent.doR then newl:setTerritory(parent) end
 
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
@@ -728,8 +726,9 @@ return
 									while p.isruler do p = parent:randomChoice(c.people) end
 									newl:add(parent, p)
 								end
-
+								
 								newl:set(parent)
+								if not retrieved and parent.doR then newl:setTerritory(parent) end
 
 								c.regions[newl.name] = nil
 								parent.thisWorld:add(newl)
