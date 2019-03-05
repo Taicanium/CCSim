@@ -17,7 +17,7 @@ return
 			makename = function(self, country, parent)
 				self.name = parent:name(false)
 				local dup = true
-				while dup == true do
+				while dup do
 					dup = false
 					for i, j in pairs(country.regions) do
 						if self.name == j.name then
