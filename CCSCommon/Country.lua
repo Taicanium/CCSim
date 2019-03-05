@@ -816,7 +816,7 @@ return
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
 				
-				self.age = self.age + 1
+				self.age = parent.years - self.founded
 			end
 		}
 
