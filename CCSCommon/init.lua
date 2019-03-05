@@ -1123,7 +1123,7 @@ return
 					if cp then
 						local newc = false
 						local pr = 1
-						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..(cp.age-1).." years\n\n"))
+						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
 
 						for k=1,#cp.events do if pr == 1 then
 							if cp.events[k].Event:sub(1, 12) == "Independence" then
