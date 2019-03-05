@@ -654,7 +654,6 @@ return
 
 									parent.thisWorld.planet[x][y][z].country = newl.name
 									parent.thisWorld.planet[x][y][z].region = ""
-									parent.thisWorld.planet[x][y][z].city = ""
 								end
 
 								newl.rulers = {}
@@ -706,9 +705,10 @@ return
 												local x = l[1]
 												local y = l[2]
 												local z = l[3]
-												self.thisWorld.planet[x][y][z].country = newl.name
 												self.thisWorld.planet[x][y][z].region = j.name
 												table.insert(newl.nodes, {x, y, z})
+												
+												for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
 											end end
 
 											parent.final[i] = nil
@@ -745,7 +745,7 @@ return
 												local oldcap = c.capitalcity
 												local oldreg = c.capitalregion
 
-												local nr = parent:randomChoice(newl.regions)
+												local nr = parent:randomChoice(c.regions)
 												c.capitalregion = nr.name
 												c.capitalcity = parent:randomChoice(nr.cities).name
 
