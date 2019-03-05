@@ -86,7 +86,7 @@ return
 							local sys = parent.systems[self.system]
 							if sys.dynastic then
 								local child = nil
-								for r=#self.rulers,1,-1 do if not child then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
+								for r=#self.rulers,1 do if not child then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
 
 								if not child then
 									local possibles = {}
@@ -153,7 +153,7 @@ return
 					self.people = nil
 				end
 
-				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
+				for i=#self.ongoing,1 do table.remove(self.ongoing, i) end
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
@@ -172,7 +172,7 @@ return
 				if not self.ongoing then self.ongoing = {} end
 				if not self.relations then self.relations = {} end
 
-				for i=#self.ongoing,1,-1 do
+				for i=#self.ongoing,1 do
 					if self.ongoing[i] then
 						if self.ongoing[i].args > 1 then
 							local found = false
@@ -182,7 +182,7 @@ return
 					end
 				end
 
-				for i=#self.ongoing,1,-1 do
+				for i=#self.ongoing,1 do
 					if self.ongoing[i] then
 						if self.ongoing[i].doStep then
 							local r = self.ongoing[i]:doStep(parent, self)
@@ -524,15 +524,6 @@ return
 					if parent.thisWorld.planet[x][y][z].country == self.name then table.insert(self.nodes, {x, y, z}) end
 				end
 
-				for i=1,#self.nodes do
-					local x = self.nodes[i][1]
-					local y = self.nodes[i][2]
-					local z = self.nodes[i][3]
-
-					parent.thisWorld.planet[x][y][z].region = ""
-					parent.thisWorld.planet[x][y][z].city = ""
-				end
-
 				local rCount = 0
 				for i, j in pairs(self.regions) do rCount = rCount + 1 end
 
@@ -544,22 +535,34 @@ return
 					rCount = 0
 					for l, m in pairs(self.regions) do rCount = rCount + 1 end
 				end
-
+				
 				for i, j in pairs(self.regions) do
-					local x = 0
-					local y = 0
-					local z = 0
-
 					local found = false
-					while not found do
-						local pd = parent:randomChoice(self.nodes)
-						x = pd[1]
-						y = pd[2]
-						z = pd[3]
-						if parent.thisWorld.planet[x][y][z].region == "" then found = true end
+					for i=1,#self.nodes do
+						local x = self.nodes[i][1]
+						local y = self.nodes[i][2]
+						local z = self.nodes[i][3]
+						if parent.thisWorld.planet[x][y][z].region == j.name then found = true end
+						if found then i = #self.nodes + 1 end
 					end
+					
+					if not found then
+						local x = 0
+						local y = 0
+						local z = 0
 
-					parent.thisWorld.planet[x][y][z].region = j.name
+						local sFound = false
+						while not sFound do
+							local pd = parent:randomChoice(self.nodes)
+							x = pd[1]
+							y = pd[2]
+							z = pd[3]
+							if parent.thisWorld.planet[x][y][z].region == "" then sFound = true end
+						end
+
+						parent.thisWorld.planet[x][y][z].region = j.name
+						table.insert(j.nodes, {x, y, z})
+					end
 				end
 
 				local allDefined = false
@@ -581,6 +584,7 @@ return
 									allDefined = false
 									if not parent.thisWorld.planet[x][y][z].regionset then
 										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
+										table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {nx, ny, nz})
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
 								end
@@ -595,13 +599,6 @@ return
 
 						parent.thisWorld.planet[x][y][z].regionset = false
 					end
-				end
-
-				for i=1,#self.nodes do
-					local x = self.nodes[i][1]
-					local y = self.nodes[i][2]
-					local z = self.nodes[i][3]
-					for j, k in pairs(self.regions) do if k.name == parent.thisWorld.planet[x][y][z].region then table.insert(k.nodes, {x, y, z}) end end
 				end
 
 				for i, j in pairs(self.regions) do
@@ -625,6 +622,19 @@ return
 
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
+						for m=1,#self.nodes do
+							local x = self.nodes[m][1]
+							local y = self.nodes[m][2]
+							local z = self.nodes[m][3]
+							
+							if parent.thisWorld.planet[x][y][z].city == l.name then
+								l.x = x
+								l.y = y
+								l.z = z
+								m = #self.nodes + 1
+							end
+						end
+					
 						if not l.x or not l.y or not l.z then
 							local pd = parent:randomChoice(j.nodes)
 							local x = pd[1]
@@ -692,7 +702,7 @@ return
 					end
 				end
 
-				for i=#self.alliances,1,-1 do
+				for i=#self.alliances,1 do
 					local found = false
 					local ar = self.alliances[i]
 
@@ -756,7 +766,7 @@ return
 
 				self.hasruler = -1
 
-				for i=#self.people,1,-1 do
+				for i=#self.people,1 do
 					local chn = false
 					self.people[i]:update(parent, self)
 
@@ -798,7 +808,7 @@ return
 				self.averageAge = self.averageAge / #self.people
 
 				if #self.parties > 0 then
-					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
+					for i=#self.parties,1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
 
 					local largest = -1
 
