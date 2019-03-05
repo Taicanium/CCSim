@@ -584,7 +584,6 @@ return
 									allDefined = false
 									if not parent.thisWorld.planet[x][y][z].regionset then
 										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
-										table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {nx, ny, nz})
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
 								end
@@ -599,6 +598,14 @@ return
 
 						parent.thisWorld.planet[x][y][z].regionset = false
 					end
+				end
+				
+				for i=1,#self.nodes do
+					local x = self.nodes[i][1]
+					local y = self.nodes[i][2]
+					local z = self.nodes[i][3]
+					
+					table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z})
 				end
 
 				for i, j in pairs(self.regions) do
