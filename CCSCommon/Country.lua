@@ -522,6 +522,7 @@ return
 					local z = parent.thisWorld.planetdefined[i][3]
 
 					if parent.thisWorld.planet[x][y][z].country == self.name then table.insert(self.nodes, {x, y, z}) end
+					parent.thisWorld.planet[x][y][z].region = ""
 				end
 
 				local rCount = 0
@@ -560,8 +561,7 @@ return
 							if parent.thisWorld.planet[x][y][z].region == "" then sFound = true end
 						end
 
-						parent.thisWorld.planet[x][y][z].region = i
-						table.insert(j.nodes, {x, y, z})
+						parent.thisWorld.planet[x][y][z].region = j.name
 					end
 				end
 
@@ -605,7 +605,7 @@ return
 					local y = self.nodes[i][2]
 					local z = self.nodes[i][3]
 					
-					if parent.thisWorld.planet[x][y][z].region == "" then
+					if parent.thisWorld.planet[x][y][z].region == "" or not self.regions[parent.thisWorld.planet[x][y][z].region] then
 						parent.thisWorld.planet[x][y][z].country = ""
 						parent.thisWorld.planet[x][y][z].city = ""
 						parent.thisWorld.planet[x][y][z].land = false
