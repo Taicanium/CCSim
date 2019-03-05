@@ -9,6 +9,7 @@ return
 				r.cities = {}
 				r.population = 0
 				r.nodes = {}
+				r.subregions = {}
 				r.mtname = "Region"
 
 				return r
