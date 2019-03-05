@@ -600,12 +600,17 @@ return
 					end
 				end
 				
-				for i=1,#self.nodes do
+				for i=#self.nodes,1 do
 					local x = self.nodes[i][1]
 					local y = self.nodes[i][2]
 					local z = self.nodes[i][3]
 					
-					table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z})
+					if parent.thisWorld.planet[x][y][z].region == "" then
+						parent.thisWorld.planet[x][y][z].country = ""
+						parent.thisWorld.planet[x][y][z].city = ""
+						parent.thisWorld.planet[x][y][z].land = false
+						table.remove(self.nodes, i)
+					else table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z}) end
 				end
 
 				for i, j in pairs(self.regions) do
