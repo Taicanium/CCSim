@@ -230,10 +230,10 @@ return
 										local nz = neighbor[3]
 										if self.planet[nx][ny][nz].land then
 											if self.planet[nx][ny][nz].country == "" then
+												allDefined = false
 												if not self.planet[nx][ny][nz].countryset then
 													self.planet[nx][ny][nz].country = self.planet[x][y][z].country
 													self.planet[nx][ny][nz].countryset = true
-													allDefined = false
 												end
 											end
 										end
