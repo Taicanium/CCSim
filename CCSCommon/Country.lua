@@ -219,7 +219,7 @@ return
 			end,
 
 			makename = function(self, parent)
-				if self.name == "" or self.name == nil then
+				if not self.name or self.name == "" then
 					local found = true
 					while found do
 						self.name = parent:name(false)
