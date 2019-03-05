@@ -705,7 +705,6 @@ return
 												local x = l[1]
 												local y = l[2]
 												local z = l[3]
-												self.thisWorld.planet[x][y][z].region = j.name
 												
 												for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
 											end end
