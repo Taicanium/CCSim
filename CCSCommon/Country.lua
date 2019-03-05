@@ -421,17 +421,21 @@ return
 
 				for i=1,#self.people do self.people[i].pIndex = i end
 
-				local rcount = math.random(3, 6)
-				for i=1,rcount do
-					local r = Region:new()
-					r:makename(self, parent)
-					self.regions[r.name] = r
+				local rcount = 0
+				for i, j in pairs(self.regions) do rcount = rcount + 1 end
+				if rcount == 0 then
+					rcount = math.random(3, 6)
+					for i=1,rcount do
+						local r = Region:new()
+						r:makename(self, parent)
+						self.regions[r.name] = r
+					end
 				end
 
 				self.capitalregion = parent:randomChoice(self.regions, true)
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 
-				self.founded = parent.years
+				if self.founded == 0 then self.founded = parent.years end
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == 0 or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 1 end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
