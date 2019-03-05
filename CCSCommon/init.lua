@@ -1644,8 +1644,10 @@ return
 						printf(self.stdscr, "\nOngoing events:")
 
 						for i=1,#currentEvents do
-							if eCount <= eLimit then printf(self.stdscr, currentEvents[i]) end
-							eCount = eCount + 1
+							if eCount <= eLimit then
+								printf(self.stdscr, currentEvents[i])
+								eCount = eCount + 1
+							end
 						end
 						
 						if eCount < #currentEvents then printf(self.stdscr, "[+%d more]", #currentEvents-eCount)
