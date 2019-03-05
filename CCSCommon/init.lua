@@ -163,7 +163,7 @@ return
 				},
 				{
 					name="Civil War",
-					chance=3,
+					chance=2,
 					target=nil,
 					args=1,
 					eString="",
@@ -194,16 +194,16 @@ return
 								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
 								if not interv then
 									if cp.relations[c.name] then
-										if cp.relations[c.name] < 45 then
+										if cp.relations[c.name] < 20 then
 											local intervene = math.random(1, cp.relations[c.name])
-											if intervene < 6 then
+											if intervene == 1 then
 												c:event(parent, "Intervention on the side of the opposition by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
 												table.insert(self.opIntervened, cp.name)
 											end
-										elseif cp.relations[c.name] > 55 then
+										elseif cp.relations[c.name] > 70 then
 											local intervene = math.random(50, 150-cp.relations[c.name])
-											if intervene < 56 then
+											if intervene == 50 then
 												c:event(parent, "Intervention on the side of the government by "..cp.name)
 												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
 												table.insert(self.govIntervened, cp.name)
@@ -220,7 +220,6 @@ return
 							local cp = parent.thisWorld.countries[self.opIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
-
 								if extFactor < 0 then varistab = varistab - (extFactor/10) end
 							end
 						end
@@ -229,7 +228,6 @@ return
 							local cp = parent.thisWorld.countries[self.govIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
-
 								if extFactor > 0 then varistab = varistab + (extFactor/10) end
 							end
 						end
@@ -1723,7 +1721,7 @@ return
 			namecheck = function(self, nom)
 				local nomin = nom
 				local check = true
-				while check == true do
+				while check do
 					check = false
 					local nomlower = string.lower(nomin)
 
