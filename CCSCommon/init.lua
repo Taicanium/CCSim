@@ -300,7 +300,7 @@ return
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do if tonumber(c.rulers[i].From) >= c.founded then if c.rulers[i].name == c.people[newRuler].royalName then if c.rulers[i].title == c.people[newRuler].title then namenum = namenum + 1 end end end end
+								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == c.people[newRuler].royalName and c.rulers[i].title == c.people[newRuler].title then namenum = namenum + 1 end end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								if c.snt[parent.systems[c.system].name] > 1 then
