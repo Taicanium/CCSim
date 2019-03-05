@@ -928,20 +928,43 @@ return
 										c1:event(parent, "Annexed "..c2.name)
 										c2:event(parent, "Annexed by "..c1.name)
 
+										local newr = Region:new()
+										newr.name = c2.name
+										
+										for i=#c2.people,1,-1 do
+											c2.people[i].region = c2.name
+											c2.people[i].nationality = c1.name
+											c2.people[i].military = false
+											c2.people[i].isruler = false
+											c2.people[i].level = 2
+											c2.people[i].title = "Citizen"
+											c2.people[i].parentRuler = false
+											table.insert(c1.people, table.remove(c2.people, i))
+										end
+										
+										c2.people = nil
+										
+										for i, j in pairs(c2.regions) do
+											table.insert(newr.subregions, j)
+											for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
+										end
+										
+										for i=1,#c1.people do c1.people[i].pIndex = i end
+										
 										for i=#c2.nodes,1,-1 do
 											local x = c2.nodes[i][1]
 											local y = c2.nodes[i][2]
 											local z = c2.nodes[i][3]
-
 											parent.thisWorld.planet[x][y][z].country = c1.name
+											parent.thisWorld.planet[x][y][z].region = c2.name
 											table.insert(c1.nodes, {x, y, z})
+											table.insert(newr.nodes, {x, y, z})
+											c2.nodes[i] = nil
 										end
 
 										c1.stability = c1.stability - 5
 										if c1.stability < 1 then c1.stability = 1 end
 										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-
-										for i, j in pairs(c2.regions) do parent:RegionTransfer(c1, c2, j.name, true) end
 
 										parent.thisWorld:delete(parent, c2)
 									end
