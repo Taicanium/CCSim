@@ -285,7 +285,6 @@ return
 					self.countries[nz.name] = nil
 
 					nz:destroy(parent)
-					nz = nil
 
 					parent.numCountries = parent.numCountries - 1
 				end
