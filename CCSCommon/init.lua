@@ -2231,9 +2231,9 @@ return
 					local nts = ts:sub(1, r-1)..ts:sub(r+1, ts:len())
 					ts = nts
 				end
-				if ts:sub(ts:len(), ts:len()) == "." then ts = ts.."0" end
-				if ts:sub(1, 1) == "." then ts = "0"..ts end
-				math.randomseed(math.ceil(tonumber(ts:reverse())))
+				if ns:sub(ns:len(), ns:len()) == "." then ns = ns.."0" end
+				if ns:sub(1, 1) == "." then ns = "0"..ns end
+				math.randomseed(math.ceil(tonumber(ns:reverse())))
 				for i=1,3 do math.random(1, 100) end
 			end,
 
