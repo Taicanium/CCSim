@@ -419,8 +419,7 @@ return
 							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
 							if isCity then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"")
-									else f:write("\"#1616AA\"") end
+									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
 							if j < i+249 then f:write(", ") end
