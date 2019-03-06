@@ -84,6 +84,7 @@ return
 								self.planet[x][y][z].regionset = false
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = false
+								self.planet[x][y][z].waterNeighbors = true
 								self.planet[x][y][z].neighbors = {}
 
 								table.insert(self.planetdefined, {x, y, z})
@@ -143,29 +144,33 @@ return
 					local y = freeNodes[node][2]
 					local z = freeNodes[node][3]
 
-					if #self.planet[x][y][z].neighbors > 0 then
-						if math.random(1, 12) == math.random(1, 12) then
-							local neighbor = math.random(1, #self.planet[x][y][z].neighbors)
+					while not self.planet[x][y][z].waterNeighbors do
+						table.remove(freeNodes, node)
+						
+						node = math.random(1, #freeNodes)
+
+						x = freeNodes[node][1]
+						y = freeNodes[node][2]
+						z = freeNodes[node][3]
+					end
+
+					if math.random(1, 10) == math.random(1, 10) then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 2) == math.random(1, 3) then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
 							if not self.planet[nx][ny][nz].land then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand + 1
-								local found = false
-								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then found = true end end
-								if found then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
+								self.planet[x][y][z].neighbors[neighbor].waterNeighbors = false
+								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then self.planet[x][y][z].neighbors[neighbor].waterNeighbors = true end end
+								if self.planet[x][y][z].neighbors[neighbor].waterNeighbors then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
 							end
-							table.remove(self.planet[x][y][z].neighbors, neighbor)
-						end
+						end end
 					end
-
-					if #self.planet[x][y][z].neighbors == 0 then table.remove(freeNodes, node)
-					else
-						local found = false
-						for i, j in pairs(self.planet[x][y][z].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then found = true end end
-						if not found then table.remove(freeNodes, node) end
-					end
+					
+					self.planet[x][y][z].waterNeighbors = false
+					for neighbor=1,#self.planet[x][y][z].neighbors do if not self.planet[x][y][z].neighbors[neighbor].land then self.planet[x][y][z].waterNeighbors = true end end
 
 					if math.fmod(doneLand, 100) == 0 then printl(parent.stdscr, "%d/%d", doneLand, maxLand) end
 				end
