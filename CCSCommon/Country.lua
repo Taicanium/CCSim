@@ -276,7 +276,7 @@ return
 
 				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "y" then
-					local split = self.name:sub(self.name:len()-1, self.name:len()-1)
+					local split = self.name:sub(1, self.name:len()-1)
 					if split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
 					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
 					elseif split:sub(split:len(), split:len()) == "b" then self.demonym = split.."ian"
@@ -302,7 +302,7 @@ return
 				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then self.demonym = self.name:sub(1, self.name:len()-1).."cian"
 				elseif self.name:sub(self.name:len()-3, self.name:len()) == "land" then
-					local split = self.name:sub(self.name:len()-1, self.name:len()-4)
+					local split = self.name:sub(1, self.name:len()-4)
 					if split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
 					elseif split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
 					elseif split:sub(split:len(), split:len()) == "c" then self.demonym = split:sub(1, split:len()-1).."ian"
