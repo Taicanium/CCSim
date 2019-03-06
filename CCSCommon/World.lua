@@ -616,6 +616,7 @@ return
 					if cp.population < 10 then
 						if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
 						cp:event(parent, "Disappeared")
+						for i=#self.people,1,-1 do parent:randomChoice(parent.thisWorld.countries):add(parent, self.people[i]) end
 						self:delete(parent, cp)
 					end
 				end end
