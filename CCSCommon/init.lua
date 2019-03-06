@@ -986,6 +986,8 @@ return
 										if c1.stability < 1 then c1.stability = 1 end
 										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
+										c1.regions[newr.name] = newr
+										
 										parent.thisWorld:delete(parent, c2)
 									end
 								end
