@@ -1,6 +1,9 @@
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
+indepCount = 0
+reviveCount = 0
+
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
 City = require("CCSCommon.City")()
@@ -628,7 +631,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=5,
+					chance=450,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -646,6 +649,7 @@ return
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 								
 								newl.name = nc.name
+								indepCount = indepCount + 1
 
 								for i=1,#nc.nodes do
 									local x = nc.nodes[i][1]
@@ -682,6 +686,7 @@ return
 
 										if retrieve then										
 											retrieved = true
+											reviveCount = reviveCount + 1
 											
 											local rIndex = 1
 											for k, l in pairs(j.rulers) do
@@ -809,7 +814,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=4,
+					chance=450,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -820,8 +825,8 @@ return
 							for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 							for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
-							if c1.relations[c2.name] then
-								if c1.relations[c2.name] < 6 then
+							--if c1.relations[c2.name] then
+							--	if c1.relations[c2.name] < 6 then
 									c1:event(parent, "Conquered "..c2.name)
 									c2:event(parent, "Conquered by "..c1.name)
 
@@ -864,8 +869,8 @@ return
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 									parent.thisWorld:delete(parent, c2)
-								end
-							end
+							--	end
+							--end
 						end
 
 						return -1
@@ -1723,6 +1728,8 @@ return
 						_running = false
 						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
+					
+					printf(self.stdscr, "\n%d %d", indepCount, reviveCount)
 				end
 
 				self:finish()
