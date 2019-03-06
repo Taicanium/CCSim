@@ -1,9 +1,6 @@
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
-indepCount = 0
-reviveCount = 0
-
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
 City = require("CCSCommon.City")()
@@ -631,154 +628,148 @@ return
 				},
 				{
 					name="Independence",
-					chance=450,
+					chance=3,
 					target=nil,
 					args=1,
 					inverse=false,
 					performEvent=function(self, parent, c)
 						parent:rseed()
 
-						local chance = math.random(1, 100)
 						local values = 0
 						local choices = {}
 						for i, j in pairs(c.regions) do values = values + 1 end
-						for i, j in pairs(c.regions) do for k, l in pairs(parent.final) do if j.name == l.name then table.insert(choices, j) end end end
 
-						if chance > 50 then
-							if #choices > 1 then
-								local newl = Country:new()
-								local nc = parent:randomChoice(choices)
-								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
-								
-								newl.name = nc.name
-								indepCount = indepCount + 1
+						if values > 1 then
+							local newl = Country:new()
+							local nc = parent:randomChoice(choices)
+							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
+							
+							newl.name = nc.name
 
-								for i=1,#nc.nodes do
-									local x = nc.nodes[i][1]
-									local y = nc.nodes[i][2]
-									local z = nc.nodes[i][3]
+							for i=1,#nc.nodes do
+								local x = nc.nodes[i][1]
+								local y = nc.nodes[i][2]
+								local z = nc.nodes[i][3]
 
-									parent.thisWorld.planet[x][y][z].country = newl.name
-									parent.thisWorld.planet[x][y][z].region = ""
-								end
-
-								newl.rulers = {}
-								for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
-								
-								for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
-								table.remove(newl.rulernames, math.random(1, #newl.rulernames))
-								table.insert(newl.rulernames, parent:name(true))
-								for i=1,#c.frulernames do newl.frulernames[i] = c.frulernames[i] end
-								table.remove(newl.frulernames, math.random(1, #newl.frulernames))
-								table.insert(newl.frulernames, parent:name(true))
-
-								local retrieved = false
-								
-								for i, j in pairs(parent.final) do
-									if j.name == newl.name then
-										local conqYear = nil
-										local retrieve = true
-										for k, l in pairs(j.events) do
-											if l.Event:match("Conquered") then if not conqYear or l.Year > conqYear then
-												conqYear = l.Year
-												retrieve = true
-											end end
-											if conqYear and not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end
-										end
-
-										if retrieve then										
-											retrieved = true
-											reviveCount = reviveCount + 1
-											
-											for k=1,#j.rulers do
-												local written = false
-												for l=1,#newl.rulers do if not written then
-													if j.rulers[k].From >= newl.rulers[#newl.rulers].From then
-														table.insert(newl.rulers, l, j.rulers[k])
-														written = true
-													end
-												end end
-												if not written then table.insert(newl.rulers, j.rulers[k]) end
-											end
-											
-											for k, l in pairs(j.events) do table.insert(newl.events, l) end
-										
-											local found = parent.years
-											for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
-											newl.founded = found
-											
-											local rIndex = 1
-											for k, l in pairs(j.rulers) do
-												table.insert(newl.rulers, rIndex, l)
-												rIndex = rIndex + 1
-											end
-											
-											newl.snt = j.snt
-											
-											newl.rulernames = {}
-											newl.frulernames = {}
-											for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
-											for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
-											
-											for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
-											
-											for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
-												local x = l[1]
-												local y = l[2]
-												local z = l[3]
-												
-												for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
-											end end
-
-											parent.final[i] = nil
-										end
-									end
-								end
-
-								newl:event(parent, "Independence from "..c.name)
-								c:event(parent, "Granted independence to "..newl.name)
-
-								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region == newl.name then newl:add(parent, c.people[i]) end end
-
-								for i=1,math.floor(#c.people/5) do
-									local p = parent:randomChoice(c.people)
-									while p.isruler do p = parent:randomChoice(c.people) end
-									newl:add(parent, p)
-								end
-								
-								newl:set(parent)
-								if parent.doR then newl:setTerritory(parent) end
-
-								c.regions[newl.name] = nil
-								parent.thisWorld:add(newl)
-								parent:getAlphabeticalCountries()
-
-								c.stability = c.stability - math.random(3, 10)
-								if c.stability < 1 then c.stability = 1 end
-
-								if c.capitalregion == newl.name then
-									for i, j in pairs(newl.regions) do
-										for k, l in pairs(j.cities) do
-											if l.name == c.capitalcity then
-												local oldcap = c.capitalcity
-												local oldreg = c.capitalregion
-
-												local nr = parent:randomChoice(c.regions)
-												c.capitalregion = nr.name
-												c.capitalcity = parent:randomChoice(nr.cities).name
-
-												local msg = "Capital moved"
-												if oldcap ~= "" then msg = msg.." from "..oldcap end
-												msg = msg.." to "..c.capitalcity
-
-												c:event(parent, msg)
-											end
-										end
-									end
-								end
-								
-								newl:checkRuler(parent)
+								parent.thisWorld.planet[x][y][z].country = newl.name
+								parent.thisWorld.planet[x][y][z].region = ""
 							end
+
+							newl.rulers = {}
+							for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
+							
+							for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
+							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
+							table.insert(newl.rulernames, parent:name(true))
+							for i=1,#c.frulernames do newl.frulernames[i] = c.frulernames[i] end
+							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
+							table.insert(newl.frulernames, parent:name(true))
+
+							local retrieved = false
+							
+							for i, j in pairs(parent.final) do
+								if j.name == newl.name then
+									local conqYear = nil
+									local retrieve = true
+									for k, l in pairs(j.events) do
+										if l.Event:match("Conquered") then if not conqYear or l.Year > conqYear then
+											conqYear = l.Year
+											retrieve = true
+										end end
+										if conqYear and not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end
+									end
+
+									if retrieve then										
+										retrieved = true
+										
+										for k=1,#j.rulers do
+											local written = false
+											for l=1,#newl.rulers do if not written then
+												if j.rulers[k].From >= newl.rulers[#newl.rulers].From then
+													table.insert(newl.rulers, l, j.rulers[k])
+													written = true
+												end
+											end end
+											if not written then table.insert(newl.rulers, j.rulers[k]) end
+										end
+										
+										for k, l in pairs(j.events) do table.insert(newl.events, l) end
+									
+										local found = parent.years
+										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
+										newl.founded = found
+										
+										local rIndex = 1
+										for k, l in pairs(j.rulers) do
+											table.insert(newl.rulers, rIndex, l)
+											rIndex = rIndex + 1
+										end
+										
+										newl.snt = j.snt
+										
+										newl.rulernames = {}
+										newl.frulernames = {}
+										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
+										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
+										
+										for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
+										
+										for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
+											local x = l[1]
+											local y = l[2]
+											local z = l[3]
+											
+											for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
+										end end
+
+										parent.final[i] = nil
+									end
+								end
+							end
+
+							newl:event(parent, "Independence from "..c.name)
+							c:event(parent, "Granted independence to "..newl.name)
+
+							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region == newl.name then newl:add(parent, c.people[i]) end end
+
+							for i=1,math.floor(#c.people/5) do
+								local p = parent:randomChoice(c.people)
+								while p.isruler do p = parent:randomChoice(c.people) end
+								newl:add(parent, p)
+							end
+							
+							newl:set(parent)
+							if parent.doR then newl:setTerritory(parent) end
+
+							c.regions[newl.name] = nil
+							parent.thisWorld:add(newl)
+							parent:getAlphabeticalCountries()
+
+							c.stability = c.stability - math.random(3, 10)
+							if c.stability < 1 then c.stability = 1 end
+
+							if c.capitalregion == newl.name then
+								for i, j in pairs(newl.regions) do
+									for k, l in pairs(j.cities) do
+										if l.name == c.capitalcity then
+											local oldcap = c.capitalcity
+											local oldreg = c.capitalregion
+
+											local nr = parent:randomChoice(c.regions)
+											c.capitalregion = nr.name
+											c.capitalcity = parent:randomChoice(nr.cities).name
+
+											local msg = "Capital moved"
+											if oldcap ~= "" then msg = msg.." from "..oldcap end
+											msg = msg.." to "..c.capitalcity
+
+											c:event(parent, msg)
+										end
+									end
+								end
+							end
+							
+							newl:checkRuler(parent)
 						end
 
 						return -1
@@ -823,65 +814,61 @@ return
 				},
 				{
 					name="Conquer",
-					chance=450,
+					chance=3,
 					target=nil,
 					args=2,
 					inverse=true,
 					performEvent=function(self, parent, c1, c2)
-						local subchance = math.random(1, 100)
+						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
+						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
-						if subchance < 50 then
-							for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
-							for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
+						if c1.relations[c2.name] then
+							if c1.relations[c2.name] < 11 then
+								c1:event(parent, "Conquered "..c2.name)
+								c2:event(parent, "Conquered by "..c1.name)
 
-							--if c1.relations[c2.name] then
-							--	if c1.relations[c2.name] < 6 then
-									c1:event(parent, "Conquered "..c2.name)
-									c2:event(parent, "Conquered by "..c1.name)
+								local newr = Region:new()
+								newr.name = c2.name
+								
+								for i=#c2.people,1,-1 do
+									c2.people[i].region = c2.name
+									c2.people[i].nationality = c1.name
+									c2.people[i].military = false
+									c2.people[i].isruler = false
+									c2.people[i].level = 2
+									c2.people[i].title = "Citizen"
+									c2.people[i].parentRuler = false
+									table.insert(c1.people, table.remove(c2.people, i))
+								end
+								
+								c2.people = nil
+								
+								for i, j in pairs(c2.regions) do
+									table.insert(newr.subregions, j)
+									for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
+								end
+								
+								for i=1,#c1.people do c1.people[i].pIndex = i end
+								
+								for i=#c2.nodes,1,-1 do
+									local x = c2.nodes[i][1]
+									local y = c2.nodes[i][2]
+									local z = c2.nodes[i][3]
+									parent.thisWorld.planet[x][y][z].country = c1.name
+									parent.thisWorld.planet[x][y][z].region = c2.name
+									table.insert(c1.nodes, {x, y, z})
+									table.insert(newr.nodes, {x, y, z})
+									c2.nodes[i] = nil
+								end
 
-									local newr = Region:new()
-									newr.name = c2.name
-									
-									for i=#c2.people,1,-1 do
-										c2.people[i].region = c2.name
-										c2.people[i].nationality = c1.name
-										c2.people[i].military = false
-										c2.people[i].isruler = false
-										c2.people[i].level = 2
-										c2.people[i].title = "Citizen"
-										c2.people[i].parentRuler = false
-										table.insert(c1.people, table.remove(c2.people, i))
-									end
-									
-									c2.people = nil
-									
-									for i, j in pairs(c2.regions) do
-										table.insert(newr.subregions, j)
-										for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
-									end
-									
-									for i=1,#c1.people do c1.people[i].pIndex = i end
-									
-									for i=#c2.nodes,1,-1 do
-										local x = c2.nodes[i][1]
-										local y = c2.nodes[i][2]
-										local z = c2.nodes[i][3]
-										parent.thisWorld.planet[x][y][z].country = c1.name
-										parent.thisWorld.planet[x][y][z].region = c2.name
-										table.insert(c1.nodes, {x, y, z})
-										table.insert(newr.nodes, {x, y, z})
-										c2.nodes[i] = nil
-									end
+								c1.stability = c1.stability - 5
+								if c1.stability < 1 then c1.stability = 1 end
+								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
+								
+								c1.regions[newr.name] = newr
 
-									c1.stability = c1.stability - 5
-									if c1.stability < 1 then c1.stability = 1 end
-									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-									
-									c1.regions[newr.name] = newr
-
-									parent.thisWorld:delete(parent, c2)
-							--	end
-							--end
+								parent.thisWorld:delete(parent, c2)
+							end
 						end
 
 						return -1
@@ -1748,8 +1735,6 @@ return
 						_running = false
 						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
-					
-					printf(self.stdscr, "\n%d %d", indepCount, reviveCount)
 				end
 
 				self:finish()
