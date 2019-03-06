@@ -274,54 +274,54 @@ return
 					if tf < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
 
-				if self.name:sub(#self.name, #self.name) == "a" then self.demonym = self.name:sub(1, #self.name-1).."ian"
-				elseif self.name:sub(#self.name, #self.name) == "y" then
-					local split = self.name:sub(1, #self.name-1)
-					if split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
-					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
-					elseif split:sub(#split, #split) == "b" then self.demonym = split.."ian"
-					elseif split:sub(#split, #split) == "d" then self.demonym = split.."ish"
-					elseif split:sub(#split, #split) == "f" then self.demonym = split.."ish"
-					elseif split:sub(#split, #split) == "g" then self.demonym = split.."ian"
-					elseif split:sub(#split, #split) == "h" then self.demonym = split.."ian"
-					elseif split:sub(#split, #split) == "a" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "e" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "i" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "o" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "u" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "l" then self.demonym = split.."ish"
-					elseif split:sub(#split, #split) == "w" then self.demonym = split.."ian"
-					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
+				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "y" then
+					local split = self.name:sub(self.name:len()1, self.name:len()-1)
+					if split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
+					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "b" then self.demonym = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "d" then self.demonym = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "f" then self.demonym = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "g" then self.demonym = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "h" then self.demonym = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "e" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "i" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "o" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "u" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "l" then self.demonym = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "w" then self.demonym = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "k" then self.demonym = split:sub(1, split:len()-1).."cian"
 					else self.demonym = split end
-				elseif self.name:sub(#self.name, #self.name) == "e" then self.demonym = self.name:sub(1, #self.name-1).."ish"
-				elseif self.name:sub(#self.name, #self.name) == "c" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-				elseif self.name:sub(#self.name, #self.name) == "s" then
-					if self.name:sub(#self.name-2, #self.name) == "ius" then self.demonym = self.name:sub(1, #self.name-2).."an"
-					else self.demonym = self.name:sub(1, #self.name-2).."ian" end
-				elseif self.name:sub(#self.name, #self.name) == "i" then self.demonym = self.name.."an"
-				elseif self.name:sub(#self.name, #self.name) == "o" then self.demonym = self.name:sub(1, #self.name-1).."ian"
-				elseif self.name:sub(#self.name, #self.name) == "k" then self.demonym = self.name:sub(1, #self.name-1).."cian"
-				elseif self.name:sub(#self.name-3, #self.name) == "land" then
-					local split = self.name:sub(1, #self.name-4)
-					if split:sub(#split, #split) == "a" then self.demonym = split.."n"
-					elseif split:sub(#split, #split) == "y" then self.demonym = split:sub(1, #split-1)
-					elseif split:sub(#split, #split) == "c" then self.demonym = split:sub(1, #split-1).."ian"
-					elseif split:sub(#split, #split) == "s" then self.demonym = split:sub(1, #split-1).."ian"
-					elseif split:sub(#split, #split) == "i" then self.demonym = split.."an"
-					elseif split:sub(#split, #split) == "o" then self.demonym = split:sub(1, #split-1).."ian"
-					elseif split:sub(#split, #split) == "g" then self.demonym = split.."lish"
-					elseif split:sub(#split, #split) == "k" then self.demonym = split:sub(1, #split-1).."cian"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "e" then self.demonym = self.name:sub(1, self.name:len()-1).."ish"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "c" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "s" then
+					if self.name:sub(self.name:len()-2, self.name:len()) == "ius" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
+					else self.demonym = self.name:sub(self.name:len()1, self.name:len()-2).."ian" end
+				elseif self.name:sub(self.name:len(), self.name:len()) == "i" then self.demonym = self.name.."an"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then self.demonym = self.name:sub(1, self.name:len()-1).."cian"
+				elseif self.name:sub(self.name:len()-3, self.name:len()) == "land" then
+					local split = self.name:sub(self.name:len()1, self.name:len()-4)
+					if split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
+					elseif split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
+					elseif split:sub(split:len(), split:len()) == "c" then self.demonym = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "i" then self.demonym = split.."an"
+					elseif split:sub(split:len(), split:len()) == "o" then self.demonym = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "g" then self.demonym = split.."lish"
+					elseif split:sub(split:len(), split:len()) == "k" then self.demonym = split:sub(1, split:len()-1).."cian"
 					else self.demonym = split.."ish" end
 				else
-					if self.name:sub(#self.name-1, #self.name) == "ia" then self.demonym = self.name.."n"
-					elseif self.name:sub(#self.name-2, #self.name) == "ian" then self.demonym = self.name
-					elseif self.name:sub(#self.name-1, #self.name) == "an" then self.demonym = self.name.."ese"
-					elseif self.name:sub(#self.name-2, #self.name) == "iar" then self.demonym = self.name:sub(1, #self.name-1).."n"
-					elseif self.name:sub(#self.name-1, #self.name) == "ar" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-					elseif self.name:sub(#self.name-2, #self.name) == "ium" then self.demonym = self.name:sub(1, #self.name-2).."an"
-					elseif self.name:sub(#self.name-1, #self.name) == "um" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-					elseif self.name:sub(#self.name-1, #self.name) == "en" then self.demonym = self.name:sub(1, #self.name-2).."ian"
-					elseif self.name:sub(#self.name-1, #self.name) == "un" then self.demonym = self.name:sub(1, #self.name-2).."ian"
+					if self.name:sub(self.name:len()-1, self.name:len()) == "ia" then self.demonym = self.name.."n"
+					elseif self.name:sub(self.name:len()-2, self.name:len()) == "ian" then self.demonym = self.name
+					elseif self.name:sub(self.name:len()-1, self.name:len()) == "an" then self.demonym = self.name.."ese"
+					elseif self.name:sub(self.name:len()-2, self.name:len()) == "iar" then self.demonym = self.name:sub(1, self.name:len()-1).."n"
+					elseif self.name:sub(self.name:len()-1, self.name:len()) == "ar" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
+					elseif self.name:sub(self.name:len()-2, self.name:len()) == "ium" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
+					elseif self.name:sub(self.name:len()-1, self.name:len()) == "um" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
+					elseif self.name:sub(self.name:len()-1, self.name:len()) == "en" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
+					elseif self.name:sub(self.name:len()-1, self.name:len()) == "un" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
 					else self.demonym = self.name.."ian" end
 				end
 
@@ -348,8 +348,8 @@ return
 				local hasend = false
 
 				while not hasend do
-					local cEnd = self.demonym:sub(#self.demonym-1, #self.demonym)
-					local cBegin = self.demonym:sub(1, #self.demonym-2)
+					local cEnd = self.demonym:sub(self.demonym:len()-1, self.demonym:len())
+					local cBegin = self.demonym:sub(self.demonym:len()1, self.demonym:len()-2)
 					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
 					local c1 = cEnd:sub(1, 1)
 					local c2 = cEnd:sub(2, 2)
