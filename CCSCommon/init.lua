@@ -2429,7 +2429,7 @@ return
 					end
 				end
 
-				printf(self.stdscr, "\nRemoving individuals not related to any other...")
+				printf(self.stdscr, "\nRemoving unlinked individuals...")
 
 				for i, j in pairs(self.royals) do if #j.fams == 0 and #j.famc == 0 then j.removed = true end end
 
