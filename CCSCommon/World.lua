@@ -103,7 +103,7 @@ return
 					local y = self.planetdefined[i][2]
 					local z = self.planetdefined[i][3]
 
-					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
+					for dx=-1,1 do if x ~= dx and self.planet[x-dx] then for dy=-1,1 do if y ~= dy and self.planet[x-dx][y-dy] then for dz=-1,1 do if and z ~= dz and self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end
 				end
 
 				printf(parent.stdscr, "Defining land masses...")
@@ -177,7 +177,7 @@ return
 
 					self.planet[x][y][z].neighbors = {}
 
-					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if self.planet[x-dx][y-dy][z-dz] then if x ~= dx or y ~= dy or z ~= dz then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
+					for dx=-1,1 do if x ~= dx and self.planet[x-dx] then for dy=-1,1 do if y ~= dy and self.planet[x-dx][y-dy] then for dz=-1,1 do if and z ~= dz and self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end
 				end
 
 				printf(parent.stdscr, "\nRooting countries...")
@@ -416,10 +416,10 @@ return
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] then if y == cCoords[j][2] then if z == cCoords[j][3] then isCity = true end end end end
+							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
 							if isCity then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" then if self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
+									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"")
 									else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
@@ -468,7 +468,7 @@ return
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] then if y == cCoords[j][2] then if z == cCoords[j][3] then isCity = true end end end end
+							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
 							if isCity then f:write("\"#888888\"") else
 								if self.planet[x][y][z].land then
 									if self.planet[x][y][z].country ~= "" then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"")
