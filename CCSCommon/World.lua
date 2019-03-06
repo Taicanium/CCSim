@@ -162,15 +162,25 @@ return
 							if not self.planet[nx][ny][nz].land then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand + 1
-								self.planet[x][y][z].neighbors[neighbor].waterNeighbors = false
-								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do if not self.planet[j[1]][j[2]][j[3]].land then self.planet[x][y][z].neighbors[neighbor].waterNeighbors = true end end
-								if self.planet[x][y][z].neighbors[neighbor].waterNeighbors then table.insert(freeNodes, self.planet[x][y][z].neighbors[neighbor]) end
+								self.planet[nx][ny][nz].waterNeighbors = false
+								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do
+									local jx = j[1]
+									local jy = j[2]
+									local jz = j[3]
+									if not self.planet[jx][jy][jz].land then self.planet[nx][ny][nz].waterNeighbors = true end
+								end
+								if self.planet[nx][ny][nz].waterNeighbors then table.insert(freeNodes, {nx, ny, nz}) end
 							end
 						end end
 					end
 					
 					self.planet[x][y][z].waterNeighbors = false
-					for neighbor=1,#self.planet[x][y][z].neighbors do if not self.planet[x][y][z].neighbors[neighbor].land then self.planet[x][y][z].waterNeighbors = true end end
+					for neighbor=1,#self.planet[x][y][z].neighbors do
+						local nx = self.planet[x][y][z].neighbors[neighbor][1]
+						local ny = self.planet[x][y][z].neighbors[neighbor][2]
+						local nz = self.planet[x][y][z].neighbors[neighbor][3]
+						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
+					end
 
 					if math.fmod(doneLand, 100) == 0 then printl(parent.stdscr, "%d/%d", doneLand, maxLand) end
 				end
