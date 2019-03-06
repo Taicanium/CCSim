@@ -2054,18 +2054,7 @@ return
 						if c2.regions[r] then
 							local rn = c2.regions[r]
 
-							for i=#c2.people,1,-1 do
-								if c2.people[i] then
-									if c2.people[i].region == rn.name then
-										if not c2.people[i].isruler then
-											c1:add(self, c2.people[i])
-										else
-											c2.people[i].region = ""
-											c2.people[i].city = ""
-										end
-									end
-								end
-							end
+							for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
