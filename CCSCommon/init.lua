@@ -1738,7 +1738,7 @@ return
 				while groups < length do
 					local ieic = false -- initial ends in consonant
 					local mbwc = false -- middle begins with consonant
-					for i=1,#self.consonants do if nom:sub(#nom, -1) == self.consonants[i] then ieic = true end end
+					for i=1,#self.consonants do if nom:sub(nom:len(), nom:len()) == self.consonants[i] then ieic = true end end
 
 					local mid = self:randomChoice(self.middlegroups)
 					local istaken = false
@@ -2017,14 +2017,14 @@ return
 				local fin = ""
 
 				local ts = tostring(n)
-				if ts:sub(#ts, #ts) == "1" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+				if ts:sub(ts:len(), ts:len()) == "1" then
+					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
 					else fin = ts.."st" end
-				elseif ts:sub(#ts, #ts) == "2" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+				elseif ts:sub(ts:len(), ts:len()) == "2" then
+					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
 					else fin = ts.."nd" end
-				elseif ts:sub(#ts, #ts) == "3" then
-					if ts:sub(#ts-1, #ts-1) == "1" then fin = ts.."th"
+				elseif ts:sub(ts:len(), ts:len()) == "3" then
+					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
 					else fin = ts.."rd" end
 				else fin = ts.."th" end
 
