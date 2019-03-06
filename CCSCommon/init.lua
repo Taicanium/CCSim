@@ -86,7 +86,7 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 26 then -- Executed
-							for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -116,7 +116,7 @@ return
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
-							for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
+							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -260,7 +260,7 @@ return
 						else -- Opposition victory
 							local dchance = math.random(1, 100)
 							if dchance < 51 then -- Executed
-								for q=1,#c.people do if c.people[q] then if c.people[q].isruler then c:delete(parent, q) end end end
+								for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -677,7 +677,7 @@ return
 												conqYear = l.Year
 												retrieve = true
 											end end
-											if conqYear then if not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end end
+											if conqYear and not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end
 										end
 										
 										local found = parent.years
@@ -717,7 +717,7 @@ return
 								newl:event(parent, "Independence from "..c.name)
 								c:event(parent, "Granted independence to "..newl.name)
 
-								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def then if c.people[i].region == newl.name and not c.people[i].isruler then newl:add(parent, c.people[i]) end end end
+								for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region == newl.name then newl:add(parent, c.people[i]) end end
 
 								for i=1,math.floor(#c.people/5) do
 									local p = parent:randomChoice(c.people)
@@ -756,7 +756,7 @@ return
 									end
 								end
 								
-								c:checkRuler(parent)
+								newl:checkRuler(parent)
 							end
 						end
 
@@ -1147,11 +1147,11 @@ return
 						end
 
 						for j=1,self.maxyears do
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j then if cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 
 							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n")) end end
 
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j then if cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 						end
 
 						f:write("\n\n\n")
@@ -1244,7 +1244,7 @@ return
 						msgout = msgout.."1 HUSB @I"..tostring(j.husb.gIndex).."@\n"
 						msgout = msgout.."1 WIFE @I"..tostring(j.wife.gIndex).."@\n"
 
-						for k=1,#j.chil do if j.chil[k].gString ~= j.husb.gString then if j.chil[k].gString ~= j.wife.gString then if j.chil[k].gIndex ~= 0 then msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n" end end end end
+						for k=1,#j.chil do if j.chil[k].gString ~= j.husb.gString and j.chil[k].gString ~= j.wife.gString and j.chil[k].gIndex ~= 0 then msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n" end end
 
 						ged:write(msgout)
 
@@ -1334,7 +1334,7 @@ return
 							local number = 1
 							local gend = "Male"
 							local to = self.years
-							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] then number = number + 1 end end end end
+							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] and fc.rulers[i].title == mat[1] then number = number + 1 end end end
 							if mat[1] == "Prime" then if mat[2] == "Minister" then
 								mat[1] = "Prime Minister"
 								for i=2,#mat-1 do mat[i] = mat[i+1] end
@@ -1574,7 +1574,7 @@ return
 				if data then
 					rString = data.title
 					
-					if data.royalName then if data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end else rString = rString.." "..data.name end
+					if data.royalName and data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end else rString = rString.." "..data.name
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
 						rString = rString.." "..self:roman(data.number)
@@ -1840,7 +1840,7 @@ return
 							for k=1,#self.vowels do if string.lower(nomlower:sub(j, j)) == self.vowels[k] then hasvowel = true end end
 
 							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nomlower:sub(j-1, j-1)) == 't' then if string.lower(nomlower:sub(j, j)) == 'h' then hasvowel = true end end
+								if string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' then hasvowel = true end
 							end
 						end
 
@@ -2037,7 +2037,7 @@ return
 				local keys = {}
 				for key, value in pairs(t) do keys[#keys+1] = key end
 				if #keys == 0 then return nil end
-				if #keys == 1 then if doKeys then return keys[1] else return t[keys[1]] end end
+				if #keys == 1 and doKeys then return keys[1] else return t[keys[1]] end
 				local index = keys[math.random(1, #keys)]
 				if doKeys then return index else return t[index] end
 			end,
@@ -2455,7 +2455,7 @@ return
 
 			strengthFactor = function(self, c)
 				local pop = 0
-				if c.rulerParty ~= "" then if c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity - 50 end end
+				if c.rulerParty ~= "" and c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity - 50 end
 				return (pop + (c.stability - 50) + ((c.military / #c.people) * 100))
 			end
 		}
