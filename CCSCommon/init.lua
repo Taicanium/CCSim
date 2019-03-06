@@ -690,7 +690,17 @@ return
 											retrieved = true
 											reviveCount = reviveCount + 1
 											
-											for k, l in pairs(j.rulers) do table.insert(newl.rulers, l) end
+											for k=1,#j.rulers do
+												local written = false
+												for l=1,#newl.rulers do if not written then
+													if j.rulers[k].From >= newl.rulers[#newl.rulers].From then
+														table.insert(newl.rulers, l, j.rulers[k])
+														written = true
+													end
+												end end
+												if not written then table.insert(newl.rulers, j.rulers[k]) end
+											end
+											
 											for k, l in pairs(j.events) do table.insert(newl.events, l) end
 										
 											local found = parent.years
@@ -862,12 +872,12 @@ return
 										table.insert(newr.nodes, {x, y, z})
 										c2.nodes[i] = nil
 									end
-									
-									c1.regions[newr.name] = newr
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
+									
+									c1.regions[newr.name] = newr
 
 									parent.thisWorld:delete(parent, c2)
 							--	end
