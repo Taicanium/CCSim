@@ -1135,6 +1135,9 @@ return
 						local pr = 1
 						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
 
+						local rWritten = 1
+						local rDone = {}
+						
 						for k=1,#cp.events do if pr == 1 then
 							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded + 1 then
 								newc = true
@@ -1143,15 +1146,15 @@ return
 						end end
 
 						if newc then
-							f:write(string.format("1. "..self:getRulerString(cp.rulers[1]).."\n"))
+							f:write(string.format(self:getRulerString(cp.rulers[1]).."\n"))
 							local nextFound = false
 							for k=1,#cp.rulers do
-								if tonumber(cp.rulers[k].From) < pr then
+								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name then
 									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
 										if not nextFound then
 											nextFound = true
 											f:write("...\n")
-											f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n"))
+											f:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
 											k = #cp.rulers + 1
 										end
 									end
@@ -1162,7 +1165,11 @@ return
 						for j=1,self.maxyears do
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 
-							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name then f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n")) end end
+							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name and not rDone[self:getRulerString(cp.rulers[k])] then
+								f:write(string.format(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n"))
+								rWritten = rWritten + 1
+								rDone[self:getRulerString(cp.rulers[k])] = true
+							end end
 
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 						end
