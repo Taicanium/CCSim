@@ -2221,20 +2221,9 @@ return
 				local ts = tostring(tc)
 				local n = tonumber(ts:reverse())
 				if not n then n = _time() end
-				while n < 100000 do n = n * math.floor(math.random(5, math.random(12, 17))) end
-				while n > 100000000 do n = n / math.floor(math.random(5, math.random(12, 17))) end
+				while n < 100000 do n = n * math.floor(math.random(5, math.random(12, 177000))) end
+				while n > 1000000000 do n = n / math.floor(math.random(5, math.random(12, 177000))) end
 				math.randomseed(math.ceil(n))
-				for i=1,3 do math.random(1, 100) end
-				local ns = ""
-				for i=1,ts:len() do
-					local r = math.random(1, ts:len())
-					ns = ns..ts:sub(r, r)
-					local nts = ts:sub(1, r-1)..ts:sub(r+1, ts:len())
-					ts = nts
-				end
-				if ns:sub(ns:len(), ns:len()) == "." then ns = ns.."0" end
-				if ns:sub(1, 1) == "." then ns = "0"..ns end
-				math.randomseed(math.ceil(tonumber(ns:reverse())))
 				for i=1,3 do math.random(1, 100) end
 			end,
 
