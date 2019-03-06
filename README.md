@@ -52,7 +52,7 @@ Independence - This event results in a region of a country gaining its independe
 
 Invade - This event results in a loss of stability for the target. Like the war event, if the initiator is much stronger than the target, the initiator will claim a region of the target as its own. It is not procedural, and may happen at random, though it becomes impossible if either the two countries have good relations or the initiator is weaker than the target.
 
-Conquer - This event results in the target becoming a region of the initiator, and no longer acting as a country. All citizens residing in the target are moved to the initiator, and the initiator loses a small amount of stability, but gains a large amount of strength. The two countries must have a relationship score of 5 out of 100 or lower. The conquered country may later regain its independence.
+Conquer - This event results in the target becoming a region of the initiator, and no longer acting as a country. All citizens residing in the target are moved to the initiator, and the initiator loses a small amount of stability, but gains a large amount of strength. The two countries must have a relationship score of 10 out of 100 or lower. The conquered country may later regain its independence.
 
 Capital Migration - This event is rather simple, in that it changes the capital of a country from its current city to another random one. It currently serves no purpose other than aesthetics.
 
