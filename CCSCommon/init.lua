@@ -1823,20 +1823,21 @@ return
 						for j=i,i+2 do
 							for k=1,#self.vowels do if string.lower(nomlower:sub(j, j)) == self.vowels[k] then hasvowel = true end end
 
-							if j > i then -- Make an exception for the 'th' group.
-								if string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' then hasvowel = true end
+							if j > 1 then -- Make an exception for the 'th' group, but only if there's a vowel close by.
+								if string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' then
+									if j > 2 then
+										local prev = nomlower:sub(j-2, j-2)
+										for k=1,#self.vowels do if prev:lower() == self.vowels[k] then hasvowel = true end end
+									end
+								end
 							end
 						end
 
 						if not hasvowel then
 							local newnom = ""
-
 							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-
 							newnom = newnom..self:randomChoice(self.vowels)
-
 							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-
 							nomlower = newnom
 						end
 					end
