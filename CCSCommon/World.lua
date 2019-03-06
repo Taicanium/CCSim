@@ -144,7 +144,7 @@ return
 					local z = freeNodes[node][3]
 
 					if #self.planet[x][y][z].neighbors > 0 then
-						if math.random(1, 10) == math.random(1, 10) then
+						if math.random(1, 12) == math.random(1, 12) then
 							local neighbor = math.random(1, #self.planet[x][y][z].neighbors)
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
@@ -373,44 +373,44 @@ return
 					end
 				end
 
-				for i=1,planetSize,250 do
-					if i+249 <= planetSize then
+				for i=1,planetSize,500 do
+					if i+499 <= planetSize then
 						f:write(")\nx <- c(")
 
-						for j=i,i+249 do
+						for j=i,i+499 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5) end
 							f:write(x)
-							if j < i+249 then f:write(", ") end
+							if j < i+499 then f:write(", ") end
 						end
 
 						f:write(")\ny <- c(")
 
-						for j=i,i+249 do
+						for j=i,i+499 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5) end
 							f:write(y)
-							if j < i+249 then f:write(", ") end
+							if j < i+499 then f:write(", ") end
 						end
 
 						f:write(")\nz <- c(")
 
-						for j=i,i+249 do
+						for j=i,i+499 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
 							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5) end
 							f:write(z)
-							if j < i+249 then f:write(", ") end
+							if j < i+499 then f:write(", ") end
 						end
 
 						f:write(")\ncsc <- c(")
 
-						for j=i,i+249 do
+						for j=i,i+499 do
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
@@ -421,7 +421,7 @@ return
 									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
 								else f:write("\"#1616AA\"") end
 							end
-							if j < i+249 then f:write(", ") end
+							if j < i+499 then f:write(", ") end
 						end
 
 						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
