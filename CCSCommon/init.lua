@@ -640,12 +640,14 @@ return
 
 						local chance = math.random(1, 100)
 						local values = 0
+						local choices = {}
 						for i, j in pairs(c.regions) do values = values + 1 end
+						for i, j in pairs(c.regions) do for k, l in pairs(parent.final) do if j.name == l.name then table.insert(choices, j) end end end
 
 						if chance > 50 then
-							if values > 1 then
+							if #choices > 1 then
 								local newl = Country:new()
-								local nc = parent:randomChoice(c.regions)
+								local nc = parent:randomChoice(choices)
 								for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 								
 								newl.name = nc.name
@@ -863,6 +865,8 @@ return
 										table.insert(newr.nodes, {x, y, z})
 										c2.nodes[i] = nil
 									end
+									
+									c2.regions[newr.name] = newr
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
