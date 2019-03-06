@@ -79,14 +79,14 @@ return
 
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
-					if #self.rulers > 0 then if self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end end
+					if #self.rulers > 0 and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
 							local sys = parent.systems[self.system]
 							if sys.dynastic then
 								local child = nil
-								for r=#self.rulers,1,-1 do if not child then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then if tonumber(self.rulers[r].number) then if self.rulers[r].Country == self.name then child = self:recurseRoyalChildren(self.rulers[r]) end end end end end
+								for r=#self.rulers,1,-1 do if not child and tonumber(self.rulers[r].number) and self.rulers[r].Country == self.name then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then child = self:recurseRoyalChildren(self.rulers[r]) end end end
 
 								if not child then
 									local possibles = {}
@@ -176,7 +176,7 @@ return
 					if self.ongoing[i] then
 						if self.ongoing[i].args > 1 then
 							local found = false
-							if self.ongoing[i].target then if self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end end
+							if self.ongoing[i].target and self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end
 							if not found then table.remove(self.ongoing, i) end
 						end
 					end
@@ -210,7 +210,7 @@ return
 
 				local revCount = 0
 
-				for i=1,#self.events do if self.events[i].Year > parent.years - 50 then if self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end end end
+				for i=1,#self.events do if self.events[i].Year > parent.years - 50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end end
 
 				if revCount > 6 then
 					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
@@ -237,7 +237,7 @@ return
 						if self.name:sub(self.name:len()-1, self.name:len()) == "wy" then self.name = self.name:sub(1, self.name:len()-2).."wia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "b" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "c" then self.name = self.name.."ia" end
-						if self.name:sub(self.name:len(), self.name:len()) == "d" then if self.name:sub(self.name:len()-3, self.name:len()) ~= "land" then self.name = self.name.."ia" end end
+						if self.name:sub(self.name:len(), self.name:len()) == "d" and self.name:sub(self.name:len()-3, self.name:len()) ~= "land" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "f" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "g" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "i" then self.name = self.name.."a" end
@@ -720,7 +720,7 @@ return
 
 					for j, cp in pairs(parent.thisWorld.countries) do
 						local nr = cp.name
-						if ar:len() >= nr:len() then if ar:sub(1, #nr) == nr then found = true end end
+						if ar:len() >= nr:len() and ar:sub(1, #nr) == nr then found = true end
 					end
 
 					if not found then
@@ -766,7 +766,7 @@ return
 
 				if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
 					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
-					if oldcap then if self.regions[oldreg] then if self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end end end
+					if oldcap and self.regions[oldreg] and self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
 				end
 
 				for i, j in pairs(self.regions) do
