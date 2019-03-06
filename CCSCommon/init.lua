@@ -866,7 +866,7 @@ return
 										c2.nodes[i] = nil
 									end
 									
-									c2.regions[newr.name] = newr
+									c1.regions[newr.name] = newr
 
 									c1.stability = c1.stability - 5
 									if c1.stability < 1 then c1.stability = 1 end
