@@ -297,7 +297,7 @@ return
 				elseif self.name:sub(self.name:len(), self.name:len()) == "c" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "s" then
 					if self.name:sub(self.name:len()-2, self.name:len()) == "ius" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
-					else self.demonym = self.name:sub(self.name:len()-1, self.name:len()-2).."ian" end
+					else self.demonym = self.name:sub(1, self.name:len()-2).."ian" end
 				elseif self.name:sub(self.name:len(), self.name:len()) == "i" then self.demonym = self.name.."an"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then self.demonym = self.name:sub(1, self.name:len()-1).."cian"
