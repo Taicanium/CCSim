@@ -2214,7 +2214,7 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.002)
+				self:sleep(0.02)
 				local tc = _time()
 				local n = tonumber(tostring(tc):reverse())
 				if not n then n = _time() end
