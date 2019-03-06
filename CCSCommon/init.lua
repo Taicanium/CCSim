@@ -756,7 +756,7 @@ return
 
 											local nr = parent:randomChoice(c.regions)
 											c.capitalregion = nr.name
-											c.capitalcity = parent:randomChoice(nr.cities).name
+											c.capitalcity = parent:randomChoice(nr.cities, true)
 
 											local msg = "Capital moved"
 											if oldcap ~= "" then msg = msg.." from "..oldcap end
@@ -844,7 +844,7 @@ return
 								
 								for i, j in pairs(c2.regions) do
 									table.insert(newr.subregions, j)
-									for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
+									for k, l in pairs(j.cities) do newr.cities[k] = l end
 								end
 								
 								for i=1,#c1.people do c1.people[i].pIndex = i end
@@ -897,7 +897,7 @@ return
 												local chance = math.random(1, 100)
 												if chance == 35 then
 													c.capitalregion = j.name
-													c.capitalcity = l.name
+													c.capitalcity = k
 
 													local msg = "Capital moved"
 													if oldcap ~= "" then msg = msg.." from "..oldcap end
@@ -952,7 +952,7 @@ return
 										
 										for i, j in pairs(c2.regions) do
 											table.insert(newr.subregions, j)
-											for k, l in pairs(j.cities) do table.insert(newr.cities, l) end
+											for k, l in pairs(j.cities) do newr.cities[k] = l end
 										end
 										
 										for i=1,#c1.people do c1.people[i].pIndex = i end
@@ -2064,7 +2064,7 @@ return
 									local msg = "Capital moved from "..c2.capitalcity.." to "
 
 									c2.capitalregion = self:randomChoice(c2.regions).name
-									c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities).name
+									c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities, true)
 
 									msg = msg..c2.capitalcity
 									c2:event(self, msg)
