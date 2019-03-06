@@ -1248,8 +1248,7 @@ return
 						ged:write(msgout)
 
 						finished = finished + 1
-						percentage = math.floor(finished / #sRoyals * 10000)/100
-						printl(self.stdscr, "Writing individuals...%d%% done", percentage)
+						printl(self.stdscr, "Writing individuals...%.2f%% done", math.floor(finished / #sRoyals * 10000)/100)
 					end
 
 					ged:flush()
@@ -1267,8 +1266,7 @@ return
 						ged:write(msgout)
 
 						finished = finished + 1
-						percentage = math.floor(finished / fCount * 10000)/100
-						printl(self.stdscr, "Writing families...%d%% done", percentage)
+						printl(self.stdscr, "Writing families...%.2f%% done", math.floor(finished / fCount * 10000)/100)
 					end end
 
 					msgout = "0 TRLR\n"
