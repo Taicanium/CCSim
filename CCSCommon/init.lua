@@ -2015,6 +2015,7 @@ return
 			end,
 
 			randomChoice = function(self, t, doKeys)
+				self:rseed()
 				local keys = {}
 				for key, value in pairs(t) do keys[#keys+1] = key end
 				if #keys == 0 then return nil end
@@ -2214,21 +2215,26 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.02)
+				self:sleep(0.005)
 				local tc = _time()
-				local n = tonumber(tostring(tc):reverse())
+				local ts = tostring(tc)
+				local n = tonumber(ts:reverse())
 				if not n then n = _time() end
-				while n < 100000 do n = n * math.floor(math.random(8, 12)) end
-				while n > 100000000 do n = n / math.floor(math.random(8, 12)) end
+				while n < 100000 do n = n * math.floor(math.random(5, math.random(12, 17))) end
+				while n > 100000000 do n = n / math.floor(math.random(5, math.random(12, 17))) end
 				math.randomseed(math.ceil(n))
-				local x = math.random(3, 5)
-				local s = math.random(2, 4)
-				for i=3,s do math.random(100, 1000) end
-				for i=3,x do
-					math.randomseed(math.random(math.floor(n), i*math.ceil(n)))
-					for j=3,s do math.random(100, 1000) end
+				for i=1,3 do math.random(1, 100) end
+				local ns = ""
+				for i=1,ts:len() do
+					local r = math.random(1, ts:len())
+					ns = ns..ts:sub(r, r)
+					local nts = ts:sub(1, r-1)..ts:sub(r+1, ts:len())
+					ts = nts
 				end
-				for i=3,s do math.random(100, 1000) end
+				if ts:sub(ts:len(), ts:len()) == "." then ts = ts.."0" end
+				if ts:sub(1, 1) == "." then ts = "0"..ts end
+				math.randomseed(math.ceil(tonumber(ts:reverse())))
+				for i=1,3 do math.random(1, 100) end
 			end,
 
 			savetable = function(self, t, f)
