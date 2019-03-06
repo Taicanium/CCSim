@@ -109,7 +109,7 @@ return
 
 				printf(parent.stdscr, "Defining land masses...")
 
-				local maxLand = math.random(math.floor(planetSize/2), math.ceil(planetSize/1.75))
+				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
 				local freeNodes = {}
 				for i=1,continents do
