@@ -79,7 +79,7 @@ return
 
 			checkRuler = function(self, parent)
 				if self.hasruler == -1 then
-					if #self.rulers > 0 and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
+					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
 						while self.hasruler == -1 do
@@ -215,7 +215,7 @@ return
 				if revCount > 6 then
 					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
 					self:event(parent, "Collapsed")
-					for i=1,#self.people do parent:randomChoice(parent.thisWorld.countries):add(parent, self.people[i]) end
+					for i=#self.people,1,-1 do parent:randomChoice(parent.thisWorld.countries):add(parent, self.people[i]) end
 					parent.thisWorld:delete(parent, self)
 				end
 			end,
