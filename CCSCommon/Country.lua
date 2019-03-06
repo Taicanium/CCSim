@@ -276,7 +276,7 @@ return
 
 				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "y" then
-					local split = self.name:sub(self.name:len()1, self.name:len()-1)
+					local split = self.name:sub(self.name:len()-1, self.name:len()-1)
 					if split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
 					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
 					elseif split:sub(split:len(), split:len()) == "b" then self.demonym = split.."ian"
@@ -297,12 +297,12 @@ return
 				elseif self.name:sub(self.name:len(), self.name:len()) == "c" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "s" then
 					if self.name:sub(self.name:len()-2, self.name:len()) == "ius" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
-					else self.demonym = self.name:sub(self.name:len()1, self.name:len()-2).."ian" end
+					else self.demonym = self.name:sub(self.name:len()-1, self.name:len()-2).."ian" end
 				elseif self.name:sub(self.name:len(), self.name:len()) == "i" then self.demonym = self.name.."an"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then self.demonym = self.name:sub(1, self.name:len()-1).."cian"
 				elseif self.name:sub(self.name:len()-3, self.name:len()) == "land" then
-					local split = self.name:sub(self.name:len()1, self.name:len()-4)
+					local split = self.name:sub(self.name:len()-1, self.name:len()-4)
 					if split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
 					elseif split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
 					elseif split:sub(split:len(), split:len()) == "c" then self.demonym = split:sub(1, split:len()-1).."ian"
@@ -349,7 +349,7 @@ return
 
 				while not hasend do
 					local cEnd = self.demonym:sub(self.demonym:len()-1, self.demonym:len())
-					local cBegin = self.demonym:sub(self.demonym:len()1, self.demonym:len()-2)
+					local cBegin = self.demonym:sub(self.demonym:len()-1, self.demonym:len()-2)
 					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
 					local c1 = cEnd:sub(1, 1)
 					local c2 = cEnd:sub(2, 2)
