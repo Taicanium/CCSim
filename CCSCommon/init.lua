@@ -679,13 +679,20 @@ return
 											end end
 											if conqYear and not l.Event:match("Conquered") and not l.Event:match("Loss of") and not l.Event:match("Capital moved") and l.Year > conqYear then retrieve = false end
 										end
-										
-										local found = parent.years
-										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
-										newl.founded = found
 
-										if retrieve then
+										if retrieve then										
 											retrieved = true
+											
+											local rIndex = 1
+											for k, l in pairs(j.rulers) do
+												table.insert(newl.rulers, rIndex, l)
+												rIndex = rIndex + 1
+											end
+										
+											local found = parent.years
+											for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
+											newl.founded = found
+											
 											local rIndex = 1
 											for k, l in pairs(j.rulers) do
 												table.insert(newl.rulers, rIndex, l)
