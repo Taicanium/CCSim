@@ -1736,16 +1736,10 @@ return
 				local groups = 1
 
 				while groups < length do
-					local ieic = false -- initial ends in consonant
-					local mbwc = false -- middle begins with consonant
-					for i=1,#self.consonants do if nom:sub(nom:len(), nom:len()) == self.consonants[i] then ieic = true end end
-
 					local mid = self:randomChoice(self.middlegroups)
 					local istaken = false
 
 					for i=1,#taken do if taken[i] == mid then istaken = true end end
-
-					for i=1,#self.consonants do if mid:sub(1, 1) == self.consonants[i] then mbwc = true end end
 
 					if not istaken then
 						nom = nom..mid
