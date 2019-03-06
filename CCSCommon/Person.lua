@@ -41,7 +41,6 @@ return
 				n.gensSet = false
 				n.maternalLineTimes = -1
 				n.LastRoyalAncestor = ""
-				n.LastRoyalGenerations = 0
 				n.pbelief = 0
 				n.ebelief = 0
 				n.cbelief = 0
@@ -111,20 +110,17 @@ return
 						if self.spouse.royalGenerations < self.royalGenerations then
 							nn.royalGenerations = self.spouse.royalGenerations + 1
 							nn.royalSystem = self.spouse.royalSystem
-							nn.LastRoyalGenerations = self.spouse.LastRoyalGenerations + 1
 							nn.LastRoyalAncestor = self.spouse.LastRoyalAncestor
 							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes + 1 end
 						else
 							nn.royalGenerations = self.royalGenerations + 1
 							nn.royalSystem = self.royalSystem
-							nn.LastRoyalGenerations = self.LastRoyalGenerations + 1
 							nn.LastRoyalAncestor = self.LastRoyalAncestor
 							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
 						end
 					else
 						nn.royalGenerations = self.royalGenerations + 1
 						nn.royalSystem = self.royalSystem
-						nn.LastRoyalGenerations = self.LastRoyalGenerations + 1
 						nn.LastRoyalAncestor = self.LastRoyalAncestor
 						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
 					end
@@ -133,12 +129,12 @@ return
 				if self.isruler then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.royalSystem
-					nn.LastRoyalGenerations = 1
+					nn.royalGenerations = 1
 					nn.LastRoyalAncestor = string.format(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
 				else if self.spouse.isruler then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalSystem = self.spouse.royalSystem
-					nn.LastRoyalGenerations = 1
+					nn.royalGenerations = 1
 					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end end
 
