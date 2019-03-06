@@ -1748,19 +1748,9 @@ return
 					for i=1,#self.consonants do if mid:sub(1, 1) == self.consonants[i] then mbwc = true end end
 
 					if not istaken then
-						if ieic then
-							if not mbwc then
-								nom = nom..mid
-								groups = groups + 1
-								table.insert(taken, string.lower(mid))
-							end
-						else
-							if mbwc then
-								nom = nom..mid
-								groups = groups + 1
-								table.insert(taken, string.lower(mid))
-							end
-						end
+						nom = nom..mid
+						groups = groups + 1
+						table.insert(taken, string.lower(mid))
 					end
 				end
 
@@ -1874,7 +1864,6 @@ return
 					nomlower = nomlower:gsub("tp", "t")
 					nomlower = nomlower:gsub("dt", "t")
 					nomlower = nomlower:gsub("td", "t")
-					nomlower = nomlower:gsub("ct", "t")
 					nomlower = nomlower:gsub("tc", "t")
 					nomlower = nomlower:gsub("hc", "c")
 					nomlower = nomlower:gsub("fd", "d")
