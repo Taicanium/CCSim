@@ -224,7 +224,6 @@ return
 				if not self.name or self.name == "" then
 					local found = true
 					while found do
-						parent:rseed()
 						self.name = parent:name(false)
 						if self.name:sub(self.name:len()-4, self.name:len()) == "sicia" then self.name = self.name:sub(1, self.name:len()-5).."scia" end
 						if self.name:sub(self.name:len()-4, self.name:len()) == "shicia" then self.name = self.name:sub(1, self.name:len()-5).."scia" end
