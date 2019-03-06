@@ -690,11 +690,8 @@ return
 											retrieved = true
 											reviveCount = reviveCount + 1
 											
-											local rIndex = 1
-											for k, l in pairs(j.rulers) do
-												table.insert(newl.rulers, rIndex, l)
-												rIndex = rIndex + 1
-											end
+											for k, l in pairs(j.rulers) do table.insert(newl.rulers, l) end
+											for k, l in pairs(j.events) do table.insert(newl.events, l) end
 										
 											local found = parent.years
 											for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
@@ -1139,7 +1136,7 @@ return
 						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
 
 						for k=1,#cp.events do if pr == 1 then
-							if cp.events[k].Event:sub(1, 12) == "Independence" then
+							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded + 1 then
 								newc = true
 								pr = tonumber(cp.events[k].Year)
 							end
@@ -1165,7 +1162,7 @@ return
 						for j=1,self.maxyears do
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 
-							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and tonumber(cp.rulers[k].From) >= pr then f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n")) end end
+							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name then f:write(string.format(k..". "..self:getRulerString(cp.rulers[k]).."\n")) end end
 
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 						end
