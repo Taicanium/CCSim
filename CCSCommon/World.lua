@@ -134,7 +134,7 @@ return
 					end
 
 					self.planet[x][y][z].land = true
-					table.insert(freeNodes, cSeed)
+					table.insert(freeNodes, {x, y, z})
 				end
 				local doneLand = continents
 				while doneLand < maxLand do
@@ -155,7 +155,7 @@ return
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 2) == math.random(1, 3) then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 4) == 4 then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
