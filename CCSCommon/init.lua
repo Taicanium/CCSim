@@ -636,12 +636,11 @@ return
 						parent:rseed()
 
 						local values = 0
-						local choices = {}
 						for i, j in pairs(c.regions) do values = values + 1 end
 
 						if values > 1 then
 							local newl = Country:new()
-							local nc = parent:randomChoice(choices)
+							local nc = parent:randomChoice(c.regions)
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 							
 							newl.name = nc.name
