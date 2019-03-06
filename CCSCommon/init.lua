@@ -2016,7 +2016,6 @@ return
 			end,
 
 			randomChoice = function(self, t, doKeys)
-				self:rseed()
 				local keys = {}
 				for key, value in pairs(t) do table.insert(keys, key) end
 				if #keys == 0 then return nil end
