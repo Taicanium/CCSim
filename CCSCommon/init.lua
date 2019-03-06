@@ -2018,7 +2018,7 @@ return
 			randomChoice = function(self, t, doKeys)
 				self:rseed()
 				local keys = {}
-				for key, value in pairs(t) do keys[#keys+1] = key end
+				for key, value in pairs(t) do table.insert(keys, key) end
 				if #keys == 0 then return nil end
 				if #keys == 1 and doKeys then return keys[1] else return t[keys[1]] end
 				local index = keys[math.random(1, #keys)]
