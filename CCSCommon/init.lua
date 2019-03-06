@@ -1731,26 +1731,27 @@ return
 				local taken = {}
 
 				nom = self:randomChoice(self.initialgroups)
-				table.insert(taken, string.lower(nom))
+				table.insert(taken, nom:lower())
 
 				local groups = 1
 
 				while groups < length do
-					local mid = self:randomChoice(self.middlegroups)
-					local istaken = false
-
-					for i=1,#taken do if taken[i] == mid then istaken = true end end
-
-					if not istaken then
-						nom = nom..mid
-						groups = groups + 1
-						table.insert(taken, string.lower(mid))
+					local mid = ""
+					local istaken = true
+					
+					while istaken do
+						mid = self:randomChoice(self.middlegroups)
+						for i=1,#taken do if taken[i] == mid:lower() then istaken = true end end
 					end
+
+					nom = nom..mid:lower()
+					groups = groups + 1
+					table.insert(taken, mid:lower())
 				end
 
 				if not personal then
 					local ending = self:randomChoice(self.endgroups)
-					nom = nom..ending
+					nom = nom..ending:lower()
 				end
 
 				nom = self:namecheck(nom)
