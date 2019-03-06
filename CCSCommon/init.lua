@@ -1574,14 +1574,12 @@ return
 				if data then
 					rString = data.title
 					
-					if data.royalName and data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end else rString = rString.." "..data.name
+					if data.royalName and data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
 						rString = rString.." "..self:roman(data.number)
 						if data.surname then rString = rString.." ("..data.surname..")" end
-					else
-						if data.surname then rString = rString.." "..data.surname end
-					end
+					else if data.surname then rString = rString.." "..data.surname end end
 					
 					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 					else rString = rString.." of "..data.nationality end
