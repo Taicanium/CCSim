@@ -1740,6 +1740,7 @@ return
 					local istaken = true
 					
 					while istaken do
+						istaken = false
 						mid = self:randomChoice(self.middlegroups)
 						for i=1,#taken do if taken[i] == mid:lower() then istaken = true end end
 					end
