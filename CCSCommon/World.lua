@@ -252,7 +252,7 @@ return
 						self.planet[x][y][z].countryset = false
 					end
 
-					printl(parent.stdscr, "%d%% done", math.floor(defined/planetSize*10000)/100)
+					printl(parent.stdscr, "%.2f%% done", math.floor(defined/planetSize*10000)/100)
 				end
 
 				for i=1,planetSize do
