@@ -384,57 +384,112 @@ return
 						end
 					end
 				end
+				
+				for i=1,planetSize,2000
+					if i < planetSize-2000 then
+						f:write(")\nx <- c(")
 
-				f:write(")\nx <- c(")
+						for j=i,i+1999 do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
+							f:write(x)
+							if j < i+1999 then f:write(", ") end
+						end
 
-				for j=1,planetSize do
-					local x = self.planetdefined[j][1]
-					local y = self.planetdefined[j][2]
-					local z = self.planetdefined[j][3]
-					if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
-					f:write(x)
-					if j < planetSize then f:write(", ") end
-				end
+						f:write(")\ny <- c(")
 
-				f:write(")\ny <- c(")
+						for j=i,i+1999 do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
+							f:write(y)
+							if j < i+1999 then f:write(", ") end
+						end
 
-				for j=1,planetSize do
-					local x = self.planetdefined[j][1]
-					local y = self.planetdefined[j][2]
-					local z = self.planetdefined[j][3]
-					if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
-					f:write(y)
-					if j < planetSize then f:write(", ") end
-				end
+						f:write(")\nz <- c(")
 
-				f:write(")\nz <- c(")
+						for j=i,i+1999 do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
+							f:write(z)
+							if j < i+1999 then f:write(", ") end
+						end
 
-				for j=1,planetSize do
-					local x = self.planetdefined[j][1]
-					local y = self.planetdefined[j][2]
-					local z = self.planetdefined[j][3]
-					if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
-					f:write(z)
-					if j < planetSize then f:write(", ") end
-				end
+						f:write(")\ncsc <- c(")
 
-				f:write(")\ncsc <- c(")
+						for j=i,i+1999 do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							local isCity = false
+							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
+							if isCity then f:write("\"#888888\"") else
+								if self.planet[x][y][z].land then
+									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
+								else f:write("\"#1616AA\"") end
+							end
+							if j < i+1999 then f:write(", ") end
+						end
 
-				for j=1,planetSize do
-					local x = self.planetdefined[j][1]
-					local y = self.planetdefined[j][2]
-					local z = self.planetdefined[j][3]
-					local isCity = false
-					for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-					if isCity then f:write("\"#888888\"") else
-						if self.planet[x][y][z].land then
-							if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
-						else f:write("\"#1616AA\"") end
+						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
+					else
+						f:write(")\nx <- c(")
+
+						for j=i,planetSize do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
+							f:write(x)
+							if j < planetSize then f:write(", ") end
+						end
+
+						f:write(")\ny <- c(")
+
+						for j=i,planetSize do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
+							f:write(y)
+							if j < planetSize then f:write(", ") end
+						end
+
+						f:write(")\nz <- c(")
+
+						for j=i,planetSize do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
+							f:write(z)
+							if j < planetSize then f:write(", ") end
+						end
+
+						f:write(")\ncsc <- c(")
+
+						for j=i,planetSize do
+							local x = self.planetdefined[j][1]
+							local y = self.planetdefined[j][2]
+							local z = self.planetdefined[j][3]
+							local isCity = false
+							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
+							if isCity then f:write("\"#888888\"") else
+								if self.planet[x][y][z].land then
+									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
+								else f:write("\"#1616AA\"") end
+							end
+							if j < planetSize then f:write(", ") end
+						end
+
+						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					end
-					if j < planetSize then f:write(", ") end
 				end
-
-				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 
 				f:write(")\ncsd <- c(")
 
