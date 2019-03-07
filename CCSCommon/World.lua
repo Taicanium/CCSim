@@ -460,9 +460,9 @@ return
 					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 
 					while ratio < self.planetR+8 and ratio < self.planetR+8.25 do
-						xChange = xChange + math.atan(avgX / self.planetR) / 16
-						yChange = yChange + math.atan(avgY / self.planetR) / 16
-						zChange = zChange + math.atan(avgZ / self.planetR) / 16
+						xChange = xChange + math.atan(x / self.planetR) / 16
+						yChange = yChange + math.atan(y / self.planetR) / 16
+						zChange = zChange + math.atan(z / self.planetR) / 16
 
 						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 					end
