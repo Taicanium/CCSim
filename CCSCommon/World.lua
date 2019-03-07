@@ -385,7 +385,7 @@ return
 					end
 				end
 				
-				for i=1,planetSize,2000
+				for i=1,planetSize,2000 do
 					if i < planetSize-2000 then
 						f:write(")\nx <- c(")
 
