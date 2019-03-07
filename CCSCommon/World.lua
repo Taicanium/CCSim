@@ -364,12 +364,9 @@ return
 							end
 						end
 
-						local rh = string.format("%x", r)
-						if rh:len() == 1 then rh = "0"..rh end
-						local gh = string.format("%x", g)
-						if gh:len() == 1 then gh = "0"..gh end
-						local bh = string.format("%x", b)
-						if bh:len() == 1 then bh = "0"..bh end
+						local rh = string.format("%.2x", r)
+						local gh = string.format("%.2x", g)
+						local bh = string.format("%.2x", b)
 
 						self.cColors[cp.name] = "#"..rh..gh..bh
 						self.cTriplets[cp.name] = {r, g, b}
@@ -388,127 +385,61 @@ return
 					end
 				end
 
-				for i=1,planetSize,500 do
-					if i+499 <= planetSize then
-						f:write(")\nx <- c(")
+				f:write(")\nx <- c(")
 
-						for j=i,i+499 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5) end
-							f:write(x)
-							if j < i+499 then f:write(", ") end
-						end
-
-						f:write(")\ny <- c(")
-
-						for j=i,i+499 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5) end
-							f:write(y)
-							if j < i+499 then f:write(", ") end
-						end
-
-						f:write(")\nz <- c(")
-
-						for j=i,i+499 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5) end
-							f:write(z)
-							if j < i+499 then f:write(", ") end
-						end
-
-						f:write(")\ncsc <- c(")
-
-						for j=i,i+499 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-							if isCity then f:write("\"#888888\"") else
-								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
-								else f:write("\"#1616AA\"") end
-							end
-							if j < i+499 then f:write(", ") end
-						end
-
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
-					else
-						f:write(")\nx <- c(")
-
-						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.5) end
-							f:write(x)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\ny <- c(")
-
-						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.5) end
-							f:write(y)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\nz <- c(")
-
-						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.5) end
-							f:write(z)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\ncsc <- c(")
-
-						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
-							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-							if isCity then f:write("\"#888888\"") else
-								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"")
-									else f:write("\"#1616AA\"") end
-								else f:write("\"#1616AA\"") end
-							end
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
-					end
+				for j=1,planetSize do
+					local x = self.planetdefined[j][1]
+					local y = self.planetdefined[j][2]
+					local z = self.planetdefined[j][3]
+					if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
+					f:write(x)
+					if j < planetSize then f:write(", ") end
 				end
+
+				f:write(")\ny <- c(")
+
+				for j=1,planetSize do
+					local x = self.planetdefined[j][1]
+					local y = self.planetdefined[j][2]
+					local z = self.planetdefined[j][3]
+					if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
+					f:write(y)
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\nz <- c(")
+
+				for j=1,planetSize do
+					local x = self.planetdefined[j][1]
+					local y = self.planetdefined[j][2]
+					local z = self.planetdefined[j][3]
+					if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
+					f:write(z)
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\ncsc <- c(")
+
+				for j=1,planetSize do
+					local x = self.planetdefined[j][1]
+					local y = self.planetdefined[j][2]
+					local z = self.planetdefined[j][3]
+					local isCity = false
+					for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
+					if isCity then f:write("\"#888888\"") else
+						if self.planet[x][y][z].land then
+							if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
+						else f:write("\"#1616AA\"") end
+					end
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 
 				f:write(")\ncsd <- c(")
 
 				for i, cp in pairs(self.countries) do
 					f:write("\""..cp.name.."\"")
-					if ci < parent.numCountries then f:write(", ") end
-					ci = ci + 1
-				end
-
-				ci = 1
-
-				f:write(")\ncse <- c(")
-
-				for i, cp in pairs(self.countries) do
-					f:write("\""..self.cColors[cp.name].."\"")
 					if ci < parent.numCountries then f:write(", ") end
 					ci = ci + 1
 				end
@@ -521,14 +452,25 @@ return
 					local x = cCoords[i][1]
 					local y = cCoords[i][2]
 					local z = cCoords[i][3]
+					
+					local xChange = x
+					local yChange = y
+					local zChange = z
+					
+					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 
-					x = x + (math.atan(x / self.planetR) * 12)
-					y = y + (math.atan(y / self.planetR) * 12)
-					z = z + (math.atan(z / self.planetR) * 12)
+					while ratio < self.planetR+8 and ratio < self.planetR+8.25 do
+						xChange = xChange + math.atan(avgX / self.planetR) / 16
+						yChange = yChange + math.atan(avgY / self.planetR) / 16
+						zChange = zChange + math.atan(avgZ / self.planetR) / 16
 
-					cCoords[i][1] = x
-					cCoords[i][2] = y
-					cCoords[i][3] = z
+						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+					end
+
+					cCoords[i][1] = xChange
+					cCoords[i][2] = yChange
+					cCoords[i][3] = zChange
+					
 					f:write(x)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -536,9 +478,7 @@ return
 				f:write(")\ncityy <- c(")
 
 				for i=1,#cCoords do
-					local x = cCoords[i][1]
 					local y = cCoords[i][2]
-					local z = cCoords[i][3]
 					f:write(y)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -546,8 +486,6 @@ return
 				f:write(")\ncityz <- c(")
 
 				for i=1,#cCoords do
-					local x = cCoords[i][1]
-					local y = cCoords[i][2]
 					local z = cCoords[i][3]
 					f:write(z)
 					if i < #cCoords then f:write(", ") end
@@ -568,27 +506,23 @@ return
 					local avgY = 0
 					local avgZ = 0
 
-					for j=1,#cp.nodes do avgX = avgX + cp.nodes[j][1] end
-
-					for j=1,#cp.nodes do avgY = avgY + cp.nodes[j][2] end
-
-					for j=1,#cp.nodes do avgZ = avgZ + cp.nodes[j][3] end
+					for j=1,#cp.nodes do
+						avgX = avgX + cp.nodes[j][1]
+						avgY = avgY + cp.nodes[j][2]
+						avgZ = avgZ + cp.nodes[j][3]
+					end
 
 					avgX = math.floor(avgX / #cp.nodes)
 					avgY = math.floor(avgY / #cp.nodes)
 					avgZ = math.floor(avgZ / #cp.nodes)
 
-					local xChange = avgX - math.pi
-					local yChange = avgY - math.pi
-					local zChange = avgZ - math.pi
-
-					if avgX < 0 then xChange = xChange + math.pi * 2 end
-					if avgY < 0 then yChange = yChange + math.pi * 2 end
-					if avgZ < 0 then zChange = zChange + math.pi * 2 end
+					local xChange = avgX
+					local yChange = avgY
+					local zChange = avgZ
 
 					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 
-					while ratio < self.planetR-0.1 and ratio > self.planetR+0.1 do
+					while ratio < self.planetR+24 and ratio < self.planetR+24.25 do
 						xChange = xChange + math.atan(avgX / self.planetR) / 16
 						yChange = yChange + math.atan(avgY / self.planetR) / 16
 						zChange = zChange + math.atan(avgZ / self.planetR) / 16
@@ -596,20 +530,13 @@ return
 						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
 					end
 
-					xChange = xChange + (math.atan(avgX / self.planetR) * 36)
-					yChange = yChange + (math.atan(avgY / self.planetR) * 36)
-					zChange = zChange + (math.atan(avgZ / self.planetR) * 36)
-
 					local r = 255 - self.cTriplets[cp.name][1]
 					local g = 255 - self.cTriplets[cp.name][2]
 					local b = 255 - self.cTriplets[cp.name][3]
 
-					local rh = string.format("%x", r)
-					if rh:len() == 1 then rh = "0"..rh end
-					local gh = string.format("%x", g)
-					if gh:len() == 1 then gh = "0"..gh end
-					local bh = string.format("%x", b)
-					if bh:len() == 1 then bh = "0"..bh end
+					local rh = string.format("%.2x", r)
+					local gh = string.format("%.2x", g)
+					local bh = string.format("%.2x", b)
 
 					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
 				end
