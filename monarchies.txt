@@ -1,18 +1,25 @@
 Year 2094
-C England
-R England
-P London
-S Manchester
+C United Kingdom
 R Scotland
 S Glasgow
 S Edinburgh
-R Ireland
-S Dublin
-S Belfast
+S Aberdeen
+S Dundee
 R Wales
 S Cardiff
 S Swansea
 S Newport
+S Wrexham
+R Ireland
+S Dublin
+S Cork
+S Limerick
+S Belfast
+R England
+P London
+S Manchester
+S Birmingham
+S Cornwall
 King William 1066 1087
 King William 1087 1100
 King Henry 1100 1135
