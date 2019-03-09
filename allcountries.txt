@@ -106,8 +106,32 @@ C Cameroon
 R Yaounde
 P Yaounde
 C Canada
-R Ottawa
+R Ontario
 P Ottawa
+S Toronto
+R Quebec
+S Quebec City
+S Montreal
+R Nova Scotia
+S Halifax
+R New Brunswick
+S Fredericton
+S Moncton
+R Manitoba
+S Winnipeg
+R British Columbia
+S Victoria
+S Vancouver
+R Prince Edward Island
+S Charlottetown
+R Saskatchewan
+S Regina
+S Saskatoon
+R Alberta
+S Edmonton
+S Calgary
+R Newfoundland and Labrador
+S St. John's
 C Cape Verde
 R Praia
 P Praia
@@ -379,7 +403,7 @@ C Grenada
 R St. George's
 P St. George's
 C Guatemala
-R Guatemala City
+R Guatemala
 P Guatemala City
 C Guinea
 R Conakry
@@ -547,7 +571,7 @@ C Kiribati
 R South Tarawa
 P South Tarawa
 C Kuwait
-R Kuwait City
+R Kuwait
 P Kuwait City
 C Kyrgyzstan
 R Bishkek
@@ -579,7 +603,7 @@ P Vilnius
 C Luxembourg
 R Luxembourg
 P Luxembourg
-C Macedonia
+C North Macedonia
 R Skopje
 P Skopje
 C Madagascar
@@ -610,10 +634,78 @@ C Mauritius
 R Port Louis
 P Port Louis
 C Mexico
-R Mexico City
+R Aguascalientes
+S Aguascalientes
+R Baja California
+S Mexicali
+S Tijuana
+S La Paz
+R Campeche
+S Campeche
+R Chiapas
+S Tuxtla
+R Mexico
 P Mexico City
-R Yucatan
+S Toluca
+S Ecatepec
+R Chihuahua
+S Chihuahua
+S Juarez City
+R Coahuila
+S Saltillo
+R Colima
+S Colima
+S Manzanillo
+R Durango
+S Victoria
+R Guanajuato
+S Guanajuato
+S Leon
+R Guerrero
+S Chilpancingo
+S Acapulco
+R Hidalgo
+S Pachuca
+R Jalisco
+S Guadalajara
+R Michoacan
+S Morelia
+R Morelos
+S Cuernavaca
+R Nayarit
+S Tepic
+R Nuevo Leon
+S Monterrey
+R Oaxaca
+S Oaxaca
+R Puebla
+S Zaragoza
+R Potosi
+S San Luis
+R Queretaro
+S Santiago
+R Quintana
+S Chetumal
 S Cancun
+R Sinaloa
+S Culiacan
+R Sonora
+S Hermosillo
+R Tabasco
+S Villahermosa
+R Tamaulipas
+S Reynosa
+S Victoria City
+R Tlaxcala
+S Tlaxcala
+S Vicente Guerrero
+R Veracruz
+S Xalapa
+S Veracruz
+R Yucatan
+S Merida
+R Zacatecas
+S Zacatecas
 C Micronesia
 R Palikir
 P Palikir
@@ -863,7 +955,7 @@ C Tanzania
 R Dodoma
 P Dodoma
 C Thailand
-R Greater Bangkok
+R Bangkok
 P Bangkok
 R Chiang Mai
 S Chiang Mai
@@ -1111,7 +1203,7 @@ C Holy See
 R Vatican City
 P Vatican City
 C Venezuela
-R Greater Caracas
+R Caracas
 P Caracas
 C Vietnam
 R North Vietnam
