@@ -21,6 +21,7 @@ return
 				nl.allyOngoing = {}
 				nl.alliances = {}
 				nl.system = 0
+				nl.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system. 
 				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
 				nl.formalities = {}
 				nl.demonym = ""
@@ -363,8 +364,8 @@ return
 				if #t.children == 0 then return nil end
 				
 				local childrenByAge = {}
-				local childrenLiving = {}
 				local hasMale = false
+				local eldestLiving = nil
 
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
@@ -377,37 +378,15 @@ return
 					end end
 					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
-
-				local found = false
-				local eldestLiving = nil
-				for i=1,#childrenByAge do if not found then if childrenByAge[i].def then if not childrenByAge[i].isruler and childrenByAge[i].royalName == "" then
-					found = true
-					table.insert(childrenLiving, childrenByAge[i])
-					if childrenByAge[i].gender == "Male" then hasMale = true end
-				end end end end
-
-				if not found then
-					for i=1,#childrenByAge do
-						if not eldestLiving then
-							if not hasMale then
-								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
-								if nextLevel then eldestLiving = nextLevel end
-							elseif childrenByAge[i].gender == "Male" then
-								local nextLevel = self:recurseRoyalChildren(childrenByAge[i])
-								if nextLevel then eldestLiving = nextLevel end
-							end
-						end
+				
+				for i=1,#childrenByAge do if childrenByAge[i].gender == "Male" then hasMale = true end end
+				for i=1,#childrenByAge do if not eldestLiving then
+					if hasMale then
+						if childrenByAge[i].gender == "Male" and not childrenByAge[i].isruler and childrenByAge[i].royalName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
+					elseif not self.agPrim then
+						if not childrenByAge[i].isruler and childrenByAge[i].royalName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
 					end
-				else
-					if not hasMale then eldestLiving = childrenLiving[1]
-					else
-						local mFound = false
-						for i=1,#childrenLiving do if not mFound then if childrenLiving[i].gender == "Male" then
-							eldestLiving = childrenLiving[i]
-							mFound = true
-						end end end
-					end
-				end
+				end end
 
 				return eldestLiving
 			end,
@@ -417,6 +396,7 @@ return
 
 				self.system = math.random(1, #parent.systems)
 				self:makename(parent, 3)
+				self.agPrim = parent:randomChoice({true, false})
 
 				if self.population <= 1 then self:setPop(parent, math.random(1000, 2000)) end
 
