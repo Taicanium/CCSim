@@ -27,7 +27,7 @@ function main()
 		CCSCommon.maxyears = tonumber(datin)
 	end
 	
-	CCSCommon.maxyears = CCSCommon.maxyears + 1 -- We start at year 1.
+	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
 	printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?")
 	printp(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
