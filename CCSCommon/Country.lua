@@ -72,10 +72,10 @@ return
 					n.spouse.military = false
 					n.spouse.isruler = false
 					table.insert(self.people, n.spouse)
-					self.population = self.population + 1
+					self.population = self.population+1
 				end
 				table.insert(self.people, n)
-				self.population = self.population + 1
+				self.population = self.population+1
 			end,
 
 			checkRuler = function(self, parent)
@@ -99,7 +99,7 @@ return
 									for i=1,#self.people do
 										if self.people[i].royalGenerations > 0 then
 											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
-											elseif self.people[i].age <= self.averageAge + 25 then table.insert(possibles, self.people[i]) end
+											elseif self.people[i].age <= self.averageAge+25 then table.insert(possibles, self.people[i]) end
 										end
 									end
 
@@ -119,7 +119,7 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge + 25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
+										if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
@@ -128,7 +128,7 @@ return
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge + 25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
+								if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
 							end
 						end
 					end
@@ -143,7 +143,7 @@ return
 						table.insert(parent.royals, self.people[y])
 						w = table.remove(self.people, y)
 						if w then w:destroy() end
-						self.population = self.population - 1
+						self.population = self.population-1
 					end
 				end end
 			end,
@@ -165,8 +165,8 @@ return
 			end,
 
 			eventloop = function(self, parent)
-				local v = math.floor(math.random(300, 800) * math.floor(self.stability))
-				local vi = math.floor(math.random(300, 800) * (100 - math.floor(self.stability)))
+				local v = math.floor(math.random(300, 800)*math.floor(self.stability))
+				local vi = math.floor(math.random(300, 800)*(100-math.floor(self.stability)))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
@@ -211,7 +211,7 @@ return
 
 				local revCount = 0
 
-				for i=1,#self.events do if self.events[i].Year > parent.years - 50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount + 1 end end
+				for i=1,#self.events do if self.events[i].Year > parent.years-50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount+1 end end
 
 				if revCount > 6 then
 					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
@@ -399,11 +399,10 @@ return
 				self.agPrim = parent:randomChoice({true, false})
 
 				if self.population <= 1 then self:setPop(parent, math.random(1000, 2000)) end
-
 				for i=1,#self.people do self.people[i].pIndex = i end
 
 				local rcount = 0
-				for i, j in pairs(self.regions) do rcount = rcount + 1 end
+				for i, j in pairs(self.regions) do rcount = rcount+1 end
 				if rcount == 0 then
 					rcount = math.random(3, 6)
 					for i=1,rcount do
@@ -419,7 +418,7 @@ return
 				if self.founded == 0 then self.founded = parent.years end
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
-				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name] + 1
+				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 
@@ -434,8 +433,8 @@ return
 					local n = Person:new()
 					n:makename(parent, self)
 					n.age = math.random(1, 20)
-					n.birth = parent.years - n.age
-					if n.birth < 1 then n.birth = n.birth - 1 end
+					n.birth = parent.years-n.age
+					if n.birth < 1 then n.birth = n.birth-1 end
 					n.level = 2
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
@@ -471,7 +470,7 @@ return
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
 
-					for i=1,#self.rulers do if self.rulers[i].Country == self.name and tonumber(self.rulers[i].From) >= self.founded and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum + 1 end end
+					for i=1,#self.rulers do if self.rulers[i].Country == self.name and tonumber(self.rulers[i].From) >= self.founded and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
 
 					self.people[newRuler].RoyalTitle = self.people[newRuler].title
 					self.people[newRuler].royalGenerations = 0
@@ -507,15 +506,15 @@ return
 				end
 
 				local rCount = 0
-				for i, j in pairs(self.regions) do rCount = rCount + 1 end
+				for i, j in pairs(self.regions) do rCount = rCount+1 end
 
-				local maxR = math.ceil(#self.nodes / 35)
+				local maxR = math.ceil(#self.nodes/35)
 
 				while rCount > maxR do
 					local r = parent:randomChoice(self.regions, true)
 					self.regions[r] = nil
 					rCount = 0
-					for l, m in pairs(self.regions) do rCount = rCount + 1 end
+					for l, m in pairs(self.regions) do rCount = rCount+1 end
 				end
 				
 				for i, j in pairs(self.regions) do
@@ -525,7 +524,7 @@ return
 						local y = self.nodes[k][2]
 						local z = self.nodes[k][3]
 						if parent.thisWorld.planet[x][y][z].region == j.name then found = true end
-						if found then k = #self.nodes + 1 end
+						if found then k = #self.nodes+1 end
 					end
 					
 					if not found then
@@ -596,9 +595,9 @@ return
 
 				for i, j in pairs(self.regions) do
 					local cCount = 0
-					for k, l in pairs(j.cities) do cCount = cCount + 1 end
+					for k, l in pairs(j.cities) do cCount = cCount+1 end
 
-					local maxC = math.ceil(#j.nodes / 25)
+					local maxC = math.ceil(#j.nodes/25)
 
 					while cCount > maxC do
 						local c = parent:randomChoice(j.cities, true)
@@ -609,7 +608,7 @@ return
 						if r.x and r.y and r.z then parent.thisWorld.planet[x][y][z].city = "" end
 						j.cities[c] = nil
 						cCount = 0
-						for k, l in pairs(j.cities) do cCount = cCount + 1 end
+						for k, l in pairs(j.cities) do cCount = cCount+1 end
 					end
 				end
 
@@ -624,7 +623,7 @@ return
 								l.x = x
 								l.y = y
 								l.z = z
-								m = #self.nodes + 1
+								m = #self.nodes+1
 							end
 						end
 					
@@ -681,7 +680,7 @@ return
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
 
-				self.stability = self.stability + math.random(-3, 3)
+				self.stability = self.stability+math.random(-3, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
@@ -720,7 +719,7 @@ return
 					if cp.name ~= self.name then
 						if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 						local v = math.random(-4, 4)
-						self.relations[cp.name] = self.relations[cp.name] + v
+						self.relations[cp.name] = self.relations[cp.name]+v
 						if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
 						if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 					end
@@ -733,7 +732,7 @@ return
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 75 end
 
-				while math.floor(#self.people) > math.floor(parent.popLimit * 3) do self:delete(parent, parent:randomChoice(self.people, true)) end
+				while math.floor(#self.people) > math.floor(parent.popLimit*3) do self:delete(parent, parent:randomChoice(self.people, true)) end
 
 				local oldcap = nil
 				local oldreg = nil
@@ -786,8 +785,8 @@ return
 					end end
 
 					if not chn then
-						self.averageAge = self.averageAge + self.people[i].age
-						if self.people[i].military then self.military = self.military + 1 end
+						self.averageAge = self.averageAge+self.people[i].age
+						if self.people[i].military then self.military = self.military+1 end
 						if self.people[i].isruler then
 							self.hasruler = 0
 							self.rulerage = self.people[i].age
@@ -798,7 +797,7 @@ return
 				
 				self:checkRuler(parent)
 
-				self.averageAge = self.averageAge / #self.people
+				self.averageAge = self.averageAge/#self.people
 
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
@@ -813,14 +812,14 @@ return
 					if largest ~= -1 then self.parties[largest].leading = true end
 				end
 
-				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i] / #self.people) * 100 end
+				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i]/#self.people)*100 end
 
 				local largest = ""
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
 				
-				self.age = parent.years - self.founded
+				self.age = parent.years-self.founded
 			end
 		}
 
