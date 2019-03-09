@@ -1007,15 +1007,23 @@ C United Kingdom
 R Scotland
 S Glasgow
 S Edinburgh
+S Aberdeen
+S Dundee
 R Wales
 S Cardiff
 S Swansea
+S Newport
+S Wrexham
 R Ireland
 S Dublin
+S Cork
+S Limerick
 S Belfast
 R England
-S Manchester
 P London
+S Manchester
+S Birmingham
+S Cornwall
 King William 1066 1087
 King William 1087 1100
 King Henry 1100 1135
