@@ -45,19 +45,19 @@ return
 				for x=-bRad,bRad do
 					for y=-bRad,bRad do
 						for z=-bRad,bRad do
-							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
+							fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 							if fsqrt < bRad+0.5 and fsqrt > bRad-0.5 then
 								if not bench[x] then bench[x] = {} end
 								if not bench[x][y] then bench[x][y] = {} end
 								bench[x][y][z] = {}
 							end
-							bdone = bdone + 1
+							bdone = bdone+1
 							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", bdone, math.pow((bRad*2)+1, 3)) end
 						end
 					end
 				end
 
-				local benchAdjust = math.floor(_time() - t0)
+				local benchAdjust = math.floor(_time()-t0)
 				if benchAdjust > 50 then benchAdjust = 50 end
 
 				local r = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
@@ -70,7 +70,7 @@ return
 				for x=-r,r do
 					for y=-r,r do
 						for z=-r,r do
-							fsqrt = math.sqrt(math.pow(x, 2) + math.pow(y, 2) + math.pow(z, 2))
+							fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 							if fsqrt < r+0.5 and fsqrt > r-0.5 then
 								if not self.planet[x] then self.planet[x] = {} end
 								if not self.planet[x][y] then self.planet[x][y] = {} end
@@ -89,7 +89,7 @@ return
 
 								table.insert(self.planetdefined, {x, y, z})
 							end
-							rdone = rdone + 1
+							rdone = rdone+1
 							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%d/%d", rdone, math.pow((r*2)+1, 3)) end
 						end
 					end
@@ -161,7 +161,7 @@ return
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
 							if not self.planet[nx][ny][nz].land then
 								self.planet[nx][ny][nz].land = true
-								doneLand = doneLand + 1
+								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
 								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do
 									local jx = j[1]
@@ -263,7 +263,7 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined + 1 end
+						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 end
 						self.planet[x][y][z].countryset = false
 					end
 
@@ -284,7 +284,7 @@ return
 
 				for i, cp in pairs(self.countries) do
 					printf(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
-					ci = ci + 1
+					ci = ci+1
 					cp:setTerritory(parent)
 				end
 
@@ -301,7 +301,7 @@ return
 
 					nz:destroy(parent)
 
-					parent.numCountries = parent.numCountries - 1
+					parent.numCountries = parent.numCountries-1
 				end
 			end,
 
@@ -393,7 +393,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then x = x-(math.atan(self.planetdefined[j][1]/self.planetR)*1.65) end
 							f:write(x)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -404,7 +404,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then y = y-(math.atan(self.planetdefined[j][2]/self.planetR)*1.65) end
 							f:write(y)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -415,7 +415,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then z = z-(math.atan(self.planetdefined[j][3]/self.planetR)*1.65) end
 							f:write(z)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -444,7 +444,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x - (math.atan(self.planetdefined[j][1] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then x = x-(math.atan(self.planetdefined[j][1]/self.planetR)*1.65) end
 							f:write(x)
 							if j < planetSize then f:write(", ") end
 						end
@@ -455,7 +455,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y - (math.atan(self.planetdefined[j][2] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then y = y-(math.atan(self.planetdefined[j][2]/self.planetR)*1.65) end
 							f:write(y)
 							if j < planetSize then f:write(", ") end
 						end
@@ -466,7 +466,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z - (math.atan(self.planetdefined[j][3] / self.planetR) * 1.65) end
+							if not self.planet[x][y][z].land then z = z-(math.atan(self.planetdefined[j][3]/self.planetR)*1.65) end
 							f:write(z)
 							if j < planetSize then f:write(", ") end
 						end
@@ -496,7 +496,7 @@ return
 				for i, cp in pairs(self.countries) do
 					f:write("\""..cp.name.."\"")
 					if ci < parent.numCountries then f:write(", ") end
-					ci = ci + 1
+					ci = ci+1
 				end
 
 				ci = 1
@@ -512,14 +512,14 @@ return
 					local yChange = y
 					local zChange = z
 					
-					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
 					while ratio < self.planetR+8 and ratio < self.planetR+8.25 do
-						xChange = xChange + math.atan(x / self.planetR) / 16
-						yChange = yChange + math.atan(y / self.planetR) / 16
-						zChange = zChange + math.atan(z / self.planetR) / 16
+						xChange = xChange+math.atan(x/self.planetR)/16
+						yChange = yChange+math.atan(y/self.planetR)/16
+						zChange = zChange+math.atan(z/self.planetR)/16
 
-						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
 
 					cCoords[i][1] = xChange
@@ -562,32 +562,32 @@ return
 					local avgZ = 0
 
 					for j=1,#cp.nodes do
-						avgX = avgX + cp.nodes[j][1]
-						avgY = avgY + cp.nodes[j][2]
-						avgZ = avgZ + cp.nodes[j][3]
+						avgX = avgX+cp.nodes[j][1]
+						avgY = avgY+cp.nodes[j][2]
+						avgZ = avgZ+cp.nodes[j][3]
 					end
 
-					avgX = math.floor(avgX / #cp.nodes)
-					avgY = math.floor(avgY / #cp.nodes)
-					avgZ = math.floor(avgZ / #cp.nodes)
+					avgX = math.floor(avgX/#cp.nodes)
+					avgY = math.floor(avgY/#cp.nodes)
+					avgZ = math.floor(avgZ/#cp.nodes)
 
 					local xChange = avgX
 					local yChange = avgY
 					local zChange = avgZ
 
-					local ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
 					while ratio < self.planetR+24 and ratio < self.planetR+24.25 do
-						xChange = xChange + math.atan(avgX / self.planetR) / 16
-						yChange = yChange + math.atan(avgY / self.planetR) / 16
-						zChange = zChange + math.atan(avgZ / self.planetR) / 16
+						xChange = xChange+math.atan(avgX/self.planetR)/16
+						yChange = yChange+math.atan(avgY/self.planetR)/16
+						zChange = zChange+math.atan(avgZ/self.planetR)/16
 
-						ratio = math.sqrt(math.pow(xChange, 2) + math.pow(yChange, 2) + math.pow(zChange, 2))
+						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
 
-					local r = 255 - self.cTriplets[cp.name][1]
-					local g = 255 - self.cTriplets[cp.name][2]
-					local b = 255 - self.cTriplets[cp.name][3]
+					local r = 255-self.cTriplets[cp.name][1]
+					local g = 255-self.cTriplets[cp.name][2]
+					local b = 255-self.cTriplets[cp.name][3]
 
 					local rh = string.format("%.2x", r)
 					local gh = string.format("%.2x", g)
@@ -605,7 +605,7 @@ return
 
 			update = function(self, parent)
 				parent.numCountries = 0
-				for i, cp in pairs(self.countries) do parent.numCountries = parent.numCountries + 1 end
+				for i, cp in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
 
 				local f0 = _time()
 
@@ -620,16 +620,16 @@ return
 				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 
-				local f1 = _time() - f0
+				local f1 = _time()-f0
 
-				if parent.years > parent.startyear + 1 then
+				if parent.years > parent.startyear+1 then
 					if f1 > 0.75 then
-						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit - (50 * (f1 * 2))) end
+						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
 
 						if parent.popLimit < 1500 then parent.popLimit = 1500 end
 						if parent.numCountries >= 9 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					elseif f1 < 0.5 then
-						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit + (150 * (0.08 / f1))) end
+						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(150*(0.08/f1))) end
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
