@@ -58,7 +58,7 @@ printc = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
 		local str = string.format(tostring(fmt), ...)
-		if x + str:len() < curses:cols() then stdscr:addstr(str) elseif x + 3 < curses:cols() then stdscr:addstr("...") end
+		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
 		stdscr:refresh()
 	else io.write(string.format(tostring(fmt), ...)) end
 end
@@ -99,7 +99,7 @@ return
 						c.hasruler = -1
 						c:checkRuler(parent)
 
-						c.stability = c.stability - 10
+						c.stability = c.stability-10
 						if c.stability < 1 then c.stability = 1 end
 
 						return -1
@@ -130,7 +130,7 @@ return
 
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
-						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
+						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
@@ -148,11 +148,11 @@ return
 							end
 						end
 
-						c.stability = c.stability - 15
+						c.stability = c.stability-15
 						if c.stability < 1 then c.stability = 1 end
 
-						if math.floor(#c.people / 10) > 1 then
-							for d=1,math.random(1, math.floor(#c.people / 10)) do
+						if math.floor(#c.people/10) > 1 then
+							for d=1,math.random(1, math.floor(#c.people/10)) do
 								local z = math.random(1, #c.people)
 								c:delete(parent, z)
 							end
@@ -172,10 +172,10 @@ return
 					opIntervened = {},
 					govIntervened = {},
 					beginEvent=function(self, parent, c)
-						c.civilWars = c.civilWars + 1
+						c.civilWars = c.civilWars+1
 						c:event(parent, "Beginning of "..parent:ordinal(c.civilWars).." civil war")
 						self.status = 0 -- -100 is victory for the opposition side; 100 is victory for the present government.
-						self.status = self.status + parent:strengthFactor(c)
+						self.status = self.status+parent:strengthFactor(c)
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% opposition"
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% government"
@@ -220,7 +220,7 @@ return
 							local cp = parent.thisWorld.countries[self.opIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
-								if extFactor < 0 then varistab = varistab - (extFactor/10) end
+								if extFactor < 0 then varistab = varistab-(extFactor/10) end
 							end
 						end
 
@@ -228,11 +228,11 @@ return
 							local cp = parent.thisWorld.countries[self.govIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
-								if extFactor > 0 then varistab = varistab + (extFactor/10) end
+								if extFactor > 0 then varistab = varistab+(extFactor/10) end
 							end
 						end
 
-						self.status = self.status + math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
+						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
 
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."%% opposition"
@@ -283,7 +283,7 @@ return
 
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
-							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name] + 1
+							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
 							c:checkRuler(parent)
@@ -300,7 +300,7 @@ return
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == c.people[newRuler].royalName and c.rulers[i].title == c.people[newRuler].title then namenum = namenum + 1 end end
+								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == c.people[newRuler].royalName and c.rulers[i].title == c.people[newRuler].title then namenum = namenum+1 end end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
 								if c.snt[parent.systems[c.system].name] > 1 then
@@ -327,7 +327,7 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c)
-						for i=1,#c.ongoing - 1 do if c.ongoing[i].name == self.name then return -1 end end
+						for i=1,#c.ongoing-1 do if c.ongoing[i].name == self.name then return -1 end end
 						return 0
 					end
 				},
@@ -343,8 +343,8 @@ return
 						c1:event(parent, "Declared war on "..self.target.name)
 						self.target:event(parent, "War declared by "..c1.name)
 						self.status = 0 -- -100 is victory for the target; 100 is victory for the initiator.
-						self.status = self.status + parent:strengthFactor(c1)
-						self.status = self.status - parent:strengthFactor(self.target)
+						self.status = self.status+parent:strengthFactor(c1)
+						self.status = self.status-parent:strengthFactor(self.target)
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..c1.name
@@ -403,23 +403,23 @@ return
 						local str1Factor = parent:strengthFactor(c1)
 						local str2Factor = parent:strengthFactor(self.target)
 
-						local varistab = str1Factor - str2Factor
+						local varistab = str1Factor-str2Factor
 
 						ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
-							varistab = varistab + (extFactor/10)
+							varistab = varistab+(extFactor/10)
 						end
 
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
-							varistab = varistab - (extFactor/10)
+							varistab = varistab-(extFactor/10)
 						end
 
-						self.status = self.status + math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
+						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
 
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
@@ -441,14 +441,14 @@ return
 							c1:event(parent, "Victory in war with "..self.target.name)
 							self.target:event(parent, "Defeat in war with "..c1.name)
 
-							c1.stability = c1.stability + 10
-							self.target.stability = self.target.stability - 10
+							c1.stability = c1.stability+10
+							self.target.stability = self.target.stability-10
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 							for i=1,#ao do
 								if ao[i] then
-									c1strength = c1strength + ao[i].strength
+									c1strength = c1strength+ao[i].strength
 									ao[i]:event(parent, "Victory with "..c1.name.." in war with "..self.target.name)
 								end
 							end
@@ -457,7 +457,7 @@ return
 
 							for i=1,#ao do
 								if ao[i] then
-									c2strength = c2strength + ao[i].strength
+									c2strength = c2strength+ao[i].strength
 									ao[i]:event(parent, "Defeat with "..self.target.name.." in war with "..c1.name)
 								end
 							end
@@ -465,9 +465,9 @@ return
 							parent:removeAllyOngoing(c1, self.target, self.name)
 							parent:removeAllyOngoing(self.target, c1, self.name)
 
-							if c1strength > c2strength + (c2strength / 5) then
+							if c1strength > c2strength+(c2strength/5) then
 								local rcount = 0
-								for q, b in pairs(self.target.regions) do rcount = rcount + 1 end
+								for q, b in pairs(self.target.regions) do rcount = rcount+1 end
 								if rcount > 1 then
 									local rname = parent:randomChoice(self.target.regions).name
 									parent:RegionTransfer(c1, self.target, rname, false)
@@ -477,29 +477,29 @@ return
 							c1:event(parent, "Defeat in war with "..self.target.name)
 							self.target:event(parent, "Victory in war with "..c1.name)
 
-							c1.stability = c1.stability - 25
-							self.target.stability = self.target.stability + 25
+							c1.stability = c1.stability-25
+							self.target.stability = self.target.stability+25
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 							for i=1,#ao do
-								c1strength = c1strength + ao[i].strength
+								c1strength = c1strength+ao[i].strength
 								ao[i]:event(parent, "Defeat with "..c1.name.." in war with "..self.target.name)
 							end
 
 							ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 							for i=1,#ao do
-								c2strength = c2strength + ao[i].strength
+								c2strength = c2strength+ao[i].strength
 								ao[i]:event(parent, "Victory with "..self.target.name.." in war with "..c1.name)
 							end
 
 							parent:removeAllyOngoing(c1, self.target, self.name)
 							parent:removeAllyOngoing(self.target, c1, self.name)
 
-							if c2strength > c1strength + (c1strength / 5) then
+							if c2strength > c1strength+(c1strength/5) then
 								local rcount = 0
-								for q, b in pairs(c1.regions) do rcount = rcount + 1 end
+								for q, b in pairs(c1.regions) do rcount = rcount+1 end
 								if rcount > 1 then
 									local rname = parent:randomChoice(c1.regions).name
 									parent:RegionTransfer(self.target, c1, rname, false)
@@ -510,7 +510,7 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
-						for i=1,#c1.ongoing - 1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
+						for i=1,#c1.ongoing-1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
 
 						if parent.doR then
 							local border = false
@@ -636,7 +636,7 @@ return
 						parent:rseed()
 
 						local values = 0
-						for i, j in pairs(c.regions) do values = values + 1 end
+						for i, j in pairs(c.regions) do values = values+1 end
 
 						if values > 1 then
 							local newl = Country:new()
@@ -701,7 +701,7 @@ return
 										local rIndex = 1
 										for k, l in pairs(j.rulers) do
 											table.insert(newl.rulers, rIndex, l)
-											rIndex = rIndex + 1
+											rIndex = rIndex+1
 										end
 										
 										newl.snt = j.snt
@@ -744,7 +744,7 @@ return
 							parent.thisWorld:add(newl)
 							parent:getAlphabeticalCountries()
 
-							c.stability = c.stability - math.random(3, 10)
+							c.stability = c.stability-math.random(3, 10)
 							if c.stability < 1 then c.stability = 1 end
 
 							if c.capitalregion == newl.name then
@@ -789,16 +789,16 @@ return
 								c1:event(parent, "Invaded "..c2.name)
 								c2:event(parent, "Invaded by "..c1.name)
 
-								c1.stability = c1.stability - 5
+								c1.stability = c1.stability-5
 								if c1.stability < 1 then c1.stability = 1 end
-								c2.stability = c2.stability - 10
+								c2.stability = c2.stability-10
 								if c2.stability < 1 then c2.stability = 1 end
-								c1:setPop(parent, math.ceil(c1.population / 1.25))
-								c2:setPop(parent, math.ceil(c2.population / 1.75))
+								c1:setPop(parent, math.ceil(c1.population/1.25))
+								c2:setPop(parent, math.ceil(c2.population/1.75))
 
 								local rcount = 0
-								for q, b in pairs(c2.regions) do rcount = rcount + 1 end
-								if rcount > 1 and c1.strength > c2.strength + (c2.strength / 5) then
+								for q, b in pairs(c2.regions) do rcount = rcount+1 end
+								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) then
 									local rchance = math.random(1, 30)
 									if rchance < 5 then
 										local rname = parent:randomChoice(c2.regions).name
@@ -860,7 +860,7 @@ return
 									c2.nodes[i] = nil
 								end
 
-								c1.stability = c1.stability - 5
+								c1.stability = c1.stability-5
 								if c1.stability < 1 then c1.stability = 1 end
 								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 								
@@ -881,7 +881,7 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						local cCount = 0
-						for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do cCount = cCount + 1 end end
+						for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do cCount = cCount+1 end end
 
 						if cCount > 2 then
 							local oldcap = c.capitalcity
@@ -968,7 +968,7 @@ return
 											c2.nodes[i] = nil
 										end
 
-										c1.stability = c1.stability - 5
+										c1.stability = c1.stability-5
 										if c1.stability < 1 then c1.stability = 1 end
 										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
@@ -1106,7 +1106,7 @@ return
 							local chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
 							local chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
 							while chr2 == chr1 do
-								ind = ind + 1
+								ind = ind+1
 								chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
 								chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
 							end
@@ -1137,7 +1137,7 @@ return
 						local rDone = {}
 						
 						for k=1,#cp.events do if pr == 1 then
-							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded + 1 then
+							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded+1 then
 								newc = true
 								pr = tonumber(cp.events[k].Year)
 							end
@@ -1153,7 +1153,7 @@ return
 											nextFound = true
 											f:write("...\n")
 											f:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
-											k = #cp.rulers + 1
+											k = #cp.rulers+1
 										end
 									end
 								end
@@ -1165,7 +1165,7 @@ return
 
 							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name and not rDone[self:getRulerString(cp.rulers[k])] then
 								f:write(string.format(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n"))
-								rWritten = rWritten + 1
+								rWritten = rWritten+1
 								rDone[self:getRulerString(cp.rulers[k])] = true
 							end end
 
@@ -1187,11 +1187,11 @@ return
 					local cCount = 0
 					local cIndex = 1
 					local finished = 0
-					for i, j in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
+					for i, j in pairs(self.thisWorld.countries) do cCount = cCount+1 end
 					for i, j in pairs(self.thisWorld.countries) do
 						printl(self.stdscr, "Country %d/%d", cIndex, cCount)
 						j:destroy(self)
-						cIndex = cIndex + 1
+						cIndex = cIndex+1
 					end
 
 					printf(self.stdscr, "\nFiltering duplicate or irrelevant individuals. This might take a moment...")
@@ -1207,14 +1207,14 @@ return
 					for i, j in pairs(self.royals) do if not j.removed then
 						j.gIndex = ind
 						sRoyals[ind] = j
-						ind = ind + 1
+						ind = ind+1
 					end end
 					local fInd = 1
 					local fCount = 0
 					for i, j in pairs(fams) do if j.husb.gIndex ~= 0 and j.wife.gIndex ~= 0 then 
 						j.fIndex = fInd
-						fCount = fCount + 1
-						fInd = fInd + 1
+						fCount = fCount+1
+						fInd = fInd+1
 					end end
 
 					for i=1,#sRoyals do
@@ -1236,7 +1236,7 @@ return
 							for q, b in pairs(j.ethnicity) do
 								if ei == 1 then msgout = msgout.."\n1 NOTE Descent:\n2 CONT " else msgout = msgout.."\n2 CONT " end
 								msgout = msgout..tostring(b).."% "..tostring(q)
-								ei = ei + 1
+								ei = ei+1
 							end
 						end
 
@@ -1247,8 +1247,8 @@ return
 
 						ged:write(msgout)
 
-						finished = finished + 1
-						printl(self.stdscr, "Writing individuals...%.2f%% done", math.floor(finished / #sRoyals * 10000)/100)
+						finished = finished+1
+						printl(self.stdscr, "Writing individuals...%.2f%% done", math.floor(finished/#sRoyals*10000)/100)
 					end
 
 					ged:flush()
@@ -1265,8 +1265,8 @@ return
 
 						ged:write(msgout)
 
-						finished = finished + 1
-						printl(self.stdscr, "Writing families...%.2f%% done", math.floor(finished / fCount * 10000)/100)
+						finished = finished+1
+						printl(self.stdscr, "Writing families...%.2f%% done", math.floor(finished/fCount*10000)/100)
 					end end
 
 					msgout = "0 TRLR\n"
@@ -1286,7 +1286,7 @@ return
 					name = debug.getupvalue(fn, i)
 					if not name then break end
 					debug.upvaluejoin(cloned, i, fn, i)
-					i = i + 1
+					i = i+1
 				end
 				return cloned
 			end,
@@ -1314,7 +1314,7 @@ return
 						if mat[1] == "Year" then
 							self.startyear = tonumber(mat[2])
 							self.years = tonumber(mat[2])
-							self.maxyears = self.maxyears + self.startyear
+							self.maxyears = self.maxyears+self.startyear
 						elseif mat[1] == "Disable" then
 							local sEvent = mat[2]
 							for q=3,#mat do sEvent = sEvent.." "..mat[q] end
@@ -1350,7 +1350,7 @@ return
 							local number = 1
 							local gend = "Male"
 							local to = self.years
-							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] and fc.rulers[i].title == mat[1] then number = number + 1 end end end
+							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] and fc.rulers[i].title == mat[1] then number = number+1 end end end
 							if mat[1] == "Prime" then if mat[2] == "Minister" then
 								mat[1] = "Prime Minister"
 								for i=2,#mat-1 do mat[i] = mat[i+1] end
@@ -1365,38 +1365,38 @@ return
 							if mat[1] == "King" then
 								local oldsystem = fc.system
 								fc.system = 1
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "President" then
 								local oldsystem = fc.system
 								fc.system = 2
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Prime Minister" then
 								local oldsystem = fc.system
 								fc.system = 3
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Premier" then
 								local oldsystem = fc.system
 								fc.system = 4
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Emperor" then
 								local oldsystem = fc.system
 								fc.system = 5
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Queen" then
 								local oldsystem = fc.system
 								fc.system = 1
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 								gend = "Female"
 							end
 							if mat[1] == "Empress" then
 								local oldsystem = fc.system
 								fc.system = 5
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name] + 1 end
+								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 								gend = "Female"
 							end
 							local found = false
@@ -1419,18 +1419,18 @@ return
 				local cCount = 0
 				local cDone = 0
 				
-				for i, cp in pairs(self.thisWorld.countries) do cCount = cCount + 1 end
+				for i, cp in pairs(self.thisWorld.countries) do cCount = cCount+1 end
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
 						if #cp.rulers > 0 then
 							cp.founded = tonumber(cp.rulers[1].From)
-							cp.age = self.years - cp.founded
+							cp.age = self.years-cp.founded
 						else
 							cp.founded = self.years
 							cp.age = 0
 							cp.system = math.random(1, #self.systems)
-							cp.snt[self.systems[cp.system].name] = cp.snt[self.systems[cp.system].name] + 1
+							cp.snt[self.systems[cp.system].name] = cp.snt[self.systems[cp.system].name]+1
 						end
 
 						cp:makename(self, 3)
@@ -1439,7 +1439,7 @@ return
 						table.insert(self.final, cp)
 					end
 					
-					cDone = cDone + 1
+					cDone = cDone+1
 					printl(self.stdscr, "Country %d/%d", cDone, cCount)
 				end
 
@@ -1489,7 +1489,7 @@ return
 								local chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
 								local chr2 = alphaOrder[i:sub(ind, ind):lower()]
 								while chr2 == chr1 do
-									ind = ind + 1
+									ind = ind+1
 									chr1 = alphaOrder[cKeys[j]:sub(ind, ind):lower()]
 									chr2 = alphaOrder[i:sub(ind, ind):lower()]
 								end
@@ -1524,7 +1524,7 @@ return
 								local name = debug.getupvalue(j, q)
 								if not name then break end
 								debug.upvaluejoin(fn, q, j, q)
-								q = q + 1
+								q = q+1
 							end
 						end
 					elseif type(j) == "table" then
@@ -1597,7 +1597,7 @@ return
 						if data.surname then rString = rString.." ("..data.surname..")" end
 					else if data.surname then rString = rString.." "..data.surname end end
 					
-					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
+					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).."-"..tostring(data.To)..")"
 					else rString = rString.." of "..data.nationality end
 				else rString = "None" end
 
@@ -1692,8 +1692,8 @@ return
 						local eCount = 0
 						local eLimit = 4
 						if cursesstatus then
-							cLimit = math.floor(curses:lines() / 2)
-							eLimit = (curses:lines() - cLimit) - 9
+							cLimit = math.floor(curses:lines()/2)
+							eLimit = (curses:lines()-cLimit)-9
 						end
 
 						for i=1,#self.alpha do
@@ -1705,8 +1705,8 @@ return
 									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, self:ordinal(cp.snt[self.systems[cp.system].name]).." ") end
 									local sysName = self.systems[cp.system].name
 									if cp.dfif[sysName] then printc(self.stdscr, "%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else printc(self.stdscr, "%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-									printc(self.stdscr, " - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
-									cCount = cCount + 1
+									printc(self.stdscr, "-Population %d-%s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
+									cCount = cCount+1
 								end
 							end
 						end
@@ -1718,7 +1718,7 @@ return
 						for i=1,#currentEvents do
 							if eCount <= eLimit then
 								printf(self.stdscr, currentEvents[i])
-								eCount = eCount + 1
+								eCount = eCount+1
 							end
 						end
 						
@@ -1726,7 +1726,7 @@ return
 						elseif eCount == 0 then printf(self.stdscr, "None") end
 					end
 
-					self.years = self.years + 1
+					self.years = self.years+1
 
 					if self.years > self.maxyears then
 						_running = false
@@ -1762,7 +1762,7 @@ return
 					end
 
 					nom = nom..mid:lower()
-					groups = groups + 1
+					groups = groups+1
 					table.insert(taken, mid:lower())
 				end
 
@@ -2045,7 +2045,7 @@ return
 			RegionTransfer = function(self, c1, c2, r, conq)
 				if c1 and c2 then
 					local rCount = 0
-					for i, j in pairs(c2.regions) do rCount = rCount + 1 end
+					for i, j in pairs(c2.regions) do rCount = rCount+1 end
 
 					local lim = 1
 					if conq then lim = 0 end
@@ -2075,7 +2075,7 @@ return
 							local lossMsg = "Loss of the "..rn.name.." region "
 
 							local cCount = 0
-							for i, j in pairs(rn.cities) do cCount = cCount + 1 end
+							for i, j in pairs(rn.cities) do cCount = cCount+1 end
 							if cCount > 0 then
 								gainMsg = gainMsg.."(including the "
 								lossMsg = lossMsg.."(including the "
@@ -2090,7 +2090,7 @@ return
 												gainMsg = gainMsg..j.name.." "
 												lossMsg = lossMsg..j.name.." "
 											end
-											index = index + 1
+											index = index+1
 										end
 										index = 1
 										for i, j in pairs(rn.cities) do
@@ -2098,26 +2098,26 @@ return
 												gainMsg = gainMsg.."and "..j.name
 												lossMsg = lossMsg.."and "..j.name
 											end
-											index = index + 1
+											index = index+1
 										end
 									else
 										gainMsg = gainMsg.."cities of "
 										lossMsg = lossMsg.."cities of "
 										local index = 1
 										for i, j in pairs(rn.cities) do
-											if index < cCount - 1 then
+											if index < cCount-1 then
 												gainMsg = gainMsg..j.name..", "
 												lossMsg = lossMsg..j.name..", "
 											end
-											index = index + 1
+											index = index+1
 										end
 										index = 1
 										for i, j in pairs(rn.cities) do
-											if index == cCount - 1 then
+											if index == cCount-1 then
 												gainMsg = gainMsg..j.name.." "
 												lossMsg = lossMsg..j.name.." "
 											end
-											index = index + 1
+											index = index+1
 										end
 										index = 1
 										for i, j in pairs(rn.cities) do
@@ -2125,7 +2125,7 @@ return
 												gainMsg = gainMsg.."and "..j.name
 												lossMsg = lossMsg.."and "..j.name
 											end
-											index = index + 1
+											index = index+1
 										end
 									end
 								else
@@ -2164,69 +2164,69 @@ return
 				if not tmp then return n end
 				local fin = ""
 
-				while tmp - 1000 > -1 do
+				while tmp-1000 > -1 do
 					fin = fin.."M"
-					tmp = tmp - 1000
+					tmp = tmp-1000
 				end
 
-				while tmp - 900 > -1 do
+				while tmp-900 > -1 do
 					fin = fin.."CM"
-					tmp = tmp - 900
+					tmp = tmp-900
 				end
 
-				while tmp - 500 > -1 do
+				while tmp-500 > -1 do
 					fin = fin.."D"
-					tmp = tmp - 500
+					tmp = tmp-500
 				end
 
-				while tmp - 400 > -1 do
+				while tmp-400 > -1 do
 					fin = fin.."CD"
-					tmp = tmp - 400
+					tmp = tmp-400
 				end
 
-				while tmp - 100 > -1 do
+				while tmp-100 > -1 do
 					fin = fin.."C"
-					tmp = tmp - 100
+					tmp = tmp-100
 				end
 
-				while tmp - 90 > -1 do
+				while tmp-90 > -1 do
 					fin = fin.."XC"
-					tmp = tmp - 90
+					tmp = tmp-90
 				end
 
-				while tmp - 50 > -1 do
+				while tmp-50 > -1 do
 					fin = fin.."L"
-					tmp = tmp - 50
+					tmp = tmp-50
 				end
 
-				while tmp - 40 > -1 do
+				while tmp-40 > -1 do
 					fin = fin.."XL"
-					tmp = tmp - 40
+					tmp = tmp-40
 				end
 
-				while tmp - 10 > -1 do
+				while tmp-10 > -1 do
 					fin = fin.."X"
-					tmp = tmp - 10
+					tmp = tmp-10
 				end
 
-				while tmp - 9 > -1 do
+				while tmp-9 > -1 do
 					fin = fin.."IX"
-					tmp = tmp - 9
+					tmp = tmp-9
 				end
 
-				while tmp - 5 > -1 do
+				while tmp-5 > -1 do
 					fin = fin.."V"
-					tmp = tmp - 5
+					tmp = tmp-5
 				end
 
-				while tmp - 4 > -1 do
+				while tmp-4 > -1 do
 					fin = fin.."IV"
-					tmp = tmp - 4
+					tmp = tmp-4
 				end
 
-				while tmp - 1 > -1 do
+				while tmp-1 > -1 do
 					fin = fin.."I"
-					tmp = tmp - 1
+					tmp = tmp-1
 				end
 
 				return fin
@@ -2238,8 +2238,8 @@ return
 				local ts = tostring(tc)
 				local n = tonumber(ts:reverse())
 				if not n then n = _time() end
-				while n < 100000 do n = n * math.floor(math.random(5, math.random(12, 177000))) end
-				while n > 1000000000 do n = n / math.floor(math.random(5, math.random(12, 177000))) end
+				while n < 100000 do n = n*math.floor(math.random(5, math.random(12, 177000))) end
+				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(12, 177000))) end
 				math.randomseed(math.ceil(n))
 				for i=1,3 do math.random(1, 100) end
 			end,
@@ -2257,7 +2257,7 @@ return
 				for i, j in pairs(t) do
 					found = false
 					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if not found then iCount = iCount + 1 end
+					if not found then iCount = iCount+1 end
 				end
 
 				f:write(tostring(iCount):len())
@@ -2303,7 +2303,7 @@ return
 						if i.royalGenerations == -1 then i.royalGenerations = v
 						elseif i.royalGenerations >= self.genLimit then i.royalGenerations = v end
 						if g < 1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end
-						else if i.royalGenerations < self.genLimit - 1 and i.royalGenerations > -1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end end end
+						else if i.royalGenerations < self.genLimit-1 and i.royalGenerations > -1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end end end
 						self:setGens(i.father, v, 0)
 						self:setGens(i.mother, v, 0)
 					end
@@ -2322,7 +2322,7 @@ return
 				local id = i
 				if not t.id then
 					t.id = "ID "..tostring(id)
-					id = id + 1
+					id = id+1
 					for j, k in pairs(t) do if type(k) == "table" then id = self:setRecursiveIDs(k, id) end end
 				end
 				return id
@@ -2358,7 +2358,7 @@ return
 
 			sleep = function(self, t)
 				local n = _time()
-				while _time() < n + t do end
+				while _time() < n+t do end
 			end,
 
 			sortAscendants = function(self)
@@ -2367,7 +2367,7 @@ return
 				local count = 0
 				local done = 0
 
-				for i, j in pairs(self.royals) do oldCount = oldCount + 1 end
+				for i, j in pairs(self.royals) do oldCount = oldCount+1 end
 				count = oldCount
 
 				for i, j in pairs(self.royals) do
@@ -2375,8 +2375,8 @@ return
 					if j.royalGenerations == 0 then self:setGens(j.father, -2, 0) end
 					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
-					done = done + 1
-					printl(self.stdscr, "%d/%d sorted.", done, count)
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "")
@@ -2386,18 +2386,18 @@ return
 				for i, j in pairs(self.royals) do
 					if j.royalGenerations == -1 or j.royalGenerations >= self.genLimit then
 						j.removed = true
-						removed = removed + 1
+						removed = removed+1
 					end
 
-					done = done + 1
-					printl(self.stdscr, "%d/%d filtered.", done, count)
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "")
 				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 
 				count = 0
-				for i, j in pairs(self.royals) do if not j.removed then count = count + 1 end end
+				for i, j in pairs(self.royals) do if not j.removed then count = count+1 end end
 				oldCount = count
 				printf(self.stdscr, "Linking %d individuals...", count)
 
@@ -2418,14 +2418,14 @@ return
 								table.insert(j.famc, fams[parentString])
 							else
 								local ind = 1
-								for k=1,#fams[parentString].chil do if tonumber(fams[parentString].chil[k].birth) <= tonumber(j.birth) then ind = k + 1 end end
+								for k=1,#fams[parentString].chil do if tonumber(fams[parentString].chil[k].birth) <= tonumber(j.birth) then ind = k+1 end end
 								table.insert(fams[parentString].chil, ind, j)
 								table.insert(j.famc, fams[parentString])
 							end
 						end end
 
-						done = done + 1
-						printl(self.stdscr, "%d/%d linked.", done, count)
+						done = done+1
+						printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
 					end
 				end
 
@@ -2438,8 +2438,8 @@ return
 
 			strengthFactor = function(self, c)
 				local pop = 0
-				if c.rulerParty ~= "" and c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity - 50 end
-				return (pop + (c.stability - 50) + ((c.military / #c.people) * 100))
+				if c.rulerParty ~= "" and c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity-50 end
+				return (pop+(c.stability-50)+((c.military/#c.people)*100))
 			end
 		}
 
