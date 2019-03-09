@@ -108,21 +108,21 @@ return
 				if self.royalGenerations ~= -1 then
 					if self.spouse.royalGenerations ~= -1 then
 						if self.spouse.royalGenerations < self.royalGenerations then
-							nn.royalGenerations = self.spouse.royalGenerations + 1
+							nn.royalGenerations = self.spouse.royalGenerations+1
 							nn.royalSystem = self.spouse.royalSystem
 							nn.LastRoyalAncestor = self.spouse.LastRoyalAncestor
-							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes + 1 end
+							if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes+1 end
 						else
-							nn.royalGenerations = self.royalGenerations + 1
+							nn.royalGenerations = self.royalGenerations+1
 							nn.royalSystem = self.royalSystem
 							nn.LastRoyalAncestor = self.LastRoyalAncestor
-							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
+							if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes+1 end
 						end
 					else
-						nn.royalGenerations = self.royalGenerations + 1
+						nn.royalGenerations = self.royalGenerations+1
 						nn.royalSystem = self.royalSystem
 						nn.LastRoyalAncestor = self.LastRoyalAncestor
-						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes + 1 end
+						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes+1 end
 					end
 				end
 
@@ -139,7 +139,7 @@ return
 				end end
 
 				if self.isruler or self.spouse.isruler then
-					nn.level = self.level - 1
+					nn.level = self.level-1
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
@@ -148,10 +148,10 @@ return
 				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
 				for i, j in pairs(self.spouse.ethnicity) do
 					if not nn.ethnicity[i] then nn.ethnicity[i] = 0 end
-					nn.ethnicity[i] = nn.ethnicity[i] + j
+					nn.ethnicity[i] = nn.ethnicity[i]+j
 				end
 
-				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i] / 2 end
+				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i]/2 end
 				nn.nationality = nl.name
 
 				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
@@ -188,8 +188,8 @@ return
 			end,
 
 			update = function(self, parent, nl)
-				self.age = parent.years - self.birth
-				if self.birth <= -1 then self.age = self.age - 1 end
+				self.age = parent.years-self.birth
+				if self.birth <= -1 then self.age = self.age-1 end
 
 				if self.birthplace == "" then self.birthplace = nl.name end
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
@@ -205,22 +205,22 @@ return
 					if self.title and self.level then
 						self.title = sys.ranks[self.level]
 
-						if self.level < #sys.ranks - rankLim then
+						if self.level < #sys.ranks-rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
 								self.prevtitle = self.title
-								self.level = self.level - 1
+								self.level = self.level-1
 							elseif x > 85 then
 								self.prevtitle = self.title
-								self.level = self.level + 1
+								self.level = self.level+1
 							end
 						end
 
 						if self.level < 1 then self.level = 1 end
-						if self.level >= #sys.ranks - rankLim then self.level = #sys.ranks - rankLim end
+						if self.level >= #sys.ranks-rankLim then self.level = #sys.ranks-rankLim end
 						if self.isruler then self.level = #sys.ranks end
 
-						if self.parentRuler and sys.dynastic then self.level = #sys.ranks - 1 end
+						if self.parentRuler and sys.dynastic then self.level = #sys.ranks-1 end
 					else self.level = 2 end
 
 					self.title = sys.ranks[self.level]
@@ -228,22 +228,22 @@ return
 					if self.title and self.level then
 						self.title = sys.franks[self.level]
 
-						if self.level < #sys.franks - rankLim then
+						if self.level < #sys.franks-rankLim then
 							local x = math.random(-100, 100)
 							if x < -85 then
 								self.prevtitle = self.title
-								self.level = self.level - 1
+								self.level = self.level-1
 							elseif x > 85 then
 								self.prevtitle = self.title
-								self.level = self.level + 1
+								self.level = self.level+1
 							end
 						end
 
 						if self.level < 1 then self.level = 1 end
-						if self.level >= #sys.franks - rankLim then self.level = #sys.franks - rankLim end
+						if self.level >= #sys.franks-rankLim then self.level = #sys.franks-rankLim end
 						if self.isruler then self.level = #sys.franks end
 
-						if self.parentRuler and sys.dynastic then self.level = #sys.franks - 1 end
+						if self.parentRuler and sys.dynastic then self.level = #sys.franks-1 end
 					else self.level = 2 end
 
 					self.title = sys.franks[self.level]
@@ -286,9 +286,9 @@ return
 
 				self.recentbirth = false
 
-				self.pbelief = self.pbelief + math.random(-2, 2)
-				self.ebelief = self.ebelief + math.random(-2, 2)
-				self.cbelief = self.cbelief + math.random(-2, 2)
+				self.pbelief = self.pbelief+math.random(-2, 2)
+				self.ebelief = self.ebelief+math.random(-2, 2)
+				self.cbelief = self.cbelief+math.random(-2, 2)
 
 				if self.pbelief < -100 then self.pbelief = -100 end
 				if self.pbelief > 100 then self.pbelief = 100 end
@@ -302,9 +302,9 @@ return
 				if #nl.parties > 0 then
 					for i=1,#nl.parties do if not pmatch then
 						pmatch = true
-						if math.abs(nl.parties[i].pfreedom - self.pbelief) > 35 then pmatch = false end
-						if math.abs(nl.parties[i].efreedom - self.ebelief) > 35 then pmatch = false end
-						if math.abs(nl.parties[i].cfreedom - self.cbelief) > 35 then pmatch = false end
+						if math.abs(nl.parties[i].pfreedom-self.pbelief) > 35 then pmatch = false end
+						if math.abs(nl.parties[i].efreedom-self.ebelief) > 35 then pmatch = false end
+						if math.abs(nl.parties[i].cfreedom-self.cbelief) > 35 then pmatch = false end
 					end end
 				end
 
@@ -314,7 +314,7 @@ return
 					newp.cfreedom = self.cbelief
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief
-					local belieftotal = newp.cfreedom + newp.efreedom + newp.pfreedom
+					local belieftotal = newp.cfreedom+newp.efreedom+newp.pfreedom
 
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
@@ -327,9 +327,9 @@ return
 				if self.party == "" then
 					local pi = parent:randomChoice(nl.parties)
 					pmatch = true
-					if math.abs(pi.pfreedom - self.pbelief) > 35 then pmatch = false end
-					if math.abs(pi.efreedom - self.ebelief) > 35 then pmatch = false end
-					if math.abs(pi.cfreedom - self.cbelief) > 35 then pmatch = false end
+					if math.abs(pi.pfreedom-self.pbelief) > 35 then pmatch = false end
+					if math.abs(pi.efreedom-self.ebelief) > 35 then pmatch = false end
+					if math.abs(pi.cfreedom-self.cbelief) > 35 then pmatch = false end
 					if pmatch then
 						self.party = pi.name
 						if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
@@ -337,16 +337,16 @@ return
 				else
 					for i=1,#nl.parties do
 						local pi = nl.parties[i]
-						local belieftotal = self.pbelief + self.ebelief + self.cbelief
-						local partytotal = pi.pfreedom + pi.efreedom + pi.cfreedom
-						local diff = math.abs(belieftotal - partytotal)
-						if diff < 165 then pi.popularity = pi.popularity + ((100 - (diff / 3)) / #nl.people) end
-						if pi.name == self.party then pi.membership = pi.membership + 1
+						local belieftotal = self.pbelief+self.ebelief+self.cbelief
+						local partytotal = pi.pfreedom+pi.efreedom+pi.cfreedom
+						local diff = math.abs(belieftotal-partytotal)
+						if diff < 165 then pi.popularity = pi.popularity+((100-(diff/3))/#nl.people) end
+						if pi.name == self.party then pi.membership = pi.membership+1
 						else
 							pmatch = true
-							if math.abs(pi.pfreedom - self.pbelief) > 50 then pmatch = false end
-							if math.abs(pi.efreedom - self.ebelief) > 50 then pmatch = false end
-							if math.abs(pi.cfreedom - self.cbelief) > 50 then pmatch = false end
+							if math.abs(pi.pfreedom-self.pbelief) > 50 then pmatch = false end
+							if math.abs(pi.efreedom-self.ebelief) > 50 then pmatch = false end
+							if math.abs(pi.cfreedom-self.cbelief) > 50 then pmatch = false end
 							if pmatch then
 								self.party = pi.name
 								if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
@@ -362,8 +362,8 @@ return
 				end
 
 				if self.military then
-					self.militaryTraining = self.militaryTraining + 1
-					nl.strength = nl.strength + self.militaryTraining
+					self.militaryTraining = self.militaryTraining+1
+					nl.strength = nl.strength+self.militaryTraining
 				else
 					if self.age < 35 then
 						local joinChance = math.random(1, 250)
@@ -388,7 +388,7 @@ return
 					end
 				end
 				
-				for i, j in pairs(self.ethnicity) do if j >= lEthVal then nl.ethnicities[i] = nl.ethnicities[i] + 1 end end
+				for i, j in pairs(self.ethnicity) do if j >= lEthVal then nl.ethnicities[i] = nl.ethnicities[i]+1 end end
 
 				if self.region == "" or not nl.regions[self.region] then
 					self.region = parent:randomChoice(nl.regions, true)
@@ -404,9 +404,9 @@ return
 				end
 
 				if nl.regions[self.region] then
-					nl.regions[self.region].population = nl.regions[self.region].population + 1
+					nl.regions[self.region].population = nl.regions[self.region].population+1
 					if nl.regions[self.region].cities[self.city] then
-						nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population + 1
+						nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population+1
 					else self.city = "" end
 				else self.region = "" end
 			end
