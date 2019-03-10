@@ -1,5 +1,4 @@
 torchstatus, torch = pcall(require, "torch")
-
 jsonstatus, json = pcall(require, "cjson")
 
 return
@@ -12,11 +11,11 @@ return
 				nm.countries = {}
 				nm.cColors = {}
 				nm.cTriplets = {}
+				nm.fromFile = false
+				nm.mtname = "World"
 				nm.planet = {}
 				nm.planetdefined = {}
 				nm.planetR = 0
-				nm.fromFile = false
-				nm.mtname = "World"
 
 				return nm
 			end,
@@ -636,8 +635,8 @@ return
 			end
 		}
 
-		World.__index = World
 		World.__call = function() return World:new() end
+		World.__index = World
 
 		return World
 	end
