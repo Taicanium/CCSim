@@ -5,42 +5,42 @@ return
 				local nl = {}
 				setmetatable(nl, self)
 
-				nl.name = ""
-				nl.founded = 0
 				nl.age = 0
-				nl.hasruler = -1
-				nl.people = {}
-				nl.averageAge = 0
-				nl.events = {}
-				nl.rulerage = 0
-				nl.relations = {}
-				nl.rulers = {}
-				nl.rulernames = {}
-				nl.frulernames = {}
-				nl.ongoing = {}
-				nl.allyOngoing = {}
-				nl.alliances = {}
-				nl.system = 0
 				nl.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system. 
-				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
-				nl.formalities = {}
+				nl.alliances = {}
+				nl.allyOngoing = {}
+				nl.averageAge = 0
+				nl.birthrate = 3
+				nl.capitalcity = ""
+				nl.capitalregion = ""
+				nl.civilWars = 0
 				nl.demonym = ""
 				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
+				nl.ethnicities = {}
+				nl.events = {}
+				nl.formalities = {}
+				nl.founded = 0
+				nl.frulernames = {}
+				nl.hasruler = -1
+				nl.majority = ""
+				nl.military = 0
+				nl.mtname = "Country"
+				nl.name = ""
+				nl.nodes = {}
+				nl.ongoing = {}
+				nl.parties = {}
+				nl.people = {}
+				nl.population = 0
+				nl.regions = {}
+				nl.relations = {}
+				nl.rulerage = 0
+				nl.rulernames = {}
+				nl.rulerParty = ""
+				nl.rulers = {}
+				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
 				nl.stability = 50
 				nl.strength = 0
-				nl.military = 0
-				nl.population = 0
-				nl.ethnicities = {}
-				nl.majority = ""
-				nl.birthrate = 3
-				nl.regions = {}
-				nl.parties = {}
-				nl.rulerParty = ""
-				nl.nodes = {}
-				nl.civilWars = 0
-				nl.capitalregion = ""
-				nl.capitalcity = ""
-				nl.mtname = "Country"
+				nl.system = 0
 
 				return nl
 			end,
@@ -185,13 +185,13 @@ return
 
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] then
-						if self.ongoing[i].doStep then
-							local r = self.ongoing[i]:doStep(parent, self)
-							if r == -1 then
-								local ro = table.remove(self.ongoing, i)
-								ro = nil
-							end
-						else
+						if not self.ongoing[i].doStep then
+							local ro = table.remove(self.ongoing, i)
+							ro = nil
+						end
+						
+						local r = self.ongoing[i]:doStep(parent, self)
+						if r == -1 then
 							local ro = table.remove(self.ongoing, i)
 							ro = nil
 						end
@@ -199,10 +199,7 @@ return
 				end
 
 				for i=1,#parent.c_events do
-					local isDisabled = false
-					if parent.disabled[parent.c_events[i].name:lower()] then isDisabled = true end
-					if parent.disabled["!"..parent.c_events[i].name:lower()] then isDisabled = true end
-					if not isDisabled then
+					if not parent.disabled[parent.c_events[i].name:lower()] and not parent.disabled["!"..parent.c_events[i].name:lower()] then
 						local chance = math.floor(math.random(1, v))
 						if parent.c_events[i].inverse then chance = math.floor(math.random(1, vi)) end
 						if chance <= parent.c_events[i].chance then self:triggerEvent(parent, i) end
@@ -210,9 +207,7 @@ return
 				end
 
 				local revCount = 0
-
 				for i=1,#self.events do if self.events[i].Year > parent.years-50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount+1 end end
-
 				if revCount > 6 then
 					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
 					self:event(parent, "Collapsed")
@@ -825,8 +820,8 @@ return
 			end
 		}
 
-		Country.__index = Country
 		Country.__call = function() return Country:new() end
+		Country.__index = Country
 
 		return Country
 	end
