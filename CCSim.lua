@@ -29,7 +29,7 @@ function main()
 	
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
-	printc(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?")
+	printc(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\n")
 	printp(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
