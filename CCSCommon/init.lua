@@ -330,7 +330,7 @@ return
 				},
 				{
 					name="War",
-					chance=10,
+					chance=8,
 					target=nil,
 					args=2,
 					status=0,
@@ -625,7 +625,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=4,
+					chance=6,
 					target=nil,
 					args=1,
 					inverse=false,
