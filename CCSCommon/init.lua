@@ -1209,6 +1209,15 @@ return
 						fCount = fCount+1
 						fInd = fInd+1
 					end end
+					
+					for i=#sRoyals,1,-1 do
+						local linked = false
+						for q, b in pairs(sRoyals[i].fams) do if b.fIndex ~= 0 then linked = true end end
+						for q, b in pairs(sRoyals[i].famc) do if b.fIndex ~= 0 then linked = true end end
+						if not linked then table.remove(sRoyals, i) end
+					end
+					
+					for i=#sRoyals,1,-1 do sRoyals[i].gIndex = i end
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
@@ -2425,8 +2434,14 @@ return
 				end
 
 				printf(self.stdscr, "\nRemoving unlinked individuals...")
+				done = 0
 
-				for i, j in pairs(self.royals) do if #j.fams == 0 and #j.famc == 0 then j.removed = true end end
+				for i, j in pairs(self.royals) do
+					if #j.fams == 0 and #j.famc == 0 then j.removed = true end
+					
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
+				end
 
 				return fams
 			end,
