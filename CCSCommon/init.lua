@@ -702,6 +702,10 @@ return
 										end
 										
 										newl.snt = j.snt
+										newl.dfif = j.dfif
+										newl.formalities = j.formalities
+										newl.civilWars = j.civilWars
+										newl.agPrim = j.agPrim
 										
 										newl.rulernames = {}
 										newl.frulernames = {}
