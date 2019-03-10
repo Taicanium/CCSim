@@ -45,7 +45,7 @@ return
 				n.royalGenerations = -1
 				n.royalName = ""
 				n.royalSystem = ""
-				n.RoyalTitle = ""
+				n.RulerTitle = ""
 				n.spouse = nil
 				n.surname = ""
 				n.title = "Citizen"
