@@ -30,21 +30,21 @@ function main()
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
 	printf(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?")
-	printp(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
+	printl(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
 
 	CCSCommon.showinfo = 0
 	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
+	printp(CCSCommon.stdscr, "Do you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
 
 	CCSCommon.doR = false
 	if string.lower(datin) == "y" then CCSCommon.doR = true end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+	printp(CCSCommon.stdscr, "Do you want to produce a GEDCOM file for royal lines (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
 
@@ -53,7 +53,7 @@ function main()
 
 	local done = nil
 	while not done do
-		printp(CCSCommon.stdscr, "\nData > ")
+		printp(CCSCommon.stdscr, "Data > ")
 		datin = readl(CCSCommon.stdscr)
 
 		if string.lower(datin) == "random" then
