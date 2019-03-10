@@ -1089,7 +1089,7 @@ return
 
 			finish = function(self)
 				self:clearTerm()
-				printf(self.stdscr, "\nPrinting result...")
+				printf(self.stdscr, "Printing result...")
 
 				local f = io.open("output.txt", "w+")
 
