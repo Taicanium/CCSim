@@ -1543,6 +1543,7 @@ return
 
 			loop = function(self)
 				local _running = true
+				local msg = ""
 
 				printf(self.stdscr, "\nBegin Simulation!")
 
@@ -1555,8 +1556,7 @@ return
 					end
 
 					self:clearTerm()
-					
-					printf(self.stdscr, "Year %d: %d countries\n", self.years, self.numCountries)
+					msg = string.format("Year %d: %d countries\n\n", self.years, self.numCountries)
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
@@ -1575,36 +1575,39 @@ return
 								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
 							
 								if cCount <= cLimit then
-									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, "%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
+									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
 									local sysName = self.systems[cp.system].name
-									if cp.dfif[sysName] then printc(self.stdscr, "%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else printc(self.stdscr, "%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-									printc(self.stdscr, " - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
+									if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
+									msg = msg..string.format(" - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
 									cCount = cCount+1
 								end
 							end
 						end
 
-						if cCount < self.numCountries then printf(self.stdscr, "[+%d more]", self.numCountries-cCount) end
-
-						printf(self.stdscr, "\nOngoing events:")
+						if cCount < self.numCountries then msg = msg..string.format("[+%d more]\n", self.numCountries-cCount) end
+						
+						msg = msg..string.format("\nOngoing events:")
 
 						for i=1,#currentEvents do
 							if eCount <= eLimit then
-								printf(self.stdscr, "%s", currentEvents[i])
+								msg = msg..string.format("\n%s", currentEvents[i])
 								eCount = eCount+1
 							end
 						end
 						
-						if eCount < #currentEvents then printf(self.stdscr, "[+%d more]", #currentEvents-eCount)
-						elseif eCount == 0 then printf(self.stdscr, "None") end
+						if eCount < #currentEvents then msg = msg..string.format("\n[+%d more]", #currentEvents-eCount)
+						elseif eCount == 0 then msg = msg..string.format("\nNone") end
+						
+						msg = msg.."\n"
 					end
 
 					self.years = self.years+1
-
 					if self.years > self.maxyears then
 						_running = false
 						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
+					
+					for sx in msg:gmatch("%C+\n") do printc(self.stdscr, sx) end
 				end
 
 				self:finish()
