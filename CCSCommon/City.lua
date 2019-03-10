@@ -5,12 +5,12 @@ return
 				local c = {}
 				setmetatable(c, self)
 
+				c.mtname = "City"
 				c.name = ""
 				c.population = 0
 				c.x = nil
 				c.y = nil
 				c.z = nil
-				c.mtname = "City"
 
 				return c
 			end,
@@ -20,8 +20,8 @@ return
 			end
 		}
 
-		City.__index = City
 		City.__call = function() return City:new() end
+		City.__index = City
 
 		return City
 	end
