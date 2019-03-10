@@ -1249,7 +1249,7 @@ return
 						ged:write(msgout)
 
 						finished = finished+1
-						printl(self.stdscr, "Writing individuals...%.2f%% done", math.floor(finished/#sRoyals*10000)/100)
+						printl(self.stdscr, "Writing individuals...%.2f%% done", (finished/#sRoyals*10000)/100)
 					end
 
 					ged:flush()
@@ -1267,7 +1267,7 @@ return
 						ged:write(msgout)
 
 						finished = finished+1
-						printl(self.stdscr, "Writing families...%.2f%% done", math.floor(finished/fCount*10000)/100)
+						printl(self.stdscr, "Writing families...%.2f%% done", (finished/fCount*10000)/100)
 					end end
 
 					msgout = "0 TRLR\n"
@@ -2377,7 +2377,7 @@ return
 					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
 					done = done+1
-					printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "")
@@ -2391,7 +2391,7 @@ return
 					end
 
 					done = done+1
-					printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "")
@@ -2426,7 +2426,7 @@ return
 						end end
 
 						done = done+1
-						printl(self.stdscr, "%.2f%% done.", math.floor((done/count*10000)/100))
+						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 					end
 				end
 
