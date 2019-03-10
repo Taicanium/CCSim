@@ -1590,7 +1590,7 @@ return
 
 						for i=1,#currentEvents do
 							if eCount <= eLimit then
-								printf(self.stdscr, currentEvents[i])
+								printf(self.stdscr, "%s", currentEvents[i])
 								eCount = eCount+1
 							end
 						end
