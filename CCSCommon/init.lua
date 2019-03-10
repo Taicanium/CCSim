@@ -95,7 +95,6 @@ return
 							if r then newC:add(parent, r) end
 						end
 
-						for i=1,#c.people do c.people[i].pIndex = i end
 						c.hasruler = -1
 						c:checkRuler(parent)
 
@@ -125,7 +124,6 @@ return
 							if r then newC:add(parent, r) end
 						end
 
-						for i=1,#c.people do c.people[i].pIndex = i end
 						c.hasruler = -1
 
 						local oldsys = parent.systems[c.system].name
@@ -278,7 +276,6 @@ return
 								if opC then opC:event(parent, "Defeat with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 
-							for i=1,#c.people do c.people[i].pIndex = i end
 							c.hasruler = -1
 
 							local oldsys = parent.systems[c.system].name
@@ -847,8 +844,6 @@ return
 									for k, l in pairs(j.cities) do newr.cities[k] = l end
 								end
 								
-								for i=1,#c1.people do c1.people[i].pIndex = i end
-								
 								for i=#c2.nodes,1,-1 do
 									local x = c2.nodes[i][1]
 									local y = c2.nodes[i][2]
@@ -954,8 +949,6 @@ return
 											table.insert(newr.subregions, j)
 											for k, l in pairs(j.cities) do newr.cities[k] = l end
 										end
-										
-										for i=1,#c1.people do c1.people[i].pIndex = i end
 										
 										for i=#c2.nodes,1,-1 do
 											local x = c2.nodes[i][1]
