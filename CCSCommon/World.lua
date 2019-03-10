@@ -305,12 +305,11 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				printf(parent.stdscr, "Writing R data...")
+				printf(parent.stdscr, "\nWriting R data...")
 
 				local ci = 1
 
 				local f = io.open(label, "w+")
-
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
 				local planetSize = #self.planetdefined
