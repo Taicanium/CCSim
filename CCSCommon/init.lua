@@ -1194,13 +1194,11 @@ return
 						cIndex = cIndex+1
 					end
 
-					printf(self.stdscr, "\nFiltering duplicate or irrelevant individuals. This might take a moment...")
+					printf(self.stdscr, "\nFiltering duplicate or irrelevant individuals. This might take a moment...\n")
 					local fams = self:sortAscendants()
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
-
-					printf(self.stdscr, "")
 
 					local sRoyals = {}
 					local ind = 1
@@ -1225,6 +1223,7 @@ return
 					end
 					
 					for i=#sRoyals,1,-1 do sRoyals[i].gIndex = i end
+					printf(self.stdscr, "Writing individuals...")
 
 					for i=1,#sRoyals do
 						local j = sRoyals[i]
@@ -1258,11 +1257,11 @@ return
 						ged:write(msgout)
 
 						finished = finished+1
-						printl(self.stdscr, "Writing individuals...%.2f%% done", (finished/#sRoyals*10000)/100)
+						printl(self.stdscr, "%.2f%% done", (finished/#sRoyals*10000)/100)
 					end
 
 					ged:flush()
-					printf(self.stdscr, "")
+					printf(self.stdscr, "\nWriting families...")
 					finished = 0
 
 					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
@@ -1276,7 +1275,7 @@ return
 						ged:write(msgout)
 
 						finished = finished+1
-						printl(self.stdscr, "Writing families...%.2f%% done", (finished/fCount*10000)/100)
+						printl(self.stdscr, "%.2f%% done", (finished/fCount*10000)/100)
 					end end
 
 					msgout = "0 TRLR\n"
@@ -1607,7 +1606,7 @@ return
 						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
 					
-					for sx in msg:gmatch("%C+\n") do printc(self.stdscr, sx) end
+					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
 				end
 
 				self:finish()
@@ -2202,25 +2201,19 @@ return
 
 			sortAscendants = function(self)
 				local fams = {}
-				local oldCount = 0
 				local count = 0
 				local done = 0
-
-				for i, j in pairs(self.royals) do oldCount = oldCount+1 end
-				count = oldCount
+				local removed = 0
 
 				for i, j in pairs(self.royals) do
+					count = count+1
 					if j.number ~= 0 then j.royalGenerations = 0 end
 					if j.royalGenerations == 0 then self:setGens(j.father, -2, 0) end
 					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
-					done = done+1
-					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
-				printf(self.stdscr, "")
-				done = 0
-				local removed = 0
+				printf(self.stdscr, "Filtering irrelevant individuals...")
 
 				for i, j in pairs(self.royals) do
 					if j.royalGenerations == -1 or j.royalGenerations >= self.genLimit then
@@ -2232,15 +2225,10 @@ return
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
-				printf(self.stdscr, "")
 				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 
-				count = 0
-				for i, j in pairs(self.royals) do if not j.removed then count = count+1 end end
-				oldCount = count
-				printf(self.stdscr, "Linking %d individuals...", count)
-
 				done = 0
+				printf(self.stdscr, "Linking %d individuals...", count)
 
 				for i, j in pairs(self.royals) do
 					if not j.removed then
@@ -2261,10 +2249,10 @@ return
 								table.insert(j.famc, fams[parentString])
 							end
 						end end
-
-						done = done+1
-						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 					end
+					
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "\nRemoving unlinked individuals...")
