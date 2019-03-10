@@ -1,15 +1,15 @@
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
+_time = os.clock
+if socketstatus then _time = socket.gettime end
+
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
 City = require("CCSCommon.City")()
 Region = require("CCSCommon.Region")()
 Country = require("CCSCommon.Country")()
 World = require("CCSCommon.World")()
-
-_time = os.clock
-if socketstatus then _time = socket.gettime end
 
 printf = function(stdscr, fmt, ...)
 	if stdscr then
