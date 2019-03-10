@@ -5,12 +5,12 @@ return
 				local r = {}
 				setmetatable(r, self)
 
-				r.name = ""
 				r.cities = {}
-				r.population = 0
-				r.nodes = {}
-				r.subregions = {}
 				r.mtname = "Region"
+				r.name = ""
+				r.nodes = {}
+				r.population = 0
+				r.subregions = {}
 
 				return r
 			end,
