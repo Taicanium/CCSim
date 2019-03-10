@@ -511,8 +511,13 @@ return
 				while rCount > maxR do
 					local r = parent:randomChoice(self.regions, true)
 					self.regions[r] = nil
-					rCount = 0
-					for l, m in pairs(self.regions) do rCount = rCount+1 end
+					rCount = rCount-1
+				end
+
+				while rCount > #self.nodes do
+					local r = parent:randomChoice(self.regions, true)
+					self.regions[r] = nil
+					rCount = rCount-1
 				end
 				
 				for i, j in pairs(self.regions) do
@@ -605,8 +610,18 @@ return
 						local z = r.z
 						if r.x and r.y and r.z then parent.thisWorld.planet[x][y][z].city = "" end
 						j.cities[c] = nil
-						cCount = 0
-						for k, l in pairs(j.cities) do cCount = cCount+1 end
+						cCount = cCount-1
+					end
+					
+					while cCount > #j.nodes do
+						local c = parent:randomChoice(j.cities, true)
+						local r = j.cities[c]
+						local x = r.x
+						local y = r.y
+						local z = r.z
+						if r.x and r.y and r.z then parent.thisWorld.planet[x][y][z].city = "" end
+						j.cities[c] = nil
+						cCount = cCount-1
 					end
 				end
 
