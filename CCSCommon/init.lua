@@ -1049,7 +1049,7 @@ return
 			clearTerm = function(self)
 				if not self.stdscr and cursesstatus then
 					self.stdscr = curses.initscr()
-					curses.cbreak(false)
+					curses.cbreak(true)
 					curses.echo(true)
 					curses.nl(true)
 					self.stdscr:refresh()
@@ -1519,79 +1519,6 @@ return
 				end
 			end,
 
-			getfunctionvalues = function(self, fnname, fn, t)
-				local found = false
-				local exceptions = {"__index", "target", "spouse", "children"}
-
-				for i, j in pairs(t) do
-					if type(j) == "function" then
-						if string.dump(fn) == string.dump(j) then
-							local q = 1
-							while true do
-								local name = debug.getupvalue(j, q)
-								if not name then break end
-								debug.upvaluejoin(fn, q, j, q)
-								q = q+1
-							end
-						end
-					elseif type(j) == "table" then
-						local isexception = false
-						for q=1,#exceptions do if exceptions[q] == tostring(i) then isexception = true end end
-						if not isexception then self:getfunctionvalues(fnname, fn, j) end
-					end
-				end
-			end,
-
-			getRecursiveRefs = function(self, tables)
-				local finished = false
-				while not finished do
-					finished = true
-					
-					for i, t in pairs(tables) do
-						if type(t) == "table" then
-							for k, l in pairs(t) do
-								if type(t[k]) == "string" then
-									if l:len() >= 3 and l:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[l] then
-										t[k] = tables[l]
-										finished = false
-									elseif l:len() >= 5 and l:sub(1, 5) == "FUNC " then
-										t[k] = self:loadfunction(k, l:sub(6, l:len()))
-										finished = false
-									end
-								end
-							end
-						elseif type(t) == "string" then
-							if t:len() >= 3 and t:sub(1, 3) == "ID " and tostring(k) ~= "id" and tables[t] then
-								tables[i] = tables[t]
-								finished = false
-							elseif t:len() >= 5 and t:sub(1, 5) == "FUNC " then
-								tables[i] = self:loadfunction(k, t:sub(6, t:len()))
-								finished = false
-							end
-						end
-					end
-					
-					for i, t in pairs(tables) do if type(t) == "table" then
-						local t2 = {}
-						
-						for j, k in pairs(t) do
-							if type(j) ~= "number" and tonumber(j) then t2[tonumber(j)] = k
-							else t2[j] = k end
-						end
-						
-						tables[i] = t2
-					end end
-				end
-			end,
-			
-			getRecursiveIDs = function(self, t)
-				t.id = nil
-				for i, j in pairs(t) do if type(j) == "table" then if j.id then
-					j.id = nil
-					self:getRecursiveIDs(j)
-				end end end
-			end,
-
 			getRulerString = function(self, data)
 				local rString = ""
 				if data then
@@ -1609,70 +1536,6 @@ return
 				else rString = "None" end
 
 				return rString
-			end,
-
-			loadfunction = function(self, fnname, fndata)
-				local fn = loadstring(fndata)
-				if fn then self:getfunctionvalues(fnname, fn, self) return fn else return fndata end
-			end,
-
-			loadtable = function(self, f)
-				local tableout = {}
-				local types = {"string", "number", "boolean", "table", "function"}
-
-				local slen = f:read(1)
-				local mt = f:read(tonumber(slen))
-
-				if mt ~= "nilmt" then
-					if mt == "World" then
-						setmetatable(tableout, World)
-					elseif mt == "Country" then
-						setmetatable(tableout, Country)
-					elseif mt == "Region" then
-						setmetatable(tableout, Region)
-					elseif mt == "City" then
-						setmetatable(tableout, City)
-					elseif mt == "Person" then
-						setmetatable(tableout, Person)
-					elseif mt == "Party" then setmetatable(tableout, Party) end
-				end
-
-				slen = f:read(1)
-				local iCount = f:read(tonumber(slen))
-
-				for i=1,iCount do
-					local itype = types[tonumber(f:read(1))]
-
-					slen = f:read(1)
-					slen = f:read(tonumber(slen))
-					local idata = f:read(tonumber(slen))
-
-					if itype == "number" then idata = tonumber(idata) end
-
-					local jtype = types[tonumber(f:read(1))]
-
-					if jtype == "table" then
-						tableout[idata] = self:loadtable(f)
-					elseif jtype == "function" then
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						local fndata = f:read(tonumber(slen))
-						tableout[idata] = self:loadfunction(idata, fndata)
-					elseif jtype == "boolean" then
-						local booldata = tonumber(f:read(1))
-						if booldata == 0 then tableout[idata] = false else tableout[idata] = true end
-					elseif jtype == "number" then
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						tableout[idata] = tonumber(f:read(tonumber(slen)))
-					else
-						slen = f:read(1)
-						slen = f:read(tonumber(slen))
-						tableout[idata] = f:read(tonumber(slen))
-					end
-				end
-
-				return tableout
 			end,
 
 			loop = function(self)
@@ -2324,44 +2187,6 @@ return
 					t.LastRoyalAncestor = a
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
-			end,
-
-			setRecursiveIDs = function(self, t, i)
-				local id = i
-				if not t.id then
-					t.id = "ID "..tostring(id)
-					id = id+1
-					for j, k in pairs(t) do if type(k) == "table" then id = self:setRecursiveIDs(k, id) end end
-				end
-				return id
-			end,
-
-			setRecursiveRefs = function(self, t, tables)
-				for i, j in pairs(t) do
-					if type(j) == "table" then
-						if getmetatable(j) then setmetatable(j, nil) end
-						if t.id == "ID 1" then
-							t[i] = i
-							
-							if not tables[i] then
-								tables[i] = j
-								self:setRecursiveRefs(j, tables)
-							end
-						else
-							t[i] = j.id
-							
-							if not tables[j.id] then
-								tables[j.id] = j
-								self:setRecursiveRefs(j, tables)
-							end
-						end
-					elseif type(j) == "function" then
-						if t.id ~= "ID 1" then
-							t[i] = tostring(string.dump(j))
-							t[i] = "FUNC "..t[i]
-						end
-					end
-				end
 			end,
 
 			sleep = function(self, t)
