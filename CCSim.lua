@@ -77,7 +77,7 @@ function main()
 			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			done = true
 			if not i then
-				printf(CCSCommon.stdscr, tostring(i), tostring(j), "\nUnable to load data file! Please try again.")
+				printf(CCSCommon.stdscr, "\nUnable to load data file! Please try again.")
 				done = nil
 			end
 		end
