@@ -584,15 +584,7 @@ return
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
 
-					local r = 255-self.cTriplets[cp.name][1]
-					local g = 255-self.cTriplets[cp.name][2]
-					local b = 255-self.cTriplets[cp.name][3]
-
-					local rh = string.format("%.2x", r)
-					local gh = string.format("%.2x", g)
-					local bh = string.format("%.2x", b)
-
-					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..rh..gh..bh.."\", cex=1.1, font=2)")
+					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..self.cColors[self.planet[x][y][z].country].."\", cex=1.1, font=2)")
 				end
 
 				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
