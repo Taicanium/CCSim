@@ -88,16 +88,16 @@ return
 					end
 				end
 
-				if self.royalGenerations >= parent.genLimit and self.spouse.royalGenerations >= parent.genLimit then
-					local modChance = math.random(1, 50000)
-					if modChance > 999 and modChance < 1106 then
-						local ops = {{"d", "b"}, {"t", "d"}, {"th", "t"}, {"s", "th"}, {"p", "b"}, {"a", "e"}, {"e", "i"}, {"e", "o"}, {"sh", "s"}, {"g", "c"}, {"v", "f"}, {"ea", "e"}, {"er", "e"}, {"ei", "e"}, {"z", "s"}}
-						local op = parent:randomChoice(ops)
-						local o1 = parent:randomChoice(op, true)
-						local o2 = 2
-						if o1 == 2 then o2 = 1 end
-						nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
+				local modChance = math.random(1, 50000)
+				if modChance > 999 and modChance < 1106 then
+					local op = parent:randomChoice({parent.consonants, parent.vowels})
+					local o1 = -1
+					local o2 = -1
+					while o1 == o2 do
+						o1 = parent:randomChoice(op, true)
+						o2 = parent:randomChoice(op, true)
 					end
+					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
 				end
 
 				local sys = parent.systems[nl.system]
