@@ -71,10 +71,13 @@ return
 					n.spouse.city = ""
 					n.spouse.military = false
 					n.spouse.isruler = false
+					n.spouse.parentRuler = false
 					table.insert(self.people, n.spouse)
+					n.spouse.pIndex = #self.people
 					self.population = self.population+1
 				end
 				table.insert(self.people, n)
+				n.pIndex = #self.people
 				self.population = self.population+1
 			end,
 
@@ -83,6 +86,8 @@ return
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
+						for i=1,#self.people do self.people[i].pIndex = i end
+						
 						while self.hasruler == -1 do
 							local sys = parent.systems[self.system]
 							if sys.dynastic then
@@ -123,7 +128,6 @@ return
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
-									for i=1,#self.people do self.people[i].pIndex = i end
 									self:setRuler(parent, child.pIndex)
 								end
 							else
@@ -394,7 +398,6 @@ return
 				self.agPrim = parent:randomChoice({true, false})
 
 				if self.population <= 1 then self:setPop(parent, math.random(1000, 2000)) end
-				for i=1,#self.people do self.people[i].pIndex = i end
 
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end
@@ -439,8 +442,6 @@ return
 					n.gString = n.name.." "..n.surname.." "..n.birth.." "..n.birthplace.." "..tostring(n.number)
 					self:add(parent, n)
 				end
-
-				for i=1,#self.people do self.people[i].pIndex = i end
 			end,
 
 			setRuler = function(self, parent, newRuler)
@@ -782,6 +783,7 @@ return
 					end end
 
 					if not chn then
+						self.people[i].pIndex = i
 						self.averageAge = self.averageAge+self.people[i].age
 						if self.people[i].military then self.military = self.military+1 end
 						if self.people[i].isruler then
