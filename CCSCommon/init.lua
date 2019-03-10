@@ -1890,6 +1890,7 @@ return
 					nomlower = nomlower:gsub("gj", "g")
 					nomlower = nomlower:gsub("tn", "t")
 					nomlower = nomlower:gsub("jz", "j")
+					nomlower = nomlower:gsub("js", "j")
 					nomlower = nomlower:gsub("zt", "t")
 					nomlower = nomlower:gsub("gd", "d")
 					nomlower = nomlower:gsub("dg", "g")
