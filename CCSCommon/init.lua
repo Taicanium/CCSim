@@ -2409,8 +2409,7 @@ return
 
 				for i, j in pairs(self.royals) do
 					if not j.removed then
-						j.title = j.RoyalTitle
-						if j.RoyalTitle ~= "King" and j.RoyalTitle ~= "Queen" and j.RoyalTitle ~= "Emperor" and j.RoyalTitle ~= "Empress" then j.title = "" end
+						j.title = j.RulerTitle
 
 						if j.father and j.mother then if not j.father.removed and not j.mother.removed then
 							local parentString = j.father.gString.."-"..j.mother.gString
