@@ -97,10 +97,10 @@ return
 									local closestAge = -1
 
 									for i=1,#self.people do
-										if self.people[i].royalGenerations > 0 then
+										if self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "Male" then
 											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
 											elseif self.people[i].age <= self.averageAge+25 then table.insert(possibles, self.people[i]) end
-										end
+										end end
 									end
 
 									for i=1,#possibles do
