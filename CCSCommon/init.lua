@@ -1232,11 +1232,12 @@ return
 						msgout = msgout.."\n2 PLAC "..j.birthplace
 						if j.death ~= 0 then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
 						if j.ethnicity then
-							local ei = 1
+							local ie = true
 							for q, b in pairs(j.ethnicity) do
-								if ei == 1 then msgout = msgout.."\n1 NOTE Descent:\n2 CONT " else msgout = msgout.."\n2 CONT " end
-								msgout = msgout..tostring(b).."% "..tostring(q)
-								ei = ei+1
+								local eth = string.format("%.2f", b)
+								if ie then msgout = msgout.."\n1 NOTE Descent:" end
+								msgout = msgout.."\n2 CONT "..eth.."% "..tostring(q)
+								ie = nil
 							end
 						end
 
@@ -1597,7 +1598,7 @@ return
 						if data.surname then rString = rString.." ("..data.surname..")" end
 					else if data.surname then rString = rString.." "..data.surname end end
 					
-					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).."-"..tostring(data.To)..")"
+					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 					else rString = rString.." of "..data.nationality end
 				else rString = "None" end
 
@@ -1705,7 +1706,7 @@ return
 									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, self:ordinal(cp.snt[self.systems[cp.system].name]).." ") end
 									local sysName = self.systems[cp.system].name
 									if cp.dfif[sysName] then printc(self.stdscr, "%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else printc(self.stdscr, "%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-									printc(self.stdscr, "-Population %d-%s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
+									printc(self.stdscr, " - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
 									cCount = cCount+1
 								end
 							end
