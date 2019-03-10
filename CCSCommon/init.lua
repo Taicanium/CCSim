@@ -17,10 +17,13 @@ printf = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(tostring(fmt), ...))
+		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
-	else print(string.format(tostring(fmt), ...)) end
+	else
+		io.write(string.format(fmt, ...))
+		io.write("\n")
+	end
 end
 
 printl = function(stdscr, fmt, ...)
@@ -29,12 +32,12 @@ printl = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(tostring(fmt), ...))
+		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
 	else
 		io.write("\r")
-		io.write(string.format(tostring(fmt), ...))
+		io.write(string.format(fmt, ...))
 	end
 end
 
@@ -44,11 +47,11 @@ printp = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
-		stdscr:addstr(string.format(tostring(fmt), ...))
+		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	else
 		io.write("\n")
-		io.write(string.format(tostring(fmt), ...))
+		io.write(string.format(fmt, ...))
 	end
 end
 
@@ -57,10 +60,10 @@ printc = function(stdscr, fmt, ...)
 		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
-		local str = string.format(tostring(fmt), ...)
+		local str = string.format(fmt, ...)
 		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
 		stdscr:refresh()
-	else io.write(string.format(tostring(fmt), ...)) end
+	else io.write(string.format(fmt, ...)) end
 end
 
 readl = function(stdscr)
@@ -1572,7 +1575,7 @@ return
 								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
 							
 								if cCount <= cLimit then
-									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, self:ordinal(cp.snt[self.systems[cp.system].name]).." ") end
+									if cp.snt[self.systems[cp.system].name] > 1 then printp(self.stdscr, "%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
 									local sysName = self.systems[cp.system].name
 									if cp.dfif[sysName] then printc(self.stdscr, "%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else printc(self.stdscr, "%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
 									printc(self.stdscr, " - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
