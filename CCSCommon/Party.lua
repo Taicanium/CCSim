@@ -5,15 +5,15 @@ return
 				local p = {}
 				setmetatable(p, self)
 
-				p.name = ""
-				p.efreedom = 0
-				p.pfreedom = 0
 				p.cfreedom = 0
-				p.radical = false
+				p.efreedom = 0
 				p.leading = false
-				p.popularity = 50
 				p.membership = 0
 				p.mtname = "Party"
+				p.name = ""
+				p.pfreedom = 0
+				p.popularity = 50
+				p.radical = false
 
 				return p
 			end,
@@ -75,8 +75,8 @@ return
 			end
 		}
 
-		Party.__index = Party
 		Party.__call = function() return Party:new() end
+		Party.__index = Party
 
 		return Party
 	end
