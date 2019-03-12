@@ -57,12 +57,11 @@ function main()
 		datin = readl(CCSCommon.stdscr)
 
 		if string.lower(datin) == "random" then
-			CCSCommon.thisWorld = World:new()
-
-			CCSCommon:rseed()
-			CCSCommon.numCountries = math.random(9, 12)
-
 			printf(CCSCommon.stdscr, "\nDefining countries...")
+			
+			CCSCommon:rseed()
+			CCSCommon.thisWorld = World:new()
+			CCSCommon.numCountries = math.random(9, 12)
 
 			for j=1,CCSCommon.numCountries do
 				local nl = Country:new()
