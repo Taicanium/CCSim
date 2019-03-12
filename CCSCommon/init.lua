@@ -2222,6 +2222,8 @@ return
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
+				local oldCount = count
+				count = count-removed
 				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 
 				done = 0
@@ -2246,10 +2248,10 @@ return
 								table.insert(j.famc, fams[parentString])
 							end
 						end end
+						
+						done = done+1
+						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 					end
-					
-					done = done+1
-					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "\nRemoving unlinked individuals...")
