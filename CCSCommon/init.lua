@@ -2172,7 +2172,7 @@ return
 				if i then
 					local set = i.gensSet
 					i.gensSet = true
-					if not set or set and d then
+					if not set or d then
 						if i.royalDescendant or d then i.royalGenerations = -self.genLimit else i.royalGenerations = v end
 						if g ~= 1 and not d then for j, k in pairs(i.children) do self:setGens(k, v+1, 1, false) end end
 						if i.royalDescendant or d then self:setGens(i.father, -self.genLimit, 0, true) else self:setGens(i.father, v-1, 0, false) end
@@ -2201,15 +2201,20 @@ return
 				local done = 0
 				local removed = 0
 
+				for i, j in pairs(self.royals) do count = count+1 end
+				
+				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
-					count = count+1
 					if j.number ~= 0 then j.royalGenerations = 0 end
 					if j.royalGenerations == 0 then self:setGens(j.father, -1, 0, false) end
 					if j.royalGenerations == 0 then self:setGens(j.mother, -1, 0, false) end
 					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, 1, 1, false) end end
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
 				printf(self.stdscr, "Filtering irrelevant individuals...")
+				done = 0
 
 				for i, j in pairs(self.royals) do
 					if j.royalGenerations >= self.genLimit or j.royalGenerations <= -self.genLimit then
