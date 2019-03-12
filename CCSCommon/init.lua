@@ -2218,7 +2218,14 @@ return
 					end
 					
 					local rmGens = false
-					if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then rmGens = true end end end
+					local rmReversed = false
+					if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then
+						if rmGens then
+							rmGens = false
+							rmReversed = true
+						elseif not rmReversed then rmGens = true end
+					end end end
+					
 					if rmGens then
 						j.removed = true
 						for k, l in pairs(j.children) do if not l.royalDescendant then l.royalGenerations = -self.genLimit end end
