@@ -542,7 +542,7 @@ return
 							x = pd[1]
 							y = pd[2]
 							z = pd[3]
-							if parent.thisWorld.planet[x][y][z].region == "" then sFound = true end
+							if parent.thisWorld.planet[x][y][z].region == "" or parent.thisWorld.planet[x][y][z].region == j.name then sFound = true end
 						end
 
 						parent.thisWorld.planet[x][y][z].region = j.name
@@ -646,12 +646,15 @@ return
 							local x = pd[1]
 							local y = pd[2]
 							local z = pd[3]
-
-							while parent.thisWorld.planet[x][y][z].city ~= "" do
+							
+							local cFound = false
+							while not cFound do
 								pd = parent:randomChoice(j.nodes)
 								x = pd[1]
 								y = pd[2]
 								z = pd[3]
+								
+								if parent.thisWorld.planet[x][y][z].city == "" or parent.thisWorld.planet[x][y][z].city == l.name then cFound = true end
 							end
 
 							l.x = x
