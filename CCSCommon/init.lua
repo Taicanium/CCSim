@@ -19,8 +19,8 @@ printf = function(stdscr, fmt, ...)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
-		stdscr:refresh()
 	else
+		io.write("\r")
 		io.write(string.format(fmt, ...))
 		io.write("\n")
 	end
@@ -34,10 +34,10 @@ printl = function(stdscr, fmt, ...)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
-		stdscr:refresh()
 	else
 		io.write("\r")
 		io.write(string.format(fmt, ...))
+		io.write("\r")
 	end
 end
 
@@ -48,9 +48,8 @@ printp = function(stdscr, fmt, ...)
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
-		stdscr:refresh()
 	else
-		io.write("\n")
+		io.write("\r")
 		io.write(string.format(fmt, ...))
 	end
 end
