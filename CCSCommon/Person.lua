@@ -136,7 +136,7 @@ return
 					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end
 
-				if self.royalName ~= "" or self.spouse.spouse.royalName ~= "" then
+				if self.royalName ~= "" or self.spouse.royalName ~= "" then
 					nn.royalGenerations = 1
 					nn.level = self.level-1
 					nn.parentRuler = true
@@ -199,6 +199,7 @@ return
 				if not sys.dynastic then rankLim = 1 end
 
 				if self.spouse and not self.spouse.def then self.spouse = nil end
+				if not self.spouse or not self.spouse.def or not self.spouse.spouse or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
 				if self.gender == "Male" or not sys.dynastic then
 					if self.title and self.level then
@@ -248,7 +249,7 @@ return
 					self.title = sys.franks[self.level]
 				end
 
-				if not self.spouse then
+				if not self.spouse or not self.spouse.def or not self.spouse.spouse or self.spouse.spouse.gString ~= self.gString then
 					if self.age > 15 then
 						local c = math.random(1, 8)
 						if c == 4 then
@@ -274,7 +275,7 @@ return
 				end
 
 				if not self.recentbirth then
-					if self.spouse then
+					if self.spouse and self.spouse.def then
 						local tmp = math.random(1, nl.birthrate)
 						if tmp == 2 then
 							self:dobirth(parent, nl)
