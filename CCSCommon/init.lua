@@ -2257,12 +2257,12 @@ return
 				printf(self.stdscr, "\nRemoving unlinked individuals...")
 				done = 0
 
-				for i, j in pairs(self.royals) do
+				for i, j in pairs(self.royals) do if not j.removed then
 					if #j.fams == 0 and #j.famc == 0 then j.removed = true end
 					
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
-				end
+				end end
 
 				return fams
 			end,
