@@ -613,13 +613,13 @@ return
 				local f1 = _time()-f0
 
 				if parent.years > parent.startyear+1 then
-					if f1 > 0.85 then
-						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(25*(f1*2))) end
+					if f1 > 0.7 then
+						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
 
 						if parent.popLimit < 1500 then parent.popLimit = 1500 end
 						if parent.numCountries >= 9 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					else
-						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(25*(f1*2))) end
+						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(f1*2))) end
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
