@@ -42,7 +42,7 @@ return
 				n.recentbirth = false
 				n.region = ""
 				n.removed = false
-				n.royalGenerations = -1
+				n.royalGenerations = math.huge
 				n.royalName = ""
 				n.royalSystem = ""
 				n.RulerTitle = ""
@@ -71,7 +71,7 @@ return
 				if self.gender == "Male" then nn.surname = self.surname
 				else nn.surname = self.spouse.surname end
 
-				if self.royalGenerations ~= -1 and self.spouse.royalGenerations ~= -1 then
+				if self.royalGenerations < math.huge and self.spouse.royalGenerations < math.huge then
 					if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
 						if self.surname ~= self.spouse.surname then
 							local surnames = {}
@@ -105,8 +105,8 @@ return
 				nn.birthplace = nl.name
 				nn.age = 0
 
-				if self.royalGenerations ~= -1 then
-					if self.spouse.royalGenerations ~= -1 then
+				if self.royalGenerations < math.huge then
+					if self.spouse.royalGenerations < math.huge then
 						if self.spouse.royalGenerations < self.royalGenerations then
 							nn.royalGenerations = self.spouse.royalGenerations+1
 							nn.royalSystem = self.spouse.royalSystem
