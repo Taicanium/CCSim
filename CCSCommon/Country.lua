@@ -97,8 +97,8 @@ return
 								if not child then
 									local possibles = {}
 									local closest = nil
-									local closestGens = 1000000
-									local closestMats = 1000000
+									local closestGens = math.huge
+									local closestMats = math.huge
 									local closestAge = -1
 
 									for i=1,#self.people do
