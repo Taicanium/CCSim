@@ -13,7 +13,6 @@ World = require("CCSCommon.World")()
 
 printf = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -28,7 +27,6 @@ end
 
 printl = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -43,7 +41,6 @@ end
 
 printp = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -56,12 +53,10 @@ end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
 		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
-		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
 end
 
@@ -1054,13 +1049,12 @@ return
 					curses.cbreak(true)
 					curses.echo(true)
 					curses.nl(true)
-					self.stdscr:refresh()
 				end
 			
 				if cursesstatus then
+					self.stdscr:refresh()
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
-					self.stdscr:refresh()
 				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
 
@@ -1553,7 +1547,6 @@ return
 						table.insert(self.final, cp)
 					end
 
-					self:clearTerm()
 					msg = string.format("Year %d: %d countries\n\n", self.years, self.numCountries)
 
 					if self.showinfo == 1 then
@@ -1605,6 +1598,7 @@ return
 						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
 					
+					self:clearTerm()
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
 				end
 
