@@ -13,12 +13,12 @@ World = require("CCSCommon.World")()
 
 printf = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
+		stdscr:refresh()
 	else
 		io.write("\r")
 		io.write(string.format(fmt, ...))
@@ -28,12 +28,12 @@ end
 
 printl = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
+		stdscr:refresh()
 	else
 		io.write("\r")
 		io.write(string.format(fmt, ...))
@@ -43,11 +43,11 @@ end
 
 printp = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
+		stdscr:refresh()
 	else
 		io.write("\r")
 		io.write(string.format(fmt, ...))
@@ -56,11 +56,11 @@ end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
-		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
 		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
+		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
 end
 
