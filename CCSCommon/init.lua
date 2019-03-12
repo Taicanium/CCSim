@@ -13,6 +13,7 @@ World = require("CCSCommon.World")()
 
 printf = function(stdscr, fmt, ...)
 	if stdscr then
+		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -27,6 +28,7 @@ end
 
 printl = function(stdscr, fmt, ...)
 	if stdscr then
+		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -41,6 +43,7 @@ end
 
 printp = function(stdscr, fmt, ...)
 	if stdscr then
+		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtobot()
@@ -53,6 +56,7 @@ end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
+		stdscr:refresh()
 		local y, x = stdscr:getyx()
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
