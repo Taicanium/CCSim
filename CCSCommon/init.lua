@@ -1043,7 +1043,7 @@ return
 			yearstorun = 0,
 			final = {},
 			thisWorld = {},
-
+			
 			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
 			-- All of this assuming we don't have Curses, of course.
 			clearTerm = function(self)
@@ -1527,7 +1527,7 @@ return
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
 						rString = rString.." "..self:roman(data.number)
 						if data.surname then rString = rString.." ("..data.surname..")" end
-					else if data.surname then rString = rString.." "..data.surname end end
+					elseif data.surname then rString = rString.." "..data.surname end
 					
 					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 					else rString = rString.." of "..data.nationality end
@@ -2168,23 +2168,23 @@ return
 				end
 			end,
 
-			setGens = function(self, i, v, g)
+			setGens = function(self, i, v, g, d)
 				if i then
 					local set = i.gensSet
 					i.gensSet = true
 					if not set then
-						if i.royalGenerations == -1 then i.royalGenerations = v
-						elseif i.royalGenerations >= self.genLimit then i.royalGenerations = v end
-						if g < 1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end
-						else if i.royalGenerations < self.genLimit-1 and i.royalGenerations > -1 then for j, k in pairs(i.children) do self:setGens(k, v, 1) end end end
-						self:setGens(i.father, v, 0)
-						self:setGens(i.mother, v, 0)
+						if i.royalDescendant or d then i.royalGenerations = -self.genLimit else i.royalGenerations = v end
+						if g ~= 1 then for j, k in pairs(i.children) do self:setGens(k, v+1, 1, false) end end
+						if i.royalDescendant or d then self:setGens(i.father, -self.genLimit, 0, true) else self:setGens(i.father, v-1, 0, false) end
+						if i.royalDescendant or d then self:setGens(i.mother, -self.genLimit, 0, true) else self:setGens(i.mother, v-1, 0, false) end
 					end
+					if g ~= 1 then i.royalDescendant = true end
+					i.gensSet = false
 				end
 			end,
 
 			setGensChildren = function(self, t, v, a)
-				if t.royalGenerations > v or t.royalGenerations == -1 then
+				if t.royalGenerations > v then
 					t.royalGenerations = v
 					t.LastRoyalAncestor = a
 				end
@@ -2205,17 +2205,24 @@ return
 				for i, j in pairs(self.royals) do
 					count = count+1
 					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j.father, -2, 0) end
-					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0) end
-					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, -2, 1) end end
+					if j.royalGenerations == 0 then self:setGens(j.father, -1, 0, false) end
+					if j.royalGenerations == 0 then self:setGens(j.mother, -1, 0, false) end
+					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, 1, 1, false) end end
 				end
 
 				printf(self.stdscr, "Filtering irrelevant individuals...")
 
 				for i, j in pairs(self.royals) do
-					if j.royalGenerations == -1 or j.royalGenerations >= self.genLimit then
+					if j.royalGenerations >= self.genLimit or j.royalGenerations <= -self.genLimit then
 						j.removed = true
 						removed = removed+1
+					end
+					
+					local rmGens = false
+					if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then rmGens = true end end
+					if rmGens then
+						j.removed = true
+						for k, l in pairs(j.children) do if not l.royalDescendant then l.royalGenerations = -self.genLimit end end
 					end
 
 					done = done+1
