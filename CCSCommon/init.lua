@@ -60,7 +60,6 @@ printc = function(stdscr, fmt, ...)
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
 		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
-		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
 end
 
@@ -1604,6 +1603,7 @@ return
 					
 					self:clearTerm()
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
+					if cursesstatus then self.stdscr:refresh() end
 				end
 
 				self:finish()
