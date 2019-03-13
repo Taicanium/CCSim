@@ -2172,7 +2172,6 @@ return
 
 			setGens = function(self, i, v, g, d)
 				if i then
-					if d and i.royalDescendant and i.royalGenerations == -self.genLimit then return end
 					local set = i.gensSet
 					i.gensSet = true
 					if d or not set then
