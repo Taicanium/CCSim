@@ -2170,18 +2170,19 @@ return
 				end
 			end,
 
-			setGens = function(self, i, v, g, d)
+			setGens = function(self, i, v, g)
 				if i then
 					local set = i.gensSet
 					i.gensSet = true
-					if d or not set then
-						if math.abs(v) < math.abs(i.royalGenerations) then i.royalGenerations = v end
-						if i.royalDescendant and v < 0 then i.royalGenerations = -self.genLimit end
-						if g ~= 1 and not d then for j, k in pairs(i.children) do self:setGens(k, v+1, 1, false) end end
-						if i.royalDescendant and v < 0 then self:setGens(i.father, -self.genLimit, 0, true) else self:setGens(i.father, v-1, 0, false) end
-						if i.royalDescendant and v < 0 then self:setGens(i.mother, -self.genLimit, 0, true) else self:setGens(i.mother, v-1, 0, false) end
-					end
 					if g ~= 1 and v < 0 then i.royalDescendant = true end
+					if not set then
+						if v > -1 and v < i.royalGenerations then i.royalGenerations = v end
+						if i.royalDescendant and v < 0 then i.royalGenerations = -2 end
+						if g ~= 1 then for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end end
+						if i.royalGenerations == -2 then self:setGens(i.father, -2, 0) elseif not d then self:setGens(i.father, v-1, 1) end
+						if i.royalGenerations == -2 then self:setGens(i.mother, -2, 0) elseif not d then self:setGens(i.mother, v-1, 1) end
+					end
+					i.gensSet = false
 				end
 			end,
 
@@ -2209,7 +2210,7 @@ return
 				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
 					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
+					if j.royalGenerations == 0 then self:setGens(j, 0, 0) end
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
