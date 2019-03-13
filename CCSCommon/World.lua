@@ -391,7 +391,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x-(math.atan(self.planetdefined[j][1]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
 							f:write(x)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -402,7 +402,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y-(math.atan(self.planetdefined[j][2]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
 							f:write(y)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -413,7 +413,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z-(math.atan(self.planetdefined[j][3]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
 							f:write(z)
 							if j < i+1999 then f:write(", ") end
 						end
@@ -442,7 +442,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then x = x-(math.atan(self.planetdefined[j][1]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
 							f:write(x)
 							if j < planetSize then f:write(", ") end
 						end
@@ -453,7 +453,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then y = y-(math.atan(self.planetdefined[j][2]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
 							f:write(y)
 							if j < planetSize then f:write(", ") end
 						end
@@ -464,7 +464,7 @@ return
 							local x = self.planetdefined[j][1]
 							local y = self.planetdefined[j][2]
 							local z = self.planetdefined[j][3]
-							if not self.planet[x][y][z].land then z = z-(math.atan(self.planetdefined[j][3]/self.planetR)*1.65) end
+							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
 							f:write(z)
 							if j < planetSize then f:write(", ") end
 						end
