@@ -552,7 +552,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=2)")
+				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=1)")
 
 				for i, cp in pairs(self.countries) do
 					local avgX = 0
