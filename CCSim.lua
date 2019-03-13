@@ -70,7 +70,6 @@ function main()
 				CCSCommon:getAlphabeticalCountries()
 			end
 
-			if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 			done = true
 		else
 			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
@@ -82,8 +81,8 @@ function main()
 		end
 	end
 
+	if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
 	CCSCommon:loop()
-
 	CCSCommon = nil
 	if cursesstatus then curses.endwin() end
 end
