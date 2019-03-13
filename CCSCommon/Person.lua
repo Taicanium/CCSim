@@ -26,7 +26,7 @@ return
 				n.isruler = false
 				n.LastRoyalAncestor = ""
 				n.level = 2
-				n.maternalLineTimes = -1
+				n.maternalLineTimes = math.huge
 				n.military = false
 				n.militaryTraining = 0
 				n.mother = nil
