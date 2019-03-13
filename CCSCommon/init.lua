@@ -2171,18 +2171,15 @@ return
 			end,
 
 			setGens = function(self, i, v, g)
-				if i then
-					local set = i.gensSet
+				if i and not i.gensSet then
 					i.gensSet = true
 					if g ~= 1 and v < 0 then i.royalDescendant = true
 					elseif g == 1 and v > 0 then i.royalAncestor = true end
-					if not set then
-						if v > -1 and v < i.royalGenerations then i.royalGenerations = v end
-						if i.royalDescendant and i.royalAncestor then i.royalGenerations = -2 end
-						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
-						if i.royalGenerations == -2 then self:setGens(i.father, -2, 0) else self:setGens(i.father, v-1, 0) end
-						if i.royalGenerations == -2 then self:setGens(i.mother, -2, 0) else self:setGens(i.mother, v-1, 0) end
-					end
+					if v > -1 and v < i.royalGenerations then i.royalGenerations = v end
+					if i.royalDescendant and i.royalAncestor then i.royalGenerations = -2 end
+					for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
+					if i.royalGenerations == -2 then self:setGens(i.father, -2, 0) else self:setGens(i.father, v-1, 0) end
+					if i.royalGenerations == -2 then self:setGens(i.mother, -2, 0) else self:setGens(i.mother, v-1, 0) end
 					i.gensSet = false
 				end
 			end,
