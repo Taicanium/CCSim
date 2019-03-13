@@ -2173,13 +2173,13 @@ return
 				if i then
 					local set = i.gensSet
 					i.gensSet = true
-					if not set or d then
+					if d or not set then
 						if i.royalDescendant or d then i.royalGenerations = -self.genLimit else i.royalGenerations = v end
 						if g ~= 1 and not d then for j, k in pairs(i.children) do self:setGens(k, v+1, 1, false) end end
 						if i.royalDescendant or d then self:setGens(i.father, -self.genLimit, 0, true) else self:setGens(i.father, v-1, 0, false) end
 						if i.royalDescendant or d then self:setGens(i.mother, -self.genLimit, 0, true) else self:setGens(i.mother, v-1, 0, false) end
 					end
-					if g ~= 1 then i.royalDescendant = true end
+					if g ~= 1 and v ~= 0 then i.royalDescendant = true end
 				end
 			end,
 
