@@ -434,7 +434,7 @@ return
 							if j < i+1999 then f:write(", ") end
 						end
 
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nshapelist3d(cube3d(), x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.32, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
+						f:write(")\nshapes <- rep(c(cube3d()), times=2000)\ninpdata <- data.frame(SHAPES=shapes, X=x, Y=y, Z=z, CSC=csc)\nshapelist3d(inpdata$SHAPES, x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.32, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					else
 						f:write(")\nx <- c(")
 
@@ -484,8 +484,8 @@ return
 							end
 							if j < planetSize then f:write(", ") end
 						end
-
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nshapelist3d(cube3d(), x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.32, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
+						
+						f:write(")\nshapes <- rep(c(cube3d()), times="..planetSize-i+1..")\ninpdata <- data.frame(SHAPES=shapes, X=x, Y=y, Z=z, CSC=csc)\nshapelist3d(inpdata$SHAPES, x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.32, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					end
 				end
 
