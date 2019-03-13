@@ -512,10 +512,10 @@ return
 					
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
-					while ratio < self.planetR+8 and ratio < self.planetR+8.25 do
-						xChange = xChange+math.atan(x/self.planetR)/16
-						yChange = yChange+math.atan(y/self.planetR)/16
-						zChange = zChange+math.atan(z/self.planetR)/16
+					while ratio < self.planetR+8 do
+						xChange = xChange+0.2
+						yChange = yChange+0.2
+						zChange = zChange+0.2
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
@@ -552,7 +552,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=2)")
+				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=2)")
 
 				for i, cp in pairs(self.countries) do
 					local avgX = 0
@@ -575,10 +575,10 @@ return
 
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
-					while ratio < self.planetR+24 and ratio < self.planetR+24.25 do
-						xChange = xChange+math.atan(avgX/self.planetR)/16
-						yChange = yChange+math.atan(avgY/self.planetR)/16
-						zChange = zChange+math.atan(avgZ/self.planetR)/16
+					while ratio < self.planetR+24 do
+						xChange = xChange+0.2
+						yChange = yChange+0.2
+						zChange = zChange+0.2
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
