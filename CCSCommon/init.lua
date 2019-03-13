@@ -2219,23 +2219,9 @@ return
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					if j.royalGenerations > self.genLimit or j.royalGenerations < -self.genLimit then
+					if j.royalGenerations > self.genLimit or j.royalGenerations == -1 then
 						j.removed = true
 						removed = removed+1
-					else
-						local rmGens = false
-						local rmReversed = false
-						if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then
-							if rmGens then
-								rmGens = false
-								rmReversed = true
-							elseif not rmReversed then rmGens = true end
-						end end end
-						
-						if rmGens then
-							j.removed = true
-							for k, l in pairs(j.children) do if not l.royalDescendant then l.royalGenerations = -self.genLimit end end
-						end
 					end
 
 					done = done+1
