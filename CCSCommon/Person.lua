@@ -89,7 +89,7 @@ return
 				end
 
 				local modChance = math.random(1, 50000)
-				if modChance > 999 and modChance < 1106 then
+				if modChance > 999 and modChance < 1156 then
 					local op = parent:randomChoice({parent.consonants, parent.vowels})
 					local o1 = -1
 					local o2 = -1
