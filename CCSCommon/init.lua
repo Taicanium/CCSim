@@ -2180,7 +2180,7 @@ return
 						if i.royalDescendant or d then self:setGens(i.father, -self.genLimit, 0, true) else self:setGens(i.father, v-1, 0, false) end
 						if i.royalDescendant or d then self:setGens(i.mother, -self.genLimit, 0, true) else self:setGens(i.mother, v-1, 0, false) end
 					end
-					if g ~= 1 and v ~= 0 then i.royalDescendant = true end
+					if g ~= 1 and v < 0 then i.royalDescendant = true end
 				end
 			end,
 
@@ -2220,20 +2220,20 @@ return
 					if j.royalGenerations > self.genLimit or j.royalGenerations < -self.genLimit then
 						j.removed = true
 						removed = removed+1
-					end
-					
-					local rmGens = false
-					local rmReversed = false
-					if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then
+					else
+						local rmGens = false
+						local rmReversed = false
+						if j.royalGenerations == -self.genLimit then for k, l in pairs(j.children) do if l.royalGenerations == -self.genLimit then
+							if rmGens then
+								rmGens = false
+								rmReversed = true
+							elseif not rmReversed then rmGens = true end
+						end end end
+						
 						if rmGens then
-							rmGens = false
-							rmReversed = true
-						elseif not rmReversed then rmGens = true end
-					end end end
-					
-					if rmGens then
-						j.removed = true
-						for k, l in pairs(j.children) do if not l.royalDescendant then l.royalGenerations = -self.genLimit end end
+							j.removed = true
+							for k, l in pairs(j.children) do if not l.royalDescendant then l.royalGenerations = -self.genLimit end end
+						end
 					end
 
 					done = done+1
