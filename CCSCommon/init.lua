@@ -1655,7 +1655,7 @@ return
 				local check = true
 				while check do
 					check = false
-					local nomlower = string.lower(nomin)
+					local nomlower = nomin:lower()
 
 					for i=1,nomlower:len()-1 do
 						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+1, i+1)) then
@@ -1881,6 +1881,7 @@ return
 
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, nomlower:len())
+					nomin = nomin:gsub("%-(%w)", string.upper)
 				end
 
 				return nomin
@@ -2206,9 +2207,7 @@ return
 				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
 					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j.father, -1, 0, false) end
-					if j.royalGenerations == 0 then self:setGens(j.mother, -1, 0, false) end
-					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, 1, 1, false) end end
+					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
