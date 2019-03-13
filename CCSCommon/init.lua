@@ -2217,7 +2217,7 @@ return
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					if j.royalGenerations >= self.genLimit or j.royalGenerations <= -self.genLimit then
+					if j.royalGenerations > self.genLimit or j.royalGenerations < -self.genLimit then
 						j.removed = true
 						removed = removed+1
 					end
