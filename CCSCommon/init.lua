@@ -2174,7 +2174,7 @@ return
 				if i and not i.gensSet then
 					i.gensSet = true
 					if r then
-						j.royalGenerations = 0
+						i.royalGenerations = 0
 						self:setGens(i.father, false, false, v-1)
 						self:setGens(i.mother, false, false, v-1)
 						for j, k in pairs(i.children) do self:setGens(k, false, true, v+1) end
