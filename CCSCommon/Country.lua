@@ -110,9 +110,9 @@ return
 
 									for i=1,#possibles do
 										local psp = possibles[i]
-										if psp then if psp.royalGenerations <= closestGens then
-											if psp.maternalLineTimes <= closestMats then
-												if psp.age >= closestAge then
+										if psp then if psp.royalGenerations < closestGens then
+											if psp.maternalLineTimes < closestMats then
+												if psp.age > closestAge then
 													closest = psp
 													closestGens = psp.royalGenerations
 													closestMats = psp.maternalLineTimes
