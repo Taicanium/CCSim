@@ -583,7 +583,7 @@ return
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
 
-					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\"#"..self.cColors[cp.name].."\", cex=1.1, font=2)")
+					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\""..self.cColors[cp.name].."\", cex=1.1, font=2)")
 				end
 
 				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
