@@ -2170,17 +2170,24 @@ return
 				end
 			end,
 
-			setGens = function(self, i, v, g)
-				local oldGens = i.royalGenerations
-				if g == 0 and v < 0 then i.royalDescendant = true
-				elseif g == 1 and v > 0 then i.royalAncestor = true end
-				if v > -1 and v < i.royalGenerations then i.royalGenerations = v end
-				if i.royalDescendant and i.royalAncestor then i.royalGenerations = -2 end
-				if i and i.royalGenerations ~= oldGens and not i.gensSet then
+			setGens = function(self, i, r, d, v)
+				if i and not i.gensSet then
 					i.gensSet = true
-					if v > -1 and i.royalGenerations <= self.genLimit then for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end end
-					if i.royalGenerations <= self.genLimit then if i.royalGenerations == -2 then self:setGens(i.father, -2, 0) elseif i.royalGenerations ~= -1 then self:setGens(i.father, v-1, 0) end end
-					if i.royalGenerations <= self.genLimit then if i.royalGenerations == -2 then self:setGens(i.mother, -2, 0) elseif i.royalGenerations ~= -1 then self:setGens(i.mother, v-1, 0) end end
+					if r then
+						j.royalGenerations = 0
+						self:setGens(i.father, false, false, v-1)
+						self:setGens(i.mother, false, false, v-1)
+						for j, k in pairs(i.children) do self:setGens(k, false, true, v+1) end
+					elseif d then
+						i.royalAncestor = true
+						for j, k in pairs(i.children) do
+							k.royalGenerations = v
+							self:setGens(k, false, true, v+1)
+						end
+					else
+						i.royalDescendant = true
+						i.royalGenerations = -1
+					end
 					i.gensSet = false
 				end
 			end,
@@ -2208,8 +2215,8 @@ return
 				
 				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
-					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j, 0, 0) end
+					if j.number ~= 0 then self:setGens(j, true, false, 0) end
+					
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
@@ -2218,7 +2225,12 @@ return
 				done = 0
 
 				for i, j in pairs(self.royals) do
-					if j.royalGenerations > self.genLimit or j.royalGenerations == math.huge then
+					if j.royalGenerations > self.genLimit then
+						j.removed = true
+						removed = removed+1
+					end
+					
+					if j.royalGenerations == -1 and not j.royalAncestor then
 						j.removed = true
 						removed = removed+1
 					end
