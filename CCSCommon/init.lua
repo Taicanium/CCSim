@@ -1085,8 +1085,10 @@ return
 
 			finish = function(self)
 				self:clearTerm()
+				
+				if self.doR then self.thisWorld:rOutput(self, "final.r") end
+				
 				printf(self.stdscr, "Printing result...")
-
 				local f = io.open("output.txt", "w+")
 
 				local ged = nil
@@ -1598,7 +1600,6 @@ return
 					self.years = self.years+1
 					if self.years > self.maxyears then
 						_running = false
-						if self.doR then self.thisWorld:rOutput(self, "final.r") end
 					end
 					
 					self:clearTerm()
