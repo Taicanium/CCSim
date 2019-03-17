@@ -2177,7 +2177,7 @@ return
 							if i.royalGenerations > self.genLimit then i.royalGenerations = v end
 							if i.royalGenerations == -1 then
 								local found = false
-								for j, k in pairs(i.children) do if k.royalGenerations == -2 then found = true end
+								for j, k in pairs(i.children) do if k.royalGenerations == -2 then found = true end end
 								if not found then i.royalGenerations = v end
 							end
 						elseif i.royalGenerations > v then i.royalGenerations = v end
