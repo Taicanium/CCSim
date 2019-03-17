@@ -2218,14 +2218,20 @@ return
 				local count = 0
 				local done = 0
 				local removed = 0
+				
+				for i, j in pairs(self.royals) do count = count+1 end
 
+				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
-					count = count+1
 					if j.number ~= 0 then j.royalGenerations = 0 end
 					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
+					
+					done = done+1
+					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
-				printf(self.stdscr, "Filtering irrelevant individuals...")
+				printf(self.stdscr, "\nFiltering irrelevant individuals...")
+				done = 0
 
 				for i, j in pairs(self.royals) do
 					if j.royalGenerations > self.genLimit or j.royalGenerations == math.huge then
@@ -2239,9 +2245,8 @@ return
 
 				local oldCount = count
 				count = count-removed
-				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
-
 				done = 0
+				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 				printf(self.stdscr, "Linking %d individuals...", count)
 
 				for i, j in pairs(self.royals) do
