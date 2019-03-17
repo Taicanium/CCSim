@@ -2181,7 +2181,6 @@ return
 							self:setGens(i.mother, -2, 0)
 						end
 					end
-					i.gensSet = false
 				end
 			end,
 
