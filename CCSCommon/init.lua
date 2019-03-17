@@ -135,17 +135,6 @@ return
 
 						c:checkRuler(parent)
 
-						if c.snt[parent.systems[c.system].name] > 1 then
-							if parent.systems[c.system].dynastic then
-								local newRuler = -1
-								for i=1,#c.people do if c.people[i].isruler then newRuler = i end end
-								if c.people[newRuler].LastRoyalAncestor ~= "" then
-									msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
-									c:event(parent, msg)
-								end
-							end
-						end
-
 						c.stability = c.stability-15
 						if c.stability < 1 then c.stability = 1 end
 
@@ -300,24 +289,8 @@ return
 								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == c.people[newRuler].royalName and c.rulers[i].title == c.people[newRuler].title then namenum = namenum+1 end end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
-								if c.snt[parent.systems[c.system].name] > 1 then
-									if parent.systems[c.system].dynastic then
-										if c.people[newRuler].LastRoyalAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
-											c:event(parent, msg)
-										end
-									end
-								end
 							else
 								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
-								if c.snt[parent.systems[c.system].name] > 1 then
-									if parent.systems[c.system].dynastic then
-										if c.people[newRuler].LastRoyalAncestor ~= "" then
-											msg = "Enthronement of "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(c.people[newRuler].number).." of "..c.name..", "..parent:generationString(c.people[newRuler].royalGenerations, c.people[newRuler].gender).." of "..c.people[newRuler].LastRoyalAncestor
-											c:event(parent, msg)
-										end
-									end
-								end
 							end
 						end
 
