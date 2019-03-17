@@ -2173,9 +2173,17 @@ return
 					local set = i.gensSet
 					i.gensSet = true
 					if not set then
-						if v == -2 and i.royalGenerations == -1 then i.royalGenerations = v end
-						elseif i.royalGenerations > v and i.royalGenerations ~= 0 then i.royalGenerations = v end
+						if v == -2 then
+							if i.royalGenerations > self.genLimit then i.royalGenerations = v end
+							if i.royalGenerations == -1 then
+								local found = false
+								for j, k in pairs(i.children) do if k.royalGenerations == -2 then found = true end
+								if not found then i.royalGenerations = v end
+							end
+						elseif i.royalGenerations > v then i.royalGenerations = v end
+						
 						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
+						
 						if v == -2 and i.royalGenerations ~= 0 then
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
