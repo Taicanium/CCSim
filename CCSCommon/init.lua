@@ -2176,7 +2176,13 @@ return
 						if v == -2 and i.royalGenerations == -1 then i.royalGenerations = v end
 						if i.royalGenerations > v then i.royalGenerations = v end
 						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
-						if v == -2 or i.father.royalGenerations == 0 or i.mother.royalGenerations == 0 then
+						if v == -2 then
+							self:setGens(i.father, -2, 0)
+							self:setGens(i.mother, -2, 0)
+						elseif i.father and i.father.royalGenerations == 0 then
+							self:setGens(i.father, -2, 0)
+							self:setGens(i.mother, -2, 0)
+						elseif i.mother and i.mother.royalGenerations == 0 then
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
 						end
