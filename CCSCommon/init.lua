@@ -626,7 +626,7 @@ return
 							end
 
 							newl.rulers = {}
-							for i=1,#c.rulers do newl.rulers[i] = c.rulers[i] end
+							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
 							
 							for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
@@ -651,17 +651,6 @@ return
 
 									if retrieve then										
 										retrieved = true
-										
-										for k=1,#j.rulers do
-											local written = false
-											for l=1,#newl.rulers do if not written then
-												if j.rulers[k].From >= newl.rulers[#newl.rulers].From then
-													table.insert(newl.rulers, l, j.rulers[k])
-													written = true
-												end
-											end end
-											if not written then table.insert(newl.rulers, j.rulers[k]) end
-										end
 										
 										for k, l in pairs(j.events) do table.insert(newl.events, l) end
 									
@@ -1119,14 +1108,12 @@ return
 							f:write(string.format(self:getRulerString(cp.rulers[1]).."\n"))
 							local nextFound = false
 							for k=1,#cp.rulers do
-								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name then
+								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name and not nextFound then
 									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
-										if not nextFound then
-											nextFound = true
-											f:write("...\n")
-											f:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
-											k = #cp.rulers+1
-										end
+										nextFound = true
+										f:write("...\n")
+										f:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
+										k = #cp.rulers+1
 									end
 								end
 							end
