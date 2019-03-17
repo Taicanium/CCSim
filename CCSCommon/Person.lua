@@ -83,7 +83,7 @@ return
 								else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 							end
 
-							nn.surname = surnames[1].."-"..surnames[2]
+							if surnames[1] == surnames[2] then nn.surname = surnames[1] else nn.surname = surnames[1].."-"..surnames[2] end
 						end
 					end
 				end
