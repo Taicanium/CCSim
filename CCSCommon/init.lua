@@ -2180,6 +2180,8 @@ return
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
 						end
+						
+						if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
 					end
 				end
 			end,
