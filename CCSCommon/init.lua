@@ -2173,11 +2173,13 @@ return
 					local set = i.gensSet
 					i.gensSet = true
 					if not set then
-						iv v == -2 and i.royalGenerations == -1 then i.royalGenerations = v end
-						if i.royalGenerations > self.genLimit then i.royalGenerations = v end
+						if v == -2 and i.royalGenerations == -1 then i.royalGenerations = v end
+						if i.royalGenerations > v then i.royalGenerations = v end
 						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
-						self:setGens(i.father, -2, 0)
-						self:setGens(i.mother, -2, 0)
+						if v == -2 or i.father.royalGenerations == 0 or i.mother.royalGenerations == 0 then
+							self:setGens(i.father, -2, 0)
+							self:setGens(i.mother, -2, 0)
+						end
 					end
 					i.gensSet = false
 				end
@@ -2205,9 +2207,7 @@ return
 				for i, j in pairs(self.royals) do
 					count = count+1
 					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j.father, -2, 0, false) end
-					if j.royalGenerations == 0 then self:setGens(j.mother, -2, 0, false) end
-					if j.royalGenerations == 0 then for k, l in pairs(j.children) do self:setGens(l, 1, 1, false) end end
+					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
 				end
 
 				printf(self.stdscr, "Filtering irrelevant individuals...")
