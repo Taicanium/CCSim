@@ -2176,8 +2176,8 @@ return
 						iv v == -2 and i.royalGenerations == -1 then i.royalGenerations = v end
 						if i.royalGenerations > self.genLimit then i.royalGenerations = v end
 						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
-						if v == -2 then self:setGens(i.father, -2, 0) else self:setGens(i.father, v-1, 0) end
-						if v == -2 then self:setGens(i.mother, -2, 0) else self:setGens(i.mother, v-1, 0) end
+						if v == -2 then self:setGens(i.father, -2, 0) end
+						if v == -2 then self:setGens(i.mother, -2, 0) end
 					end
 					i.gensSet = false
 				end
