@@ -42,8 +42,6 @@ return
 				n.recentbirth = false
 				n.region = ""
 				n.removed = false
-				n.royalAncestor = false
-				n.royalDescendant = false
 				n.royalGenerations = math.huge
 				n.royalName = ""
 				n.royalSystem = ""
