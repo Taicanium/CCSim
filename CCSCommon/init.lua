@@ -781,13 +781,13 @@ return
 					target=nil,
 					args=2,
 					inverse=true,
-					performEvent=function(self, parent, c1, c2, d)
+					performEvent=function(self, parent, c1, c2, r)
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 11 then
-								if not d then
+								if not r then
 									c1:event(parent, "Conquered "..c2.name)
 									c2:event(parent, "Conquered by "..c1.name)
 								end
