@@ -796,7 +796,6 @@ return
 								newr.name = c2.name
 								
 								for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
-								
 								c2.people = nil
 								
 								for i, j in pairs(c2.regions) do
