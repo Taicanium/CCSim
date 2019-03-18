@@ -606,10 +606,8 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then
 					if cp.population < 10 then
-						if cp.rulers[#cp.rulers].To == "Current" then cp.rulers[#cp.rulers].To = parent.years end
 						cp:event(parent, "Disappeared")
-						for i=#self.people,1,-1 do parent:randomChoice(parent.thisWorld.countries):add(parent, self.people[i]) end
-						self:delete(parent, cp)
+						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true) end end
 					end
 				end end
 				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
