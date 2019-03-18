@@ -89,7 +89,7 @@ return
 				end
 
 				local modChance = math.random(1, 50000)
-				if modChance > 999 and modChance < 1156 then
+				if modChance > 1024 and modChance < 1206 then
 					local op = parent:randomChoice({parent.consonants, parent.vowels})
 					local o1 = -1
 					local o2 = -1
@@ -97,7 +97,7 @@ return
 						o1 = parent:randomChoice(op, true)
 						o2 = parent:randomChoice(op, true)
 					end
-					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
+					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], math.random(1, 2)))
 				end
 
 				local sys = parent.systems[nl.system]
