@@ -209,10 +209,8 @@ return
 				local revCount = 0
 				for i=1,#self.events do if self.events[i].Year > parent.years-50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount+1 end end
 				if revCount > 6 then
-					if self.rulers[#self.rulers].To == "Current" then self.rulers[#self.rulers].To = parent.years end
 					self:event(parent, "Collapsed")
-					for i=#self.people,1,-1 do parent:randomChoice(parent.thisWorld.countries):add(parent, self.people[i]) end
-					parent.thisWorld:delete(parent, self)
+					for i=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then self:triggerEvent(parent, i, true) end end
 				end
 			end,
 
@@ -663,13 +661,12 @@ return
 				end
 			end,
 
-			triggerEvent = function(self, parent, i)
+			triggerEvent = function(self, parent, i, r)
+				table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
+				local newE = self.ongoing[#self.ongoing]
+			
 				if parent.c_events[i].args == 1 then
-					table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-					local newE = self.ongoing[#self.ongoing]
-
-					if newE.performEvent then
-						if newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
+					if not newE.performEvent or newE:performEvent(parent, self, r) == -1 then table.remove(self.ongoing, #self.ongoing)
 						else newE:beginEvent(parent, self) end
 					else table.remove(self.ongoing, #self.ongoing) end
 				elseif parent.c_events[i].args == 2 then
@@ -677,11 +674,7 @@ return
 						local other = parent:randomChoice(parent.thisWorld.countries)
 						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 
-						table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-						local newE = self.ongoing[#self.ongoing]
-
-						if newE.performEvent then
-							if newE:performEvent(parent, self, other) == -1 then table.remove(self.ongoing, #self.ongoing)
+						if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
 							else newE:beginEvent(parent, self, other) end
 						else table.remove(self.ongoing, #self.ongoing) end
 					end
