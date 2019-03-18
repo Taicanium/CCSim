@@ -46,6 +46,8 @@ return
 			end,
 
 			add = function(self, parent, n)
+				if not n then return end
+			
 				if n.nationality ~= self.name then
 					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then
 						for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
