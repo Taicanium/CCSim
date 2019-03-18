@@ -97,7 +97,7 @@ return
 						o1 = parent:randomChoice(op, true)
 						o2 = parent:randomChoice(op, true)
 					end
-					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], math.random(1, 2)))
+					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
 				end
 
 				local sys = parent.systems[nl.system]
