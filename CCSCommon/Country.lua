@@ -191,13 +191,7 @@ return
 
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] then
-						if not self.ongoing[i].doStep then
-							local ro = table.remove(self.ongoing, i)
-							ro = nil
-						end
-						
-						local r = self.ongoing[i]:doStep(parent, self)
-						if r == -1 then
+						if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then
 							local ro = table.remove(self.ongoing, i)
 							ro = nil
 						end
