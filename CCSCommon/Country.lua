@@ -37,7 +37,7 @@ return
 				nl.rulernames = {}
 				nl.rulerParty = ""
 				nl.rulers = {}
-				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once.
+				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
 				nl.stability = 50
 				nl.strength = 0
 				nl.system = 0
@@ -56,6 +56,8 @@ return
 				n.nationality = self.name
 				n.region = ""
 				n.city = ""
+				n.level = 2
+				n.title = "Citizen"
 				n.military = false
 				n.isruler = false
 				n.parentRuler = false
@@ -69,6 +71,8 @@ return
 					n.spouse.nationality = self.name
 					n.spouse.region = ""
 					n.spouse.city = ""
+					n.spouse.level = 2
+					n.spouse.title = "Citizen"
 					n.spouse.military = false
 					n.spouse.isruler = false
 					n.spouse.parentRuler = false
@@ -110,21 +114,19 @@ return
 
 									for i=1,#possibles do
 										local psp = possibles[i]
-										if psp then if psp.royalGenerations < closestGens then
-											if psp.maternalLineTimes < closestMats then
-												if psp.age > closestAge then
-													closest = psp
-													closestGens = psp.royalGenerations
-													closestMats = psp.maternalLineTimes
-													closestAge = psp.age
-												end
+										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then
+											if psp.gender == "Male" or not self.agPrim then
+												closest = psp
+												closestGens = psp.royalGenerations
+												closestMats = psp.maternalLineTimes
+												closestAge = psp.age
 											end
 										end end
 									end
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
+										if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p) end end
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
