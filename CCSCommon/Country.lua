@@ -121,7 +121,7 @@ return
 												closestMats = psp.maternalLineTimes
 												closestAge = psp.age
 											end
-										end end
+										end
 									end
 
 									if not closest then
