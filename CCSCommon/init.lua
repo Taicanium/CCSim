@@ -1841,7 +1841,7 @@ return
 
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, nomlower:len())
-					nomin = nomin:gsub("%-(%w)", string.upper)
+					nomin = nomin:gsub("%-%w", string.upper)
 				end
 
 				return nomin
