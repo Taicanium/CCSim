@@ -667,16 +667,14 @@ return
 			
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self, r) == -1 then table.remove(self.ongoing, #self.ongoing)
-						else newE:beginEvent(parent, self) end
-					else table.remove(self.ongoing, #self.ongoing) end
+					else newE:beginEvent(parent, self) end
 				elseif parent.c_events[i].args == 2 then
 					if parent.numCountries > 1 then
 						local other = parent:randomChoice(parent.thisWorld.countries)
 						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 
 						if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
-							else newE:beginEvent(parent, self, other) end
-						else table.remove(self.ongoing, #self.ongoing) end
+						else newE:beginEvent(parent, self, other) end
 					end
 				end
 			end,
