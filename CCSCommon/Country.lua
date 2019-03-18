@@ -212,7 +212,7 @@ return
 				for i=1,#self.events do if self.events[i].Year > parent.years-50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount+1 end end
 				if revCount > 6 then
 					self:event(parent, "Collapsed")
-					for i=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then self:triggerEvent(parent, i, true) end end
+					for i=1,#parent.c_events do if parent.c_events[i].name == "Conquer" then self:triggerEvent(parent, i, true) end end
 				end
 			end,
 
