@@ -781,28 +781,21 @@ return
 					target=nil,
 					args=2,
 					inverse=true,
-					performEvent=function(self, parent, c1, c2)
+					performEvent=function(self, parent, c1, c2, d)
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 11 then
-								c1:event(parent, "Conquered "..c2.name)
-								c2:event(parent, "Conquered by "..c1.name)
+								if not d then
+									c1:event(parent, "Conquered "..c2.name)
+									c2:event(parent, "Conquered by "..c1.name)
+								end
 
 								local newr = Region:new()
 								newr.name = c2.name
 								
-								for i=#c2.people,1,-1 do
-									c2.people[i].region = c2.name
-									c2.people[i].nationality = c1.name
-									c2.people[i].military = false
-									c2.people[i].isruler = false
-									c2.people[i].level = 2
-									c2.people[i].title = "Citizen"
-									c2.people[i].parentRuler = false
-									table.insert(c1.people, table.remove(c2.people, i))
-								end
+								for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
 								
 								c2.people = nil
 								
