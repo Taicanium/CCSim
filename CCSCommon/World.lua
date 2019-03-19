@@ -435,7 +435,7 @@ return
 							if j < i+1999 then f:write(", ") end
 						end
 
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
+						f:write(")\nspheres3d(x=x, y=y, z=y, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					else
 						f:write(")\nx <- c(")
 
@@ -607,7 +607,7 @@ return
 				f:write(")\nccs <- c(")
 				
 				for i=1,#ccs do
-					f:write(ccs[i])
+					f:write("\""..ccs[i].."\"")
 					if i < #ccs then f:write(", ") end
 				end
 				
