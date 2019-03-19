@@ -434,8 +434,6 @@ return
 							end
 							if j < i+1999 then f:write(", ") end
 						end
-
-						f:write(")\nspheres3d(x=x, y=y, z=y, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					else
 						f:write(")\nx <- c(")
 
@@ -485,9 +483,9 @@ return
 							end
 							if j < planetSize then f:write(", ") end
 						end
-
-						f:write(")\ninpdata <- data.frame(X=x, Y=y, Z=z, CSC=csc)\nspheres3d(x=inpdata$X, y=inpdata$Y, z=inpdata$Z, col=inpdata$CSC, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 					end
+					
+					f:write(")\nspheres3d(x=x, y=y, z=z, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 				end
 
 				f:write(")\ncityx <- c(")
