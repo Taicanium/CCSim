@@ -1381,8 +1381,6 @@ return
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
-						self.numCountries = self.numCountries+1
-					
 						if #cp.rulers > 0 then
 							cp.founded = tonumber(cp.rulers[1].From)
 							cp.age = self.years-cp.founded
