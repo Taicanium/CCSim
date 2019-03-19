@@ -112,7 +112,7 @@ S Jersey City
 C New Mexico
 R New Mexico
 P Santa Fe
-S Albequerque
+S Albuquerque
 C New York
 R New York
 P Albany
@@ -128,7 +128,7 @@ P Bismarck
 C Ohio
 R Ohio
 P Columbus
-S Cincinatti
+S Cincinnati
 C Oklahoma
 R Oklahoma
 P Oklahoma City
