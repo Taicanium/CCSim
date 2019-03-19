@@ -487,18 +487,6 @@ return
 					end
 				end
 
-				f:write(")\ncsd <- c(")
-
-				local ci = 1
-				
-				for i, cp in pairs(self.countries) do
-					f:write("\""..cp.name.."\"")
-					if ci < parent.numCountries then f:write(", ") end
-					ci = ci+1
-				end
-
-				ci = 1
-
 				f:write(")\ncityx <- c(")
 
 				for i=1,#cCoords do
@@ -552,8 +540,15 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=1)")
+				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=1)\n")
 
+				local ccs = {}
+				local css = {}
+				local cst = {}
+				local csx = {}
+				local cys = {}
+				local czs = {}
+				
 				for i, cp in pairs(self.countries) do
 					local avgX = 0
 					local avgY = 0
@@ -590,11 +585,58 @@ return
 					
 					local cex = 0.5 + (#cp.nodes / 8000)
 					cex = cex - math.fmod(cex, 0.1)
-
-					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\""..invTrip.."\", cex="..tostring(cex)..", font=2)")
+					
+					table.insert(cst, cp.name)
+					table.insert(ccs, invTrip)
+					table.insert(css, cex)
+					table.insert(csx, xChange)
+					table.insert(csy, yChange)
+					table.insert(csz, zChange)
+				end
+				
+				f:write("cst <- c(")
+				
+				for i=1,#cst do
+					f:write("\""..cst[i].."\"")
+					if i < #cst then f:write(", ") end
+				end
+				
+				f:write(")\nccs <- c(")
+				
+				for i=1,#ccs do
+					f:write(ccs[i])
+					if i < #ccs then f:write(", ") end
+				end
+				
+				f:write(")\ncss <- c(")
+				
+				for i=1,#css do
+					f:write(css[i])
+					if i < #css then f:write(", ") end
+				end
+				
+				f:write(")\ncsx <- c(")
+				
+				for i=1,#csx do
+					f:write(csx[i])
+					if i < #csx then f:write(", ") end
+				end
+				
+				f:write(")\ncsy <- c(")
+				
+				for i=1,#csy do
+					f:write(csy[i])
+					if i < #csy then f:write(", ") end
+				end
+				
+				f:write(")\ncsz <- c(")
+				
+				for i=1,#csz do
+					f:write(csz[i])
+					if i < #csz then f:write(", ") end
 				end
 
-				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
