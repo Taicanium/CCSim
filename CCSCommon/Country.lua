@@ -296,7 +296,7 @@ return
 					else self.demonym = self.name:sub(1, self.name:len()-2).."ian" end
 				elseif self.name:sub(self.name:len(), self.name:len()) == "i" then self.demonym = self.name.."an"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then self.demonym = self.name:sub(1, self.name:len()-1).."cian"
+				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then if self.name:sub(self.name:len()-1, self.name:len()-1) == "c" then self.demonym = self.name:sub(1, self.name:len()-1).."ian" else self.demonym = self.name:sub(1, self.name:len()-1).."cian" end
 				elseif self.name:sub(self.name:len()-3, self.name:len()) == "land" then
 					local split = self.name:sub(1, self.name:len()-4)
 					if split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
