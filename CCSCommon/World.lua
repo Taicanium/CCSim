@@ -246,7 +246,6 @@ return
 								local ny = neighbor[2]
 								local nz = neighbor[3]
 								if self.planet[nx][ny][nz].land and self.planet[nx][ny][nz].country == "" then
-									allDefined = false
 									if not self.planet[nx][ny][nz].countryset then
 										self.planet[nx][ny][nz].country = self.planet[x][y][z].country
 										self.planet[nx][ny][nz].countryset = true
@@ -261,7 +260,7 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 end
+						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 else allDefined = false end
 						self.planet[x][y][z].countryset = false
 					end
 
