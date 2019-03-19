@@ -750,17 +750,19 @@ return
 
 				for i=#self.people,1,-1 do
 					local chn = false
-					self.people[i]:update(parent, self)
+					if self.people[i] then self.people[i]:update(parent, self) else chn = false end
 
-					local age = self.people[i].age
-					if age > 100 then
-						self:delete(parent, i)
-						chn = true
-					else
-						d = math.random(1, 3000-(age*3))
-						if d < age then
+					if not chn then
+						local age = self.people[i].age
+						if age > 100 then
 							self:delete(parent, i)
 							chn = true
+						else
+							d = math.random(1, 3000-(age*3))
+							if d < age then
+								self:delete(parent, i)
+								chn = true
+							end
 						end
 					end
 
