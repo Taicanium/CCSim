@@ -26,7 +26,7 @@ function main()
 
 		CCSCommon.maxyears = tonumber(datin)
 	end
-	
+
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
 	printc(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\n")
@@ -58,7 +58,7 @@ function main()
 
 		if string.lower(datin) == "random" then
 			printf(CCSCommon.stdscr, "\nDefining countries...")
-			
+
 			CCSCommon:rseed()
 			CCSCommon.thisWorld = World:new()
 			CCSCommon.numCountries = math.random(7, 10)
