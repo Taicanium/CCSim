@@ -154,7 +154,7 @@ return
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 6) == math.random(1, 6) then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 8) == math.random(1, 8) then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
@@ -571,7 +571,7 @@ return
 
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
-					while ratio < self.planetR+24 do
+					while ratio < self.planetR+14 do
 						xChange = xChange+(avgX*1.01)
 						yChange = yChange+(avgY*1.01)
 						zChange = zChange+(avgZ*1.01)
