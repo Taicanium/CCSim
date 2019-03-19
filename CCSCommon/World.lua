@@ -153,12 +153,12 @@ return
 						z = freeNodes[node][3]
 					end
 
-					if math.random(1, 12) == math.random(1, 12) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 12) == math.random(1, 12) then
+					if math.random(1, 10) == math.random(1, 10) then
+						for neighbor=1,#self.planet[x][y][z].neighbors do
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
-							if not self.planet[nx][ny][nz].land then
+							if not self.planet[nx][ny][nz].land and math.random(1, 14) == math.random(1, 14) then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
@@ -170,7 +170,7 @@ return
 								end
 								if self.planet[nx][ny][nz].waterNeighbors then table.insert(freeNodes, {nx, ny, nz}) end
 							end
-						end end
+						end
 					end
 
 					self.planet[x][y][z].waterNeighbors = false
