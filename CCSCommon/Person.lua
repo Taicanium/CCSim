@@ -61,10 +61,10 @@ return
 			dobirth = function(self, parent, nl)
 				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
 				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
-				
+
 				if self.spouse.gender == "Male" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end
 				elseif self.spouse.gender == "Female" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
-			
+
 				local nn = Person:new()
 				nn:makename(parent, nl)
 
@@ -298,7 +298,7 @@ return
 				if self.cbelief > 100 then self.cbelief = 100 end
 
 				local pmatch = false
-				
+
 				if #nl.parties > 0 then
 					for i=1,#nl.parties do if not pmatch then
 						pmatch = true
@@ -387,7 +387,7 @@ return
 						lEthVal = j
 					end
 				end
-				
+
 				for i, j in pairs(self.ethnicity) do if j >= lEthVal then nl.ethnicities[i] = nl.ethnicities[i]+1 end end
 
 				if self.region == "" or not nl.regions[self.region] then
