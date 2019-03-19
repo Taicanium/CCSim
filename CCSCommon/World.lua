@@ -546,8 +546,8 @@ return
 				local css = {}
 				local cst = {}
 				local csx = {}
-				local cys = {}
-				local czs = {}
+				local csy = {}
+				local csz = {}
 				
 				for i, cp in pairs(self.countries) do
 					local avgX = 0
