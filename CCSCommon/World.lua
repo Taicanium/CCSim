@@ -108,7 +108,7 @@ return
 
 				printf(parent.stdscr, "Defining land masses...")
 
-				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
+				local maxLand = math.random(math.floor(planetSize/2.85), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
 				local freeNodes = {}
 				for i=1,continents do
@@ -154,7 +154,7 @@ return
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 4) == 4 then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 6) == 4 then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
