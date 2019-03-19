@@ -7,9 +7,9 @@ If the player sets it as such, at the start of the simulation, the script will o
 
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
 
-The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries. It should be noted that this will substantially increase the program's memory usage.
+The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries.
 
-If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply installing the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds.
+If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply installing the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds. Be sure, if you do this, to configure your Torch installation with Lua 5.2, and not LuaJIT! The JIT interpreter is incapable of addressing the amount of memory CCSim uses.
 
 # File Format
 As an alternative to randomly generated data, CCSim supports the use of a text file with predetermined country data to use as a base for its simulation (which remains random). "monarchies.txt" is a file included with this repository that provides predetermined data on the monarchies of England, France, Belgium, Denmark, Russia, and Japan, up to the year 2094 based on assumptions of the futures of those countries (and disregarding the revolutions in France and Russia) to that point. "allcountries.txt" includes the preceding data in addition to all other present countries on Earth (as of 2018), and their capital cities.
