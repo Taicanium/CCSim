@@ -502,9 +502,9 @@ return
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
 					while ratio < self.planetR+8 do
-						if xChange ~= 0 then xChange = xChange+((xChange/math.abs(xChange))*0.2) end
-						if yChange ~= 0 then yChange = yChange+((yChange/math.abs(yChange))*0.2) end
-						if zChange ~= 0 then zChange = zChange+((zChange/math.abs(zChange))*0.2) end
+						xChange = xChange+(x*1.05)
+						yChange = yChange+(y*1.05)
+						zChange = zChange+(z*1.05)
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
@@ -572,9 +572,9 @@ return
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
 					while ratio < self.planetR+24 do
-						if xChange ~= 0 then xChange = xChange+((xChange/math.abs(xChange))*0.2) end
-						if yChange ~= 0 then yChange = yChange+((yChange/math.abs(yChange))*0.2) end
-						if zChange ~= 0 then zChange = zChange+((zChange/math.abs(zChange))*0.2) end
+						xChange = xChange+(avgX*1.05)
+						yChange = yChange+(avgY*1.05)
+						zChange = zChange+(avgZ*1.05)
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
