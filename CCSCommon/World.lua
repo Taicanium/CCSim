@@ -503,18 +503,15 @@ return
 
 					while ratio < self.planetR+8 do
 						xChange = xChange+(x*0.001)
-						xChange = xChange-math.fmod(xChange, 0.001)
 						yChange = yChange+(y*0.001)
-						yChange = yChange-math.fmod(yChange, 0.001)
 						zChange = zChange+(z*0.001)
-						zChange = zChange-math.fmod(zChange, 0.001)
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
 
-					cCoords[i][1] = xChange
-					cCoords[i][2] = yChange
-					cCoords[i][3] = zChange
+					cCoords[i][1] = xChange-math.fmod(xChange, 0.001)
+					cCoords[i][2] = yChange-math.fmod(yChange, 0.001)
+					cCoords[i][3] = zChange-math.fmod(zChange, 0.001)
 					
 					f:write(x)
 					if i < #cCoords then f:write(", ") end
@@ -576,11 +573,8 @@ return
 
 					while ratio < self.planetR+24 do
 						xChange = xChange+(avgX*0.001)
-						xChange = xChange-math.fmod(xChange, 0.001)
 						yChange = yChange+(avgY*0.001)
-						yChange = yChange-math.fmod(yChange, 0.001)
 						zChange = zChange+(avgZ*0.001)
-						zChange = zChange-math.fmod(zChange, 0.001)
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
@@ -596,9 +590,9 @@ return
 					table.insert(cst, cp.name)
 					table.insert(ccs, invTrip)
 					table.insert(css, cex)
-					table.insert(csx, xChange)
-					table.insert(csy, yChange)
-					table.insert(csz, zChange)
+					table.insert(csx, xChange-math.fmod(xChange, 0.001))
+					table.insert(csy, yChange-math.fmod(yChange, 0.001))
+					table.insert(csz, zChange-math.fmod(zChange, 0.001))
 				end
 				
 				f:write("cst <- c(")
