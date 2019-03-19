@@ -750,7 +750,7 @@ return
 
 				for i=#self.people,1,-1 do
 					local chn = false
-					if self.people[i] then self.people[i]:update(parent, self) else chn = false end
+					if self.people[i] then self.people[i]:update(parent, self) else chn = true end
 
 					if not chn then
 						local age = self.people[i].age
