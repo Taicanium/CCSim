@@ -1252,8 +1252,6 @@ return
 			end,
 
 			fromFile = function(self, datin)
-				self.doR = false
-
 				printf(self.stdscr, "Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
