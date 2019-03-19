@@ -543,6 +543,7 @@ return
 
 				while not allDefined do
 					allDefined = true
+				
 					for i=1,#self.nodes do
 						local x = self.nodes[i][1]
 						local y = self.nodes[i][2]
@@ -555,7 +556,6 @@ return
 								local ny = neighbor[2]
 								local nz = neighbor[3]
 								if parent.thisWorld.planet[nx][ny][nz].region == "" then
-									allDefined = false
 									if not parent.thisWorld.planet[x][y][z].regionset then
 										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
@@ -571,6 +571,7 @@ return
 						local z = self.nodes[i][3]
 
 						parent.thisWorld.planet[x][y][z].regionset = false
+						if parent.thisWorld.planet[x][y][z].region == "" then allDefined = false end
 					end
 				end
 				
