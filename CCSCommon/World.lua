@@ -239,26 +239,20 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if self.planet[x][y][z].land then
-							if self.planet[x][y][z].country ~= "" then
-								if not self.planet[x][y][z].countryset then
-									for j=1,#self.planet[x][y][z].neighbors do
-										local neighbor = self.planet[x][y][z].neighbors[j]
-										local nx = neighbor[1]
-										local ny = neighbor[2]
-										local nz = neighbor[3]
-										if self.planet[nx][ny][nz].land then
-											if self.planet[nx][ny][nz].country == "" then
-												allDefined = false
-												if not self.planet[nx][ny][nz].countryset then
-													self.planet[nx][ny][nz].country = self.planet[x][y][z].country
-													self.planet[nx][ny][nz].countryset = true
-												end
-											end
-										end
+						if math.random(1, 12) == math.random(1, 12) and self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
+							for j=1,#self.planet[x][y][z].neighbors do if math.random(1, 12) == math.random(1, 12) then
+								local neighbor = self.planet[x][y][z].neighbors[j]
+								local nx = neighbor[1]
+								local ny = neighbor[2]
+								local nz = neighbor[3]
+								if self.planet[nx][ny][nz].land and self.planet[nx][ny][nz].country == "" then
+									allDefined = false
+									if not self.planet[nx][ny][nz].countryset then
+										self.planet[nx][ny][nz].country = self.planet[x][y][z].country
+										self.planet[nx][ny][nz].countryset = true
 									end
 								end
-							end
+							end end
 						end
 					end
 
