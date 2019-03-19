@@ -154,7 +154,7 @@ return
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 6) == 4 then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 4) == math.random(1, 4) then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
