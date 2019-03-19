@@ -1377,10 +1377,12 @@ return
 				self.numCountries = 0
 				local cDone = 0
 				
-				for i, cp in pairs(self.thisWorld.countries) do self.numCountries = self.numCountries+1 end
+				for i, cp in pairs(self.thisWorld.countries) do if cp then self.numCountries = self.numCountries+1 end end
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
+						self.numCountries = self.numCountries+1
+					
 						if #cp.rulers > 0 then
 							cp.founded = tonumber(cp.rulers[1].From)
 							cp.age = self.years-cp.founded
