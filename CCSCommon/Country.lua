@@ -47,7 +47,7 @@ return
 
 			add = function(self, parent, n)
 				if not n then return end
-			
+
 				if n.nationality ~= self.name then
 					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then
 						for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
@@ -93,7 +93,7 @@ return
 
 					if #self.people > 1 then
 						for i=1,#self.people do self.people[i].pIndex = i end
-						
+
 						while self.hasruler == -1 do
 							local sys = parent.systems[self.system]
 							if sys.dynastic then
@@ -357,7 +357,7 @@ return
 			recurseRoyalChildren = function(self, t)
 				if not t.children then return nil end
 				if #t.children == 0 then return nil end
-				
+
 				local childrenByAge = {}
 				local hasMale = false
 				local eldestLiving = nil
@@ -373,7 +373,7 @@ return
 					end end
 					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
-				
+
 				for i=1,#childrenByAge do if childrenByAge[i].gender == "Male" then hasMale = true end end
 				for i=1,#childrenByAge do if not eldestLiving then
 					if hasMale then
@@ -418,7 +418,7 @@ return
 
 			setPop = function(self, parent, u)
 				if u < 100 then return end
-				
+
 				while self.population > u do
 					local r = math.random(1, #self.people)
 					if #self.people > 1 then while self.people[r].isruler do r = math.random(1, #self.people) end end
@@ -460,7 +460,7 @@ return
 				else
 					self.people[newRuler].royalName = parent:randomChoice(self.rulernames)
 				end
-				
+
 				self.people[newRuler].RulerTitle = self.people[newRuler].title
 
 				if parent.systems[self.system].dynastic then
@@ -510,7 +510,7 @@ return
 					self.regions[r] = nil
 					rCount = rCount-1
 				end
-				
+
 				for i, j in pairs(self.regions) do
 					local found = false
 					for k=1,#self.nodes do
@@ -520,7 +520,7 @@ return
 						if parent.thisWorld.planet[x][y][z].region == j.name then found = true end
 						if found then k = #self.nodes+1 end
 					end
-					
+
 					if not found then
 						local x = 0
 						local y = 0
@@ -543,14 +543,14 @@ return
 
 				while not allDefined do
 					allDefined = true
-				
+
 					for i=1,#self.nodes do
 						local x = self.nodes[i][1]
 						local y = self.nodes[i][2]
 						local z = self.nodes[i][3]
 
-						if math.random(1, 6) == math.random(1, 6) and parent.thisWorld.planet[x][y][z].region ~= "" then
-							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do if math.random(1, 6) == math.random(1, 6) then
+						if parent.thisWorld.planet[x][y][z].region ~= "" then
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 								local nx = neighbor[1]
 								local ny = neighbor[2]
@@ -561,7 +561,7 @@ return
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
 								end
-							end end
+							end
 						end
 					end
 
@@ -574,12 +574,12 @@ return
 						if parent.thisWorld.planet[x][y][z].region == "" then allDefined = false end
 					end
 				end
-				
+
 				for i=#self.nodes,1,-1 do
 					local x = self.nodes[i][1]
 					local y = self.nodes[i][2]
 					local z = self.nodes[i][3]
-					
+
 					if parent.thisWorld.planet[x][y][z].region == "" or not self.regions[parent.thisWorld.planet[x][y][z].region] then
 						parent.thisWorld.planet[x][y][z].country = ""
 						parent.thisWorld.planet[x][y][z].city = ""
@@ -612,7 +612,7 @@ return
 							local x = self.nodes[m][1]
 							local y = self.nodes[m][2]
 							local z = self.nodes[m][3]
-							
+
 							if parent.thisWorld.planet[x][y][z].city == l.name then
 								l.x = x
 								l.y = y
@@ -620,20 +620,20 @@ return
 								m = #self.nodes+1
 							end
 						end
-					
+
 						if not l.x or not l.y or not l.z then
 							local pd = parent:randomChoice(j.nodes)
 							local x = pd[1]
 							local y = pd[2]
 							local z = pd[3]
-							
+
 							local cFound = false
 							while not cFound do
 								pd = parent:randomChoice(j.nodes)
 								x = pd[1]
 								y = pd[2]
 								z = pd[3]
-								
+
 								if parent.thisWorld.planet[x][y][z].city == "" or parent.thisWorld.planet[x][y][z].city == l.name then cFound = true end
 							end
 
@@ -650,7 +650,7 @@ return
 			triggerEvent = function(self, parent, i, r)
 				table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
 				local newE = self.ongoing[#self.ongoing]
-			
+
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self, r) == -1 then table.remove(self.ongoing, #self.ongoing)
 					else newE:beginEvent(parent, self) end
@@ -785,7 +785,7 @@ return
 						end
 					end
 				end
-				
+
 				self:checkRuler(parent)
 
 				self.averageAge = self.averageAge/#self.people
@@ -809,7 +809,7 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
-				
+
 				self.age = parent.years-self.founded
 			end
 		}
