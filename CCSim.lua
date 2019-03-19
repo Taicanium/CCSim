@@ -61,7 +61,7 @@ function main()
 			
 			CCSCommon:rseed()
 			CCSCommon.thisWorld = World:new()
-			CCSCommon.numCountries = math.random(9, 12)
+			CCSCommon.numCountries = math.random(7, 10)
 
 			for j=1,CCSCommon.numCountries do
 				local nl = Country:new()
