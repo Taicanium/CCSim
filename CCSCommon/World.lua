@@ -307,8 +307,6 @@ return
 			rOutput = function(self, parent, label)
 				printf(parent.stdscr, "\nWriting R data...")
 
-				local ci = 1
-
 				local f = io.open(label, "w+")
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
@@ -491,6 +489,8 @@ return
 
 				f:write(")\ncsd <- c(")
 
+				local ci = 1
+				
 				for i, cp in pairs(self.countries) do
 					f:write("\""..cp.name.."\"")
 					if ci < parent.numCountries then f:write(", ") end
