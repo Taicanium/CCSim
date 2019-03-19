@@ -60,6 +60,7 @@ printc = function(stdscr, fmt, ...)
 		stdscr:clrtobot()
 		local str = string.format(fmt, ...)
 		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
+		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
 end
 
