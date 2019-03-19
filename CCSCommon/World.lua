@@ -153,8 +153,8 @@ return
 						z = freeNodes[node][3]
 					end
 
-					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 8) == math.random(1, 8) then
+					if math.random(1, 12) == math.random(1, 12) then
+						for neighbor=1,#self.planet[x][y][z].neighbors do if math.random(1, 12) == math.random(1, 12) then
 							local nx = self.planet[x][y][z].neighbors[neighbor][1]
 							local ny = self.planet[x][y][z].neighbors[neighbor][2]
 							local nz = self.planet[x][y][z].neighbors[neighbor][3]
