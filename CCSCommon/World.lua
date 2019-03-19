@@ -239,8 +239,8 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if math.random(1, 12) == math.random(1, 12) and self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
-							for j=1,#self.planet[x][y][z].neighbors do if math.random(1, 12) == math.random(1, 12) then
+						if math.random(1, 6) == math.random(1, 6) and self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
+							for j=1,#self.planet[x][y][z].neighbors do if math.random(1, 6) == math.random(1, 6) then
 								local neighbor = self.planet[x][y][z].neighbors[j]
 								local nx = neighbor[1]
 								local ny = neighbor[2]
