@@ -145,7 +145,7 @@ return
 
 					while not self.planet[x][y][z].waterNeighbors do
 						table.remove(freeNodes, node)
-						
+
 						node = math.random(1, #freeNodes)
 
 						x = freeNodes[node][1]
@@ -172,7 +172,7 @@ return
 							end
 						end end
 					end
-					
+
 					self.planet[x][y][z].waterNeighbors = false
 					for neighbor=1,#self.planet[x][y][z].neighbors do
 						local nx = self.planet[x][y][z].neighbors[neighbor][1]
@@ -200,7 +200,7 @@ return
 				for i, cp in pairs(self.countries) do
 					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
 					ci = ci+1
-					
+
 					local located = true
 
 					local rnd = parent:randomChoice(self.planetdefined)
@@ -228,6 +228,7 @@ return
 
 				local allDefined = false
 				local defined = 0
+				local prevDefined = 0
 				ci = 1
 
 				while not allDefined do
@@ -239,8 +240,8 @@ return
 						local y = self.planetdefined[i][2]
 						local z = self.planetdefined[i][3]
 
-						if math.random(1, 6) == math.random(1, 6) and self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
-							for j=1,#self.planet[x][y][z].neighbors do if math.random(1, 6) == math.random(1, 6) then
+						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
+							for j=1,#self.planet[x][y][z].neighbors do
 								local neighbor = self.planet[x][y][z].neighbors[j]
 								local nx = neighbor[1]
 								local ny = neighbor[2]
@@ -251,7 +252,7 @@ return
 										self.planet[nx][ny][nz].countryset = true
 									end
 								end
-							end end
+							end
 						end
 					end
 
@@ -263,6 +264,9 @@ return
 						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 else allDefined = false end
 						self.planet[x][y][z].countryset = false
 					end
+
+					if defined == prevDefined then allDefined = true end
+					prevDefined = defined
 
 					printl(parent.stdscr, "%.2f%% done", (defined/planetSize*10000)/100)
 				end
@@ -376,7 +380,7 @@ return
 						end
 					end
 				end
-				
+
 				for i=1,planetSize,2000 do
 					if i < planetSize-2000 then
 						f:write(")\nx <- c(")
@@ -477,7 +481,7 @@ return
 							if j < planetSize then f:write(", ") end
 						end
 					end
-					
+
 					f:write(")\nspheres3d(x=x, y=y, z=z, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
 				end
 
@@ -487,11 +491,11 @@ return
 					local x = cCoords[i][1]
 					local y = cCoords[i][2]
 					local z = cCoords[i][3]
-					
+
 					local xChange = x
 					local yChange = y
 					local zChange = z
-					
+
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
 					while ratio < self.planetR+8 do
@@ -505,7 +509,7 @@ return
 					cCoords[i][1] = xChange-math.fmod(xChange, 0.001)
 					cCoords[i][2] = yChange-math.fmod(yChange, 0.001)
 					cCoords[i][3] = zChange-math.fmod(zChange, 0.001)
-					
+
 					f:write(x)
 					if i < #cCoords then f:write(", ") end
 				end
@@ -542,7 +546,7 @@ return
 				local csx = {}
 				local csy = {}
 				local csz = {}
-				
+
 				for i, cp in pairs(self.countries) do
 					local avgX = 0
 					local avgY = 0
@@ -571,15 +575,15 @@ return
 
 						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 					end
-					
+
 					local rh = 255-self.cTriplets[cp.name][1]
 					local gh = 255-self.cTriplets[cp.name][2]
 					local bh = 255-self.cTriplets[cp.name][3]
 					local invTrip = string.format("#%.2x%.2x%.2x", rh, gh, bh)
-					
+
 					local cex = 0.5 + (#cp.nodes / 8000)
 					cex = cex - math.fmod(cex, 0.1)
-					
+
 					table.insert(cst, cp.name)
 					table.insert(ccs, invTrip)
 					table.insert(css, cex)
@@ -587,44 +591,44 @@ return
 					table.insert(csy, yChange-math.fmod(yChange, 0.001))
 					table.insert(csz, zChange-math.fmod(zChange, 0.001))
 				end
-				
+
 				f:write("cst <- c(")
-				
+
 				for i=1,#cst do
 					f:write("\""..cst[i].."\"")
 					if i < #cst then f:write(", ") end
 				end
-				
+
 				f:write(")\nccs <- c(")
-				
+
 				for i=1,#ccs do
 					f:write("\""..ccs[i].."\"")
 					if i < #ccs then f:write(", ") end
 				end
-				
+
 				f:write(")\ncss <- c(")
-				
+
 				for i=1,#css do
 					f:write(css[i])
 					if i < #css then f:write(", ") end
 				end
-				
+
 				f:write(")\ncsx <- c(")
-				
+
 				for i=1,#csx do
 					f:write(csx[i])
 					if i < #csx then f:write(", ") end
 				end
-				
+
 				f:write(")\ncsy <- c(")
-				
+
 				for i=1,#csy do
 					f:write(csy[i])
 					if i < #csy then f:write(", ") end
 				end
-				
+
 				f:write(")\ncsz <- c(")
-				
+
 				for i=1,#csz do
 					f:write(csz[i])
 					if i < #csz then f:write(", ") end
