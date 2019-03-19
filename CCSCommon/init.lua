@@ -1374,10 +1374,10 @@ return
 				self:getAlphabeticalCountries()
 				
 				printf(self.stdscr, "Constructing initial populations...\n")
-				local cCount = 0
+				self.numCountries = 0
 				local cDone = 0
 				
-				for i, cp in pairs(self.thisWorld.countries) do cCount = cCount+1 end
+				for i, cp in pairs(self.thisWorld.countries) do self.numCountries = self.numCountries+1 end
 
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
@@ -1398,7 +1398,7 @@ return
 					end
 					
 					cDone = cDone+1
-					printl(self.stdscr, "Country %d/%d", cDone, cCount)
+					printl(self.stdscr, "Country %d/%d", cDone, self.numCountries)
 				end
 
 				self.thisWorld.fromFile = true
