@@ -587,8 +587,11 @@ return
 					local gh = 255-self.cTriplets[cp.name][2]
 					local bh = 255-self.cTriplets[cp.name][3]
 					local invTrip = string.format("#%.2x%.2x%.2x", rh, gh, bh)
+					
+					local cex = 0.5 + (#cp.nodes / 8000)
+					cex = cex - math.fmod(cex, 0.1)
 
-					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\""..invTrip.."\", cex=1.1, font=2)")
+					f:write("\ntext3d(x="..tostring(xChange)..", y="..tostring(yChange)..", z="..tostring(zChange)..", text=\""..cp.name.."\", color=\""..invTrip.."\", cex="..tostring(cex)..", font=2)")
 				end
 
 				f:write("\nif (interactive() == FALSE) { Sys.sleep(10000) }")
