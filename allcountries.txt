@@ -1156,7 +1156,7 @@ S Charlotte
 R North Dakota
 S Bismarck
 R Ohio
-S Cincinatti
+S Cincinnati
 S Columbus
 R Oklahoma
 S Oklahoma City
