@@ -548,8 +548,8 @@ return
 						local y = self.nodes[i][2]
 						local z = self.nodes[i][3]
 
-						if parent.thisWorld.planet[x][y][z].region ~= "" then
-							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+						if math.random(1, 12) == math.random(1, 12) and parent.thisWorld.planet[x][y][z].region ~= "" then
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do if math.random(1, 12) == math.random(1, 12) then
 								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 								local nx = neighbor[1]
 								local ny = neighbor[2]
@@ -561,7 +561,7 @@ return
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
 									end
 								end
-							end
+							end end
 						end
 					end
 
