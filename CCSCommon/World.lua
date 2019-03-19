@@ -195,8 +195,12 @@ return
 				end
 
 				printf(parent.stdscr, "\nRooting countries...")
+				local ci = 1
 
 				for i, cp in pairs(self.countries) do
+					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
+					ci = ci+1
+					
 					local located = true
 
 					local rnd = parent:randomChoice(self.planetdefined)
@@ -224,6 +228,7 @@ return
 
 				local allDefined = false
 				local defined = 0
+				ci = 1
 
 				while not allDefined do
 					allDefined = true
@@ -278,8 +283,6 @@ return
 				end
 
 				printf(parent.stdscr, "\nDefining regional boundaries...")
-
-				local ci = 1
 
 				for i, cp in pairs(self.countries) do
 					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
