@@ -537,11 +537,9 @@ return
 				end
 
 				local allDefined = false
-				local prevDefined = defined
+				local prevDefined = 0
 
 				while not allDefined do
-					allDefined = true
-
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])
 
