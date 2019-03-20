@@ -36,11 +36,17 @@ return
 				if not axes then
 					printf(parent.stdscr, "Writing maps...")
 				
+					printl(parent.stdscr, "Map 1/6")
 					self:bmpOutput(parent, label.."/XY+", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, self.planetR, 1}})
+					printl(parent.stdscr, "Map 2/6")
 					self:bmpOutput(parent, label.."/XY-", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}})
+					printl(parent.stdscr, "Map 3/6")
 					self:bmpOutput(parent, label.."/XZ+", {{self.planetR, -self.planetR, -1}, {0, self.planetR, 1}, {self.planetR, -self.planetR, -1}})
+					printl(parent.stdscr, "Map 4/6")
 					self:bmpOutput(parent, label.."/XZ-", {{self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					printl(parent.stdscr, "Map 5/6")
 					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					printl(parent.stdscr, "Map 6/6")
 					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
 				else
 					local f = io.open(label..".bmp", "w+b")
@@ -49,8 +55,6 @@ return
 					local iw = (self.planetR*4)
 					local is = 0
 					local offset = 0
-					
-					local bmpString = "424Ds000000003600000028000000wh010020000000000000000000130B0000130B00000000000000000000"
 					
 					local bmp = {}
 					local cx = 1
@@ -83,11 +87,6 @@ return
 						cy = 1
 					end end
 					
-					for y=iw,1,-1 do
-						for x=1,iw+128 do bmpString = bmpString..string.format("%02x%02x%02x", bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
-						for p=1,math.fmod(iw+128, 4) do bmpString = bmpString.."00" end
-					end
-					
 					local siw = string.format("%08x", iw+128)
 					local sa = {}
 					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
@@ -104,12 +103,15 @@ return
 					sis = ""
 					for q=#sa,1,-1 do sis = sis..sa[q] end
 					
-					bmpString = bmpString:gsub("w", siw)
-					bmpString = bmpString:gsub("h", sih)
-					bmpString = bmpString:gsub("s", sis)
+					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010020000000000000000000130B0000130B00000000000000000000"
 					
-					local binString = ""
-					for x in bmpString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
+					local binString = string.char(66, 77)
+					for x in headString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
+					
+					for y=iw,1,-1 do
+						for x=1,iw+128 do binString = binString..string.char(bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
+						for p=1,math.fmod(iw+128, 4) do binString = binString..string.char(0) end
+					end
 					
 					f:write(binString)
 					f:flush()
