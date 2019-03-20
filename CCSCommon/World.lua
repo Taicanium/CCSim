@@ -35,15 +35,15 @@ return
 					printl(parent.stdscr, "Map 1/6")
 					self:bmpOutput(parent, label.."/XY+", {{-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {0, self.planetR, 1}})
 					printl(parent.stdscr, "Map 2/6")
-					self:bmpOutput(parent, label.."/XY-", {{-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {0, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XY-", {{self.planetR, -self.planetR, -1}, {-self.planetR, self.planetR, 1}, {0, -self.planetR, -1}})
 					printl(parent.stdscr, "Map 3/6")
 					self:bmpOutput(parent, label.."/XZ+", {{-self.planetR, self.planetR, 1}, {0, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 4/6")
-					self:bmpOutput(parent, label.."/XZ-", {{-self.planetR, self.planetR, 1}, {0, -self.planetR, -1}, {-self.planetR, self.planetR, 1}})
+					self:bmpOutput(parent, label.."/XZ-", {{self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 5/6")
 					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 6/6")
-					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
+					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {-self.planetR, self.planetR, 1}})
 				else
 					local f = io.open(label..".bmp", "w+b")
 					if not f then return end
