@@ -11,7 +11,6 @@ return
 
 				nm.bmp = {}
 				nm.bmpHeadString = ""
-				nm.bmpString = ""
 				nm.countries = {}
 				nm.cColors = {}
 				nm.cTriplets = {}
@@ -63,32 +62,31 @@ return
 								end
 
 								if not self.cTriplets[self.planet[x][y][z].country] then
-									self.bmp[cx][cy] = {170, 22, 22}
-									self.bmp[cx+1][cy] = {170, 22, 22}
-									self.bmp[cx][cy+1] = {170, 22, 22}
-									self.bmp[cx+1][cy+1] = {170, 22, 22}
+									self.bmp[cx][cy] = string.char(170, 22, 22)
+									self.bmp[cx+1][cy] = string.char(170, 22, 22)
+									self.bmp[cx][cy+1] = string.char(170, 22, 22)
+									self.bmp[cx+1][cy+1] = string.char(170, 22, 22)
 								else
 									local rh = self.cTriplets[self.planet[x][y][z].country][1]
 									local gh = self.cTriplets[self.planet[x][y][z].country][2]
 									local bh = self.cTriplets[self.planet[x][y][z].country][3]
 
-									self.bmp[cx][cy] = {bh, gh, rh}
-									self.bmp[cx+1][cy] = {bh, gh, rh}
-									self.bmp[cx][cy+1] = {bh, gh, rh}
-									self.bmp[cx+1][cy+1] = {bh, gh, rh}
+									self.bmp[cx][cy] = string.char(bh, gh, rh)
+									self.bmp[cx+1][cy] = string.char(bh, gh, rh)
+									self.bmp[cx][cy+1] = string.char(bh, gh, rh)
+									self.bmp[cx+1][cy+1] = string.char(bh, gh, rh)
 								end
 							end end
 						end end
 					end end
+					
+					f:write(self.bmpHeadString)
 
 					local ib = self.planetR*4
 					local iw = ib+256
 					local ih = ib+4
-					self.bmpString = ""
-					for y=1,ih do for x=1,iw do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
+					for y=1,ih do for x=1,iw do f:write(self.bmp[x][y]) end end
 					
-					f:write(self.bmpHeadString)
-					f:write(self.bmpString)
 					f:flush()
 					f = nil
 				end
@@ -352,7 +350,7 @@ return
 				local cx = 1
 				local cy = 1
 				
-				for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = {255, 255, 255} end end
+				for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 
 				if lfsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
