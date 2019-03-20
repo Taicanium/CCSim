@@ -52,7 +52,7 @@ return
 					local f = io.open(label..".bmp", "w+b")
 					if not f then return end
 				
-					local iw = (self.planetR*4)
+					local iw = (self.planetR*2)
 					local is = 0
 					local offset = 0
 					
@@ -60,7 +60,7 @@ return
 					local cx = 1
 					local cy = 1
 					
-					for x=1,iw+128 do bmp[x] = {} for y=1,iw do bmp[x][y] = {r=255, g=255, b=255} end end
+					for x=1,iw+256 do bmp[x] = {} for y=1,iw do bmp[x][y] = {r=255, g=255, b=255} end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
@@ -87,7 +87,7 @@ return
 						cy = 1
 					end end
 					
-					local siw = string.format("%08x", iw+128)
+					local siw = string.format("%08x", iw+256)
 					local sa = {}
 					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 					siw = ""
@@ -97,20 +97,20 @@ return
 					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 					sih = ""
 					for q=#sa,1,-1 do sih = sih..sa[q] end
-					local sis = string.format("%08x", (iw*(iw+128))+54)
+					local sis = string.format("%08x", (iw*(iw+256))+54)
 					sa = {}
 					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
 					sis = ""
 					for q=#sa,1,-1 do sis = sis..sa[q] end
 					
-					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B0000FFFFFF0000000000"
+					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B00000000000000000000"
 					local binString = ""
 					
 					for x in headString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
 					
 					for y=iw,1,-1 do
-						for x=1,iw+128 do binString = binString..string.char(bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
-						for p=1,math.fmod(iw+128, 4) do binString = binString..string.char(0) end
+						for x=1,iw+256 do binString = binString..string.char(bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
+						for p=1,math.fmod(iw+256, 4) do binString = binString..string.char(0) end
 					end
 					
 					f:write(binString)
