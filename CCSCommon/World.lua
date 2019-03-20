@@ -24,13 +24,6 @@ return
 				return nm
 			end,
 
-			destroy = function(self)
-				for i, cp in pairs(self.countries) do
-					cp:destroy(parent)
-					cp = nil
-				end
-			end,
-
 			add = function(self, nd)
 				self.countries[nd.name] = nd
 			end,
@@ -403,6 +396,13 @@ return
 					nz:destroy(parent)
 
 					parent.numCountries = parent.numCountries-1
+				end
+			end,
+			
+			destroy = function(self)
+				for i, cp in pairs(self.countries) do
+					cp:destroy(parent)
+					cp = nil
 				end
 			end,
 
