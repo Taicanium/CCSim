@@ -488,7 +488,7 @@ return
 				self.rulerParty = self.people[newRuler].party
 			end,
 
-			setTerritory = function(self, parent)
+			setTerritory = function(self, parent, patron, patronRegion)
 				self.nodes = {}
 
 				for i=1,#parent.thisWorld.planetdefined do
@@ -509,6 +509,8 @@ return
 					rCount = rCount-1
 				end
 
+				local defined = 0
+				
 				for i, j in pairs(self.regions) do
 					local found = false
 					for k=1,#self.nodes do
@@ -530,10 +532,12 @@ return
 						end
 
 						parent.thisWorld.planet[x][y][z].region = j.name
+						defined = defined+1
 					end
 				end
 
 				local allDefined = false
+				local prevDefined = defined
 
 				while not allDefined do
 					allDefined = true
@@ -549,17 +553,19 @@ return
 									if not parent.thisWorld.planet[x][y][z].regionset then
 										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
 										parent.thisWorld.planet[nx][ny][nz].regionset = true
+										defined = defined+1
 									end
 								end
 							end
 						end
 					end
-
+					
+					if defined == prevDefined then allDefined = true end
+					defined = prevDefined
+					
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])
-
 						parent.thisWorld.planet[x][y][z].regionset = false
-						if parent.thisWorld.planet[x][y][z].region == "" then allDefined = false end
 					end
 				end
 
@@ -567,9 +573,16 @@ return
 					local x, y, z = table.unpack(self.nodes[i])
 
 					if parent.thisWorld.planet[x][y][z].region == "" or not self.regions[parent.thisWorld.planet[x][y][z].region] then
-						parent.thisWorld.planet[x][y][z].country = ""
-						parent.thisWorld.planet[x][y][z].city = ""
-						parent.thisWorld.planet[x][y][z].land = false
+						if not patron then
+							parent.thisWorld.planet[x][y][z].country = ""
+							parent.thisWorld.planet[x][y][z].city = ""
+							parent.thisWorld.planet[x][y][z].land = false
+						else
+							parent.thisWorld.planet[x][y][z].country = patron.name
+							parent.thisWorld.planet[x][y][z].region = patronRegion.name
+							table.insert(patron.nodes, self.nodes[i])
+							table.insert(patronRegion.nodes, self.nodes[i])
+						end
 						table.remove(self.nodes, i)
 					else table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z}) end
 				end
