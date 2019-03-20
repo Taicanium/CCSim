@@ -104,8 +104,8 @@ return
 					for q=#sa,1,-1 do sis = sis..sa[q] end
 					
 					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010020000000000000000000130B0000130B00000000000000000000"
+					local binString = ""
 					
-					local binString = string.char(66, 77)
 					for x in headString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
 					
 					for y=iw,1,-1 do
