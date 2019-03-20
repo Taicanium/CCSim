@@ -104,7 +104,7 @@ return
 						local nx = cx+4
 						for c in name:gmatch("%w") do
 							local gData = parent.glyphs[c]
-							for y=cy,cy+#gData do for x=nx,nx+#gData[y-cy] do if gData[y-cy][x-nx] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end
+							for y=cy,cy+#gData do for x=nx,nx+#gData[y-cy+1] do if gData[y-cy+1][x-nx+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end
 							nx = nx+4
 						end
 						
