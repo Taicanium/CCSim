@@ -1916,9 +1916,9 @@ return
 							for i, j in pairs(c1.regions[rn.name].nodes) do
 								local x, y, z = table.unpack(j)
 								
-								if self.planet[x] and self.planet[x][y] and self.planet[x][y][z] then
-									self.planet[x][y][z].country = c1.name
-									self.planet[x][y][z].region = rn.name
+								if self.thisWorld.planet[x] and self.thisWorld.planet[x][y] and self.thisWorld.planet[x][y][z] then
+									self.thisWorld.planet[x][y][z].country = c1.name
+									self.thisWorld.planet[x][y][z].region = rn.name
 								end
 							end
 
