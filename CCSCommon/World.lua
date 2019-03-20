@@ -88,12 +88,12 @@ return
 					end end
 					
 					local ib = self.planetR*4
-					local iw = ib+256
+					local iw = ib+384
 					local ih = ib+4
 					cx = ib+16
 					cy = 16
 					
-					for x=ib,iw do for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
+					for x=ib+16,iw do for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					local longestName = 0
 					
@@ -104,23 +104,15 @@ return
 						local nx = cx+8
 						for c in name:gmatch("%w") do
 							local gData = parent.glyphs[c]
-							local yDiv = 0
-							for y=cy,cy+7 do
-								local xDiv = 0
-								for x=nx,nx+5 do
-									if gData[x-nx-math.ceil(xDiv)+1][y-cy-math.ceil(yDiv)+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end
-									xDiv = xDiv+0.5
-								end
-								yDiv = yDiv+0.5
-							end
-							nx = nx+6
+							for y=cy,cy+7 do for x=nx,nx+5 do if gData[y-cy+1][x-nx+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end
+							nx = nx+8
 						end
 						
 						if name:len() > longestName then longestName = name:len() end
 					
 						cy = cy+10
 						if cy >= ih then
-							cx = cx+(longestName*6)+6
+							cx = cx+(longestName*8)+4
 							cy = 16
 							longestName = 0
 						end
@@ -165,7 +157,7 @@ return
 				local r = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
 				self.planetR = r
 
-				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", r)
+				printf(parent.stdscr, "\nConstructing voxel planet with radius of %d units...", r)
 
 				local rdone = 0
 
@@ -278,7 +270,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf(parent.stdscr, "Rooting countries...")
+				printf(parent.stdscr, "\nRooting countries...")
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
@@ -351,7 +343,7 @@ return
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
-				printf(parent.stdscr, "Defining regional boundaries...")
+				printf(parent.stdscr, "\nDefining regional boundaries...")
 
 				for i, cp in pairs(self.countries) do
 					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
@@ -359,10 +351,10 @@ return
 					cp:setTerritory(parent)
 				end
 				
-				printf(parent.stdscr, "Defining initial map data...")
+				printf(parent.stdscr, "\nDefining initial map data...")
 				
 				local ib = self.planetR*4
-				local iw = ib+256
+				local iw = ib+384
 				local ih = ib+4
 				local ratio = iw*ih
 				local is = (ratio*3)+54
@@ -421,7 +413,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				printf(parent.stdscr, "Writing R data...")
+				printf(parent.stdscr, "\nWriting R data...")
 				
 				local f = io.open(label..".r", "w+")
 				if not f then return end
