@@ -1057,7 +1057,7 @@ return
 				if self.doR then
 					if lfsstatus then lfs.mkdir("./maps/final") else os.execute("mkdir ./maps/final") end
 					self.thisWorld:rOutput(self, "./maps/final")
-					self.thisWorld:bmpOutput(parent, "./maps/final")
+					self.thisWorld:bmpOutput(self, "./maps/final")
 				end
 				
 				printf(self.stdscr, "Printing result...")
