@@ -160,9 +160,7 @@ return
 				printf(parent.stdscr, "")
 
 				for i=1,planetSize do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
+					local x, y, z = table.unpack(self.planetdefined[i])
 
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
@@ -177,17 +175,13 @@ return
 
 					local cSeed = parent:randomChoice(self.planetdefined)
 
-					local x = cSeed[1]
-					local y = cSeed[2]
-					local z = cSeed[3]
+					local x, y, z = table.unpack(cSeed)
 
 					if self.planet[x][y][z].land then located = false end
 					while not located do
 						cSeed = parent:randomChoice(self.planetdefined)
 
-						x = cSeed[1]
-						y = cSeed[2]
-						z = cSeed[3]
+						x, y, z = table.unpack(cSeed)
 
 						located = true
 						if self.planet[x][y][z].land then located = false end
@@ -199,34 +193,25 @@ return
 				local doneLand = continents
 				while doneLand < maxLand do
 					local node = math.random(1, #freeNodes)
-
-					local x = freeNodes[node][1]
-					local y = freeNodes[node][2]
-					local z = freeNodes[node][3]
+					local x, y, z = table.unpack(freeNodes[node])
 
 					while not self.planet[x][y][z].waterNeighbors do
 						table.remove(freeNodes, node)
 
 						node = math.random(1, #freeNodes)
 
-						x = freeNodes[node][1]
-						y = freeNodes[node][2]
-						z = freeNodes[node][3]
+						x, y, z = table.unpack(freeNodes[node])
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
 						for neighbor=1,#self.planet[x][y][z].neighbors do
-							local nx = self.planet[x][y][z].neighbors[neighbor][1]
-							local ny = self.planet[x][y][z].neighbors[neighbor][2]
-							local nz = self.planet[x][y][z].neighbors[neighbor][3]
+							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
 							if not self.planet[nx][ny][nz].land and math.random(1, 14) == math.random(1, 14) then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
 								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do
-									local jx = j[1]
-									local jy = j[2]
-									local jz = j[3]
+									local jx, jy, jz = table.unpack(j)
 									if not self.planet[jx][jy][jz].land then self.planet[nx][ny][nz].waterNeighbors = true end
 								end
 								if self.planet[nx][ny][nz].waterNeighbors then table.insert(freeNodes, {nx, ny, nz}) end
@@ -236,9 +221,7 @@ return
 
 					self.planet[x][y][z].waterNeighbors = false
 					for neighbor=1,#self.planet[x][y][z].neighbors do
-						local nx = self.planet[x][y][z].neighbors[neighbor][1]
-						local ny = self.planet[x][y][z].neighbors[neighbor][2]
-						local nz = self.planet[x][y][z].neighbors[neighbor][3]
+						local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
 						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
 					end
 
@@ -246,9 +229,7 @@ return
 				end
 
 				for i=1,planetSize do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
+					local x, y, z = table.unpack(self.planetdefined[j])
 
 					self.planet[x][y][z].neighbors = {}
 
@@ -266,17 +247,13 @@ return
 
 					local rnd = parent:randomChoice(self.planetdefined)
 
-					local x = rnd[1]
-					local y = rnd[2]
-					local z = rnd[3]
+					local x, y, z = table.unpack(rnd)
 
 					if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
 					while not located do
 						rnd = parent:randomChoice(self.planetdefined)
 
-						x = rnd[1]
-						y = rnd[2]
-						z = rnd[3]
+						x, y, z = table.unpack(rnd)
 
 						located = true
 						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
@@ -297,16 +274,12 @@ return
 					defined = 0
 
 					for i=1,planetSize do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
+						local x, y, z = table.unpack(self.planetdefined[j])
 
 						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
 							for j=1,#self.planet[x][y][z].neighbors do
 								local neighbor = self.planet[x][y][z].neighbors[j]
-								local nx = neighbor[1]
-								local ny = neighbor[2]
-								local nz = neighbor[3]
+								local nx, ny, nz = table.unpack(neighbor)
 								if self.planet[nx][ny][nz].land and self.planet[nx][ny][nz].country == "" then
 									if not self.planet[nx][ny][nz].countryset then
 										self.planet[nx][ny][nz].country = self.planet[x][y][z].country
@@ -318,9 +291,7 @@ return
 					end
 
 					for i=1,planetSize do
-						local x = self.planetdefined[i][1]
-						local y = self.planetdefined[i][2]
-						local z = self.planetdefined[i][3]
+						local x, y, z = table.unpack(self.planetdefined[j])
 
 						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 else allDefined = false end
 						self.planet[x][y][z].countryset = false
@@ -333,9 +304,7 @@ return
 				end
 
 				for i=1,planetSize do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
+					local x, y, z = table.unpack(self.planetdefined[j])
 
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
@@ -417,9 +386,7 @@ return
 				local planetSize = #self.planetdefined
 
 				for i=1,planetSize do
-					local x = self.planetdefined[i][1]
-					local y = self.planetdefined[i][2]
-					local z = self.planetdefined[i][3]
+					local x, y, z = table.unpack(self.planetdefined[j])
 					f:write("\""..self.planet[x][y][z].country.."\"")
 					if i < planetSize then f:write(", ") end
 				end
@@ -490,9 +457,7 @@ return
 						f:write(")\nx <- c(")
 
 						for j=i,i+1999 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
 							f:write(x)
 							if j < i+1999 then f:write(", ") end
@@ -501,9 +466,7 @@ return
 						f:write(")\ny <- c(")
 
 						for j=i,i+1999 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
 							f:write(y)
 							if j < i+1999 then f:write(", ") end
@@ -512,9 +475,7 @@ return
 						f:write(")\nz <- c(")
 
 						for j=i,i+1999 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
 							f:write(z)
 							if j < i+1999 then f:write(", ") end
@@ -523,9 +484,7 @@ return
 						f:write(")\ncsc <- c(")
 
 						for j=i,i+1999 do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							local isCity = false
 							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
 							if isCity then f:write("\"#888888\"") else
@@ -539,9 +498,7 @@ return
 						f:write(")\nx <- c(")
 
 						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
 							f:write(x)
 							if j < planetSize then f:write(", ") end
@@ -550,9 +507,7 @@ return
 						f:write(")\ny <- c(")
 
 						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
 							f:write(y)
 							if j < planetSize then f:write(", ") end
@@ -561,9 +516,7 @@ return
 						f:write(")\nz <- c(")
 
 						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
 							f:write(z)
 							if j < planetSize then f:write(", ") end
@@ -572,9 +525,7 @@ return
 						f:write(")\ncsc <- c(")
 
 						for j=i,planetSize do
-							local x = self.planetdefined[j][1]
-							local y = self.planetdefined[j][2]
-							local z = self.planetdefined[j][3]
+							local x, y, z = table.unpack(self.planetdefined[j])
 							local isCity = false
 							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
 							if isCity then f:write("\"#888888\"") else
@@ -592,9 +543,7 @@ return
 				f:write(")\ncityx <- c(")
 
 				for i=1,#cCoords do
-					local x = cCoords[i][1]
-					local y = cCoords[i][2]
-					local z = cCoords[i][3]
+					local x, y, z = table.unpack(cCoords[i])
 
 					local xChange = x
 					local yChange = y
