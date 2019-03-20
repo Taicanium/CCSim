@@ -47,6 +47,11 @@ return
 					local f = io.open(label..".bmp", "w+b")
 					if not f then return end
 					
+					local cx = 1
+					local cy = 1
+					
+					local cUsed = {}
+					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
@@ -75,17 +80,46 @@ return
 									self.bmp[cx+1][cy] = string.char(bh, gh, rh)
 									self.bmp[cx][cy+1] = string.char(bh, gh, rh)
 									self.bmp[cx+1][cy+1] = string.char(bh, gh, rh)
+									
+									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
 								end
 							end end
 						end end
 					end end
 					
-					f:write(self.bmpHeadString)
-
 					local ib = self.planetR*4
 					local iw = ib+256
 					local ih = ib+4
-					for y=1,ih do for x=1,iw do f:write(self.bmp[x][y]) end end
+					cx = ib+16
+					cy = 16
+					
+					for x=ib,iw do for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
+					
+					local longestName = 0
+					
+					for i, j in pairs(self.countries) do if cUsed[j.name] then
+						for x=cx,cx+3 do for y=cy,cy+3 do self.bmp[x][y] = cUsed[j.name] end end
+						
+						local name = j.name:lower()
+						local nx = cx+4
+						for c in name:gmatch("%w") do
+							local gData = parent.glyphs[c]
+							for y=cy,cy+#gData do for x=nx,nx+#gData[y-cy] do if gData[y-cy][x-nx] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end
+							nx = nx+4
+						end
+						
+						if name:len() > longestName then longestName = name:len() end
+					
+						cy = cy+6
+						if cy >= ih then
+							cx = cx+(longestName*4)+4
+							cy = 16
+							longestName = 0
+						end
+					end end
+					
+					f:write(self.bmpHeadString)
+					for y=ih,1,-1 do for x=1,iw do f:write(self.bmp[x][y]) end end
 					
 					f:flush()
 					f = nil
