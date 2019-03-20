@@ -723,9 +723,9 @@ return
 							
 							newl:checkRuler(parent)
 								
-							if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
-							parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
-							parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
+							if lfsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
+							parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+							parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 						end
 
 						return -1
@@ -813,9 +813,9 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 								
-								if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
-								parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
-								parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
+								if lfsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
+								parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+								parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 							end
 						end
 
@@ -921,9 +921,9 @@ return
 										
 										parent.thisWorld:delete(parent, c2)
 								
-										if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
-										parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
-										parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
+										if lfsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
+										parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+										parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 									end
 								end
 							end
