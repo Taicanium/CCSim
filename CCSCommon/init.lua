@@ -698,16 +698,18 @@ return
 							
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country ~= newl.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
+								if parent.thisWorld.planet[x][y][z].country ~= newl.name then if c.regions[parent.thisWorld.planet[x][y][z].region] then
 									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-										local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
-										if parent.thisWorld.planet[nx][ny][nz].country == newl.name then
+										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+										local nx, ny, nz = table.unpack(neighbor)
+										local nnode = parent.thisWorld.planet[nx][ny][nz]
+										if nnode.country == newl.name then
 											pR = c.regions[parent.thisWorld.planet[x][y][z].region]
 											j = #parent.thisWorld.planet[x][y][z].neighbors
 											i = 0
 										end
 									end
-								else table.remove(c.nodes, i) end
+								end else table.remove(c.nodes, i) end
 							end
 							
 							if parent.doR then newl:setTerritory(parent, c, pR) end
