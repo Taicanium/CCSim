@@ -81,9 +81,11 @@ return
 						end end
 					end end
 
-					local iw = self.planetR*4
+					local ib = self.planetR*4
+					local iw = ib+256
+					local ih = ib+4
 					self.bmpString = ""
-					for y=1,iw+4 do for x=1,iw+256 do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
+					for y=1,ih do for x=1,iw do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
 					
 					f:write(self.bmpHeadString)
 					f:write(self.bmpString)
@@ -319,17 +321,19 @@ return
 				
 				printf(parent.stdscr, "\nDefining initial map data...")
 				
-				local iw = self.planetR*4
-				local ratio = (iw+256)*(iw+4)
+				local ib = self.planetR*4
+				local iw = ib+256
+				local ih = ib+4
+				local ratio = iw*ih
 				local is = (ratio*3)+54
 				local offset = 0
 				
-				local siw = string.format("%08x", iw+256)
+				local siw = string.format("%08x", iw)
 				local sa = {}
 				for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 				siw = ""
 				for q=#sa,1,-1 do siw = siw..sa[q] end
-				local sih = string.format("%08x", iw+4)
+				local sih = string.format("%08x", ih)
 				sa = {}
 				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 				sih = ""
@@ -348,7 +352,7 @@ return
 				local cx = 1
 				local cy = 1
 				
-				for x=1,iw+256 do self.bmp[x] = {} for y=1,iw+4 do self.bmp[x][y] = {r=255, g=255, b=255} end end
+				for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = {255, 255, 255} end end
 
 				if lfsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
