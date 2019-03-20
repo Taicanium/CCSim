@@ -9,6 +9,9 @@ return
 				local nm = {}
 				setmetatable(nm, self)
 
+				nm.bmp = {}
+				nm.bmpHeadString = ""
+				nm.bmpString = ""
 				nm.countries = {}
 				nm.cColors = {}
 				nm.cTriplets = {}
@@ -51,100 +54,46 @@ return
 				else
 					local f = io.open(label..".bmp", "w+b")
 					if not f then return end
-				
-					local iw = (self.planetR*4)
-					local is = 0
-					local offset = 0
-					
-					local bmp = {}
-					local cx = 1
-					local cy = 1
-					local axisSet = false
-					
-					for x=1,iw+256 do bmp[x] = {} for y=1,iw do bmp[x][y] = {r=255, g=255, b=255} end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
-							for z=axes[3][1],axes[3][2],axes[3][3] do
-								axisSet = false
-								if self.planet[x][y][z] then
-									if not self.cTriplets[self.planet[x][y][z].country] then
-										bmp[cx][cy] = {r=22, g=22, b=170}
-										bmp[cx+1][cy] = {r=22, g=22, b=170}
-										bmp[cx][cy+1] = {r=22, g=22, b=170}
-										bmp[cx+1][cy+1] = {r=22, g=22, b=170}
-									else
-										local rh = self.cTriplets[self.planet[x][y][z].country][1]
-										local gh = self.cTriplets[self.planet[x][y][z].country][2]
-										local bh = self.cTriplets[self.planet[x][y][z].country][3]
-
-										bmp[cx][cy] = {r=rh, g=gh, b=bh}
-										bmp[cx+1][cy] = {r=rh, g=gh, b=bh}
-										bmp[cx][cy+1] = {r=rh, g=gh, b=bh}
-										bmp[cx+1][cy+1] = {r=rh, g=gh, b=bh}
-									end
-									
-									if axes[3][1] ~= 0 then
-										if not axisSet then
-											cy = cy+2
-											axisSet = true
-										else
-											cx = cx+2
-											cy = 1
-										end
-									end
+							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
+								if axes[1][1] == 0 then
+									cx = (self.planetR+y)*2
+									cy = (self.planetR+z)*2
+								elseif axes[2][1] == 0 then
+									cx = (self.planetR+x)*2
+									cy = (self.planetR+z)*2
+								elseif axes[3][1] == 0 then
+									cx = (self.planetR+x)*2
+									cy = (self.planetR+y)*2
 								end
-							end
-								
-							if axes[2][1] ~= 0 then
-								if not axisSet then
-									cy = cy+2
-									axisSet = true
+							
+								if not self.cTriplets[self.planet[x][y][z].country] then
+									self.bmp[cx][cy] = {170, 22, 22}
+									self.bmp[cx+1][cy] = {170, 22, 22}
+									self.bmp[cx][cy+1] = {170, 22, 22}
+									self.bmp[cx+1][cy+1] = {170, 22, 22}
 								else
-									cx = cx+2
-									cy = 1
+									local rh = self.cTriplets[self.planet[x][y][z].country][1]
+									local gh = self.cTriplets[self.planet[x][y][z].country][2]
+									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+
+									self.bmp[cx][cy] = {bh, gh, rh}
+									self.bmp[cx+1][cy] = {bh, gh, rh}
+									self.bmp[cx][cy+1] = {bh, gh, rh}
+									self.bmp[cx+1][cy+1] = {bh, gh, rh}
 								end
-							end
+							end end
 						end end
-								
-						if axes[1][1] ~= 0 then
-							if not axisSet then
-								cy = cy+2
-								axisSet = true
-							else
-								cx = cx+2
-								cy = 1
-							end
-						end
 					end end
 					
-					local siw = string.format("%08x", iw+256)
-					local sa = {}
-					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
-					siw = ""
-					for q=#sa,1,-1 do siw = siw..sa[q] end
-					local sih = string.format("%08x", iw)
-					sa = {}
-					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
-					sih = ""
-					for q=#sa,1,-1 do sih = sih..sa[q] end
-					local sis = string.format("%08x", (iw*(iw+256))+54)
-					sa = {}
-					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
-					sis = ""
-					for q=#sa,1,-1 do sis = sis..sa[q] end
+					local iw = self.planetR*4
+					self.bmpString = ""
+					for y=1,iw do for x=1,iw+256 do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
 					
-					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B00000000000000000000"
-					local binString = ""
-					
-					for x in headString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
-					
-					for y=iw,1,-1 do
-						for x=1,iw+256 do binString = binString..string.char(bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
-						for p=1,math.fmod(iw+256, 4) do binString = binString..string.char(0) end
-					end
-					
-					f:write(binString)
+					f:write(self.bmpHeadString)
+					f:write(self.bmpString)
 					f:flush()
 					f = nil
 				end
@@ -405,6 +354,38 @@ return
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
+				
+				printf(parent.stdscr, "\nDefining initial map data...")
+				
+				local iw = self.planetR*4
+				local is = 0
+				local offset = 0
+				
+				local siw = string.format("%08x", iw+256)
+				local sa = {}
+				for x in siw:gmatch("%w%w") do table.insert(sa, x) end
+				siw = ""
+				for q=#sa,1,-1 do siw = siw..sa[q] end
+				local sih = string.format("%08x", iw)
+				sa = {}
+				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
+				sih = ""
+				for q=#sa,1,-1 do sih = sih..sa[q] end
+				local sis = string.format("%08x", (iw*(iw+256))+54)
+				sa = {}
+				for x in sis:gmatch("%w%w") do table.insert(sa, x) end
+				sis = ""
+				for q=#sa,1,-1 do sis = sis..sa[q] end
+				
+				local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B00000000000000000000"
+				self.bmpHeadString = ""
+				for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
+				
+				self.bmp = {}
+				local cx = 1
+				local cy = 1
+				
+				for x=1,iw+256 do self.bmp[x] = {} for y=1,iw do self.bmp[x][y] = {r=255, g=255, b=255} end end
 
 				if lfsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
