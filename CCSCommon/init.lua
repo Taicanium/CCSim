@@ -2107,57 +2107,6 @@ return
 				for i=1,3 do math.random(1, 100) end
 			end,
 
-			savetable = function(self, t, f)
-				local types = {["string"]=1, ["number"]=2, ["boolean"]=3, ["table"]=4, ["function"]=5}
-				local exceptions = {"__index", "stdscr"}
-
-				if not t.mtname then f:write("5nilmt") else
-					f:write(t.mtname:len())
-					f:write(t.mtname)
-				end
-
-				local iCount = 0
-				for i, j in pairs(t) do
-					found = false
-					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if not found then iCount = iCount+1 end
-				end
-
-				f:write(tostring(iCount):len())
-				f:write(tostring(iCount))
-
-				for i, j in pairs(t) do
-					local found = false
-					for k=1,#exceptions do if exceptions[k] == tostring(i) then found = true end end
-					if not found then 
-						local itype = types[type(i)]
-						f:write(itype)
-
-						f:write(tostring(i:len()):len())
-						f:write(tostring(i):len())
-						f:write(tostring(i))
-
-						local jtype = type(j)
-						f:write(types[jtype])
-
-						if jtype == "table" then
-							self:savetable(j, f)
-						elseif jtype == "function" then
-							fndata = string.dump(j)
-							f:write(tostring(fndata:len()):len())
-							f:write(fndata:len())
-							f:write(fndata)
-						elseif jtype == "boolean" then
-							if not j then f:write("0") else f:write("1") end
-						else
-							f:write(tostring(tostring(j):len()):len())
-							f:write(tostring(j):len())
-							f:write(tostring(j))
-						end
-					end
-				end
-			end,
-
 			setGens = function(self, i, v, g)
 				if i then
 					local set = i.gensSet
