@@ -1,5 +1,6 @@
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
+lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.clock
 if socketstatus then _time = socket.gettime end
