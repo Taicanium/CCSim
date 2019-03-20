@@ -1,5 +1,6 @@
 torchstatus, torch = pcall(require, "torch")
 jsonstatus, json = pcall(require, "cjson")
+lfsstatus, lfs = pcall(require, "lfs")
 
 return
 	function()
@@ -29,6 +30,91 @@ return
 
 			add = function(self, nd)
 				self.countries[nd.name] = nd
+			end,
+			
+			bmpOutput = function(self, parent, label, axes)
+				if not axes then
+					printf(parent.stdscr, "Writing maps...")
+				
+					self:bmpOutput(parent, label.."/XY+", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, self.planetR, 1}})
+					self:bmpOutput(parent, label.."/XY-", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XZ+", {{self.planetR, -self.planetR, -1}, {0, self.planetR, 1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XZ-", {{self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+				else
+					local f = io.open(label..".bmp", "w+b")
+					if not f then return end
+				
+					local iw = (self.planetR*4)
+					local is = 0
+					local offset = 0
+					
+					local bmpString = "424Ds000000003600000028000000wh010020000000000000000000130B0000130B00000000000000000000"
+					
+					local bmp = {}
+					local cx = 1
+					local cy = 1
+					
+					for x=1,iw+128 do bmp[x] = {} for y=1,iw do bmp[x][y] = {r=255, g=255, b=255} end end
+					
+					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
+						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
+							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
+								if self.planet[x][y][z].land or self.planet[x][y][z].country ~= "" and self.cTriplets[self.planet[x][y][z].country] then
+									local rh = self.cTriplets[self.planet[x][y][z].country][1]
+									local gh = self.cTriplets[self.planet[x][y][z].country][2]
+									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+
+									bmp[cx][cy] = {r=rh, g=gh, b=bh}
+									bmp[cx+1][cy] = {r=rh, g=gh, b=bh}
+									bmp[cx][cy+1] = {r=rh, g=gh, b=bh}
+									bmp[cx+1][cy+1] = {r=rh, g=gh, b=bh}
+								else
+									bmp[cx][cy] = {r=22, g=22, b=170}
+									bmp[cx+1][cy] = {r=22, g=22, b=170}
+									bmp[cx][cy+1] = {r=22, g=22, b=170}
+									bmp[cx+1][cy+1] = {r=22, g=22, b=170}
+								end
+							end end
+							cy = cy+2
+						end end
+						cx = cx+2
+						cy = 1
+					end end
+					
+					for y=iw,1,-1 do
+						for x=1,iw+128 do bmpString = bmpString..string.format("%.2x%.2x%.2x", bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
+						for p=1,math.fmod(iw+128, 4) do bmpString = bmpString.."00" end
+					end
+					
+					local siw = string.format("%.8x", iw+128)
+					local sa = {}
+					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
+					siw = ""
+					for q=#sa,1,-1 do siw = siw..sa[q] end
+					local sih = string.format("%.8x", iw)
+					sa = {}
+					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
+					sih = ""
+					for q=#sa,1,-1 do sih = sih..sa[q] end
+					local sis = string.format("%.8x", (iw*(iw+128))+54)
+					sa = {}
+					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
+					sis = ""
+					for q=#sa,1,-1 do sis = sis..sa[q] end
+					
+					bmpString = bmpString:gsub("w", siw)
+					bmpString = bmpString:gsub("h", sih)
+					bmpString = bmpString:gsub("s", sis)
+					
+					local binString = ""
+					for x in bmpString:gmatch("%w%w") do binString = binString..string.char(tonumber(x, 16)) end
+					
+					f:write(binString)
+					f:flush()
+					f = nil
+				end
 			end,
 
 			constructVoxelPlanet = function(self, parent)
@@ -287,7 +373,9 @@ return
 					cp:setTerritory(parent)
 				end
 
-				self:rOutput(parent, "initial.r")
+				if lfsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
+				self:rOutput(parent, "./maps/initial")
+				self:bmpOutput(parent, "./maps/initial")
 			end,
 
 			delete = function(self, parent, nz)
@@ -306,8 +394,9 @@ return
 
 			rOutput = function(self, parent, label)
 				printf(parent.stdscr, "\nWriting R data...")
-
-				local f = io.open(label, "w+")
+				
+				local f = io.open(label.."/"..label..".r", "w+")
+				if not f then return end
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
 				local planetSize = #self.planetdefined

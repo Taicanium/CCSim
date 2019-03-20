@@ -734,6 +734,10 @@ return
 							end
 							
 							newl:checkRuler(parent)
+								
+							if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
+							parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
+							parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
 						end
 
 						return -1
@@ -822,6 +826,10 @@ return
 								c1.regions[newr.name] = newr
 
 								parent.thisWorld:delete(parent, c2)
+								
+								if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
+								parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
+								parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
 							end
 						end
 
@@ -928,6 +936,10 @@ return
 										c1.regions[newr.name] = newr
 										
 										parent.thisWorld:delete(parent, c2)
+								
+										if lfsstatus then lfs.mkdir("./maps/"..tostring(parent.years)) else os.execute("mkdir ./maps/"..tostring(parent.years)) end
+										parent.thisWorld:rOutput(parent, "./maps/"..tostring(parent.years))
+										parent.thisWorld:bmpOutput(parent, "./maps/"..tostring(parent.years))
 									end
 								end
 							end
@@ -1042,7 +1054,11 @@ return
 			finish = function(self)
 				self:clearTerm()
 				
-				if self.doR then self.thisWorld:rOutput(self, "final.r") end
+				if self.doR then
+					if lfsstatus then lfs.mkdir("./maps/final") else os.execute("mkdir ./maps/final") end
+					self.thisWorld:rOutput(self, "./maps/final")
+					self.thisWorld:bmpOutput(parent, "./maps/final")
+				end
 				
 				printf(self.stdscr, "Printing result...")
 				local f = io.open("output.txt", "w+")
@@ -1883,6 +1899,17 @@ return
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
+							
+							for i, j in pairs(c1.regions[rn.name].nodes) do
+								local x = j[1]
+								local y = j[2]
+								local z = j[3]
+								
+								if self.planet[x] and self.planet[x][y] and self.planet[x][y][z] then
+									self.planet[x][y][z].country = c1.name
+									self.planet[x][y][z].region = rn.name
+								end
+							end
 
 							if not conq then
 								if c2.capitalregion == rn.name then

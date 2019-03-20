@@ -81,7 +81,10 @@ function main()
 		end
 	end
 
-	if CCSCommon.doR then CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon) end
+	if CCSCommon.doR then
+		if lfsstatus then lfs.mkdir("maps") else os.execute("mkdir ./maps")
+		CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
+	end
 	CCSCommon:loop()
 	CCSCommon = nil
 	if cursesstatus then curses.endwin() end
