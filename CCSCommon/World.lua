@@ -229,7 +229,7 @@ return
 				end
 
 				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
+					local x, y, z = table.unpack(self.planetdefined[i])
 
 					self.planet[x][y][z].neighbors = {}
 
@@ -274,7 +274,7 @@ return
 					defined = 0
 
 					for i=1,planetSize do
-						local x, y, z = table.unpack(self.planetdefined[j])
+						local x, y, z = table.unpack(self.planetdefined[i])
 
 						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
 							for j=1,#self.planet[x][y][z].neighbors do
@@ -291,7 +291,7 @@ return
 					end
 
 					for i=1,planetSize do
-						local x, y, z = table.unpack(self.planetdefined[j])
+						local x, y, z = table.unpack(self.planetdefined[i])
 
 						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 else allDefined = false end
 						self.planet[x][y][z].countryset = false
@@ -304,7 +304,7 @@ return
 				end
 
 				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
+					local x, y, z = table.unpack(self.planetdefined[i])
 
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
@@ -386,7 +386,7 @@ return
 				local planetSize = #self.planetdefined
 
 				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
+					local x, y, z = table.unpack(self.planetdefined[i])
 					f:write("\""..self.planet[x][y][z].country.."\"")
 					if i < planetSize then f:write(", ") end
 				end
