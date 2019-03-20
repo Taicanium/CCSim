@@ -395,7 +395,7 @@ return
 			rOutput = function(self, parent, label)
 				printf(parent.stdscr, "\nWriting R data...")
 				
-				local f = io.open(label.."/"..label..".r", "w+")
+				local f = io.open(label..".r", "w+")
 				if not f then return end
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
