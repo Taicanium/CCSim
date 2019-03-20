@@ -84,21 +84,21 @@ return
 					end end
 					
 					for y=iw,1,-1 do
-						for x=1,iw+128 do bmpString = bmpString..string.format("%.2x%.2x%.2x", bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
+						for x=1,iw+128 do bmpString = bmpString..string.format("%02x%02x%02x", bmp[x][y].b, bmp[x][y].g, bmp[x][y].r) end
 						for p=1,math.fmod(iw+128, 4) do bmpString = bmpString.."00" end
 					end
 					
-					local siw = string.format("%.8x", iw+128)
+					local siw = string.format("%08x", iw+128)
 					local sa = {}
 					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 					siw = ""
 					for q=#sa,1,-1 do siw = siw..sa[q] end
-					local sih = string.format("%.8x", iw)
+					local sih = string.format("%08x", iw)
 					sa = {}
 					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 					sih = ""
 					for q=#sa,1,-1 do sih = sih..sa[q] end
-					local sis = string.format("%.8x", (iw*(iw+128))+54)
+					local sis = string.format("%08x", (iw*(iw+128))+54)
 					sa = {}
 					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
 					sis = ""
