@@ -253,7 +253,7 @@ return
 						if self.name:sub(self.name:len(), self.name:len()) == "w" then self.name = self.name.."y" end
 						if self.name:sub(self.name:len(), self.name:len()) == "z" then self.name = self.name.."ia" end
 						found = false
-						for i, j in pairs(parent.final) do if j.name == self.name then found = true end end
+						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") then found = true end end
 					end
 				end
 
