@@ -488,15 +488,11 @@ return
 							local border = false
 							local water = {}
 							for i=1,#c1.nodes do
-								local x = c1.nodes[i][1]
-								local y = c1.nodes[i][2]
-								local z = c1.nodes[i][3]
+								local x, y, z = table.unpack(c1.nodes[i])
 
 								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									local nx = neighbor[1]
-									local ny = neighbor[2]
-									local nz = neighbor[3]
+									local nx, ny, nz = table.unpack(neighbor)
 									local nnode = parent.thisWorld.planet[nx][ny][nz]
 									if nnode.country == c2.name then border = true end
 									if not nnode.land then water[1] = 1 end
@@ -504,15 +500,11 @@ return
 							end
 
 							for i=1,#c2.nodes do
-								local x = c2.nodes[i][1]
-								local y = c2.nodes[i][2]
-								local z = c2.nodes[i][3]
+								local x, y, z = table.unpack(c2.nodes[i])
 
 								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									local nx = neighbor[1]
-									local ny = neighbor[2]
-									local nz = neighbor[3]
+									local nx, ny, nz = table.unpack(neighbor)
 									local nnode = parent.thisWorld.planet[nx][ny][nz]
 									if nnode.country == c1.name then border = true end
 									if not nnode.land then water[2] = 1 end
@@ -618,9 +610,7 @@ return
 							newl.name = nc.name
 
 							for i=1,#nc.nodes do
-								local x = nc.nodes[i][1]
-								local y = nc.nodes[i][2]
-								local z = nc.nodes[i][3]
+								local x, y, z = table.unpack(nc.nodes[i])
 
 								parent.thisWorld.planet[x][y][z].country = newl.name
 								parent.thisWorld.planet[x][y][z].region = ""
@@ -679,9 +669,7 @@ return
 										for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
 										
 										for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
-											local x = l[1]
-											local y = l[2]
-											local z = l[3]
+											local x, y, z = table.unpack(l)
 											
 											for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
 										end end
@@ -809,9 +797,7 @@ return
 								end
 								
 								for i=#c2.nodes,1,-1 do
-									local x = c2.nodes[i][1]
-									local y = c2.nodes[i][2]
-									local z = c2.nodes[i][3]
+									local x, y, z = table.unpack(c2.nodes[i])
 									parent.thisWorld.planet[x][y][z].country = c1.name
 									parent.thisWorld.planet[x][y][z].region = c2.name
 									table.insert(c1.nodes, {x, y, z})
@@ -919,9 +905,7 @@ return
 										end
 										
 										for i=#c2.nodes,1,-1 do
-											local x = c2.nodes[i][1]
-											local y = c2.nodes[i][2]
-											local z = c2.nodes[i][3]
+											local x, y, z = table.unpack(c2.nodes[i])
 											parent.thisWorld.planet[x][y][z].country = c1.name
 											parent.thisWorld.planet[x][y][z].region = c2.name
 											table.insert(c1.nodes, {x, y, z})
@@ -1901,9 +1885,7 @@ return
 							c2.regions[rn.name] = nil
 							
 							for i, j in pairs(c1.regions[rn.name].nodes) do
-								local x = j[1]
-								local y = j[2]
-								local z = j[3]
+								local x, y, z = table.unpack(j)
 								
 								if self.planet[x] and self.planet[x][y] and self.planet[x][y][z] then
 									self.planet[x][y][z].country = c1.name
