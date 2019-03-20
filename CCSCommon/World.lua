@@ -61,7 +61,12 @@ return
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								if self.planet[x][y][z].land or self.planet[x][y][z].country ~= "" and self.cTriplets[self.planet[x][y][z].country] then
+								if not self.cTriplets[self.planet[x][y][z].country] then
+									bmp[cx][cy] = {r=22, g=22, b=170}
+									bmp[cx+1][cy] = {r=22, g=22, b=170}
+									bmp[cx][cy+1] = {r=22, g=22, b=170}
+									bmp[cx+1][cy+1] = {r=22, g=22, b=170}
+								else
 									local rh = self.cTriplets[self.planet[x][y][z].country][1]
 									local gh = self.cTriplets[self.planet[x][y][z].country][2]
 									local bh = self.cTriplets[self.planet[x][y][z].country][3]
@@ -70,11 +75,6 @@ return
 									bmp[cx+1][cy] = {r=rh, g=gh, b=bh}
 									bmp[cx][cy+1] = {r=rh, g=gh, b=bh}
 									bmp[cx+1][cy+1] = {r=rh, g=gh, b=bh}
-								else
-									bmp[cx][cy] = {r=22, g=22, b=170}
-									bmp[cx+1][cy] = {r=22, g=22, b=170}
-									bmp[cx][cy+1] = {r=22, g=22, b=170}
-									bmp[cx+1][cy+1] = {r=22, g=22, b=170}
 								end
 							end end
 							cy = cy+2
