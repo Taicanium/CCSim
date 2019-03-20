@@ -364,7 +364,7 @@ return
 				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 				sih = ""
 				for q=#sa,1,-1 do sih = sih..sa[q] end
-				local sis = string.format("%08x", ((iw+4)*(iw+256))+54)
+				local sis = string.format("%08x", (((iw+4)*(iw+256))*3)+54)
 				sa = {}
 				for x in sis:gmatch("%w%w") do table.insert(sa, x) end
 				sis = ""
