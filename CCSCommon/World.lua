@@ -37,54 +37,85 @@ return
 					printf(parent.stdscr, "Writing maps...")
 				
 					printl(parent.stdscr, "Map 1/6")
-					self:bmpOutput(parent, label.."/XY+", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, self.planetR, 1}})
+					self:bmpOutput(parent, label.."/XY+", {{-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {0, self.planetR, 1}})
 					printl(parent.stdscr, "Map 2/6")
-					self:bmpOutput(parent, label.."/XY-", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XY-", {{-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {0, -self.planetR, -1}})
 					printl(parent.stdscr, "Map 3/6")
-					self:bmpOutput(parent, label.."/XZ+", {{self.planetR, -self.planetR, -1}, {0, self.planetR, 1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XZ+", {{-self.planetR, self.planetR, 1}, {0, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 4/6")
-					self:bmpOutput(parent, label.."/XZ-", {{self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/XZ-", {{-self.planetR, self.planetR, 1}, {0, -self.planetR, -1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 5/6")
-					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
 					printl(parent.stdscr, "Map 6/6")
-					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
+					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
 				else
 					local f = io.open(label..".bmp", "w+b")
 					if not f then return end
 				
-					local iw = (self.planetR*2)
+					local iw = (self.planetR*4)
 					local is = 0
 					local offset = 0
 					
 					local bmp = {}
 					local cx = 1
 					local cy = 1
+					local axisSet = false
 					
 					for x=1,iw+256 do bmp[x] = {} for y=1,iw do bmp[x][y] = {r=255, g=255, b=255} end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
-							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								if not self.cTriplets[self.planet[x][y][z].country] then
-									bmp[cx][cy] = {r=22, g=22, b=170}
-									bmp[cx+1][cy] = {r=22, g=22, b=170}
-									bmp[cx][cy+1] = {r=22, g=22, b=170}
-									bmp[cx+1][cy+1] = {r=22, g=22, b=170}
-								else
-									local rh = self.cTriplets[self.planet[x][y][z].country][1]
-									local gh = self.cTriplets[self.planet[x][y][z].country][2]
-									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+							for z=axes[3][1],axes[3][2],axes[3][3] do
+								axisSet = false
+								if self.planet[x][y][z] then
+									if not self.cTriplets[self.planet[x][y][z].country] then
+										bmp[cx][cy] = {r=22, g=22, b=170}
+										bmp[cx+1][cy] = {r=22, g=22, b=170}
+										bmp[cx][cy+1] = {r=22, g=22, b=170}
+										bmp[cx+1][cy+1] = {r=22, g=22, b=170}
+									else
+										local rh = self.cTriplets[self.planet[x][y][z].country][1]
+										local gh = self.cTriplets[self.planet[x][y][z].country][2]
+										local bh = self.cTriplets[self.planet[x][y][z].country][3]
 
-									bmp[cx][cy] = {r=rh, g=gh, b=bh}
-									bmp[cx+1][cy] = {r=rh, g=gh, b=bh}
-									bmp[cx][cy+1] = {r=rh, g=gh, b=bh}
-									bmp[cx+1][cy+1] = {r=rh, g=gh, b=bh}
+										bmp[cx][cy] = {r=rh, g=gh, b=bh}
+										bmp[cx+1][cy] = {r=rh, g=gh, b=bh}
+										bmp[cx][cy+1] = {r=rh, g=gh, b=bh}
+										bmp[cx+1][cy+1] = {r=rh, g=gh, b=bh}
+									end
+									
+									if axes[3][1] ~= 0 then
+										if not axisSet then
+											cy = cy+2
+											axisSet = true
+										else
+											cx = cx+2
+											cy = 1
+										end
+									end
 								end
-							end end
-							cy = cy+2
+							end
+								
+							if axes[2][1] ~= 0 then
+								if not axisSet then
+									cy = cy+2
+									axisSet = true
+								else
+									cx = cx+2
+									cy = 1
+								end
+							end
 						end end
-						cx = cx+2
-						cy = 1
+								
+						if axes[1][1] ~= 0 then
+							if not axisSet then
+								cy = cy+2
+								axisSet = true
+							else
+								cx = cx+2
+								cy = 1
+							end
+						end
 					end end
 					
 					local siw = string.format("%08x", iw+256)
