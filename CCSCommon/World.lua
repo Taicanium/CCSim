@@ -52,16 +52,16 @@ return
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
 								if axes[1][1] == 0 then
-									cx = (self.planetR+y)*2
-									cy = (self.planetR+z)*2
+									cx = ((self.planetR+y)*2)+1
+									cy = ((self.planetR+z)*2)+1
 								elseif axes[2][1] == 0 then
-									cx = (self.planetR+x)*2
-									cy = (self.planetR+z)*2
+									cx = ((self.planetR+x)*2)+1
+									cy = ((self.planetR+z)*2)+1
 								elseif axes[3][1] == 0 then
-									cx = (self.planetR+x)*2
-									cy = (self.planetR+y)*2
+									cx = ((self.planetR+x)*2)+1
+									cy = ((self.planetR+y)*2)+1
 								end
-							
+
 								if not self.cTriplets[self.planet[x][y][z].country] then
 									self.bmp[cx][cy] = {170, 22, 22}
 									self.bmp[cx+1][cy] = {170, 22, 22}
@@ -80,10 +80,10 @@ return
 							end end
 						end end
 					end end
-					
+
 					local iw = self.planetR*4
 					self.bmpString = ""
-					for y=1,iw do for x=1,iw+256 do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
+					for y=1,iw+1 do for x=1,iw+256 do self.bmpString = self.bmpString..string.char(table.unpack(self.bmp[x][y])) end end
 					
 					f:write(self.bmpHeadString)
 					f:write(self.bmpString)
@@ -359,12 +359,12 @@ return
 				for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 				siw = ""
 				for q=#sa,1,-1 do siw = siw..sa[q] end
-				local sih = string.format("%08x", iw)
+				local sih = string.format("%08x", iw+1)
 				sa = {}
 				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 				sih = ""
 				for q=#sa,1,-1 do sih = sih..sa[q] end
-				local sis = string.format("%08x", (iw*(iw+256))+54)
+				local sis = string.format("%08x", ((iw+1)*(iw+256))+54)
 				sa = {}
 				for x in sis:gmatch("%w%w") do table.insert(sa, x) end
 				sis = ""
@@ -378,7 +378,7 @@ return
 				local cx = 1
 				local cy = 1
 				
-				for x=1,iw+256 do self.bmp[x] = {} for y=1,iw do self.bmp[x][y] = {r=255, g=255, b=255} end end
+				for x=1,iw+256 do self.bmp[x] = {} for y=1,iw+1 do self.bmp[x][y] = {r=255, g=255, b=255} end end
 
 				if lfsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
