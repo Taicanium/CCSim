@@ -153,7 +153,7 @@ return
 				local r = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
 				self.planetR = r
 
-				printf(parent.stdscr, "\nConstructing voxel planet with radius of %d units...", r)
+				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", r)
 
 				local rdone = 0
 
@@ -266,7 +266,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf(parent.stdscr, "\nRooting countries...")
+				printf(parent.stdscr, "Rooting countries...")
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
@@ -339,7 +339,7 @@ return
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
-				printf(parent.stdscr, "\nDefining regional boundaries...")
+				printf(parent.stdscr, "Defining regional boundaries...")
 
 				for i, cp in pairs(self.countries) do
 					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
@@ -347,7 +347,7 @@ return
 					cp:setTerritory(parent)
 				end
 				
-				printf(parent.stdscr, "\nDefining initial map data...")
+				printf(parent.stdscr, "Defining initial map data...")
 				
 				local ib = self.planetR*4
 				local iw = ib+384
@@ -409,7 +409,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				printf(parent.stdscr, "\nWriting R data...")
+				printf(parent.stdscr, "Writing R data...")
 				
 				local f = io.open(label..".r", "w+")
 				if not f then return end
