@@ -1421,7 +1421,7 @@ return
 						end
 
 						cp:makename(self, 3)
-						cp:setPop(self, 500)
+						cp:setPop(self, 1500)
 
 						table.insert(self.final, cp)
 					end
