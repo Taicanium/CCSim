@@ -1,7 +1,3 @@
-torchstatus, torch = pcall(require, "torch")
-jsonstatus, json = pcall(require, "cjson")
-lfsstatus, lfs = pcall(require, "lfs")
-
 return
 	function()
 		local World = {
