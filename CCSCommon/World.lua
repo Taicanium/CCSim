@@ -351,7 +351,8 @@ return
 				printf(parent.stdscr, "\nDefining initial map data...")
 				
 				local iw = self.planetR*4
-				local is = 0
+				local ratio = (iw+256)*(iw+4)
+				local is = (ratio*3)+54
 				local offset = 0
 				
 				local siw = string.format("%08x", iw+256)
@@ -364,13 +365,13 @@ return
 				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 				sih = ""
 				for q=#sa,1,-1 do sih = sih..sa[q] end
-				local sis = string.format("%08x", (((iw+4)*(iw+256))*3)+54)
+				local sis = string.format("%08x", is)
 				sa = {}
 				for x in sis:gmatch("%w%w") do table.insert(sa, x) end
 				sis = ""
 				for q=#sa,1,-1 do sis = sis..sa[q] end
 				
-				local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B00000000000000000000"
+				local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B0000FFFFFF0000000000"
 				self.bmpHeadString = ""
 				for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
 				
