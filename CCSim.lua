@@ -37,7 +37,7 @@ function main()
 	CCSCommon.showinfo = 0
 	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce a 3D map of the initial and final world states in R (y/n)? > ")
+	printp(CCSCommon.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
 
