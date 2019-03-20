@@ -104,9 +104,9 @@ return
 						local nx = cx+8
 						for c in name:gmatch("%w") do
 							local gData = parent.glyphs[c]
-							local xDiv = 0
 							local yDiv = 0
 							for y=cy,cy+7 do
+								local xDiv = 0
 								for x=nx,nx+5 do
 									if gData[x-nx-math.ceil(xDiv)+1][y-cy-math.ceil(yDiv)+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end
 									xDiv = xDiv+0.5
