@@ -89,16 +89,18 @@ return
 					iw = ib+16
 					local cols = {}
 					for i=8,ib+8,10 do rowCount = rowCount+1 end
-					colCount = math.ceil(cCount/rowCount)
-					for i=1,colCount do cols[i] = {} end
+					local colCount = 1
+					cols[colCount] = {}
 					
 					for x=1,#fauxBmp do for y=1,#fauxBmp[x] do if fauxBmp[x][y] ~= string.char(255, 255, 255) and fauxBmp[x][y] ~= string.char(0, 0, 0) and fauxBmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and fauxBmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then cUsed[j.name] = fauxBmp[x][y] end end end end end
 					
 					local longestName = 0
-					local colIndex = 1
 					for i, j in pairs(cUsed) do
-						table.insert(cols[colIndex], i)
-						if #cols[colIndex] >= rowCount then colIndex = colIndex+1 end
+						table.insert(cols[colCount], i)
+						if #cols[colCount] >= rowCount then
+							colCount = colCount+1
+							cols[colCount] = {}
+						end
 					end
 					local ratio = iw*ih
 					local is = (ratio*3)+54
