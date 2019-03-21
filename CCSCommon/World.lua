@@ -164,7 +164,7 @@ return
 					cx = ib+16
 					cy = 8
 					
-					for i=1,#colCount do
+					for i=1,#cols do
 						longestName = 0
 						for j=1,#cols[i] do
 							local cName = cols[i][j]
