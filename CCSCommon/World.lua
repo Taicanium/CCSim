@@ -365,7 +365,7 @@ return
 				self.ib = self.planetR*4
 				self.ih = self.ib+4
 				for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
-				self.iw = self.ib+(((longestName*8)+4)*colCount)
+				self.iw = self.ib+(((longestName*8)+8)*colCount)+32
 				local ratio = self.iw*self.ih
 				local is = (ratio*3)+54
 				local offset = 0
