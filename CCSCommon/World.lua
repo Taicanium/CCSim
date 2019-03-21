@@ -382,7 +382,7 @@ return
 				
 				for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 
-				os.execute("mkdir ./maps/initial")
+				if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
 				self:bmpOutput(parent, "./maps/initial")
 			end,
