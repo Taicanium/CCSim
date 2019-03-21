@@ -80,7 +80,6 @@ return
 
 									fauxBmp[cx][cy] = string.char(bh, gh, rh)
 								end
-								end
 							end end
 						end end
 					end end
