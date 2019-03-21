@@ -11,9 +11,6 @@ return
 				nm.cColors = {}
 				nm.cTriplets = {}
 				nm.fromFile = false
-				nm.ib = 0
-				nm.ih = 0
-				nm.iw = 0
 				nm.mtname = "World"
 				nm.planet = {}
 				nm.planetdefined = {}
@@ -66,19 +63,19 @@ return
 					local longestName = 0
 					local colCount = 0
 					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
-					self.ib = self.planetR*4
-					self.ih = self.ib+4
-					for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
-					self.iw = self.ib+(((longestName*8)+8)*colCount)+32
-					local ratio = self.iw*self.ih
+					local ib = self.planetR*4
+					local ih = ib+4
+					for i=1,cCount,math.floor((ih-20)/10) do colCount = colCount+1 end
+					local iw = ib+(((longestName*8)+8)*colCount)+32
+					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
-					local siw = string.format("%08x", self.iw)
+					local siw = string.format("%08x", iw)
 					local sa = {}
 					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 					siw = ""
 					for q=#sa,1,-1 do siw = siw..sa[q] end
-					local sih = string.format("%08x", self.ih)
+					local sih = string.format("%08x", ih)
 					sa = {}
 					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 					sih = ""
@@ -94,7 +91,7 @@ return
 					for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
 					
 					self.bmp = {}
-					for x=1,self.iw do self.bmp[x] = {} for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
+					for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
@@ -129,7 +126,7 @@ return
 						end end
 					end end
 					
-					cx = self.ib+16
+					cx = ib+16
 					cy = 16
 					
 					local longestName = 0
@@ -148,7 +145,7 @@ return
 						if name:len() > longestName then longestName = name:len() end
 					
 						cy = cy+10
-						if cy >= self.ih then
+						if cy >= ih then
 							cx = cx+(longestName*8)+4
 							cy = 16
 							longestName = 0
@@ -156,7 +153,7 @@ return
 					end end
 					
 					f:write(self.bmpHeadString)
-					for y=self.ih,1,-1 do for x=1,self.iw do f:write(self.bmp[x][y]) end end
+					for y=ih,1,-1 do for x=1,iw do f:write(self.bmp[x][y]) end end
 					
 					f:flush()
 					f = nil
