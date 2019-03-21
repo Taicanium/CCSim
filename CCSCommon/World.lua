@@ -477,10 +477,10 @@ return
 
 				for i, cp in pairs(self.countries) do
 					for j, k in pairs(cp.regions) do
-						for l, m in pairs(k.cities) do
+						for l, m in pairs(k.cities) do if m.x, m.y, m.z then
 							table.insert(cCoords, {m.x, m.y, m.z})
 							table.insert(cTexts, m.name)
-						end
+						end end
 					end
 				end
 
