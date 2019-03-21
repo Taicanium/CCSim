@@ -69,7 +69,7 @@ return
 					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
 					local ib = self.planetR*4
 					local ih = ib+16
-					for i=16,ih-8,10 do rowCount = rowCount+1 end
+					for i=16,ih,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
 					local iw = ib+(((longestName*8)+4)*colCount)+16
 					local ratio = iw*ih
@@ -144,7 +144,7 @@ return
 						
 						local name = j.name:lower()
 						local nx = cx+8
-						for c in name:gmatch("[%w%- ]") do
+						for c in name:gmatch("[%w%-%' ]") do
 							local gData = parent.glyphs[c]
 							if gData then for y=cy,cy+7 do for x=nx,nx+5 do if gData[8-(y-cy)][x-nx+1] == 1 and self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end end
 							nx = nx+8
