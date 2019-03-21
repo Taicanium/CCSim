@@ -49,29 +49,58 @@ return
 					local cUsed = {}
 					local cCount = 0
 					
+					local fauxBmp = {}
+					local colCount = 0
+					local rowCount = 0
+					local ib = self.planetR*2
+					local ih = ib+8
+					local iw = ib+8
+					
+					for x=1,iw do fauxBmp[x] = {} for y=1,ih do fauxBmp[x][y] = {} end end
+					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								if self.cTriplets[self.planet[x][y][z].country] then
-									if not cUsed[self.planet[x][y][z].country] then cCount = cCount+1 end
+								if axes[1][1] == 0 then
+									cx = self.planetR+y+1
+									cy = self.planetR+z+1
+								elseif axes[2][1] == 0 then
+									cx = self.planetR+x+1
+									cy = self.planetR+z+1
+								elseif axes[3][1] == 0 then
+									cx = self.planetR+x+1
+									cy = self.planetR+y+1
+								end
+
+								if not self.cTriplets[self.planet[x][y][z].country] then fauxBmp[cx][cy] = string.char(170, 22, 22)
+								else
 									local rh = self.cTriplets[self.planet[x][y][z].country][1]
 									local gh = self.cTriplets[self.planet[x][y][z].country][2]
 									local bh = self.cTriplets[self.planet[x][y][z].country][3]
-									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
+
+									fauxBmp[cx][cy] = string.char(bh, gh, rh)
+								end
 								end
 							end end
 						end end
 					end end
 					
-					local longestName = 0
-					local colCount = 0
-					local rowCount = 0
-					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
-					local ib = self.planetR*4
-					local ih = ib+16
+					ib = self.planetR*4
+					ih = ib+16
+					iw = ib+16
+					local cols = {}
 					for i=8,ib+8,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
-					local iw = ib+(((longestName*8)+4)*colCount)+16
+					for i=1,colCount do cols[i] = {} end
+					
+					for x=1,#fauxBmp do for y=1,#fauxBmp[x] do if fauxBmp[x][y] ~= string.char(255, 255, 255) and fauxBmp[x][y] ~= string.char(0, 0, 0) and fauxBmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and fauxBmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then cUsed[j.name] = fauxBmp[x][y] end end end end end
+					
+					local longestName = 0
+					local colIndex = 1
+					for i, j in pairs(cUsed) do
+						table.insert(cols[colIndex], i)
+						if #cols[colIndex] >= rowCount then colIndex = colIndex+1 end
+					end
 					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
@@ -96,7 +125,6 @@ return
 					for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
 					
 					self.bmp = {}
-					local actuallyUsed = {}
 					for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
@@ -132,33 +160,28 @@ return
 						end end
 					end end
 					
-					for x=1,#self.bmp do for y=1,#self.bmp[x] do if self.bmp[x][y] ~= string.char(255, 255, 255) and self.bmp[x][y] ~= string.char(0, 0, 0) and self.bmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and self.bmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then actuallyUsed[j.name] = self.bmp[x][y] end end end end end
-					
 					cx = ib+16
 					cy = 8
 					
-					local longestName = 0
-					
-					for i, j in pairs(self.countries) do if actuallyUsed[j.name] then
-						for x=cx,cx+7 do for y=cy,cy+7 do if self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = cUsed[j.name] end end end
-						
-						local name = j.name:lower()
-						local nx = cx+8
-						for c in name:gmatch("[%w%-%' ]") do
-							local gData = parent.glyphs[c]
-							if gData then for y=cy,cy+7 do for x=nx,nx+5 do if gData[8-(y-cy)][x-nx+1] == 1 and self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end end
-							nx = nx+8
+					for i=1,#colCount do
+						longestName = 0
+						for j=1,#cols[i] do
+							local cName = cols[i][j]
+							for x=cx,cx+7 do for y=cy,cy+7 do if self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = cUsed[cName] end end end
+							
+							local name = cName:lower()
+							local nx = cx+8
+							for c in name:gmatch("[%w%-%' ]") do
+								local gData = parent.glyphs[c]
+								if gData then for y=cy,cy+7 do for x=nx,nx+5 do if gData[8-(y-cy)][x-nx+1] == 1 and self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end end
+								nx = nx+8
+							end
+							if name:len() > longestName then longestName = name:len() end
+							cy = cy+10
 						end
-						
-						if name:len() > longestName then longestName = name:len() end
-					
-						cy = cy+10
-						if cy >= ih then
-							cx = cx+(longestName*8)+8
-							cy = 8
-							longestName = 0
-						end
-					end end
+						cx = cx+(longestName*8)+8
+						cy = 8
+					end
 					
 					f:write(self.bmpHeadString)
 					for y=ih,1,-1 do for x=1,iw do f:write(self.bmp[x][y]) end end
