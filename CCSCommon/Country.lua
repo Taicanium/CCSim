@@ -585,7 +585,7 @@ return
 					else table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z}) end
 				end
 
-				for i, j in pairs(self.regions) do
+				if not patron then for i, j in pairs(self.regions) do
 					local cCount = 0
 					for k, l in pairs(j.cities) do cCount = cCount+1 end
 
@@ -601,7 +601,7 @@ return
 						j.cities[c] = nil
 						cCount = cCount-1
 					end
-				end
+				end end
 
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
