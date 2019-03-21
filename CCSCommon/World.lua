@@ -50,6 +50,40 @@ return
 					local cy = 1
 					
 					local cUsed = {}
+					local cCount = 0
+					
+					local longestName = 0
+					local colCount = 0
+					for i, j in pairs(cUsed) do if j.name:len() > longestName then longestName = j.name:len() end end
+					self.ib = self.planetR*4
+					self.ih = self.ib+4
+					for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
+					self.iw = self.ib+(((longestName*8)+8)*colCount)+32
+					local ratio = self.iw*self.ih
+					local is = (ratio*3)+54
+					
+					local siw = string.format("%08x", self.iw)
+					local sa = {}
+					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
+					siw = ""
+					for q=#sa,1,-1 do siw = siw..sa[q] end
+					local sih = string.format("%08x", self.ih)
+					sa = {}
+					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
+					sih = ""
+					for q=#sa,1,-1 do sih = sih..sa[q] end
+					local sis = string.format("%08x", is)
+					sa = {}
+					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
+					sis = ""
+					for q=#sa,1,-1 do sis = sis..sa[q] end
+					
+					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B0000FFFFFF0000000000"
+					self.bmpHeadString = ""
+					for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
+					
+					self.bmp = {}
+					for x=1,self.iw do self.bmp[x] = {} for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
@@ -81,6 +115,7 @@ return
 									self.bmp[cx+1][cy+1] = string.char(bh, gh, rh)
 									
 									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
+									cCount = cCount+1
 								end
 							end end
 						end end
@@ -88,8 +123,6 @@ return
 					
 					cx = self.ib+16
 					cy = 16
-					
-					for x=self.ib+16,self.iw do for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					local longestName = 0
 					
@@ -346,49 +379,6 @@ return
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
-				
-				printf(parent.stdscr, "Defining initial map data...")
-				
-				local longestName = 0
-				local cCount = 0
-				local colCount = 0
-				for i, j in pairs(self.countries) do
-					if j.name:len() > longestName then longestName = j.name:len() end
-					cCount = cCount+1
-				end
-				self.ib = self.planetR*4
-				self.ih = self.ib+4
-				for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
-				self.iw = self.ib+(((longestName*8)+8)*colCount)+32
-				local ratio = self.iw*self.ih
-				local is = (ratio*3)+54
-				local offset = 0
-				
-				local siw = string.format("%08x", self.iw)
-				local sa = {}
-				for x in siw:gmatch("%w%w") do table.insert(sa, x) end
-				siw = ""
-				for q=#sa,1,-1 do siw = siw..sa[q] end
-				local sih = string.format("%08x", self.ih)
-				sa = {}
-				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
-				sih = ""
-				for q=#sa,1,-1 do sih = sih..sa[q] end
-				local sis = string.format("%08x", is)
-				sa = {}
-				for x in sis:gmatch("%w%w") do table.insert(sa, x) end
-				sis = ""
-				for q=#sa,1,-1 do sis = sis..sa[q] end
-				
-				local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B0000FFFFFF0000000000"
-				self.bmpHeadString = ""
-				for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
-				
-				self.bmp = {}
-				local cx = 1
-				local cy = 1
-				
-				for x=1,self.iw do self.bmp[x] = {} for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 
 				if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
