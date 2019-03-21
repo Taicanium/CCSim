@@ -53,8 +53,8 @@ return
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
 								if self.cTriplets[self.planet[x][y][z].country] then
+									if not cUsed[self.planet[x][y][z].country] then cCount = cCount+1 end
 									cUsed[self.planet[x][y][z].country] = string.char(table.unpack(self.cTriplets[self.planet[x][y][z].country]))
-									cCount = cCount+1
 								end
 							end end
 						end end
@@ -66,7 +66,7 @@ return
 					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
 					local ib = self.planetR*4
 					local ih = ib+4
-					for i=1,ih,10 do rowCount = rowCount+1 end
+					for i=16,ib,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
 					local iw = ib+(longestName*8*colCount)
 					local ratio = iw*ih
