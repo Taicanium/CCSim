@@ -1,5 +1,6 @@
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
+lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.clock
 if socketstatus then _time = socket.gettime end
@@ -775,7 +776,7 @@ return
 							
 							newl:checkRuler(parent)
 								
-							os.execute("mkdir ./maps/Year "..tostring(parent.years))
+							if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
 							parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
 							parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 						end
@@ -865,7 +866,7 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 								
-								os.execute("mkdir ./maps/Year "..tostring(parent.years))
+								if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
 								parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
 								parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 							end
@@ -973,7 +974,7 @@ return
 										
 										parent.thisWorld:delete(parent, c2)
 								
-										os.execute("mkdir ./maps/Year "..tostring(parent.years))
+										if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir ./maps/Year "..tostring(parent.years)) end
 										parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
 										parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
 									end
@@ -1119,7 +1120,7 @@ return
 				self:clearTerm()
 				
 				if self.doR then
-					os.execute("mkdir ./maps/final")
+					if ifsstatus then lfs.mkdir("./maps/final") else os.execute("mkdir ./maps/final") end
 					self.thisWorld:rOutput(self, "./maps/final")
 					self.thisWorld:bmpOutput(self, "./maps/final")
 				end
