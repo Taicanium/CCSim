@@ -54,7 +54,10 @@ return
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
 								if self.cTriplets[self.planet[x][y][z].country] then
 									if not cUsed[self.planet[x][y][z].country] then cCount = cCount+1 end
-									cUsed[self.planet[x][y][z].country] = string.char(table.unpack(self.cTriplets[self.planet[x][y][z].country]))
+									local rh = self.cTriplets[self.planet[x][y][z].country][1]
+									local gh = self.cTriplets[self.planet[x][y][z].country][2]
+									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
 								end
 							end end
 						end end
@@ -93,6 +96,7 @@ return
 					for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
 					
 					self.bmp = {}
+					local actuallyUsed = {}
 					for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
@@ -128,12 +132,14 @@ return
 						end end
 					end end
 					
+					for x=1,#self.bmp do for y=1,#self.bmp[x] do if self.bmp[x][y] ~= string.char(255, 255, 255) and self.bmp[x][y] ~= string.char(0, 0, 0) and self.bmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and self.bmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then actuallyUsed[j.name] = self.bmp[x][y] end end end end end
+					
 					cx = ib+16
 					cy = 16
 					
 					local longestName = 0
 					
-					for i, j in pairs(self.countries) do if cUsed[j.name] then
+					for i, j in pairs(self.countries) do if actuallyUsed[j.name] then
 						for x=cx,cx+7 do for y=cy,cy+7 do if self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = cUsed[j.name] end end end
 						
 						local name = j.name:lower()
