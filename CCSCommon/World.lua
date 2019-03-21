@@ -69,7 +69,7 @@ return
 					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
 					local ib = self.planetR*4
 					local ih = ib+16
-					for i=16,ib,10 do rowCount = rowCount+1 end
+					for i=8,ib+8,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
 					local iw = ib+(((longestName*8)+4)*colCount)+16
 					local ratio = iw*ih
@@ -135,7 +135,7 @@ return
 					for x=1,#self.bmp do for y=1,#self.bmp[x] do if self.bmp[x][y] ~= string.char(255, 255, 255) and self.bmp[x][y] ~= string.char(0, 0, 0) and self.bmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and self.bmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then actuallyUsed[j.name] = self.bmp[x][y] end end end end end
 					
 					cx = ib+16
-					cy = 16
+					cy = 8
 					
 					local longestName = 0
 					
@@ -155,7 +155,7 @@ return
 						cy = cy+10
 						if cy >= ih then
 							cx = cx+(longestName*8)+8
-							cy = 16
+							cy = 8
 							longestName = 0
 						end
 					end end
