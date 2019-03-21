@@ -27,14 +27,18 @@ return
 						end
 					end
 				end
+				
+				local cCount = 0
+				for i, j in pairs(self.cities) do cCount = cCount+1 end
+				if cCount == 0 then
+					cCount = math.random(3, 6)
 
-				local cCount = math.random(3, 6)
+					for i=1,cCount do
+						c = City:new()
+						c:makename(country, parent)
 
-				for i=1,cCount do
-					c = City:new()
-					c:makename(country, parent)
-
-					self.cities[c.name] = c
+						self.cities[c.name] = c
+					end
 				end
 			end,
 		}
