@@ -55,12 +55,14 @@ return
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
 							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								local rh = self.cTriplets[self.planet[x][y][z].country][1]
-								local gh = self.cTriplets[self.planet[x][y][z].country][2]
-								local bh = self.cTriplets[self.planet[x][y][z].country][3]
-							
-								cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
-								cCount = cCount+1
+								if self.cTriplets[self.planet[x][y][z].country] then
+									local rh = self.cTriplets[self.planet[x][y][z].country][1]
+									local gh = self.cTriplets[self.planet[x][y][z].country][2]
+									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+								
+									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
+									cCount = cCount+1
+								end
 							end end
 						end end
 					end end
