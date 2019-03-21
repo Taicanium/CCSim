@@ -68,7 +68,7 @@ return
 					local ih = ib+4
 					for i=16,ib,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
-					local iw = ib+(longestName*8*colCount)
+					local iw = ib+(((longestName*8)+8)*colCount)+32
 					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
