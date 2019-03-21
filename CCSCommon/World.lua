@@ -69,9 +69,9 @@ return
 					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
 					local ib = self.planetR*4
 					local ih = ib+16
-					for i=16,ib,10 do rowCount = rowCount+1 end
+					for i=16,ih-8,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
-					local iw = ib+(((longestName*8)+8)*colCount)+16
+					local iw = ib+((longestName*8)*colCount)+16
 					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
