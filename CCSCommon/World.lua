@@ -69,7 +69,7 @@ return
 					
 					local longestName = 0
 					local colCount = 0
-					for i, j in pairs(cUsed) do if j.name:len() > longestName then longestName = j.name:len() end end
+					for i, j in pairs(cUsed) do if i:len() > longestName then longestName = i:len() end end
 					self.ib = self.planetR*4
 					self.ih = self.ib+4
 					for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
