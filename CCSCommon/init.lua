@@ -693,12 +693,11 @@ return
 								newl:add(parent, p)
 							end
 							
-							newl:set(parent)
 							local pR = nil
 							
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country ~= newl.name then if c.regions[parent.thisWorld.planet[x][y][z].region] then
+								if parent.thisWorld.planet[x][y][z].country ~= newl.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
 									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 										local nx, ny, nz = table.unpack(neighbor)
@@ -709,10 +708,42 @@ return
 											i = 0
 										end
 									end
-								end else table.remove(c.nodes, i) end
+								end
 							end
 							
+							for i=1,#parent.thisWorld.planetdefined do
+								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
+								local node = parent.thisWorld.planet[x][y][z]
+								if node.region == newl.name then
+									node.country = newl.name
+									node.region = ""
+									for j=#c.nodes,1,-1 do if c.nodes[j].x == x and c.nodes[j].y == y and c.nodes[j].z == z then table.remove(c.nodes, j) end end
+								end
+							end
+							
+							local nrCount = 0
+							for i=1,#newl.nodes,35 do nrCount = nrCount+1 end
+							for i=1,nrCount do
+								local r = Region:new()
+								r:makename()
+								for j, k in pairs(r.cities) do r.cities[j] = nil end
+								self.regions[r.name] = r
+							end
+							
+							newl:set(parent)
 							if parent.doR then newl:setTerritory(parent, c, pR) end
+							
+							for i, j in pairs(nc.cities) do
+								for k, l in pairs(newl.regions) do
+									for m=1,#l.nodes do
+										local x, y, z = table.unpack(l.nodes[m])
+										if x == j.x and y == j.y and z == j.z then
+											l.cities[i] = j
+											nc.cities[i] = nil
+										end
+									end
+								end
+							end
 
 							c.regions[newl.name] = nil
 							parent.thisWorld:add(newl)
