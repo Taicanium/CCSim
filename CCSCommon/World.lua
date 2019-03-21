@@ -71,7 +71,7 @@ return
 					local ih = ib+4
 					for i=16,ib,10 do rowCount = rowCount+1 end
 					colCount = math.ceil(cCount/rowCount)
-					local iw = ib+(((longestName*8)+8)*colCount)+32
+					local iw = ib+(((longestName*8)+8)*colCount)+16
 					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
@@ -154,7 +154,7 @@ return
 					
 						cy = cy+10
 						if cy >= ih then
-							cx = cx+(longestName*8)+4
+							cx = cx+(longestName*8)+8
 							cy = 16
 							longestName = 0
 						end
