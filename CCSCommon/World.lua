@@ -11,6 +11,9 @@ return
 				nm.cColors = {}
 				nm.cTriplets = {}
 				nm.fromFile = false
+				nm.ib = 0
+				nm.ih = 0
+				nm.iw = 0
 				nm.mtname = "World"
 				nm.planet = {}
 				nm.planetdefined = {}
@@ -83,13 +86,10 @@ return
 						end end
 					end end
 					
-					local ib = self.planetR*4
-					local iw = ib+384
-					local ih = ib+4
-					cx = ib+16
+					cx = self.ib+16
 					cy = 16
 					
-					for x=ib+16,iw do for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
+					for x=self.ib+16,self.iw do for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 					
 					local longestName = 0
 					
@@ -107,7 +107,7 @@ return
 						if name:len() > longestName then longestName = name:len() end
 					
 						cy = cy+10
-						if cy >= ih then
+						if cy >= self.ih then
 							cx = cx+(longestName*8)+4
 							cy = 16
 							longestName = 0
@@ -115,7 +115,7 @@ return
 					end end
 					
 					f:write(self.bmpHeadString)
-					for y=ih,1,-1 do for x=1,iw do f:write(self.bmp[x][y]) end end
+					for y=self.ih,1,-1 do for x=1,self.iw do f:write(self.bmp[x][y]) end end
 					
 					f:flush()
 					f = nil
@@ -349,9 +349,17 @@ return
 				
 				printf(parent.stdscr, "Defining initial map data...")
 				
-				local ib = self.planetR*4
-				local iw = ib+384
-				local ih = ib+4
+				local longestName = 0
+				local cCount = 0
+				local colCount = 0
+				for i, j in pairs(self.countries) do
+					if j.name:len() > longestName then longestName = j.name:len() end
+					cCount = cCount+1
+				end
+				self.ib = self.planetR*4
+				self.ih = ib+4
+				for i=1,cCount,math.floor((ih-20)/10) do colCount = colCount+1 end
+				self.iw = ib+(((longestName*8)+4)*colCount)
 				local ratio = iw*ih
 				local is = (ratio*3)+54
 				local offset = 0
