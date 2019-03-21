@@ -98,7 +98,7 @@ return
 						
 						local name = j.name:lower()
 						local nx = cx+8
-						for c in name:gmatch("%w") do
+						for c in name:gmatch("[%w ]") do
 							local gData = parent.glyphs[c]
 							for y=cy,cy+7 do for x=nx,nx+5 do
 								if gData[8-(y-cy)][x-nx+1] == 1 then
