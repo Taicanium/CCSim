@@ -357,19 +357,19 @@ return
 					cCount = cCount+1
 				end
 				self.ib = self.planetR*4
-				self.ih = ib+4
-				for i=1,cCount,math.floor((ih-20)/10) do colCount = colCount+1 end
-				self.iw = ib+(((longestName*8)+4)*colCount)
-				local ratio = iw*ih
+				self.ih = self.ib+4
+				for i=1,cCount,math.floor((self.ih-20)/10) do colCount = colCount+1 end
+				self.iw = self.ib+(((longestName*8)+4)*colCount)
+				local ratio = self.iw*self.ih
 				local is = (ratio*3)+54
 				local offset = 0
 				
-				local siw = string.format("%08x", iw)
+				local siw = string.format("%08x", self.iw)
 				local sa = {}
 				for x in siw:gmatch("%w%w") do table.insert(sa, x) end
 				siw = ""
 				for q=#sa,1,-1 do siw = siw..sa[q] end
-				local sih = string.format("%08x", ih)
+				local sih = string.format("%08x", self.ih)
 				sa = {}
 				for x in sih:gmatch("%w%w") do table.insert(sa, x) end
 				sih = ""
@@ -388,7 +388,7 @@ return
 				local cx = 1
 				local cy = 1
 				
-				for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
+				for x=1,self.iw do self.bmp[x] = {} for y=1,self.ih do self.bmp[x][y] = string.char(255, 255, 255) end end
 
 				if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
 				self:rOutput(parent, "./maps/initial")
