@@ -52,6 +52,16 @@ return
 					local cUsed = {}
 					local cCount = 0
 					
+					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
+						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
+							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
+									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
+									cCount = cCount+1
+								end
+							end end
+						end end
+					end end
+					
 					local longestName = 0
 					local colCount = 0
 					for i, j in pairs(cUsed) do if j.name:len() > longestName then longestName = j.name:len() end end
@@ -113,9 +123,6 @@ return
 									self.bmp[cx+1][cy] = string.char(bh, gh, rh)
 									self.bmp[cx][cy+1] = string.char(bh, gh, rh)
 									self.bmp[cx+1][cy+1] = string.char(bh, gh, rh)
-									
-									cUsed[self.planet[x][y][z].country] = string.char(bh, gh, rh)
-									cCount = cCount+1
 								end
 							end end
 						end end
