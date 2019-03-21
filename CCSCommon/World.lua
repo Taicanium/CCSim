@@ -100,13 +100,7 @@ return
 						local nx = cx+8
 						for c in name:gmatch("[%w ]") do
 							local gData = parent.glyphs[c]
-							for y=cy,cy+7 do for x=nx,nx+5 do
-								if gData[8-(y-cy)][x-nx+1] == 1 then
-									self.bmp[x][y] = string.char(0, 0, 0)
-								else
-									self.bmp[x][y] = string.char(255, 255, 255)
-								end
-							end end
+							if gData then for y=cy,cy+7 do for x=nx,nx+5 do if gData[8-(y-cy)][x-nx+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end end
 							nx = nx+8
 						end
 						
