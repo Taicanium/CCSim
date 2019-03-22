@@ -664,8 +664,20 @@ return
 				self.stability = self.stability+math.random(-3, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
+				
+				while math.floor(#self.people) > math.floor(parent.popLimit*3) do self:delete(parent, parent:randomChoice(self.people, true)) end
 
 				self.averageAge = 0
+				self.population = #self.people
+				self.strength = 0
+				self.military = 0
+				self.hasruler = -1
+				self.age = parent.years-self.founded
+
+				if self.population < parent.popLimit then self.birthrate = 3
+				else self.birthrate = 75 end
+				
+				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
 				if #self.parties > 0 then
 					for i=1,#self.parties do
@@ -706,15 +718,6 @@ return
 					end
 				end
 
-				self.population = #self.people
-				self.strength = 0
-				self.military = 0
-
-				if self.population < parent.popLimit then self.birthrate = 3
-				else self.birthrate = 75 end
-
-				while math.floor(#self.people) > math.floor(parent.popLimit*3) do self:delete(parent, parent:randomChoice(self.people, true)) end
-
 				local oldcap = nil
 				local oldreg = nil
 
@@ -734,10 +737,6 @@ return
 					j.population = 0
 					for k, l in pairs(j.cities) do l.population = 0 end
 				end
-
-				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
-
-				self.hasruler = -1
 
 				for i=#self.people,1,-1 do
 					local chn = false
@@ -802,8 +801,6 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
-
-				self.age = parent.years-self.founded
 			end
 		}
 
