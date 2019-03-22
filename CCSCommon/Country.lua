@@ -110,7 +110,7 @@ return
 									for i=1,#self.people do
 										if self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "Male" then
 											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
-											elseif self.people[i].age <= self.averageAge+25 then table.insert(possibles, self.people[i]) end
+											elseif self.people[i].age <= self.averageAge+25 and self.people[i].age >= self.averageAge-25 then table.insert(possibles, self.people[i]) end
 										end end
 									end
 
@@ -128,7 +128,7 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p) end end
+										if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p) end end
 									else self:setRuler(parent, closest.pIndex) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
@@ -136,7 +136,7 @@ return
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge+25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
+								if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
 							end
 						end
 					end
