@@ -52,7 +52,7 @@ return
 					local fauxBmp = {}
 					local colCount = 0
 					local rowCount = 0
-					local ib = self.planetR*2
+					local ib = self.planetR*4
 					local ih = ib
 					local iw = ib
 					
@@ -72,13 +72,18 @@ return
 									cy = self.planetR+y+1
 								end
 
-								if not self.cTriplets[self.planet[x][y][z].country] then fauxBmp[cx][cy] = string.char(170, 22, 22)
+								if not self.cTriplets[self.planet[x][y][z].country] then
+									fauxBmp[cx][cy] = string.char(170, 22, 22)
+									fauxBmp[cx+1][cy] = string.char(170, 22, 22)
+									fauxBmp[cx][cy+1] = string.char(170, 22, 22)
+									fauxBmp[cx+1][cy+1] = string.char(170, 22, 22)
 								else
-									local rh = self.cTriplets[self.planet[x][y][z].country][1]
-									local gh = self.cTriplets[self.planet[x][y][z].country][2]
-									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+									local rh, gh, bh = table.unpack(self.cTriplets[self.planet[x][y][z].country])
 
 									fauxBmp[cx][cy] = string.char(bh, gh, rh)
+									fauxBmp[cx+1][cy] = string.char(bh, gh, rh)
+									fauxBmp[cx][cy+1] = string.char(bh, gh, rh)
+									fauxBmp[cx+1][cy+1] = string.char(bh, gh, rh)
 								end
 							end end
 						end end
@@ -86,9 +91,6 @@ return
 					
 					cx = 1
 					cy = 1
-					ib = self.planetR*4
-					ih = ib
-					iw = ib
 					local cols = {}
 					for i=8,ib-8,10 do rowCount = rowCount+1 end
 					local colCount = 1
@@ -153,9 +155,7 @@ return
 									self.bmp[cx][cy+1] = string.char(170, 22, 22)
 									self.bmp[cx+1][cy+1] = string.char(170, 22, 22)
 								else
-									local rh = self.cTriplets[self.planet[x][y][z].country][1]
-									local gh = self.cTriplets[self.planet[x][y][z].country][2]
-									local bh = self.cTriplets[self.planet[x][y][z].country][3]
+									local rh, gh, bh = table.unpack(self.cTriplets[self.planet[x][y][z].country])
 
 									self.bmp[cx][cy] = string.char(bh, gh, rh)
 									self.bmp[cx+1][cy] = string.char(bh, gh, rh)
