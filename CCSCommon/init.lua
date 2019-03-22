@@ -774,9 +774,11 @@ return
 							
 							newl:checkRuler(parent)
 								
-							if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-							parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-							parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+							if parent.doMaps then
+								if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
+								parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+								parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+							end
 						end
 
 						return -1
@@ -864,9 +866,11 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 								
-								if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-								parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-								parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+								if parent.doMaps then
+									if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
+									parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+									parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+								end
 							end
 						end
 
@@ -972,9 +976,11 @@ return
 										
 										parent.thisWorld:delete(parent, c2)
 								
-										if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-										parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-										parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+										if parent.doMaps then
+											if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
+											parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
+											parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
+										end
 									end
 								end
 							end
