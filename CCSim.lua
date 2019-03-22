@@ -36,13 +36,13 @@ function main()
 
 	CCSCommon.showinfo = 0
 	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
-
+	
 	printp(CCSCommon.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
 
-	CCSCommon.doR = false
-	if string.lower(datin) == "y" then CCSCommon.doR = true end
+	CCSCommon.doMaps = false
+	if string.lower(datin) == "y" then CCSCommon.doMaps = true end
 
 	printp(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
@@ -81,10 +81,9 @@ function main()
 		end
 	end
 
-	if CCSCommon.doR then
-		if ifsstatus then lfs.mkdir("./maps") else os.execute("mkdir ./maps") end
-		CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
-	end
+	if CCSCommon.doMaps then if ifsstatus then lfs.mkdir("./maps") else os.execute("mkdir ./maps") end end
+	
+	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()
 	CCSCommon = nil
 	if cursesstatus then curses.endwin() end
