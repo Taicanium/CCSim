@@ -485,35 +485,33 @@ return
 						for i=1,#c1.ongoing-1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
 						for i=1,#c2.ongoing-1 do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
 
-						if parent.doR then
-							local border = false
-							local water = {}
-							for i=1,#c1.nodes do
-								local x, y, z = table.unpack(c1.nodes[i])
+						local border = false
+						local water = {}
+						for i=1,#c1.nodes do
+							local x, y, z = table.unpack(c1.nodes[i])
 
-								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									local nx, ny, nz = table.unpack(neighbor)
-									local nnode = parent.thisWorld.planet[nx][ny][nz]
-									if nnode.country == c2.name then border = true end
-									if not nnode.land then water[1] = 1 end
-								end
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+								local nx, ny, nz = table.unpack(neighbor)
+								local nnode = parent.thisWorld.planet[nx][ny][nz]
+								if nnode.country == c2.name then border = true end
+								if not nnode.land then water[1] = 1 end
 							end
-
-							for i=1,#c2.nodes do
-								local x, y, z = table.unpack(c2.nodes[i])
-
-								for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-									local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-									local nx, ny, nz = table.unpack(neighbor)
-									local nnode = parent.thisWorld.planet[nx][ny][nz]
-									if nnode.country == c1.name then border = true end
-									if not nnode.land then water[2] = 1 end
-								end
-							end
-
-							if not border then if not water[1] or not water[2] then return -1 end end
 						end
+
+						for i=1,#c2.nodes do
+							local x, y, z = table.unpack(c2.nodes[i])
+
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
+								local nx, ny, nz = table.unpack(neighbor)
+								local nnode = parent.thisWorld.planet[nx][ny][nz]
+								if nnode.country == c1.name then border = true end
+								if not nnode.land then water[2] = 1 end
+							end
+						end
+
+						if not border then if not water[1] or not water[2] then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 30 then
@@ -731,7 +729,7 @@ return
 							end
 							
 							newl:set(parent)
-							if parent.doR then newl:setTerritory(parent, c, pR) end
+							newl:setTerritory(parent, c, pR)
 							
 							for i, j in pairs(nc.cities) do
 								for k, l in pairs(newl.regions) do
@@ -989,7 +987,7 @@ return
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
 			disabled = {},
-			doR = false,
+			doMaps = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
 			ged = false,
 			genLimit = 3,
@@ -1122,7 +1120,7 @@ return
 			finish = function(self)
 				self:clearTerm()
 				
-				if self.doR then
+				if self.doMaps then
 					if ifsstatus then lfs.mkdir("./maps/final") else os.execute("mkdir ./maps/final") end
 					self.thisWorld:rOutput(self, "./maps/final")
 					self.thisWorld:bmpOutput(self, "./maps/final")
