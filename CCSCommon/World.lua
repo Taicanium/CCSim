@@ -54,9 +54,9 @@ return
 					local rowCount = 0
 					local ib = self.planetR*4
 					local ih = ib
-					local iw = ib
+					local iw = ib+8
 					
-					for x=1,iw do fauxBmp[x] = {} for y=1,ih do fauxBmp[x][y] = {} end end
+					for x=1,iw do fauxBmp[x] = {} for y=1,ih do fauxBmp[x][y] = string.char(255, 255, 255) end end
 					
 					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
 						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
@@ -92,7 +92,7 @@ return
 					cx = 1
 					cy = 1
 					local cols = {}
-					for i=8,ib-8,10 do rowCount = rowCount+1 end
+					for i=9,ib-8,10 do rowCount = rowCount+1 end
 					local colCount = 1
 					cols[colCount] = {}
 					
@@ -166,8 +166,8 @@ return
 						end end
 					end end
 					
-					cx = ib
-					cy = 8
+					cx = ib+8
+					cy = 9
 					
 					for i=1,#cols do
 						longestName = 0
@@ -186,7 +186,7 @@ return
 							cy = cy+10
 						end
 						cx = cx+(longestName*8)+8
-						cy = 8
+						cy = 9
 					end
 					
 					f:write(self.bmpHeadString)
