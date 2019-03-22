@@ -424,9 +424,11 @@ return
 					cp:setTerritory(parent)
 				end
 
-				if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
-				self:rOutput(parent, "./maps/initial")
-				self:bmpOutput(parent, "./maps/initial")
+				if parent.doMaps then
+					if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
+					self:rOutput(parent, "./maps/initial")
+					self:bmpOutput(parent, "./maps/initial")
+				end
 			end,
 
 			delete = function(self, parent, nz)
