@@ -84,6 +84,8 @@ return
 						end end
 					end end
 					
+					cx = 1
+					cy = 1
 					ib = self.planetR*4
 					ih = ib
 					iw = ib
