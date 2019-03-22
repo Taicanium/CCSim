@@ -779,9 +779,9 @@ return
 					end
 				end
 
-				self:checkRuler(parent)
-
 				self.averageAge = self.averageAge/#self.people
+				
+				self:checkRuler(parent)
 
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
