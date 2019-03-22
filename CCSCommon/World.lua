@@ -109,6 +109,8 @@ return
 							cols[colCount] = {}
 						end
 					end
+					iw = iw+(longestName*8)+8
+					
 					local ratio = iw*ih
 					local is = (ratio*3)+54
 					
