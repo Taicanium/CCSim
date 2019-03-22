@@ -428,7 +428,7 @@ return
 				for i=1,u-self.population do
 					local n = Person:new()
 					n:makename(parent, self)
-					n.age = math.random(1, 40)
+					n.age = math.random(1, 80)
 					n.birth = parent.years-n.age
 					if n.birth < 1 then n.birth = n.birth-1 end
 					n.level = 2
