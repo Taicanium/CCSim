@@ -53,8 +53,8 @@ return
 					local colCount = 0
 					local rowCount = 0
 					local ib = self.planetR*2
-					local ih = ib+8
-					local iw = ib+8
+					local ih = ib
+					local iw = ib
 					
 					for x=1,iw do fauxBmp[x] = {} for y=1,ih do fauxBmp[x][y] = {} end end
 					
@@ -85,10 +85,10 @@ return
 					end end
 					
 					ib = self.planetR*4
-					ih = ib+16
-					iw = ib+16
+					ih = ib
+					iw = ib
 					local cols = {}
-					for i=8,ib+8,10 do rowCount = rowCount+1 end
+					for i=8,ib-8,10 do rowCount = rowCount+1 end
 					local colCount = 1
 					cols[colCount] = {}
 					
@@ -96,8 +96,11 @@ return
 					
 					local longestName = 0
 					for i, j in pairs(cUsed) do
+						if i:len() > longestName then longestName = i:len() end
 						table.insert(cols[colCount], i)
 						if #cols[colCount] >= rowCount then
+							iw = iw+(longestName*8)+8
+							longestName = 0
 							colCount = colCount+1
 							cols[colCount] = {}
 						end
@@ -161,7 +164,7 @@ return
 						end end
 					end end
 					
-					cx = ib+16
+					cx = ib
 					cy = 8
 					
 					for i=1,#cols do
