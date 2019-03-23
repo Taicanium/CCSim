@@ -2152,9 +2152,8 @@ return
 
 			setGens = function(self, i, v, g)
 				if i then
-					local set = i.gensSet
-					i.gensSet = true
-					if not set then
+					if not i.gensSet then
+						i.gensSet = true
 						if v == -2 then
 							if i.royalGenerations > self.genLimit then i.royalGenerations = v end
 							if i.royalGenerations == -1 then
@@ -2176,9 +2175,9 @@ return
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
 						end
-						
-						if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
 					end
+					
+					if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
 				end
 			end,
 
