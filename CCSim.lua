@@ -83,7 +83,7 @@ function main()
 
 	if CCSCommon.doMaps then
 		if CCSCommon.clrcmd == "cls" then pcall(os.execute, "rmdir /S /Q ./maps") -- Windows
-		elseif CCSCommon.clrcmd == "clear" then pcall(os.execute, "rm -r -f ./maps") -- Linux
+		elseif CCSCommon.clrcmd == "clear" then pcall(os.execute, "rm -r -f ./maps") end -- Linux
 		
 		if ifsstatus then pcall(lfs.mkdir, "./maps") else pcall(os.execute, "mkdir ./maps") end
 	end
