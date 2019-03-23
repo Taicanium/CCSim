@@ -1587,7 +1587,7 @@ return
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then
-								for j=1,#cp.ongoing do table.insert(currentEvents, cp.ongoing[j].eString) end
+								for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end
 							
 								if cCount <= cLimit then
 									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
