@@ -5,8 +5,6 @@ return
 				local nm = {}
 				setmetatable(nm, self)
 
-				nm.bmp = {}
-				nm.bmpHeadString = ""
 				nm.countries = {}
 				nm.cColors = {}
 				nm.cTriplets = {}
@@ -23,182 +21,6 @@ return
 				self.countries[nd.name] = nd
 			end,
 			
-			bmpOutput = function(self, parent, label, axes)
-				if not axes then
-					printf(parent.stdscr, "Writing maps...")
-				
-					printl(parent.stdscr, "Map 1/6")
-					self:bmpOutput(parent, label.."/XY+", {{-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {0, self.planetR, 1}})
-					printl(parent.stdscr, "Map 2/6")
-					self:bmpOutput(parent, label.."/XY-", {{self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}})
-					printl(parent.stdscr, "Map 3/6")
-					self:bmpOutput(parent, label.."/XZ+", {{-self.planetR, self.planetR, 1}, {0, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
-					printl(parent.stdscr, "Map 4/6")
-					self:bmpOutput(parent, label.."/XZ-", {{self.planetR, -self.planetR, -1}, {0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
-					printl(parent.stdscr, "Map 5/6")
-					self:bmpOutput(parent, label.."/YZ+", {{0, self.planetR, 1}, {-self.planetR, self.planetR, 1}, {-self.planetR, self.planetR, 1}})
-					printl(parent.stdscr, "Map 6/6")
-					self:bmpOutput(parent, label.."/YZ-", {{0, -self.planetR, -1}, {self.planetR, -self.planetR, -1}, {self.planetR, -self.planetR, -1}})
-				else
-					local f = io.open(label..".bmp", "w+b")
-					if not f then return end
-					
-					local cx = 1
-					local cy = 1
-					
-					local cUsed = {}
-					local cCount = 0
-					
-					local fauxBmp = {}
-					local colCount = 0
-					local rowCount = 0
-					local ib = self.planetR*4
-					local ih = ib
-					local iw = ib+8
-					
-					for x=1,iw do fauxBmp[x] = {} for y=1,ih do fauxBmp[x][y] = string.char(255, 255, 255) end end
-					
-					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
-						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
-							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								if axes[1][1] == 0 then
-									cx = self.planetR+y+1
-									cy = self.planetR+z+1
-								elseif axes[2][1] == 0 then
-									cx = self.planetR+x+1
-									cy = self.planetR+z+1
-								elseif axes[3][1] == 0 then
-									cx = self.planetR+x+1
-									cy = self.planetR+y+1
-								end
-
-								if not self.cTriplets[self.planet[x][y][z].country] then
-									fauxBmp[cx][cy] = string.char(170, 22, 22)
-									fauxBmp[cx+1][cy] = string.char(170, 22, 22)
-									fauxBmp[cx][cy+1] = string.char(170, 22, 22)
-									fauxBmp[cx+1][cy+1] = string.char(170, 22, 22)
-								else
-									local rh, gh, bh = table.unpack(self.cTriplets[self.planet[x][y][z].country])
-
-									fauxBmp[cx][cy] = string.char(bh, gh, rh)
-									fauxBmp[cx+1][cy] = string.char(bh, gh, rh)
-									fauxBmp[cx][cy+1] = string.char(bh, gh, rh)
-									fauxBmp[cx+1][cy+1] = string.char(bh, gh, rh)
-								end
-							end end
-						end end
-					end end
-					
-					cx = 1
-					cy = 1
-					local cols = {}
-					for i=9,ib-8,10 do rowCount = rowCount+1 end
-					local colCount = 1
-					cols[colCount] = {}
-					
-					for x=1,#fauxBmp do for y=1,#fauxBmp[x] do if fauxBmp[x][y] ~= string.char(255, 255, 255) and fauxBmp[x][y] ~= string.char(0, 0, 0) and fauxBmp[x][y] ~= string.char(170, 22, 22) then for i, j in pairs(self.countries) do if self.cTriplets[j.name] and fauxBmp[x][y] == string.char(self.cTriplets[j.name][3], self.cTriplets[j.name][2], self.cTriplets[j.name][1]) then cUsed[j.name] = fauxBmp[x][y] end end end end end
-					
-					local longestName = 0
-					for i, j in pairs(cUsed) do
-						if i:len() > longestName then longestName = i:len() end
-						table.insert(cols[colCount], i)
-						if #cols[colCount] >= rowCount then
-							iw = iw+(longestName*8)+8
-							longestName = 0
-							colCount = colCount+1
-							cols[colCount] = {}
-						end
-					end
-					iw = iw+(longestName*8)+8
-					
-					local ratio = iw*ih
-					local is = (ratio*3)+54
-					
-					local siw = string.format("%08x", iw)
-					local sa = {}
-					for x in siw:gmatch("%w%w") do table.insert(sa, x) end
-					siw = ""
-					for q=#sa,1,-1 do siw = siw..sa[q] end
-					local sih = string.format("%08x", ih)
-					sa = {}
-					for x in sih:gmatch("%w%w") do table.insert(sa, x) end
-					sih = ""
-					for q=#sa,1,-1 do sih = sih..sa[q] end
-					local sis = string.format("%08x", is)
-					sa = {}
-					for x in sis:gmatch("%w%w") do table.insert(sa, x) end
-					sis = ""
-					for q=#sa,1,-1 do sis = sis..sa[q] end
-					
-					local headString = "424D"..sis.."000000003600000028000000"..siw..sih.."010018000000000000000000130B0000130B0000FFFFFF0000000000"
-					self.bmpHeadString = ""
-					for x in headString:gmatch("%w%w") do self.bmpHeadString = self.bmpHeadString..string.char(tonumber(x, 16)) end
-					
-					self.bmp = {}
-					for x=1,iw do self.bmp[x] = {} for y=1,ih do self.bmp[x][y] = string.char(255, 255, 255) end end
-					
-					for x=axes[1][1],axes[1][2],axes[1][3] do if self.planet[x] then
-						for y=axes[2][1],axes[2][2],axes[2][3] do if self.planet[x][y] then
-							for z=axes[3][1],axes[3][2],axes[3][3] do if self.planet[x][y][z] then
-								if axes[1][1] == 0 then
-									cx = ((self.planetR+y)*2)+1
-									cy = ((self.planetR+z)*2)+1
-								elseif axes[2][1] == 0 then
-									cx = ((self.planetR+x)*2)+1
-									cy = ((self.planetR+z)*2)+1
-								elseif axes[3][1] == 0 then
-									cx = ((self.planetR+x)*2)+1
-									cy = ((self.planetR+y)*2)+1
-								end
-
-								if not self.cTriplets[self.planet[x][y][z].country] then
-									self.bmp[cx][cy] = string.char(170, 22, 22)
-									self.bmp[cx+1][cy] = string.char(170, 22, 22)
-									self.bmp[cx][cy+1] = string.char(170, 22, 22)
-									self.bmp[cx+1][cy+1] = string.char(170, 22, 22)
-								else
-									local rh, gh, bh = table.unpack(self.cTriplets[self.planet[x][y][z].country])
-
-									self.bmp[cx][cy] = string.char(bh, gh, rh)
-									self.bmp[cx+1][cy] = string.char(bh, gh, rh)
-									self.bmp[cx][cy+1] = string.char(bh, gh, rh)
-									self.bmp[cx+1][cy+1] = string.char(bh, gh, rh)
-								end
-							end end
-						end end
-					end end
-					
-					cx = ib+8
-					cy = 9
-					
-					for i=1,#cols do
-						longestName = 0
-						for j=1,#cols[i] do
-							local cName = cols[i][j]
-							for x=cx,cx+7 do for y=cy,cy+7 do if self.bmp[x] and self.bmp[x][y] then self.bmp[x][y] = cUsed[cName] end end end
-							
-							local name = cName:lower()
-							local nx = cx+8
-							for c in name:gmatch("[%w%-%' ]") do
-								local gData = parent.glyphs[c]
-								if gData then for y=cy,cy+7 do for x=nx,nx+5 do if self.bmp[x] and self.bmp[x][y] then if gData[8-(y-cy)][x-nx+1] == 1 then self.bmp[x][y] = string.char(0, 0, 0) else self.bmp[x][y] = string.char(255, 255, 255) end end end end end
-								nx = nx+8
-							end
-							if name:len() > longestName then longestName = name:len() end
-							cy = cy+10
-						end
-						cx = cx+(longestName*8)+8
-						cy = 9
-					end
-					
-					f:write(self.bmpHeadString)
-					for y=ih,1,-1 do for x=1,iw do f:write(self.bmp[x][y]) end end
-					
-					f:flush()
-					f = nil
-				end
-			end,
-
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 
@@ -424,11 +246,7 @@ return
 					cp:setTerritory(parent)
 				end
 
-				if parent.doMaps then
-					if ifsstatus then lfs.mkdir("./maps/initial") else os.execute("mkdir ./maps/initial") end
-					self:rOutput(parent, "./maps/initial")
-					self:bmpOutput(parent, "./maps/initial")
-				end
+				if parent.doMaps then self:rOutput(parent, "./maps/initial") end
 			end,
 
 			delete = function(self, parent, nz)

@@ -81,7 +81,12 @@ function main()
 		end
 	end
 
-	if CCSCommon.doMaps then if ifsstatus then lfs.mkdir("./maps") else os.execute("mkdir ./maps") end end
+	if CCSCommon.doMaps then
+		if CCSCommon.clrcmd == "cls" then pcall(os.execute, "rmdir /S /Q ./maps") -- Windows
+		elseif CCSCommon.clrcmd == "clear" then pcall(os.execute, "rm -r -f ./maps") -- Linux
+		
+		if ifsstatus then pcall(lfs.mkdir, "./maps") else pcall(os.execute, "mkdir ./maps") end
+	end
 	
 	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()

@@ -774,11 +774,7 @@ return
 							
 							newl:checkRuler(parent)
 								
-							if parent.doMaps then
-								if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-								parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-								parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
-							end
+							if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 						end
 
 						return -1
@@ -866,11 +862,7 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 								
-								if parent.doMaps then
-									if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-									parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-									parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
-								end
+								if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 							end
 						end
 
@@ -976,11 +968,7 @@ return
 										
 										parent.thisWorld:delete(parent, c2)
 								
-										if parent.doMaps then
-											if ifsstatus then lfs.mkdir("./maps/Year "..tostring(parent.years)) else os.execute("mkdir \"./maps/Year "..tostring(parent.years).."\"") end
-											parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years))
-											parent.thisWorld:bmpOutput(parent, "./maps/Year "..tostring(parent.years))
-										end
+										if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 									end
 								end
 							end
@@ -1126,11 +1114,7 @@ return
 			finish = function(self)
 				self:clearTerm()
 				
-				if self.doMaps then
-					if ifsstatus then lfs.mkdir("./maps/final") else os.execute("mkdir ./maps/final") end
-					self.thisWorld:rOutput(self, "./maps/final")
-					self.thisWorld:bmpOutput(self, "./maps/final")
-				end
+				if self.doMaps then self.thisWorld:rOutput(self, "./maps/final") end
 				
 				printf(self.stdscr, "Printing result...")
 				local f = io.open("output.txt", "w+")
