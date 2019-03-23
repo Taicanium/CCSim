@@ -114,6 +114,8 @@ return
 					eString="",
 					inverse=false,
 					performEvent=function(self, parent, c)
+						for i, j in pairs(c.ongoing) do if j.name == "Civil War" then return -1 end end
+					
 						parent:rseed()
 						local dchance = math.random(1, 100)
 						if dchance < 51 then -- Executed
