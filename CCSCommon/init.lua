@@ -529,12 +529,9 @@ return
 					target=nil,
 					args=2,
 					inverse=true,
-					eString="",
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Entered military alliance with "..self.target.name)
 						self.target:event(parent, "Entered military alliance with "..c1.name)
-
-						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 					end,
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
@@ -548,8 +545,6 @@ return
 
 						local doEnd = math.random(1, 500)
 						if doEnd < 5 then return self:endEvent(parent, c1) end
-
-						self.eString = c1.demonym.."-"..self.target.demonym.." alliance"
 
 						return 0
 					end,
