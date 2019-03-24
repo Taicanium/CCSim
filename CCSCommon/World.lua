@@ -610,17 +610,14 @@ return
 						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
 
 						if parent.popLimit < 1500 then parent.popLimit = 1500 end
-						if parent.numCountries >= 9 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+						if f1 > 1.4 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					else
 						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(f1*2))) end
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
 				
-				if _DEBUG then
-					for i, j in pairs(parent.debugTimes) do printf(parent.stdscr, i..": "..tostring(j[1]/j[2])) end
-					printf(parent.stdscr, "TOTAL: "..tostring(f1))
-				end
+				parent.debugTimes["TOTAL"] = {f1, 1}
 			end
 		}
 
