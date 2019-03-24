@@ -1552,7 +1552,7 @@ return
 						local eCount = 0
 						local eLimit = 4
 						if cursesstatus then
-							cLimit = math.floor(curses:lines()/2)
+							cLimit = math.floor(curses:lines()/2)-4
 							eLimit = (curses:lines()-cLimit)-9
 						end
 
