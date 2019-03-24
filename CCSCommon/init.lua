@@ -1591,7 +1591,7 @@ return
 						
 						if _DEBUG then
 							self.debugTimes["PRINT"] = {_time()-f0, 1}
-							for i, j in pairs(self.debugTimes) do printf(self.stdscr, i..": "..tostring(j[1]/j[2])) end
+							for i, j in pairs(self.debugTimes) do msg = msg..i..": "..tostring(j[1]/j[2])).."\n" end
 						end
 					end
 
