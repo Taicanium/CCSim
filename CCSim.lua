@@ -1,3 +1,5 @@
+_DEBUG = false
+
 CCSCommon = require("CCSCommon")()
 
 function main()

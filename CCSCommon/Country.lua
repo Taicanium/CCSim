@@ -173,6 +173,8 @@ return
 			end,
 
 			eventloop = function(self, parent)
+				local f0 = _time()
+			
 				local v = math.floor(math.random(200, 600)*math.floor(self.stability))
 				local vi = math.floor(math.random(200, 600)*(100-math.floor(self.stability)))
 				if v < 1 then v = 1 end
@@ -213,6 +215,12 @@ return
 				if revCount > 6 then
 					self:event(parent, "Collapsed")
 					for i=1,#parent.c_events do if parent.c_events[i].name == "Conquer" then self:triggerEvent(parent, i, true) end end
+				end
+				
+				if _DEBUG then
+					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = {0, 0} end
+					parent.debugTimes["Country:eventloop"][0] = parent.debugTimes["Country:eventloop"][0]+_time()-f0
+					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+1
 				end
 			end,
 
@@ -657,6 +665,8 @@ return
 			end,
 
 			update = function(self, parent)
+				local f0 = _time()
+				
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
@@ -801,6 +811,12 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
 				self.majority = largest
+				
+				if _DEBUG then
+					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = {0, 0} end
+					parent.debugTimes["Country:update"][0] = parent.debugTimes["Country:update"][0]+_time()-f0
+					parent.debugTimes["Country:update"][1] = parent.debugTimes["Country:update"][1]+1
+				end
 			end
 		}
 

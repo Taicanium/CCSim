@@ -187,6 +187,8 @@ return
 			end,
 
 			update = function(self, parent, nl)
+				local f0 = _time()
+			
 				self.age = parent.years-self.birth
 				if self.birth <= -1 then self.age = self.age-1 end
 
@@ -409,6 +411,12 @@ return
 						nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population+1
 					else self.city = "" end
 				else self.region = "" end
+				
+				if _DEBUG then
+					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = {0, 0} end
+					parent.debugTimes["Person:update"][0] = parent.debugTimes["Person:update"][0]+_time()-f0
+					parent.debugTimes["Person:update"][1] = parent.debugTimes["Person:update"][1]+1
+				end
 			end
 		}
 

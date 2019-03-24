@@ -616,6 +616,11 @@ return
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
+				
+				if _DEBUG then
+					for i, j in pairs(parent.debugTimes) do printf(parent.stdscr, i..": "..tostring(j[0]/j[1])) end
+					printf(parent.stdscr, "TOTAL: "..tostring(f1))
+				end
 			end
 		}
 
