@@ -414,8 +414,8 @@ return
 				
 				if _DEBUG then
 					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = {0, 0} end
-					parent.debugTimes["Person:update"][0] = parent.debugTimes["Person:update"][0]+_time()-f0
-					parent.debugTimes["Person:update"][1] = parent.debugTimes["Person:update"][1]+1
+					parent.debugTimes["Person:update"][1] = parent.debugTimes["Person:update"][1]+_time()-f0
+					parent.debugTimes["Person:update"][2] = parent.debugTimes["Person:update"][2]+1
 				end
 			end
 		}
