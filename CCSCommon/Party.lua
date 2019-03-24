@@ -26,45 +26,37 @@ return
 				local n3 = math.random(1, 4)
 				local n4 = math.random(1, 4)
 
-				local v1 = -1
-				local v2 = -1
-				local v3 = -1
-				local v4 = -1
-
 				if n1 == 1 then
-					local v = math.random(1, #parent.partynames[1])
-					v1 = v
-					self.name = self.name..parent.partynames[1][v].." "
+					local v = parent:randomChoice(parent.partynames[1])
+					self.name = self.name..v.." "
 				end
 
 				if n2 == 2 then
-					local v = math.random(1, #parent.partynames[2])
-					while v == v1 do v = math.random(1, #parent.partynames[2]) end
-					v2 = v
-					self.name = self.name..parent.partynames[2][v].." "
+					local v = parent:randomChoice(parent.partynames[2])
+					while self.name:match(v) do v = parent:randomChoice(parent.partynames[2]) end
+					self.name = self.name..v.." "
 				end
 
 				if n3 == 3 then
-					local v = math.random(1, #parent.partynames[3])
-					v3 = v
-					self.name = self.name..parent.partynames[3][v].." "
+					local v = parent:randomChoice(parent.partynames[3])
+					while self.name:match(v) do v = parent:randomChoice(parent.partynames[3]) end
+					self.name = self.name..v.." "
 				end
 
 				if n4 == 4 then
-					local v = math.random(1, #parent.partynames[4])
-					while v == v3 do v = math.random(1, #parent.partynames[4]) end
-					v4 = v
-					self.name = self.name..parent.partynames[4][v].." "
+					local v = parent:randomChoice(parent.partynames[4])
+					while self.name:match(v) do v = parent:randomChoice(parent.partynames[4]) end
+					self.name = self.name..v.." "
 				end
 
 				if self.name == "" then
-					local nf = math.random(1, 3)
-					local v = math.random(1, #parent.partynames[nf])
-					self.name = self.name..parent.partynames[nf][v].." "
+					local nf = math.random(1, 4)
+					local v = parent:randomChoice(parent.partynames[nf])
+					self.name = self.name..v.." "
 				end
 
-				local v = math.random(1, #parent.partynames[5])
-				self.name = self.name..parent.partynames[5][v]
+				local v = parent:randomChoice(parent.partynames[5])
+				self.name = self.name..v
 
 				for i, p in pairs(n.parties) do
 					if self.name == p.name then
