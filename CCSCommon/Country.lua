@@ -48,12 +48,10 @@ return
 			add = function(self, parent, n)
 				if not n then return end
 
-				if n.nationality ~= self.name then
-					if parent.thisWorld.countries[n.nationality] then if parent.thisWorld.countries[n.nationality].people then
-						for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
-						table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
-						for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
-					end end
+				if n.nationality ~= self.name and parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality].people then
+					for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+					table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
+					for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
 				end
 				n.nationality = self.name
 				n.region = ""
@@ -65,10 +63,10 @@ return
 				n.parentRuler = false
 				if n.spouse then
 					if n.spouse.nationality ~= self.name then
-						if parent.thisWorld.countries[n.spouse.nationality] then if parent.thisWorld.countries[n.spouse.nationality].people then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] then if parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
+						if parent.thisWorld.countries[n.spouse.nationality] and parent.thisWorld.countries[n.spouse.nationality].people and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
 							table.remove(parent.thisWorld.countries[n.spouse.nationality].people, n.spouse.pIndex)
 							for i=n.spouse.pIndex,#parent.thisWorld.countries[n.spouse.nationality].people do parent.thisWorld.countries[n.spouse.nationality].people[i].pIndex = i end
-						end end end end
+						end
 					end
 					n.spouse.nationality = self.name
 					n.spouse.region = ""
@@ -144,16 +142,14 @@ return
 			end,
 
 			delete = function(self, parent, y)
-				if self.people then if #self.people > 0 then
-					if self.people[y] then
-						self.people[y].death = parent.years
-						self.people[y].deathplace = self.name
-						table.insert(parent.royals, self.people[y])
-						w = table.remove(self.people, y)
-						if w then w:destroy() end
-						self.population = self.population-1
-					end
-				end end
+				if self.people and #self.people > 0 and self.people[y] then
+					self.people[y].death = parent.years
+					self.people[y].deathplace = self.name
+					table.insert(parent.royals, self.people[y])
+					w = table.remove(self.people, y)
+					if w then w:destroy() end
+					self.population = self.population-1
+				end
 			end,
 
 			destroy = function(self, parent)
@@ -711,13 +707,7 @@ return
 						ra = nil
 					end
 				end
-
-				for i, j in pairs(self.relations) do
-					local found = false
-					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
-					if not found then self.relations[i] = nil end
-				end
-
+				
 				for i, cp in pairs(parent.thisWorld.countries) do
 					if cp.name ~= self.name then
 						if not self.relations[cp.name] then self.relations[cp.name] = 50 end
@@ -726,6 +716,12 @@ return
 						if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
 						if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 					end
+				end
+
+				for i, j in pairs(self.relations) do
+					local found = false
+					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
+					if not found then self.relations[i] = nil end
 				end
 
 				local oldcap = nil
@@ -766,7 +762,7 @@ return
 						end
 					end
 
-					if not chn then if not self.people[i].isruler then
+					if not chn and not self.people[i].isruler then
 						local mChance = math.random(1, 20000)
 						if mChance == 3799 then
 							local cp = parent:randomChoice(parent.thisWorld.countries)
@@ -774,7 +770,7 @@ return
 							cp:add(parent, self.people[i])
 							chn = true
 						end
-					end end
+					end
 
 					if not chn then
 						self.people[i].pIndex = i
@@ -805,11 +801,15 @@ return
 					if largest ~= -1 then self.parties[largest].leading = true end
 				end
 
-				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = (self.ethnicities[i]/#self.people)*100 end
-
 				local largest = ""
 				local largestN = 0
-				for i, j in pairs(self.ethnicities) do if j >= largestN then largest = i end end
+				for i, j in pairs(self.ethnicities) do
+					self.ethnicities[i] = (self.ethnicities[i]/#self.people)*100
+					if j >= largestN then
+						largest = i
+						largestN = j
+					end
+				end
 				self.majority = largest
 				
 				if _DEBUG then
