@@ -618,7 +618,7 @@ return
 				end
 				
 				if _DEBUG then
-					for i, j in pairs(parent.debugTimes) do printf(parent.stdscr, i..": "..tostring(j[0]/j[1])) end
+					for i, j in pairs(parent.debugTimes) do printf(parent.stdscr, i..": "..tostring(j[1]/j[2])) end
 					printf(parent.stdscr, "TOTAL: "..tostring(f1))
 				end
 			end
