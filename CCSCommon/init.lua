@@ -1546,6 +1546,8 @@ return
 					msg = string.format("Year %d: %d countries\n\n", self.years, self.numCountries)
 
 					if self.showinfo == 1 then
+						local f0 = _time()
+						
 						local currentEvents = {}
 						local cCount = 0
 						local cLimit = 14
@@ -1586,6 +1588,11 @@ return
 						elseif eCount == 0 then msg = msg..string.format("\nNone") end
 						
 						msg = msg.."\n"
+						
+						if _DEBUG then
+							self.debugTimes["PRINT"] = {_time()-f0, 1}
+							for i, j in pairs(self.debugTimes) do printf(self.stdscr, i..": "..tostring(j[1]/j[2])) end
+						end
 					end
 
 					self.years = self.years+1
