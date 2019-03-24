@@ -219,8 +219,8 @@ return
 				
 				if _DEBUG then
 					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = {0, 0} end
-					parent.debugTimes["Country:eventloop"][0] = parent.debugTimes["Country:eventloop"][0]+_time()-f0
-					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+1
+					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+_time()-f0
+					parent.debugTimes["Country:eventloop"][2] = parent.debugTimes["Country:eventloop"][2]+1
 				end
 			end,
 
@@ -814,8 +814,8 @@ return
 				
 				if _DEBUG then
 					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = {0, 0} end
-					parent.debugTimes["Country:update"][0] = parent.debugTimes["Country:update"][0]+_time()-f0
-					parent.debugTimes["Country:update"][1] = parent.debugTimes["Country:update"][1]+1
+					parent.debugTimes["Country:update"][1] = parent.debugTimes["Country:update"][1]+_time()-f0
+					parent.debugTimes["Country:update"][2] = parent.debugTimes["Country:update"][2]+1
 				end
 			end
 		}
