@@ -910,7 +910,7 @@ return
 				},
 				{
 					name="Annex",
-					chance=6,
+					chance=10,
 					target=nil,
 					args=2,
 					inverse=false,
@@ -1094,7 +1094,7 @@ return
 				for i, j in pairs(self.final) do
 					if #cKeys ~= 0 then
 						local found = false
-						for k=1,#cKeys do if cKeys[k] then if not found then
+						for k=1,#cKeys do if cKeys[k] and not found then
 							local ind = 1
 							local chr1 = alphaOrder[cKeys[k]:sub(ind, ind):lower()]
 							local chr2 = alphaOrder[j.name:sub(ind, ind):lower()]
@@ -1113,7 +1113,7 @@ return
 								table.insert(cKeys, k, j.name)
 								found = true
 							end
-						end end end
+						end end
 						if not found then table.insert(cKeys, j.name) end
 					else table.insert(cKeys, j.name) end
 				end
@@ -1349,11 +1349,11 @@ return
 							local gend = "Male"
 							local to = self.years
 							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] and fc.rulers[i].title == mat[1] then number = number+1 end end end
-							if mat[1] == "Prime" then if mat[2] == "Minister" then
+							if mat[1] == "Prime" and mat[2] == "Minister" then
 								mat[1] = "Prime Minister"
 								for i=2,#mat-1 do mat[i] = mat[i+1] end
 								mat[#mat] = nil
-							end end
+							end
 							if mat[1] == "King" then dynastic = true end
 							if mat[1] == "Emperor" then dynastic = true end
 							if mat[1] == "Queen" then dynastic = true end
@@ -2208,7 +2208,7 @@ return
 					if not j.removed then
 						j.title = j.RulerTitle
 
-						if j.father and j.mother then if not j.father.removed and not j.mother.removed then
+						if j.father and j.mother and not j.father.removed and not j.mother.removed then
 							local parentString = j.father.gString.."-"..j.mother.gString
 
 							if not fams[parentString] then
@@ -2222,7 +2222,7 @@ return
 								table.insert(fams[parentString].chil, ind, j)
 								table.insert(j.famc, fams[parentString])
 							end
-						end end
+						end
 						
 						done = done+1
 						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
