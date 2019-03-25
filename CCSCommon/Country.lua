@@ -155,7 +155,7 @@ return
 				if self.people then for i=1,#self.people do self:delete(parent, i) end end
 				self.people = nil
 
-				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) = nil end
+				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
@@ -184,7 +184,7 @@ return
 					end
 				end
 
-				for i=#self.ongoing,1,-1 do if self.ongoing[i] then if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) = nil end end end
+				for i=#self.ongoing,1,-1 do if self.ongoing[i] then if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) end end end
 
 				for i=1,#parent.c_events do
 					if not parent.disabled[parent.c_events[i].name:lower()] and not parent.disabled["!"..parent.c_events[i].name:lower()] then
@@ -693,7 +693,7 @@ return
 						if ar:len() >= nr:len() and ar:sub(1, #nr) == nr then found = true end
 					end
 
-					if not found then table.remove(self.alliances, i) = nil end
+					if not found then table.remove(self.alliances, i) end
 				end
 				
 				for i, j in pairs(self.relations) do
