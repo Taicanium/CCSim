@@ -49,8 +49,7 @@ return
 				local benchAdjust = math.floor(_time()-t0)
 				if benchAdjust > 50 then benchAdjust = 50 end
 
-				local r = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
-				self.planetR = r
+				self.planetR = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
 
 				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", r)
 

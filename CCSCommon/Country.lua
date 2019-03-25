@@ -146,19 +146,16 @@ return
 					self.people[y].death = parent.years
 					self.people[y].deathplace = self.name
 					table.insert(parent.royals, self.people[y])
-					w = table.remove(self.people, y)
-					if w then w:destroy() end
+					table.remove(self.people, y):destroy()
 					self.population = self.population-1
 				end
 			end,
 
 			destroy = function(self, parent)
-				if self.people then
-					for i=1,#self.people do self:delete(parent, i) end
-					self.people = nil
-				end
+				if self.people then for i=1,#self.people do self:delete(parent, i) end end
+				self.people = nil
 
-				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
+				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) = nil end
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
@@ -180,28 +177,19 @@ return
 				if not self.relations then self.relations = {} end
 
 				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] then
-						if self.ongoing[i].args > 1 then
-							local found = false
-							if self.ongoing[i].target and self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end
-							if not found then table.remove(self.ongoing, i) end
-						end
+					if self.ongoing[i] and self.ongoing[i].args > 1 then
+						local found = false
+						if self.ongoing[i].target and self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end
+						if not found then table.remove(self.ongoing, i) end
 					end
 				end
 
-				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] then
-						if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then
-							local ro = table.remove(self.ongoing, i)
-							ro = nil
-						end
-					end
-				end
+				for i=#self.ongoing,1,-1 do if self.ongoing[i] then if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) = nil end end end
 
 				for i=1,#parent.c_events do
 					if not parent.disabled[parent.c_events[i].name:lower()] and not parent.disabled["!"..parent.c_events[i].name:lower()] then
-						local chance = math.floor(math.random(1, v))
-						if parent.c_events[i].inverse then chance = math.floor(math.random(1, vi)) end
+						local chance = 0
+						if parent.c_events[i].inverse then chance = math.floor(math.random(1, vi)) else chance = math.floor(math.random(1, v)) end
 						if chance <= parent.c_events[i].chance then self:triggerEvent(parent, i) end
 					end
 				end
@@ -262,16 +250,18 @@ return
 				end
 
 				if #self.rulernames < 1 then
-					for k=1,math.random(5, 9) do table.insert(self.rulernames, parent:name(true)) end
-					for k=1,math.random(5, 9) do table.insert(self.frulernames, parent:name(true)) end
+					local rn = math.random(5, 9)
+					for k=1,rn do table.insert(self.rulernames, parent:name(true)) end
 				end
 
-				if #self.frulernames < 1 then for k=1,math.random(5, 9) do table.insert(self.frulernames, parent:name(true)) end end
+				if #self.frulernames < 1 then
+					local rn = math.random(5, 9)
+					for k=1,rn do table.insert(self.frulernames, parent:name(true)) end
+				end
 
 				for i=1,#parent.systems do
 					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
-					tf = math.random(1, 100)
-					if tf < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
+					if math.random(1, 100) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
 				end
 
 				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
@@ -679,6 +669,7 @@ return
 				self.military = 0
 				self.hasruler = -1
 				self.age = parent.years-self.founded
+				if self.founded < 1 then self.age = self.age-1 end
 
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 75 end
@@ -702,27 +693,21 @@ return
 						if ar:len() >= nr:len() and ar:sub(1, #nr) == nr then found = true end
 					end
 
-					if not found then
-						local ra = table.remove(self.alliances, i)
-						ra = nil
-					end
+					if not found then table.remove(self.alliances, i) = nil end
 				end
 				
-				for i, cp in pairs(parent.thisWorld.countries) do
-					if cp.name ~= self.name then
-						if not self.relations[cp.name] then self.relations[cp.name] = 50 end
-						local v = math.random(-4, 4)
-						self.relations[cp.name] = self.relations[cp.name]+v
-						if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
-						if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
-					end
-				end
-
 				for i, j in pairs(self.relations) do
 					local found = false
 					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
 					if not found then self.relations[i] = nil end
 				end
+				
+				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
+					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
+					self.relations[cp.name] = self.relations[cp.name]+math.random(-4, 4)
+					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
+					if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
+				end end
 
 				local oldcap = nil
 				local oldreg = nil
@@ -753,23 +738,17 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 							chn = true
-						else
-							d = math.random(1, 3000-(age*3))
-							if d < age then
-								self:delete(parent, i)
-								chn = true
-							end
+						elseif math.random(1, 3000-(age*3)) < age then
+							self:delete(parent, i)
+							chn = true
 						end
 					end
 
-					if not chn and not self.people[i].isruler then
-						local mChance = math.random(1, 20000)
-						if mChance == 3799 then
-							local cp = parent:randomChoice(parent.thisWorld.countries)
-							if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
-							cp:add(parent, self.people[i])
-							chn = true
-						end
+					if not chn and not self.people[i].isruler and math.random(1, 20000) == 3799 then
+						local cp = parent:randomChoice(parent.thisWorld.countries)
+						if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
+						cp:add(parent, self.people[i])
+						chn = true
 					end
 
 					if not chn then

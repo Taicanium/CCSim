@@ -86,15 +86,12 @@ return
 						c:event(parent, "Coup d'Etat")
 
 						parent:rseed()
-						local dchance = math.random(1, 100)
-						if dchance < 26 then -- Executed
+						if math.random(1, 100) < 26 then -- Executed
 							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-							local ruler = nil
-							for q, r in pairs(c.people) do if r.isruler then ruler = r end end
-							if r then newC:add(parent, r) end
+							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 						end
 
 						c.hasruler = -1
@@ -117,15 +114,12 @@ return
 						for i, j in pairs(c.ongoing) do if j.name == "Civil War" then return -1 end end
 					
 						parent:rseed()
-						local dchance = math.random(1, 100)
-						if dchance < 51 then -- Executed
+						if math.random(1, 100) < 51 then -- Executed
 							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-							local ruler = nil
-							for q, r in pairs(c.people) do if r.isruler then ruler = r end end
-							if r then newC:add(parent, r) end
+							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 						end
 
 						c.hasruler = -1
@@ -142,12 +136,7 @@ return
 						c.stability = c.stability-15
 						if c.stability < 1 then c.stability = 1 end
 
-						if math.floor(#c.people/10) > 1 then
-							for d=1,math.random(1, math.floor(#c.people/10)) do
-								local z = math.random(1, #c.people)
-								c:delete(parent, z)
-							end
-						end
+						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
 
 						return -1
 					end
@@ -185,20 +174,14 @@ return
 								for j=1,#self.govIntervened do if self.govIntervened[j] == cp.name then interv = true end end
 								if not interv then
 									if cp.relations[c.name] then
-										if cp.relations[c.name] < 20 then
-											local intervene = math.random(1, cp.relations[c.name])
-											if intervene == 1 then
-												c:event(parent, "Intervention on the side of the opposition by "..cp.name)
-												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
-												table.insert(self.opIntervened, cp.name)
-											end
-										elseif cp.relations[c.name] > 70 then
-											local intervene = math.random(50, 150-cp.relations[c.name])
-											if intervene == 50 then
-												c:event(parent, "Intervention on the side of the government by "..cp.name)
-												cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
-												table.insert(self.govIntervened, cp.name)
-											end
+										if cp.relations[c.name] < 20 and math.random(1, cp.relations[c.name]) == 1 then
+											c:event(parent, "Intervention on the side of the opposition by "..cp.name)
+											cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
+											table.insert(self.opIntervened, cp.name)
+										elseif cp.relations[c.name] > 70 and math.random(50, 150-cp.relations[c.name]) == 50 then
+											c:event(parent, "Intervention on the side of the government by "..cp.name)
+											cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
+											table.insert(self.govIntervened, cp.name)
 										end
 									end
 								end
@@ -249,15 +232,12 @@ return
 								if opC then opC:event(parent, "Victory with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 						else -- Opposition victory
-							local dchance = math.random(1, 100)
-							if dchance < 51 then -- Executed
+							if math.random(1, 100) < 51 then -- Executed
 								for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-								local ruler = nil
-								for q, r in pairs(c.people) do if r.isruler then ruler = r end end
-								if r then newC:add(parent, r) end
+								for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 							end
 
 							for i=1,#self.opIntervened do
@@ -279,22 +259,23 @@ return
 							c:checkRuler(parent)
 
 							local newRuler = nil
-							for i=1,#c.people do if c.people[i].isruler then newRuler = i end end
+							for i=1,#c.people do if c.people[i].isruler then newRuler = c.people[i] end end
+							if not newRuler then return -1 end
 
 							local namenum = 0
 							local prevtitle = ""
-							if c.people[newRuler].prevtitle then prevtitle = c.people[newRuler].prevtitle.." " end
+							if newRuler.prevtitle then prevtitle = newRuler.prevtitle.." " end
 
 							if prevtitle == "Homeless " then prevtitle = "" end
 							if prevtitle == "Citizen " then prevtitle = "" end
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == c.people[newRuler].royalName and c.rulers[i].title == c.people[newRuler].title then namenum = namenum+1 end end
+								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.royalName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
 
-								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..parent:roman(namenum).." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..parent:roman(namenum).." of "..c.name)
 							else
-								c:event(parent, "End of civil war; victory for "..prevtitle..c.people[newRuler].name.." "..c.people[newRuler].surname.." of the "..c.people[newRuler].party..", now "..c.people[newRuler].title.." "..c.people[newRuler].royalName.." "..c.people[newRuler].surname.." of "..c.name)
+								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..newRuler.surname.." of "..c.name)
 							end
 						end
 
@@ -339,15 +320,12 @@ return
 							if c3 then
 								local already = false
 								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if not already then
-									local ic = math.random(1, 25)
-									if ic == 10 then
-										table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
+								if not already and math.random(1, 25) == 10 then
+									table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 
-										self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
-										c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
-										c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
-									end
+									self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
+									c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
+									c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
 								end
 							end
 						end
@@ -361,15 +339,12 @@ return
 							if c3 then
 								local already = false
 								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if not already then
-									local ic = math.random(1, 25)
-									if ic == 10 then
-										table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
+								if not already and math.random(1, 25) == 10 then
+									table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 
-										c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
-										self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
-										c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
-									end
+									c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
+									self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
+									c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
 								end
 							end
 						end
@@ -538,15 +513,9 @@ return
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
 
-						if c1.relations[self.target.name] then
-							if c1.relations[self.target.name] < 35 then
-								local doEnd = math.random(1, 50)
-								if doEnd < 5 then return self:endEvent(parent, c1) end
-							end
-						end
+						if c1.relations[self.target.name] and c1.relations[self.target.name] < 35 and math.random(1, 50) < 5 then return self:endEvent(parent, c1) end
 
-						local doEnd = math.random(1, 500)
-						if doEnd < 5 then return self:endEvent(parent, c1) end
+						if math.random(1, 500) < 5 then return self:endEvent(parent, c1) end
 
 						return 0
 					end,
@@ -801,12 +770,9 @@ return
 
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount+1 end
-								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) then
-									local rchance = math.random(1, 30)
-									if rchance < 5 then
-										local rname = parent:randomChoice(c2.regions).name
-										parent:RegionTransfer(c1, c2, rname, false)
-									end
+								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
+									local rname = parent:randomChoice(c2.regions).name
+									parent:RegionTransfer(c1, c2, rname, false)
 								end
 							end
 						end
@@ -885,20 +851,15 @@ return
 							while not c.capitalcity do
 								for i, j in pairs(c.regions) do
 									for k, l in pairs(j.cities) do
-										if l.name ~= oldcap then
-											if not c.capitalcity then
-												local chance = math.random(1, 100)
-												if chance == 35 then
-													c.capitalregion = j.name
-													c.capitalcity = k
+										if l.name ~= oldcap and not c.capitalcity and math.random(1, 100) chance == 35 then
+											c.capitalregion = j.name
+											c.capitalcity = k
 
-													local msg = "Capital moved"
-													if oldcap ~= "" then msg = msg.." from "..oldcap end
-													msg = msg.." to "..c.capitalcity
+											local msg = "Capital moved"
+											if oldcap ~= "" then msg = msg.." from "..oldcap end
+											msg = msg.." to "..c.capitalcity
 
-													c:event(parent, msg)
-												end
-											end
+											c:event(parent, msg)
 										end
 									end
 								end
