@@ -51,15 +51,15 @@ return
 
 				self.planetR = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
 
-				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", r)
+				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", self.planetR)
 
 				local rdone = 0
 
-				for x=-r,r do
-					for y=-r,r do
-						for z=-r,r do
+				for x=-self.planetR,self.planetR do
+					for y=-self.planetR,self.planetR do
+						for z=-self.planetR,self.planetR do
 							fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
-							if fsqrt < r+0.5 and fsqrt > r-0.5 then
+							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
 								if not self.planet[x] then self.planet[x] = {} end
 								if not self.planet[x][y] then self.planet[x][y] = {} end
 								self.planet[x][y][z] = {}
@@ -78,7 +78,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", ((rdone/math.pow((r*2)+1, 3)*10000)/100)) end
+							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", ((rdone/math.pow((self.planetR*2)+1, 3)*10000)/100)) end
 						end
 					end
 				end
