@@ -216,7 +216,7 @@ return
 				self.title = ranks[self.level]
 
 				if not self.spouse and self.age > 15 and math.random(1, 8) == 4 then
-					local m = parent.randomChoice(nl.people)
+					local m = parent:randomChoice(nl.people)
 					if not m.spouse and self.gender ~= m.gender then
 						local found = false
 						if self.surname == m.surname then found = true end
