@@ -851,7 +851,7 @@ return
 							while not c.capitalcity do
 								for i, j in pairs(c.regions) do
 									for k, l in pairs(j.cities) do
-										if l.name ~= oldcap and not c.capitalcity and math.random(1, 100) chance == 35 then
+										if l.name ~= oldcap and not c.capitalcity and math.random(1, 100) == 35 then
 											c.capitalregion = j.name
 											c.capitalcity = k
 
