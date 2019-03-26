@@ -27,7 +27,7 @@ return
 						end
 					end
 				end
-				
+
 				local cCount = 0
 				for i, j in pairs(self.cities) do cCount = cCount+1 end
 				if cCount == 0 then
