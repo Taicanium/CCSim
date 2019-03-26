@@ -20,7 +20,7 @@ return
 			add = function(self, nd)
 				self.countries[nd.name] = nd
 			end,
-			
+
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 
@@ -259,7 +259,7 @@ return
 					parent.numCountries = parent.numCountries-1
 				end
 			end,
-			
+
 			destroy = function(self)
 				for i, cp in pairs(self.countries) do
 					cp:destroy(parent)
@@ -269,7 +269,7 @@ return
 
 			rOutput = function(self, parent, label)
 				printf(parent.stdscr, "Writing R data...")
-				
+
 				local f = io.open(label..".r", "w+")
 				if not f then return end
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
@@ -613,7 +613,7 @@ return
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
-				
+
 				parent.debugTimes["TOTAL"] = {f1, 1}
 			end
 		}
