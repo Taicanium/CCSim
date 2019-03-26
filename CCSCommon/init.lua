@@ -1,3 +1,6 @@
+if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue then error("CCSim requires Lua 5.2 or later!") return -1 end
+if not table.unpack then table.unpack = function(t, n) if not n then return table.unpack(t, 1) else if t[n] then return t[n], table.unpack(t, n+1) end end end end
+
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 lfsstatus, lfs = pcall(require, "lfs")
@@ -512,30 +515,16 @@ return
 					end,
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
-
 						if c1.relations[self.target.name] and c1.relations[self.target.name] < 35 and math.random(1, 50) < 5 then return self:endEvent(parent, c1) end
-
 						if math.random(1, 500) < 5 then return self:endEvent(parent, c1) end
-
 						return 0
 					end,
 					endEvent=function(self, parent, c1)
 						c1:event(parent, "Military alliance severed with "..self.target.name)
 						self.target:event(parent, "Military alliance severed with "..c1.name)
 
-						for i=#self.target.alliances,1,-1 do
-							if self.target.alliances[i] == c1.name then
-								table.remove(self.target.alliances, i)
-								i = 0
-							end
-						end
-
-						for i=#c1.alliances,1,-1 do
-							if c1.alliances[i] == self.target.name then
-								table.remove(c1.alliances, i)
-								i = 0
-							end
-						end
+						for i=#self.target.alliances,1,-1 do if self.target.alliances[i] == c1.name then table.remove(self.target.alliances, i) end end
+						for i=#c1.alliances,1,-1 do if c1.alliances[i] == self.target.name then table.remove(c1.alliances, i) end end
 
 						return -1
 					end,
@@ -687,12 +676,6 @@ return
 							
 							local nrCount = 0
 							for i=1,#newl.nodes,35 do nrCount = nrCount+1 end
-							for i=1,nrCount do
-								local r = Region:new()
-								r:makename()
-								for j, k in pairs(r.cities) do r.cities[j] = nil end
-								self.regions[r.name] = r
-							end
 							
 							newl:set(parent)
 							newl:setTerritory(parent, c, pR)
@@ -708,6 +691,12 @@ return
 										end
 									end
 								end
+							end
+							
+							for i, j in pairs(newl.regions) do
+								local cCount = 0
+								for k, l in pairs(j.cities) do cCount = cCount+1 end
+								if cCount == 0 then newl.regions[i] = nil end
 							end
 
 							c.regions[newl.name] = nil
@@ -1132,8 +1121,6 @@ return
 				f:close()
 				f = nil
 
-				printf(self.stdscr, "")
-
 				if self.ged then
 					printf(self.stdscr, "Sorting living individuals...")
 					local cCount = 0
@@ -1146,7 +1133,7 @@ return
 						cIndex = cIndex+1
 					end
 
-					printf(self.stdscr, "\nFiltering duplicate or irrelevant individuals. This might take a moment...\n")
+					printf(self.stdscr, "Filtering duplicate or irrelevant individuals. This might take a moment...\n")
 					local fams = self:sortAscendants()
 
 					ged = io.open(tostring(os.time())..".ged", "w+")
@@ -1213,7 +1200,7 @@ return
 					end
 
 					ged:flush()
-					printf(self.stdscr, "\nWriting families...")
+					printf(self.stdscr, "Writing families...")
 					finished = 0
 
 					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
@@ -1230,9 +1217,7 @@ return
 						printl(self.stdscr, "%.2f%% done", (finished/fCount*10000)/100)
 					end end
 
-					msgout = "0 TRLR\n"
-
-					ged:write(msgout)
+					ged:write("0 TRLR\n")
 					ged:flush()
 					ged:close()
 					ged = nil
@@ -1240,11 +1225,11 @@ return
 			end,
 
 			fncopy = function(self, fn)
-				dumped = string.dump(fn)
-				cloned = loadstring(dumped)
-				i = 1
+				local dumped = string.dump(fn)
+				local cloned = loadstring(dumped)
+				local i = 1
 				while true do
-					name = debug.getupvalue(fn, i)
+					local name = debug.getupvalue(fn, i)
 					if not name then break end
 					debug.upvaluejoin(cloned, i, fn, i)
 					i = i+1
@@ -2087,32 +2072,19 @@ return
 
 			setGens = function(self, i, v, g)
 				if i then
+					if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
 					if not i.gensSet then
 						i.gensSet = true
-						if v == -2 then
-							if i.royalGenerations > self.genLimit then i.royalGenerations = v end
-							if i.royalGenerations == -1 then
-								local found = false
-								for j, k in pairs(i.children) do if k.royalGenerations == -2 or k.royalGenerations <= self.genLimit then found = true end end
-								if not found then i.royalGenerations = v end
-							end
+						if v == -2 then i.royalGenerations = v
 						elseif i.royalGenerations > v then i.royalGenerations = v end
 						
-						for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end
-						
-						if v == -2 and i.royalGenerations ~= 0 then
-							self:setGens(i.father, -2, 0)
-							self:setGens(i.mother, -2, 0)
-						elseif i.father and i.father.royalGenerations == 0 then
-							self:setGens(i.father, -2, 0)
-							self:setGens(i.mother, -2, 0)
-						elseif i.mother and i.mother.royalGenerations == 0 then
+						if g == 0 then for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end end
+							
+						if i.royalGenerations ~= -1 then
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
 						end
 					end
-					
-					if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
 				end
 			end,
 
@@ -2146,7 +2118,7 @@ return
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
 
-				printf(self.stdscr, "\nFiltering irrelevant individuals...")
+				printf(self.stdscr, "Filtering irrelevant individuals...")
 				done = 0
 
 				for i, j in pairs(self.royals) do
@@ -2162,7 +2134,7 @@ return
 				local oldCount = count
 				count = count-removed
 				done = 0
-				printf(self.stdscr, "\nTrimmed %d irrelevant individuals, out of %d.", removed, oldCount)
+				printf(self.stdscr, "Trimmed %d irrelevant individuals, out of %d.", removed, oldCount)
 				printf(self.stdscr, "Linking %d individuals...", count)
 
 				for i, j in pairs(self.royals) do
@@ -2190,15 +2162,21 @@ return
 					end
 				end
 
-				printf(self.stdscr, "\nRemoving unlinked individuals...")
+				printf(self.stdscr, "Removing unlinked individuals...")
+				removed = 0
 				done = 0
 
 				for i, j in pairs(self.royals) do if not j.removed then
-					if #j.fams == 0 and #j.famc == 0 then j.removed = true end
+					if #j.fams == 0 and #j.famc == 0 then
+						j.removed = true
+						removed = removed+1
+					end
 					
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end end
+				
+				printf(self.stdscr, "Removed %d unlinked individuals.", removed)
 
 				return fams
 			end,

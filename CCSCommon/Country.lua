@@ -567,7 +567,6 @@ return
 					if parent.thisWorld.planet[x][y][z].region == "" or not self.regions[parent.thisWorld.planet[x][y][z].region] then
 						if not patron then
 							parent.thisWorld.planet[x][y][z].country = ""
-							parent.thisWorld.planet[x][y][z].city = ""
 							parent.thisWorld.planet[x][y][z].land = false
 						else
 							parent.thisWorld.planet[x][y][z].country = patron.name
@@ -599,35 +598,37 @@ return
 
 				for i, j in pairs(self.regions) do
 					for k, l in pairs(j.cities) do
-						for m=1,#self.nodes do
-							local x, y, z = table.unpack(self.nodes[m])
+						if not patron then
+							for m=1,#self.nodes do
+								local x, y, z = table.unpack(self.nodes[m])
 
-							if parent.thisWorld.planet[x][y][z].city == l.name then
+								if parent.thisWorld.planet[x][y][z].city == l.name then
+									l.x = x
+									l.y = y
+									l.z = z
+									m = #self.nodes+1
+								end
+							end
+
+							if not l.x or not l.y or not l.z then
+								local pd = parent:randomChoice(j.nodes)
+								local x, y, z = table.unpack(pd)
+
+								local cFound = false
+								while not cFound do
+									pd = parent:randomChoice(j.nodes)
+									x, y, z = table.unpack(pd)
+
+									if parent.thisWorld.planet[x][y][z].city == "" or parent.thisWorld.planet[x][y][z].city == l.name then cFound = true end
+								end
+
 								l.x = x
 								l.y = y
 								l.z = z
-								m = #self.nodes+1
-							end
-						end
-
-						if not l.x or not l.y or not l.z then
-							local pd = parent:randomChoice(j.nodes)
-							local x, y, z = table.unpack(pd)
-
-							local cFound = false
-							while not cFound do
-								pd = parent:randomChoice(j.nodes)
-								x, y, z = table.unpack(pd)
-
-								if parent.thisWorld.planet[x][y][z].city == "" or parent.thisWorld.planet[x][y][z].city == l.name then cFound = true end
 							end
 
-							l.x = x
-							l.y = y
-							l.z = z
-						end
-
-						parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
+							parent.thisWorld.planet[l.x][l.y][l.z].city = l.name
+						else j.cities[k] = nil end
 					end
 				end
 			end,
@@ -738,7 +739,7 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 							chn = true
-						elseif math.random(1, 3000-(age*3)) < age then
+						elseif math.random(1, 25000-math.pow(age, 2)) < math.pow(age, 2) then
 							self:delete(parent, i)
 							chn = true
 						end

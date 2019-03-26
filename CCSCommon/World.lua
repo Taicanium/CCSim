@@ -34,7 +34,7 @@ return
 				for x=-bRad,bRad do
 					for y=-bRad,bRad do
 						for z=-bRad,bRad do
-							fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
+							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 							if fsqrt < bRad+0.5 and fsqrt > bRad-0.5 then
 								if not bench[x] then bench[x] = {} end
 								if not bench[x][y] then bench[x][y] = {} end
@@ -58,7 +58,7 @@ return
 				for x=-self.planetR,self.planetR do
 					for y=-self.planetR,self.planetR do
 						for z=-self.planetR,self.planetR do
-							fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
+							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
 								if not self.planet[x] then self.planet[x] = {} end
 								if not self.planet[x][y] then self.planet[x][y] = {} end
@@ -84,8 +84,6 @@ return
 				end
 
 				local planetSize = #self.planetdefined
-
-				printf(parent.stdscr, "")
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])

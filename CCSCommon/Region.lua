@@ -34,7 +34,7 @@ return
 					cCount = math.random(3, 6)
 
 					for i=1,cCount do
-						c = City:new()
+						local c = City:new()
 						c:makename(country, parent)
 
 						self.cities[c.name] = c
