@@ -178,7 +178,7 @@ return
 
 			update = function(self, parent, nl)
 				local f0 = _time()
-			
+
 				self.age = parent.years-self.birth
 				if self.birth <= -1 then self.age = self.age-1 end
 
@@ -194,7 +194,7 @@ return
 
 				local ranks = sys.ranks
 				if sys.dynastic and self.gender == "Female" then ranks = sys.franks end
-				
+
 				if self.title and self.level then
 					if self.level < #ranks-rankLim then
 						local x = math.random(-100, 100)
@@ -310,9 +310,9 @@ return
 						end
 					end
 				end
-				
+
 				if math.random(1, 150) == 12 then self.region = "" end
-				
+
 				if self.region == "" or not nl.regions[self.region] then
 					self.region = parent:randomChoice(nl.regions, true)
 					self.city = ""
@@ -325,7 +325,7 @@ return
 						self.spouse.city = self.city
 					end
 				end
-				
+
 				nl.regions[self.region].population = nl.regions[self.region].population+1
 				nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population+1
 
@@ -356,7 +356,7 @@ return
 				end
 
 				nl.ethnicities[lEth] = nl.ethnicities[lEth]+1
-				
+
 				if _DEBUG then
 					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = {0, 0} end
 					parent.debugTimes["Person:update"][1] = parent.debugTimes["Person:update"][1]+_time()-f0
