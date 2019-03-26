@@ -663,6 +663,8 @@ return
 									end
 								end
 							end
+							
+							if not pR then pR = parent:randomChoice(c.regions) end
 
 							for i=1,#parent.thisWorld.planetdefined do
 								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
