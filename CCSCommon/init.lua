@@ -707,7 +707,7 @@ return
 										local nC = City:new()
 										nC:makename(country, parent)
 
-										self.cities[nC.name] = nC
+										j.cities[nC.name] = nC
 									end
 								end
 							end
