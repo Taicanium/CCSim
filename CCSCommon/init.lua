@@ -115,7 +115,7 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						for i, j in pairs(c.ongoing) do if j.name == "Civil War" then return -1 end end
-					
+
 						parent:rseed()
 						if math.random(1, 100) < 51 then -- Executed
 							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
@@ -560,7 +560,7 @@ return
 							local newl = Country:new()
 							local nc = parent:randomChoice(c.regions)
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
-							
+
 							newl.name = nc.name
 
 							for i=#nc.nodes,1,-1 do
@@ -568,13 +568,13 @@ return
 
 								parent.thisWorld.planet[x][y][z].country = newl.name
 								parent.thisWorld.planet[x][y][z].region = ""
-								
+
 								table.remove(nc.nodes, i)
 							end
 
 							newl.rulers = {}
 							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
-							
+
 							for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
 							table.insert(newl.rulernames, parent:name(true))
@@ -583,7 +583,7 @@ return
 							table.insert(newl.frulernames, parent:name(true))
 
 							local retrieved = false
-							
+
 							for i, j in pairs(parent.final) do
 								if j.name == newl.name then
 									local conqYear = nil
@@ -598,35 +598,35 @@ return
 
 									if retrieve then										
 										retrieved = true
-										
+
 										for k, l in pairs(j.events) do table.insert(newl.events, l) end
-									
+
 										local found = parent.years
 										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
 										newl.founded = found
-										
+
 										local rIndex = 1
 										for k, l in pairs(j.rulers) do
 											table.insert(newl.rulers, rIndex, l)
 											rIndex = rIndex+1
 										end
-										
+
 										newl.snt = j.snt
 										newl.dfif = j.dfif
 										newl.formalities = j.formalities
 										newl.civilWars = j.civilWars
 										newl.agPrim = j.agPrim
-										
+
 										newl.rulernames = {}
 										newl.frulernames = {}
 										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
 										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
-										
+
 										for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
-										
+
 										for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
 											local x, y, z = table.unpack(l)
-											
+
 											for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
 										end end
 
@@ -645,9 +645,9 @@ return
 								while p.isruler do p = parent:randomChoice(c.people) end
 								newl:add(parent, p)
 							end
-							
+
 							local pR = nil
-							
+
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
 								if parent.thisWorld.planet[x][y][z].country ~= newl.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
@@ -663,7 +663,7 @@ return
 									end
 								end
 							end
-							
+
 							for i=1,#parent.thisWorld.planetdefined do
 								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 								local node = parent.thisWorld.planet[x][y][z]
@@ -673,13 +673,13 @@ return
 									for j=#c.nodes,1,-1 do if c.nodes[j].x == x and c.nodes[j].y == y and c.nodes[j].z == z then table.remove(c.nodes, j) end end
 								end
 							end
-							
+
 							local nrCount = 0
 							for i=1,#newl.nodes,35 do nrCount = nrCount+1 end
-							
+
 							newl:set(parent)
 							newl:setTerritory(parent, c, pR)
-							
+
 							for i, j in pairs(nc.cities) do
 								for k, l in pairs(newl.regions) do
 									for m=1,#l.nodes do
@@ -692,11 +692,24 @@ return
 									end
 								end
 							end
-							
+
+							nrCount = 0
+							for i, j in pairs(newl.regions) do nrCount = nrCount+1 end
+
 							for i, j in pairs(newl.regions) do
 								local cCount = 0
 								for k, l in pairs(j.cities) do cCount = cCount+1 end
-								if cCount == 0 then newl.regions[i] = nil end
+								if cCount == 0 then
+									if nrCount > 1 then
+										newl.regions[i] = nil
+										nrCount = nrCount-1
+									else
+										local nC = City:new()
+										nC:makename(country, parent)
+
+										self.cities[nC.name] = nC
+									end
+								end
 							end
 
 							c.regions[newl.name] = nil
@@ -726,9 +739,9 @@ return
 									end
 								end
 							end
-							
+
 							newl:checkRuler(parent)
-								
+
 							if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 						end
 
@@ -788,15 +801,15 @@ return
 
 								local newr = Region:new()
 								newr.name = c2.name
-								
+
 								for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
 								c2.people = nil
-								
+
 								for i, j in pairs(c2.regions) do
 									table.insert(newr.subregions, j)
 									for k, l in pairs(j.cities) do newr.cities[k] = l end
 								end
-								
+
 								for i=#c2.nodes,1,-1 do
 									local x, y, z = table.unpack(c2.nodes[i])
 									parent.thisWorld.planet[x][y][z].country = c1.name
@@ -809,11 +822,11 @@ return
 								c1.stability = c1.stability-5
 								if c1.stability < 1 then c1.stability = 1 end
 								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-								
+
 								c1.regions[newr.name] = newr
 
 								parent.thisWorld:delete(parent, c2)
-								
+
 								if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 							end
 						end
@@ -879,7 +892,7 @@ return
 
 										local newr = Region:new()
 										newr.name = c2.name
-										
+
 										for i=#c2.people,1,-1 do
 											c2.people[i].region = c2.name
 											c2.people[i].nationality = c1.name
@@ -890,14 +903,14 @@ return
 											c2.people[i].parentRuler = false
 											table.insert(c1.people, table.remove(c2.people, i))
 										end
-										
+
 										c2.people = nil
-										
+
 										for i, j in pairs(c2.regions) do
 											table.insert(newr.subregions, j)
 											for k, l in pairs(j.cities) do newr.cities[k] = l end
 										end
-										
+
 										for i=#c2.nodes,1,-1 do
 											local x, y, z = table.unpack(c2.nodes[i])
 											parent.thisWorld.planet[x][y][z].country = c1.name
@@ -912,9 +925,9 @@ return
 										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 										c1.regions[newr.name] = newr
-										
+
 										parent.thisWorld:delete(parent, c2)
-								
+
 										if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
 									end
 								end
@@ -988,7 +1001,7 @@ return
 			yearstorun = 0,
 			final = {},
 			thisWorld = {},
-			
+
 			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
 			-- All of this assuming we don't have Curses, of course.
 			clearTerm = function(self)
@@ -998,7 +1011,7 @@ return
 					curses.echo(true)
 					curses.nl(true)
 				end
-			
+
 				if cursesstatus then
 					self.stdscr:refresh()
 					self.stdscr:clear()
@@ -1030,9 +1043,9 @@ return
 
 			finish = function(self)
 				self:clearTerm()
-				
+
 				if self.doMaps then self.thisWorld:rOutput(self, "./maps/final") end
-				
+
 				printf(self.stdscr, "Printing result...")
 				local f = io.open("output.txt", "w+")
 
@@ -1078,7 +1091,7 @@ return
 
 						local rWritten = 1
 						local rDone = {}
-						
+
 						for k=1,#cp.events do if pr == 1 then
 							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded+1 then
 								newc = true
@@ -1153,14 +1166,14 @@ return
 						fCount = fCount+1
 						fInd = fInd+1
 					end end
-					
+
 					for i=#sRoyals,1,-1 do
 						local linked = false
 						for q, b in pairs(sRoyals[i].fams) do if b.fIndex ~= 0 then linked = true end end
 						for q, b in pairs(sRoyals[i].famc) do if b.fIndex ~= 0 then linked = true end end
 						if not linked then table.remove(sRoyals, i) end
 					end
-					
+
 					for i=#sRoyals,1,-1 do sRoyals[i].gIndex = i end
 					printf(self.stdscr, "Writing individuals...")
 
@@ -1356,13 +1369,13 @@ return
 						end
 					end
 				end
-				
+
 				self:getAlphabeticalCountries()
-				
+
 				printf(self.stdscr, "Constructing initial populations...\n")
 				self.numCountries = 0
 				local cDone = 0
-				
+
 				for i, cp in pairs(self.thisWorld.countries) do if cp then self.numCountries = self.numCountries+1 end end
 
 				for i, cp in pairs(self.thisWorld.countries) do
@@ -1382,7 +1395,7 @@ return
 
 						table.insert(self.final, cp)
 					end
-					
+
 					cDone = cDone+1
 					printl(self.stdscr, "Country %d/%d", cDone, self.numCountries)
 				end
@@ -1401,7 +1414,7 @@ return
 						else msgout = "great-grand" end
 					else msgout = "grand" end
 				end
-				
+
 				if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
 
 				return msgout
@@ -1460,14 +1473,14 @@ return
 				local rString = ""
 				if data then
 					rString = data.title
-					
+
 					if data.royalName and data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
 						rString = rString.." "..self:roman(data.number)
 						if data.surname then rString = rString.." ("..data.surname..")" end
 					elseif data.surname then rString = rString.." "..data.surname end
-					
+
 					if data.Country then rString = rString.." of "..data.Country.." ("..tostring(data.From).." - "..tostring(data.To)..")"
 					else rString = rString.." of "..data.nationality end
 				else rString = "None" end
@@ -1493,7 +1506,7 @@ return
 
 					if self.showinfo == 1 then
 						local f0 = _time()
-						
+
 						local currentEvents = {}
 						local cCount = 0
 						local cLimit = 14
@@ -1508,7 +1521,7 @@ return
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then
 								for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end
-							
+
 								if cCount <= cLimit then
 									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
 									local sysName = self.systems[cp.system].name
@@ -1520,7 +1533,7 @@ return
 						end
 
 						if cCount < self.numCountries then msg = msg..string.format("[+%d more]\n", self.numCountries-cCount) end
-						
+
 						msg = msg..string.format("\nOngoing events:")
 
 						for i=1,#currentEvents do
@@ -1529,12 +1542,12 @@ return
 								eCount = eCount+1
 							end
 						end
-						
+
 						if eCount < #currentEvents then msg = msg..string.format("\n[+%d more]", #currentEvents-eCount)
 						elseif eCount == 0 then msg = msg..string.format("\nNone") end
-						
+
 						msg = msg.."\n"
-						
+
 						if _DEBUG then
 							self.debugTimes["PRINT"] = {_time()-f0, 1}
 							for i, j in pairs(self.debugTimes) do msg = msg..i..": "..tostring(j[1]/j[2]).."\n" end
@@ -1543,7 +1556,7 @@ return
 
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
-					
+
 					self:clearTerm()
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
 					if cursesstatus then self.stdscr:refresh() end
@@ -1569,7 +1582,7 @@ return
 				while groups < length do
 					local mid = ""
 					local istaken = true
-					
+
 					while istaken do
 						istaken = false
 						mid = self:randomChoice(self.middlegroups)
@@ -1875,10 +1888,10 @@ return
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
-							
+
 							for i, j in pairs(c1.regions[rn.name].nodes) do
 								local x, y, z = table.unpack(j)
-								
+
 								if self.thisWorld.planet[x] and self.thisWorld.planet[x][y] and self.thisWorld.planet[x][y][z] then
 									self.thisWorld.planet[x][y][z].country = c1.name
 									self.thisWorld.planet[x][y][z].region = rn.name
@@ -2077,9 +2090,9 @@ return
 						i.gensSet = true
 						if v == -2 then i.royalGenerations = v
 						elseif i.royalGenerations > v then i.royalGenerations = v end
-						
+
 						if g == 0 then for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end end
-							
+
 						if i.royalGenerations ~= -1 then
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
@@ -2106,14 +2119,14 @@ return
 				local count = 0
 				local done = 0
 				local removed = 0
-				
+
 				for i, j in pairs(self.royals) do count = count+1 end
 
 				printf(self.stdscr, "Assigning relevancy...")
 				for i, j in pairs(self.royals) do
 					if j.number ~= 0 then j.royalGenerations = 0 end
 					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
-					
+
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
@@ -2126,7 +2139,7 @@ return
 						j.removed = true
 						removed = removed+1
 					end
-					
+
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end
@@ -2156,7 +2169,7 @@ return
 								table.insert(j.famc, fams[parentString])
 							end
 						end
-						
+
 						done = done+1
 						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 					end
@@ -2171,11 +2184,11 @@ return
 						j.removed = true
 						removed = removed+1
 					end
-					
+
 					done = done+1
 					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
 				end end
-				
+
 				printf(self.stdscr, "Removed %d unlinked individuals.", removed)
 
 				return fams
