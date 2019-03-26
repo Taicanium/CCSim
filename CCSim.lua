@@ -38,7 +38,7 @@ function main()
 
 	CCSCommon.showinfo = 0
 	if string.lower(datin) == "y" then CCSCommon.showinfo = 1 end
-	
+
 	printp(CCSCommon.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = string.lower(datin)
@@ -86,10 +86,10 @@ function main()
 	if CCSCommon.doMaps then
 		if CCSCommon.clrcmd == "cls" then pcall(os.execute, "rmdir /S /Q maps") -- Windows
 		elseif CCSCommon.clrcmd == "clear" then pcall(os.execute, "rm -r -f maps") end -- Linux
-		
+
 		if lfsstatus then pcall(lfs.mkdir, "./maps") else pcall(os.execute, "mkdir maps") end
 	end
-	
+
 	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()
 	CCSCommon = nil
