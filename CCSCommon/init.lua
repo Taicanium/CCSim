@@ -1,4 +1,4 @@
-if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue then error("CCSim requires Lua 5.2 or later!") return -1 end
+if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue then error("Could not locate the Lua debug library! CCSim will not function without it!") return -1 end
 if not table.unpack then table.unpack = function(t, n) if not n then return table.unpack(t, 1) else if t[n] then return t[n], table.unpack(t, n+1) end end end end
 
 socketstatus, socket = pcall(require, "socket")
