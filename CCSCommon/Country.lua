@@ -460,7 +460,7 @@ return
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
 
-					for i=1,#self.rulers do if self.rulers[i].Country == self.name and tonumber(self.rulers[i].From) >= self.founded and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
+					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
 
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].maternalLineTimes = 0
