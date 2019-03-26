@@ -684,7 +684,11 @@ return
 								for k, l in pairs(newl.regions) do
 									for m=1,#l.nodes do
 										local x, y, z = table.unpack(l.nodes[m])
-										if x == j.x and y == j.y and z == j.z then
+										if parent.thisWorld.planet[x][y][z].city == j.name then
+											parent.thisWorld.planet[x][y][z].city = j.name
+											l.cities[i] = j
+											nc.cities[i] = nil
+										elseif x == j.x and y == j.y and z == j.z then
 											parent.thisWorld.planet[x][y][z].city = j.name
 											l.cities[i] = j
 											nc.cities[i] = nil
