@@ -2097,9 +2097,9 @@ return
 						if v == -2 then i.royalGenerations = v
 						elseif i.royalGenerations > v then i.royalGenerations = v end
 
-						if g == 0 then for j, k in pairs(i.children) do self:setGens(k, v+1, 1) end end
+						if g == 0 then for j, k in pairs(i.children) do if v == -2 then self:setGens(k, v, 1) else self:setGens(k, v+1, 1) end end end
 
-						if i.royalGenerations ~= -1 then
+						if i.royalGenerations == 0 or i.royalGenerations == -2 then
 							self:setGens(i.father, -2, 0)
 							self:setGens(i.mother, -2, 0)
 						end
