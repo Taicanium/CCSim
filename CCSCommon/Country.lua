@@ -167,7 +167,7 @@ return
 
 			eventloop = function(self, parent)
 				local f0 = _time()
-			
+
 				local v = math.floor(math.random(200, 600)*math.floor(self.stability))
 				local vi = math.floor(math.random(200, 600)*(100-math.floor(self.stability)))
 				if v < 1 then v = 1 end
@@ -200,7 +200,7 @@ return
 					self:event(parent, "Collapsed")
 					for i=1,#parent.c_events do if parent.c_events[i].name == "Conquer" then self:triggerEvent(parent, i, true) end end
 				end
-				
+
 				if _DEBUG then
 					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = {0, 0} end
 					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+_time()-f0
@@ -504,7 +504,7 @@ return
 				end
 
 				local defined = 0
-				
+
 				for i, j in pairs(self.regions) do
 					local found = false
 					for k=1,#self.nodes do
@@ -551,10 +551,10 @@ return
 							end
 						end
 					end
-					
+
 					if defined == prevDefined then allDefined = true end
 					defined = prevDefined
-					
+
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])
 						parent.thisWorld.planet[x][y][z].regionset = false
@@ -653,7 +653,7 @@ return
 
 			update = function(self, parent)
 				local f0 = _time()
-				
+
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
@@ -661,7 +661,7 @@ return
 				self.stability = self.stability+math.random(-3, 3)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
-				
+
 				while math.floor(#self.people) > math.floor(parent.popLimit*3) do self:delete(parent, parent:randomChoice(self.people, true)) end
 
 				self.averageAge = 0
@@ -674,7 +674,7 @@ return
 
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 75 end
-				
+
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
 				if #self.parties > 0 then
@@ -696,13 +696,13 @@ return
 
 					if not found then table.remove(self.alliances, i) end
 				end
-				
+
 				for i, j in pairs(self.relations) do
 					local found = false
 					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
 					if not found then self.relations[i] = nil end
 				end
-				
+
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 					self.relations[cp.name] = self.relations[cp.name]+math.random(-4, 4)
@@ -765,7 +765,7 @@ return
 				end
 
 				self.averageAge = self.averageAge/#self.people
-				
+
 				self:checkRuler(parent)
 
 				if #self.parties > 0 then
@@ -791,7 +791,7 @@ return
 					end
 				end
 				self.majority = largest
-				
+
 				if _DEBUG then
 					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = {0, 0} end
 					parent.debugTimes["Country:update"][1] = parent.debugTimes["Country:update"][1]+_time()-f0
