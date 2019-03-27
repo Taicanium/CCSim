@@ -145,7 +145,7 @@ return
 				if self.people and #self.people > 0 and self.people[y] then
 					self.people[y].death = parent.years
 					self.people[y].deathplace = self.name
-					table.insert(parent.royals, self.people[y])
+					if parent.ged then table.insert(parent.royals, self.people[y]) end
 					table.remove(self.people, y):destroy()
 					self.population = self.population-1
 				end
