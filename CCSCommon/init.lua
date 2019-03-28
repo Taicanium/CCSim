@@ -1764,7 +1764,7 @@ return
 					nomlower = nomlower:gsub("tj", "t")
 					nomlower = nomlower:gsub("cj", "c")
 					nomlower = nomlower:gsub("mj", "m")
-					nomlower = nomlower:gsub("nj", "nch")
+					nomlower = nomlower:gsub("nj", "ng")
 					nomlower = nomlower:gsub("hj", "h")
 					nomlower = nomlower:gsub("fj", "f")
 					nomlower = nomlower:gsub("kj", "k")
@@ -1839,7 +1839,7 @@ return
 						end
 					end
 
-					if nomlower ~= string.lower(nomin) then check = true end
+					if nomlower ~= nomin:lower() then check = true end
 
 					nomin = string.upper(nomlower:sub(1, 1))
 					nomin = nomin..nomlower:sub(2, nomlower:len())
