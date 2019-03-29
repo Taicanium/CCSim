@@ -1518,23 +1518,27 @@ return
 						local cLimit = 14
 						local eCount = 0
 						local eLimit = 4
+						
+						for i=#self.alpha,1,-1 do
+							local cp = self.thisWorld.countries[self.alpha[i]]
+							if cp then for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end else table.remove(self.alpha, i) end
+						end
+						
 						if cursesstatus then
-							cLimit = math.floor(curses:lines()/2)-4
-							eLimit = (curses:lines()-cLimit)-9
+							cLimit = curses:lines()-#currentEvents-6
+							if #currentEvents == 0 then cLimit = cLimit-1 end
+							if cLimit < math.floor(curses:lines()/2) then cLimit = math.floor(curses:lines()/2) end
+							eLimit = curses:lines()-cLimit-6
 						end
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cp then
-								for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end
-
-								if cCount <= cLimit then
-									if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
-									local sysName = self.systems[cp.system].name
-									if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-									msg = msg..string.format(" - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
-									cCount = cCount+1
-								end
+							if cCount < cLimit or cCount == self.numCountries then
+								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
+								local sysName = self.systems[cp.system].name
+								if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
+								msg = msg..string.format(" - Population %d - %s\n", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
+								cCount = cCount+1
 							end
 						end
 
@@ -1543,14 +1547,14 @@ return
 						msg = msg..string.format("\nOngoing events:")
 
 						for i=1,#currentEvents do
-							if eCount <= eLimit then
+							if eCount < eLimit or eCount == #currentEvents then
 								msg = msg..string.format("\n%s", currentEvents[i])
 								eCount = eCount+1
 							end
 						end
 
-						if eCount < #currentEvents then msg = msg..string.format("\n[+%d more]", #currentEvents-eCount)
-						elseif eCount == 0 then msg = msg..string.format("\nNone") end
+						if #currentEvents == 0 then msg = msg..string.format("\nNone")
+						elseif eCount < #currentEvents then msg = msg..string.format("\n[+%d more]", #currentEvents-eCount) end
 
 						msg = msg.."\n"
 
