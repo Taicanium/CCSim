@@ -1052,8 +1052,9 @@ return
 
 				if self.doMaps then self.thisWorld:rOutput(self, "./maps/final") end
 
+				local stamp = tostring(os.time())
 				printf(self.stdscr, "Printing result...")
-				local f = io.open("output.txt", "w+")
+				local f = io.open(stamp..".txt", "w+")
 
 				local ged = nil
 				local fams = {}
@@ -1155,7 +1156,7 @@ return
 					printf(self.stdscr, "Filtering duplicate or irrelevant individuals. This might take a moment...\n")
 					local fams = self:sortAscendants()
 
-					ged = io.open(tostring(os.time())..".ged", "w+")
+					ged = io.open(stamp..".ged", "w+")
 					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
 
 					local sRoyals = {}
