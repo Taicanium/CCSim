@@ -168,8 +168,8 @@ return
 			eventloop = function(self, parent)
 				local f0 = _time()
 
-				local v = math.floor(math.random(200, 600)*math.floor(self.stability))
-				local vi = math.floor(math.random(200, 600)*(100-math.floor(self.stability)))
+				local v = math.floor(math.random(175, 450)*math.floor(self.stability))
+				local vi = math.floor(math.random(175, 450)*(100-math.floor(self.stability)))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
