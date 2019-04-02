@@ -1012,10 +1012,10 @@ return
 			-- All of this assuming we don't have Curses, of course.
 			clearTerm = function(self)
 				if not self.stdscr and cursesstatus then
-					self.stdscr = curses.initscr()
 					curses.cbreak(true)
 					curses.echo(true)
 					curses.nl(true)
+					self.stdscr = curses.initscr()
 				end
 
 				if cursesstatus then
