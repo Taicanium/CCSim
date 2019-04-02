@@ -39,7 +39,7 @@ luac.out
 *.x86_64
 *.hex
 
-output.txt
+*[0-9].txt
 *.r
 *.ged
 *.paf
