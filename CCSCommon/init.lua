@@ -568,7 +568,7 @@ return
 							for i=1,#c.rulernames do table.insert(newl.rulernames, c.rulernames[i]) end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
 							table.insert(newl.rulernames, parent:name(true))
-							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i])
+							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i]) end
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
 
