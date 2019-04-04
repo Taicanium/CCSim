@@ -481,6 +481,7 @@ return
 
 				self.hasruler = 0
 				self.people[newRuler].isruler = true
+				self.people[newRuler].ruledCountry = self.name
 				self.rulerage = self.people[newRuler].age
 				self.rulerParty = self.people[newRuler].party
 			end,
