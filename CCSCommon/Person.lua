@@ -60,12 +60,17 @@ return
 					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
 					
-					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.." (b. "..math.abs(self.birth))
+					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\n"..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
-					if self.death < parent.maxyears then rf:write(" - d. "..self.death..", "..self.deathplace) end
+					if self.death < parent.maxyears then rf:write(" - "..self.death..", "..self.deathplace) end
 					rf:write(")\n")
-					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.genInfo.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
+					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then
+						local genStr = parent:generationString(self.genInfo.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n"
+						local tmpStr = genStr:sub(1, 1):upper()
+						genStr = tmpStr..genStr:sub(2, genStr:len())
+						rf:write(genStr)
+					end
 					rf:write("\n")
 					rf:flush()
 					rf:close()
