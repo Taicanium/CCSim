@@ -57,10 +57,10 @@ return
 				self.death = parent.years
 				self.deathplace = nl.name
 				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
-					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
-					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
+					local rf = io.open(parent.stamp.."/"..self.ruledCountry..".txt", "a")
+					if not rf then rf = io.open(parent.stamp.."/"..self.ruledCountry..".txt", "w+") end
 					
-					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\n"..math.abs(self.birth))
+					rf:write(self.RulerTitle.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\n"..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
 					if self.death < parent.maxyears then rf:write(" - "..self.death..", "..self.deathplace) end
