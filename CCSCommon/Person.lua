@@ -139,12 +139,12 @@ return
 					end
 				end
 
-				if self.royalName ~= "" then
+				if self.royalGenerations == 0 then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.royalSystem
 					nn.LastRoyalAncestor = string.format(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
-				elseif self.spouse.royalName ~= "" then
+				elseif self.spouse.royalGenerations == 0 then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.spouse.royalSystem
