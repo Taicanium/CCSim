@@ -56,7 +56,7 @@ return
 			destroy = function(self, parent, nl)
 				self.death = parent.years
 				self.deathplace = nl.name
-				if parent.thisWorld.fromFile and self.royalGenerations == 0 then
+				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
 					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
 					
