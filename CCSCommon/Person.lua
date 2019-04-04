@@ -64,7 +64,7 @@ return
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
 					if self.death < parent.maxyears then rf:write(" - "..self.death..", "..self.deathplace) end
-					rf:write(")\n")
+					rf:write("\n")
 					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then
 						local genStr = parent:generationString(self.genInfo.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n"
 						local tmpStr = genStr:sub(1, 1):upper()
