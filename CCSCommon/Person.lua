@@ -65,7 +65,7 @@ return
 					rf:write(", "..self.birthplace)
 					if self.death < parent.maxyears then rf:write(" - d. "..self.death..", "..self.deathplace) end
 					rf:write(")\n")
-					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
+					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.genInfo.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
 					rf:write("\n")
 					rf:flush()
 					rf:close()
