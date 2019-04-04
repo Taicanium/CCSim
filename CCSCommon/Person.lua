@@ -18,6 +18,7 @@ return
 				n.ethnicity = {}
 				n.father = nil
 				n.gender = ""
+				n.genInfo = {}
 				n.gensSet = false
 				n.gIndex = 0
 				n.gString = ""
@@ -51,7 +52,24 @@ return
 				return n
 			end,
 
-			destroy = function(self)
+			destroy = function(self, parent, nl)
+				self.death = parent.years
+				self.deathplace = nl.name
+				if self.royalName ~= "" then
+					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
+					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
+					
+					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name.." (b. "..math.abs(self.birth))
+					if self.birth < 0 then rf:write(" B.C.E.") end
+					rf:write(", "..self.birthplace)
+					if self.death < parent.maxyears then rf:write(" - d. "..self.death..", "..self.deathplace) end
+					rf:write(")\n")
+					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.royalGenerations, self.gender).." of "..self.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
+					rf:write("\n")
+					rf:flush()
+					rf:close()
+					rf = nil
+				end
 				self.def = nil -- See above.
 				self.spouse = nil
 			end,
