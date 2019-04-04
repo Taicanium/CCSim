@@ -1031,7 +1031,7 @@ return
 			finish = function(self)
 				self:clearTerm()
 
-				if self.doMaps then self.thisWorld:rOutput(self, parent.stamp.."/maps/final") end
+				if self.doMaps then self.thisWorld:rOutput(self, self.stamp.."/maps/final") end
 
 				printf(self.stdscr, "Printing result...")
 				local of = io.open(self.stamp.."/output.txt", "w+")
