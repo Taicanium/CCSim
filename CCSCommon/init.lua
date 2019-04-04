@@ -19,7 +19,6 @@ printf = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
@@ -34,7 +33,6 @@ printl = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
@@ -49,7 +47,6 @@ printp = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
-		stdscr:clrtobot()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	else
@@ -60,10 +57,7 @@ end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:clrtobot()
-		local str = string.format(fmt, ...)
-		if x+str:len() < curses:cols() then stdscr:addstr(str) elseif x+3 < curses:cols() then stdscr:addstr("...") end
+		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
 end
@@ -157,8 +151,7 @@ return
 					beginEvent=function(self, parent, c)
 						c.civilWars = c.civilWars+1
 						c:event(parent, "Beginning of "..parent:ordinal(c.civilWars).." civil war")
-						self.status = 0 -- -100 is victory for the opposition side; 100 is victory for the present government.
-						self.status = self.status+parent:strengthFactor(c)
+						self.status = parent:strengthFactor(c) -- -100 is victory for the opposition side; 100 is victory for the present government.
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% opposition"
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% government"
@@ -192,6 +185,14 @@ return
 						end
 
 						local varistab = parent:strengthFactor(c)
+						
+						for i=1,#self.govIntervened do
+							local cp = parent.thisWorld.countries[self.govIntervened[i]]
+							if cp then
+								local extFactor = parent:strengthFactor(cp)
+								if extFactor > 0 then varistab = varistab+(extFactor/10) end
+							end
+						end
 
 						for i=1,#self.opIntervened do
 							local cp = parent.thisWorld.countries[self.opIntervened[i]]
@@ -201,15 +202,7 @@ return
 							end
 						end
 
-						for i=1,#self.govIntervened do
-							local cp = parent.thisWorld.countries[self.govIntervened[i]]
-							if cp then
-								local extFactor = parent:strengthFactor(cp)
-								if extFactor > 0 then varistab = varistab+(extFactor/10) end
-							end
-						end
-
-						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
+						self.status = self.status+(math.random(math.floor(varistab-5), math.ceil(varistab+5))/2)
 
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."%% opposition"
@@ -226,13 +219,13 @@ return
 					endEvent=function(self, parent, c)
 						if self.status >= 100 then -- Government victory
 							c:event(parent, "End of civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
-							for i=1,#self.opIntervened do
-								local opC = parent.thisWorld.countries[self.opIntervened[i]]
-								if opC then opC:event(parent, "Defeat with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
-							end
 							for i=1,#self.govIntervened do
 								local opC = parent.thisWorld.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Victory with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
+							for i=1,#self.opIntervened do
+								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								if opC then opC:event(parent, "Defeat with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 						else -- Opposition victory
 							if math.random(1, 100) < 51 then -- Executed
@@ -243,13 +236,13 @@ return
 								for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 							end
 
-							for i=1,#self.opIntervened do
-								local opC = parent.thisWorld.countries[self.opIntervened[i]]
-								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
-							end
 							for i=1,#self.govIntervened do
 								local opC = parent.thisWorld.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Defeat with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
+							end
+							for i=1,#self.opIntervened do
+								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 
 							c.hasruler = -1
@@ -277,9 +270,7 @@ return
 								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.royalName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
 
 								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..parent:roman(namenum).." of "..c.name)
-							else
-								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..newRuler.surname.." of "..c.name)
-							end
+							else c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..newRuler.surname.." of "..c.name) end
 						end
 
 						return -1
@@ -300,9 +291,7 @@ return
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Declared war on "..self.target.name)
 						self.target:event(parent, "War declared by "..c1.name)
-						self.status = 0 -- -100 is victory for the target; 100 is victory for the initiator.
-						self.status = self.status+parent:strengthFactor(c1)
-						self.status = self.status-parent:strengthFactor(self.target)
+						self.status = parent:strengthFactor(c1)-parent:strengthFactor(self.target) -- -100 is victory for the target; 100 is victory for the initiator.
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..c1.name
@@ -352,23 +341,20 @@ return
 							end
 						end
 
-						local str1Factor = parent:strengthFactor(c1)
-						local str2Factor = parent:strengthFactor(self.target)
-
-						local varistab = str1Factor-str2Factor
+						local varistab = parent:strengthFactor(c1)-parent:strengthFactor(self.target)
 
 						ao = parent:getAllyOngoing(c1, self.target, self.name)
 
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
-							varistab = varistab+(extFactor/10)
+							if extFactor > 0 then varistab = varistab+(extFactor/10) end
 						end
 
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
 
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
-							varistab = varistab-(extFactor/10)
+							if extFactor < 0 then varistab = varistab+(extFactor/10) end
 						end
 
 						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
@@ -505,7 +491,7 @@ return
 				},
 				{
 					name="Alliance",
-					chance=15,
+					chance=18,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -560,8 +546,9 @@ return
 							local newl = Country:new()
 							local nc = parent:randomChoice(c.regions)
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
-
+							
 							newl.name = nc.name
+							c.regions[newl.name] = nil
 
 							for i=#nc.nodes,1,-1 do
 								local x, y, z = table.unpack(nc.nodes[i])
@@ -575,10 +562,13 @@ return
 							newl.rulers = {}
 							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
 
-							for i=1,#c.rulernames do newl.rulernames[i] = c.rulernames[i] end
+							newl.rulernames = {}
+							newl.frulernames = {}
+							
+							for i=1,#c.rulernames do table.insert(newl.rulernames, c.rulernames[i]) end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
 							table.insert(newl.rulernames, parent:name(true))
-							for i=1,#c.frulernames do newl.frulernames[i] = c.frulernames[i] end
+							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i])
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
 
@@ -617,18 +607,12 @@ return
 										newl.civilWars = j.civilWars
 										newl.agPrim = j.agPrim
 
-										newl.rulernames = {}
-										newl.frulernames = {}
-										for i=1,#j.rulernames do newl.rulernames[i] = j.rulernames[i] end
-										for i=1,#j.frulernames do newl.frulernames[i] = j.frulernames[i] end
+										newl.rulernames = j.rulernames
+										newl.frulernames = j.frulernames
 
 										for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
 
-										for i, j in pairs(newl.regions) do for k, l in pairs(j.nodes) do
-											local x, y, z = table.unpack(l)
-
-											for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end
-										end end
+										for i, j in pairs(newl.regions) do for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end end
 
 										parent.final[i] = nil
 									end
@@ -688,12 +672,12 @@ return
 										local x, y, z = table.unpack(l.nodes[m])
 										if parent.thisWorld.planet[x][y][z].city == j.name then
 											parent.thisWorld.planet[x][y][z].city = j.name
-											l.cities[i] = j
-											nc.cities[i] = nil
+											l.cities[j.name] = j
+											nc.cities[j.name] = nil
 										elseif x == j.x and y == j.y and z == j.z then
 											parent.thisWorld.planet[x][y][z].city = j.name
-											l.cities[i] = j
-											nc.cities[i] = nil
+											l.cities[j.name] = j
+											nc.cities[j.name] = nil
 										end
 									end
 								end
@@ -718,7 +702,6 @@ return
 								end
 							end
 
-							c.regions[newl.name] = nil
 							parent.thisWorld:add(newl)
 							parent:getAlphabeticalCountries()
 
@@ -765,13 +748,13 @@ return
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
 						if c1.relations[c2.name] then
-							if c1.relations[c2.name] < 16 then
+							if c1.relations[c2.name] < 21 then
 								c1:event(parent, "Invaded "..c2.name)
 								c2:event(parent, "Invaded by "..c1.name)
 
 								c1.stability = c1.stability-5
-								if c1.stability < 1 then c1.stability = 1 end
 								c2.stability = c2.stability-10
+								if c1.stability < 1 then c1.stability = 1 end
 								if c2.stability < 1 then c2.stability = 1 end
 								c1:setPop(parent, math.ceil(c1.population/1.25))
 								c2:setPop(parent, math.ceil(c2.population/1.75))
@@ -1367,11 +1350,8 @@ return
 							for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
 							for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end
 							if not found then
-								if gend == "Female" then
-									table.insert(fc.frulernames, mat[2])
-								else
-									table.insert(fc.rulernames, mat[2])
-								end
+								if gend == "Female" then table.insert(fc.frulernames, mat[2])
+								else table.insert(fc.rulernames, mat[2]) end
 							end
 						end
 					end
@@ -1640,11 +1620,8 @@ return
 							local newnom = ""
 
 							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-
 							newnom = newnom..self:randomChoice(self.consonants)
-
 							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-
 							nomlower = newnom
 						end
 					end
@@ -1655,7 +1632,6 @@ return
 
 							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
 							for j=i+4,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-
 							nomlower = newnom
 						end
 					end
@@ -1665,9 +1641,7 @@ return
 							local newnom = ""
 
 							for j=1,i+2 do newnom = newnom..nomlower:sub(j, j) end
-
 							for j=i+6,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-
 							nomlower = newnom
 						end
 					end
@@ -1978,12 +1952,10 @@ return
 											index = index+1
 										end
 									end
-								else
-									for i, j in pairs(rn.cities) do
-										gainMsg = gainMsg.."city of "..j.name
-										lossMsg = lossMsg.."city of "..j.name
-									end
-								end
+								else for i, j in pairs(rn.cities) do
+									gainMsg = gainMsg.."city of "..j.name
+									lossMsg = lossMsg.."city of "..j.name
+								end end
 
 								gainMsg = gainMsg..") "
 								lossMsg = lossMsg..") "
