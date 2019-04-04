@@ -92,7 +92,7 @@ return
 						end
 
 						c.hasruler = -1
-						c:checkRuler(parent)
+						c:checkRuler(parent, true)
 
 						c.stability = c.stability-10
 						if c.stability < 1 then c.stability = 1 end
@@ -128,7 +128,7 @@ return
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
-						c:checkRuler(parent)
+						c:checkRuler(parent, true)
 
 						c.stability = c.stability-15
 						if c.stability < 1 then c.stability = 1 end
@@ -252,7 +252,7 @@ return
 							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
-							c:checkRuler(parent)
+							c:checkRuler(parent, true)
 
 							local newRuler = nil
 							for i=1,#c.people do if c.people[i].isruler then newRuler = c.people[i] end end
@@ -729,9 +729,9 @@ return
 								end
 							end
 
-							newl:checkRuler(parent)
+							newl:checkRuler(parent, true)
 
-							if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
+							if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
 						end
 
 						return -1
@@ -816,7 +816,7 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 
-								if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
+								if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
 							end
 						end
 
@@ -917,7 +917,7 @@ return
 
 										parent.thisWorld:delete(parent, c2)
 
-										if parent.doMaps then parent.thisWorld:rOutput(parent, "./maps/Year "..tostring(parent.years)) end
+										if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
 									end
 								end
 							end
@@ -933,7 +933,7 @@ return
 			disabled = {},
 			doMaps = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
-			ged = false,
+			final = {},
 			genLimit = 3,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			maxyears = 1,
@@ -947,7 +947,6 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
 			popLimit = 2000,
-			royals = {},
 			showinfo = 0,
 			startyear = 1,
 			stdscr = nil,
@@ -985,11 +984,10 @@ return
 					dynastic=true
 				}
 			},
+			thisWorld = {},
 			vowels = {"a", "e", "i", "o", "u", "y"},
 			years = 1,
 			yearstorun = 0,
-			final = {},
-			thisWorld = {},
 
 			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession.
 			-- All of this assuming we don't have Curses, of course.
@@ -1033,14 +1031,10 @@ return
 			finish = function(self)
 				self:clearTerm()
 
-				if self.doMaps then self.thisWorld:rOutput(self, "./maps/final") end
+				if self.doMaps then self.thisWorld:rOutput(self, parent.stamp.."/maps/final") end
 
-				local stamp = tostring(os.time())
 				printf(self.stdscr, "Printing result...")
-				local f = io.open(stamp..".txt", "w+")
-
-				local ged = nil
-				local fams = {}
+				local of = io.open(self.stamp.."/output.txt", "w+")
 
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
@@ -1077,7 +1071,7 @@ return
 					if cp then
 						local newc = false
 						local pr = 1
-						f:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
+						of:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
 
 						local rWritten = 1
 						local rDone = {}
@@ -1090,14 +1084,14 @@ return
 						end end
 
 						if newc then
-							f:write(string.format(self:getRulerString(cp.rulers[1]).."\n"))
+							of:write(string.format(self:getRulerString(cp.rulers[1]).."\n"))
 							local nextFound = false
 							for k=1,#cp.rulers do
 								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name and not nextFound then
 									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
 										nextFound = true
-										f:write("...\n")
-										f:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
+										of:write("...\n")
+										of:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
 										k = #cp.rulers+1
 									end
 								end
@@ -1105,126 +1099,24 @@ return
 						end
 
 						for j=1,self.maxyears do
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then of:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 
 							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name and not rDone[self:getRulerString(cp.rulers[k])] then
-								f:write(string.format(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n"))
+								of:write(string.format(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n"))
 								rWritten = rWritten+1
 								rDone[self:getRulerString(cp.rulers[k])] = true
 							end end
 
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then f:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then of:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
 						end
 
-						f:write("\n\n\n")
-						f:flush()
+						of:write("\n\n\n")
+						of:flush()
 					end
 				end
 
-				f:close()
-				f = nil
-
-				if self.ged then
-					printf(self.stdscr, "Sorting living individuals...")
-					local cCount = 0
-					local cIndex = 1
-					local finished = 0
-					for i, j in pairs(self.thisWorld.countries) do cCount = cCount+1 end
-					for i, j in pairs(self.thisWorld.countries) do
-						printl(self.stdscr, "Country %d/%d", cIndex, cCount)
-						j:destroy(self)
-						cIndex = cIndex+1
-					end
-
-					printf(self.stdscr, "Filtering duplicate or irrelevant individuals. This might take a moment...\n")
-					local fams = self:sortAscendants()
-
-					ged = io.open(stamp..".ged", "w+")
-					ged:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English\n")
-
-					local sRoyals = {}
-					local ind = 1
-					for i, j in pairs(self.royals) do if not j.removed then
-						j.gIndex = ind
-						sRoyals[ind] = j
-						ind = ind+1
-					end end
-					local fInd = 1
-					local fCount = 0
-					for i, j in pairs(fams) do if j.husb.gIndex ~= 0 and j.wife.gIndex ~= 0 then 
-						j.fIndex = fInd
-						fCount = fCount+1
-						fInd = fInd+1
-					end end
-
-					for i=#sRoyals,1,-1 do
-						local linked = false
-						for q, b in pairs(sRoyals[i].fams) do if b.fIndex ~= 0 then linked = true end end
-						for q, b in pairs(sRoyals[i].famc) do if b.fIndex ~= 0 then linked = true end end
-						if not linked then table.remove(sRoyals, i) end
-					end
-
-					for i=#sRoyals,1,-1 do sRoyals[i].gIndex = i end
-					printf(self.stdscr, "Writing individuals...")
-
-					for i=1,#sRoyals do
-						local j = sRoyals[i]
-						local jname = j.name
-						if j.royalName ~= "" then jname = j.royalName end
-						if j.death >= self.years then j.death = 0 end
-						local msgout = "0 @I"..tostring(i).."@ INDI\n1 SEX "..j.gender.."\n1 NAME "..jname.." /"..j.surname.."/"
-						if j.number ~= 0 then msgout = msgout.." "..self:roman(j.number) end
-						if j.title ~= "" then msgout = msgout.."\n2 NPFX "..j.title end
-						msgout = msgout.."\n2 GIVN "..jname.."\n2 SURN "..j.surname.."\n"
-						if j.number ~= 0 then msgout = msgout.."2 NSFX "..self:roman(j.number).."\n" end
-						msgout = msgout.."1 BIRT\n2 DATE "..math.abs(j.birth)
-						if j.birth < 0 then msgout = msgout.." B.C." end
-						msgout = msgout.."\n2 PLAC "..j.birthplace
-						if j.death ~= 0 then msgout = msgout.."\n1 DEAT\n2 DATE "..tostring(j.death).."\n2 PLAC "..j.deathplace end
-						if j.ethnicity then
-							local ie = true
-							for q, b in pairs(j.ethnicity) do
-								local eth = string.format("%.2f", b)
-								if ie then msgout = msgout.."\n1 NOTE Descent:" end
-								msgout = msgout.."\n2 CONT "..eth.."% "..tostring(q)
-								ie = nil
-							end
-						end
-
-						for q, b in pairs(j.fams) do if b.fIndex ~= 0 then msgout = msgout.."\n1 FAMS @F"..tostring(b.fIndex).."@" end end
-						for q, b in pairs(j.famc) do if b.fIndex ~= 0 then msgout = msgout.."\n1 FAMC @F"..tostring(b.fIndex).."@" end end
-
-						msgout = msgout.."\n"
-
-						ged:write(msgout)
-
-						finished = finished+1
-						printl(self.stdscr, "%.2f%% done", (finished/#sRoyals*10000)/100)
-					end
-
-					ged:flush()
-					printf(self.stdscr, "Writing families...")
-					finished = 0
-
-					for i, j in pairs(fams) do if j.fIndex ~= 0 then 
-						local msgout = "0 @F"..tostring(j.fIndex).."@ FAM\n"
-
-						msgout = msgout.."1 HUSB @I"..tostring(j.husb.gIndex).."@\n"
-						msgout = msgout.."1 WIFE @I"..tostring(j.wife.gIndex).."@\n"
-
-						for k=1,#j.chil do if j.chil[k].gString ~= j.husb.gString and j.chil[k].gString ~= j.wife.gString and j.chil[k].gIndex ~= 0 then msgout = msgout.."1 CHIL @I"..tostring(j.chil[k].gIndex).."@\n" end end
-
-						ged:write(msgout)
-
-						finished = finished+1
-						printl(self.stdscr, "%.2f%% done", (finished/fCount*10000)/100)
-					end end
-
-					ged:write("0 TRLR\n")
-					ged:flush()
-					ged:close()
-					ged = nil
-				end
+				of:close()
+				of = nil
 			end,
 
 			fncopy = function(self, fn)
@@ -1356,6 +1248,9 @@ return
 						end
 					end
 				end
+				
+				f:close()
+				f = nil
 
 				self:getAlphabeticalCountries()
 
@@ -1390,7 +1285,7 @@ return
 				self.thisWorld.fromFile = true
 			end,
 
-			generationString = function(self, n, gen)
+			generationString = function(self, n, gender)
 				local msgout = ""
 
 				if n > 1 then
@@ -1402,7 +1297,7 @@ return
 					else msgout = "grand" end
 				end
 
-				if gen == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+				if gender == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
 
 				return msgout
 			end,
@@ -2066,24 +1961,6 @@ return
 				for i=1,3 do math.random(1, 100) end
 			end,
 
-			setGens = function(self, i, v, g)
-				if i then
-					if i.royalGenerations > self.genLimit or i.royalGenerations == -1 then i.gensSet = false end
-					if not i.gensSet then
-						i.gensSet = true
-						if v == -2 then i.royalGenerations = v
-						elseif i.royalGenerations > v then i.royalGenerations = v end
-
-						if g == 0 then for j, k in pairs(i.children) do if v == -2 then self:setGens(k, v, 1) else self:setGens(k, v+1, 1) end end end
-
-						if i.royalGenerations == 0 or i.royalGenerations == -2 then
-							self:setGens(i.father, -2, 0)
-							self:setGens(i.mother, -2, 0)
-						end
-					end
-				end
-			end,
-
 			setGensChildren = function(self, t, v, a)
 				if t.royalGenerations > v then
 					t.royalGenerations = v
@@ -2095,86 +1972,6 @@ return
 			sleep = function(self, t)
 				local n = _time()
 				while _time() < n+t do end
-			end,
-
-			sortAscendants = function(self)
-				local fams = {}
-				local count = 0
-				local done = 0
-				local removed = 0
-
-				for i, j in pairs(self.royals) do count = count+1 end
-
-				printf(self.stdscr, "Assigning relevancy...")
-				for i, j in pairs(self.royals) do
-					if j.number ~= 0 then j.royalGenerations = 0 end
-					if j.royalGenerations == 0 then self:setGens(j, 0, 0, false) end
-
-					done = done+1
-					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
-				end
-
-				printf(self.stdscr, "Filtering irrelevant individuals...")
-				done = 0
-
-				for i, j in pairs(self.royals) do
-					if j.royalGenerations > self.genLimit or j.royalGenerations == math.huge then
-						j.removed = true
-						removed = removed+1
-					end
-
-					done = done+1
-					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
-				end
-
-				local oldCount = count
-				count = count-removed
-				done = 0
-				printf(self.stdscr, "Trimmed %d irrelevant individuals, out of %d.", removed, oldCount)
-				printf(self.stdscr, "Linking %d individuals...", count)
-
-				for i, j in pairs(self.royals) do
-					if not j.removed then
-						j.title = j.RulerTitle
-
-						if j.father and j.mother and not j.father.removed and not j.mother.removed then
-							local parentString = j.father.gString.."-"..j.mother.gString
-
-							if not fams[parentString] then
-								fams[parentString] = {fIndex=0, husb=j.father, wife=j.mother, chil={j}}
-								table.insert(j.father.fams, fams[parentString])
-								table.insert(j.mother.fams, fams[parentString])
-								table.insert(j.famc, fams[parentString])
-							else
-								local ind = 1
-								for k=1,#fams[parentString].chil do if tonumber(fams[parentString].chil[k].birth) <= tonumber(j.birth) then ind = k+1 end end
-								table.insert(fams[parentString].chil, ind, j)
-								table.insert(j.famc, fams[parentString])
-							end
-						end
-
-						done = done+1
-						printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
-					end
-				end
-
-				printf(self.stdscr, "Removing unlinked individuals...")
-				removed = 0
-				done = 0
-
-				for i, j in pairs(self.royals) do if not j.removed then
-					if #j.fams == 0 and #j.famc == 0 then
-						j.removed = true
-						removed = removed+1
-					end
-
-					done = done+1
-					printl(self.stdscr, "%.2f%% done.", ((done/count*10000)/100))
-				end end
-
-				printf(self.stdscr, "Removed %d unlinked individuals.", removed)
-
-				return fams
 			end,
 
 			strengthFactor = function(self, c)

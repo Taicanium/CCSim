@@ -85,7 +85,7 @@ return
 				self.population = self.population+1
 			end,
 
-			checkRuler = function(self, parent)
+			checkRuler = function(self, parent, enthrone)
 				if self.hasruler == -1 then
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
@@ -126,15 +126,15 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p) end end
-									else self:setRuler(parent, closest.pIndex) end
+										if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
+									else self:setRuler(parent, closest.pIndex, enthrone) end
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
-									self:setRuler(parent, child.pIndex)
+									self:setRuler(parent, child.pIndex, enthrone)
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then self:setRuler(parent, p) end
+								if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].royalName == "" then self:setRuler(parent, p, enthrone) end
 							end
 						end
 					end
@@ -145,7 +145,6 @@ return
 				if self.people and #self.people > 0 and self.people[y] then
 					self.people[y].death = parent.years
 					self.people[y].deathplace = self.name
-					if parent.ged then table.insert(parent.royals, self.people[y]) end
 					table.remove(self.people, y):destroy()
 					self.population = self.population-1
 				end
@@ -435,7 +434,7 @@ return
 				end
 			end,
 
-			setRuler = function(self, parent, newRuler)
+			setRuler = function(self, parent, newRuler, enthrone)
 				for i=1,#self.people do self.people[i].isruler = false end
 
 				self.people[newRuler].prevtitle = self.people[newRuler].title
@@ -463,10 +462,28 @@ return
 
 					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
 
+					self.people[newRuler].number = namenum
+					
+					local rf = io.open(parent.stamp.."/"..self.name.."_royals.txt", "w")
+					if not rf then rf = io.open(parent.stamp.."/"..self.name.."_royals.txt", "w+") end
+					
+					rf:write(self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(self.people[newRuler].number).." of "..self.name.." (born "..math.abs(self.people[newRuler].birth))
+					if self.people[newRuler].birth < 0 then rf:write(" B.C.E.") end
+					rf:write(")")
+					if self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then
+						rf:write(" - "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor)
+						if enthrone then self:event(parent, "Enthronement of "..self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(self.people[newRuler].number).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
+					end
+					
+					rf:write("\n")
+					rf:flush()
+					rf:close()
+					rf = nil
+					
 					self.people[newRuler].royalGenerations = 0
+					self.people[newRuler].LastRoyalAncestor = ""
 					self.people[newRuler].maternalLineTimes = 0
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
-					self.people[newRuler].number = namenum
 
 					table.insert(self.rulers, {name=self.people[newRuler].royalName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 
@@ -767,7 +784,7 @@ return
 
 				self.averageAge = self.averageAge/#self.people
 
-				self:checkRuler(parent)
+				self:checkRuler(parent, false)
 
 				if #self.parties > 0 then
 					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end

@@ -4,6 +4,8 @@ CCSCommon = require("CCSCommon")()
 if not CCSCommon then return -1 end
 
 function main()
+	CCSCommon.stamp = tostring(math.floor(_time()))
+
 	CCSCommon.clrcmd = "clear"
 	local clrarr = os.execute("clear")
 
@@ -47,13 +49,6 @@ function main()
 	CCSCommon.doMaps = false
 	if datin:lower() == "y" then CCSCommon.doMaps = true end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
-	datin = readl(CCSCommon.stdscr)
-	datin = datin:lower()
-
-	CCSCommon.ged = false
-	if datin:lower() == "y" then CCSCommon.ged = true end
-
 	local done = nil
 	while not done do
 		printp(CCSCommon.stdscr, "\nData > ")
@@ -83,13 +78,9 @@ function main()
 			end
 		end
 	end
-
-	if CCSCommon.doMaps then
-		if CCSCommon.clrcmd == "cls" then pcall(os.execute, "rmdir /S /Q maps") -- Windows
-		elseif CCSCommon.clrcmd == "clear" then pcall(os.execute, "rm -rf maps") end -- Linux
-
-		if lfsstatus then pcall(lfs.mkdir, "maps") else pcall(os.execute, "mkdir maps") end
-	end
+	
+	if lfsstatus then lfs.mkdir(CCSCommon.stamp) else os.execute("mkdir "..CCSCommon.stamp) end
+	if CCSCommon.doMaps then if lfsstatus then lfs.mkdir(CCSCommon.stamp.."/maps") else os.execute("mkdir "..CCSCommon.stamp.."/maps") end end
 
 	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()

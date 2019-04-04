@@ -7,8 +7,6 @@ If the player sets it as such, at the start of the simulation, the script will o
 
 R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
 
-The user also has the option of generating a GEDCOM (.ged) file which can be loaded into an external program to display information on any royal families of the generated countries.
-
 If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply installing the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds. Be sure, if you do this, to configure your Torch installation with Lua 5.2, and not LuaJIT! The JIT interpreter is incapable of addressing the amount of memory CCSim uses.
 
 # File Format

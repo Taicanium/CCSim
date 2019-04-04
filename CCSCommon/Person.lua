@@ -16,8 +16,6 @@ return
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
 				n.ebelief = 0
 				n.ethnicity = {}
-				n.famc = {}
-				n.fams = {}
 				n.father = nil
 				n.gender = ""
 				n.gensSet = false
@@ -103,7 +101,7 @@ return
 				nn.birthplace = nl.name
 				nn.age = 0
 
-				if self.royalGenerations < math.huge then
+				if self.royalGenerations < math.huge or self.spouse.royalGenerations < math.huge then
 					if self.spouse.royalGenerations < self.royalGenerations then
 						nn.royalGenerations = self.spouse.royalGenerations+1
 						nn.royalSystem = self.spouse.royalSystem
