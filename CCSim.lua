@@ -79,8 +79,15 @@ function main()
 		end
 	end
 	
-	if lfsstatus then lfs.mkdir(CCSCommon.stamp) else os.execute("mkdir "..CCSCommon.stamp) end
-	if CCSCommon.doMaps then if lfsstatus then lfs.mkdir(CCSCommon.stamp.."/maps") else os.execute("mkdir "..CCSCommon.stamp.."/maps") end end
+	if lfsstatus then
+		lfs.mkdir(CCSCommon.stamp)
+		lfs.mkdir(CCSCommon.stamp.."/royals")
+		if CCSCommon.doMaps then lfs.mkdir(CCSCommon.stamp.."/maps") end
+	else
+		os.execute("mkdir "..CCSCommon.stamp)
+		os.execute("mkdir "..CCSCommon.stamp.."/royals")
+		if CCSCommon.doMaps then os.execute("mkdir "..CCSCommon.stamp.."/maps") end
+	end
 
 	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()
