@@ -55,7 +55,7 @@ return
 			destroy = function(self, parent, nl)
 				self.death = parent.years
 				self.deathplace = nl.name
-				if self.royalName ~= "" then
+				if self.royalGenerations == 0 then
 					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
 					
@@ -64,7 +64,7 @@ return
 					rf:write(", "..self.birthplace)
 					if self.death < parent.maxyears then rf:write(" - d. "..self.death..", "..self.deathplace) end
 					rf:write(")\n")
-					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.royalGenerations, self.gender).." of "..self.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
+					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then rf:write(parent:generationString(self.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n") end
 					rf:write("\n")
 					rf:flush()
 					rf:close()
@@ -135,16 +135,17 @@ return
 
 				if self.royalName ~= "" then
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
+					nn.royalGenerations = 1
 					nn.royalSystem = self.royalSystem
 					nn.LastRoyalAncestor = string.format(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
 				elseif self.spouse.royalName ~= "" then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
+					nn.royalGenerations = 1
 					nn.royalSystem = self.spouse.royalSystem
 					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end
-
-				if self.royalName ~= "" or self.spouse.royalName ~= "" then
-					nn.royalGenerations = 1
+				
+				if self.isruler or self.spouse.isruler then
 					nn.level = self.level-1
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
