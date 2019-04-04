@@ -44,6 +44,7 @@ return
 				n.royalGenerations = math.huge
 				n.royalName = ""
 				n.royalSystem = ""
+				n.ruledCountry = ""
 				n.RulerTitle = ""
 				n.spouse = nil
 				n.surname = ""
@@ -59,7 +60,7 @@ return
 					local rf = io.open(parent.stamp.."/"..nl.name..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/"..nl.name..".txt", "w+") end
 					
-					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name.." (b. "..math.abs(self.birth))
+					rf:write(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.." (b. "..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
 					if self.death < parent.maxyears then rf:write(" - d. "..self.death..", "..self.deathplace) end
