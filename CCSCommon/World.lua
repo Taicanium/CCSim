@@ -247,17 +247,15 @@ return
 			end,
 
 			delete = function(self, parent, nz)
-				if nz then
-					for i, cp in pairs(self.countries) do for j=#cp.ongoing,1 do if cp.target and cp.target.name == nz.name then table.remove(cp.ongoing, j) end end end
+				if not nz then return end
+			
+				self.cColors[nz.name] = nil
+				self.cTriplets[nz.name] = nil
+				self.countries[nz.name] = nil
 
-					self.cColors[nz.name] = nil
-					self.cTriplets[nz.name] = nil
-					self.countries[nz.name] = nil
+				nz:destroy(parent)
 
-					nz:destroy(parent)
-
-					parent.numCountries = parent.numCountries-1
-				end
+				parent.numCountries = parent.numCountries-1
 			end,
 
 			destroy = function(self)
