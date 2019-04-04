@@ -464,8 +464,8 @@ return
 
 					self.people[newRuler].number = namenum
 					
-					local rf = io.open(parent.stamp.."/"..self.name.."_royals.txt", "a")
-					if not rf then rf = io.open(parent.stamp.."/"..self.name.."_royals.txt", "w+") end
+					local rf = io.open(parent.stamp.."/"..self.name..".txt", "a")
+					if not rf then rf = io.open(parent.stamp.."/"..self.name..".txt", "w+") end
 					
 					rf:write(self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(self.people[newRuler].number).." of "..self.name.." (born "..math.abs(self.people[newRuler].birth))
 					if self.people[newRuler].birth < 0 then rf:write(" B.C.E.") end
