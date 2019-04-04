@@ -460,7 +460,7 @@ return
 
 					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].royalName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
 					
-					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end end
+					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].title.." "..self.people[newRuler].royalName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
 					
 					self.people[newRuler].genInfo = {LastRoyalAncestor=self.people[newRuler].LastRoyalAncestor, royalGenerations=self.people[newRuler].royalGenerations}
 					
