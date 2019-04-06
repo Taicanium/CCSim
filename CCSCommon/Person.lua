@@ -18,7 +18,7 @@ return
 				n.ethnicity = {}
 				n.father = nil
 				n.gender = ""
-				n.genInfo = {}
+				n.rulerInfo = {}
 				n.gensSet = false
 				n.gIndex = 0
 				n.gString = ""
@@ -42,10 +42,10 @@ return
 				n.region = ""
 				n.removed = false
 				n.royalGenerations = math.huge
-				n.royalName = ""
+				n.rulerName = ""
 				n.royalSystem = ""
 				n.ruledCountry = ""
-				n.RulerTitle = ""
+				n.rulerTitle = ""
 				n.spouse = nil
 				n.surname = ""
 				n.title = "Citizen"
@@ -60,13 +60,14 @@ return
 					local rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "w+") end
 					
-					rf:write(self.RulerTitle.." "..self.royalName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\n"..math.abs(self.birth))
+					rf:write(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\nBorn "..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
-					if self.death < parent.maxyears then rf:write(" - "..self.death..", "..self.deathplace) end
-					rf:write("\n")
-					if self.genInfo.royalGenerations < math.huge and self.genInfo.royalGenerations > 0 then
-						local genStr = parent:generationString(self.genInfo.royalGenerations, self.gender).." of "..self.genInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n"
+					if self.death < parent.maxyears then rf:write(" - Died "..self.death..", "..self.deathplace) end
+					if self.rulerInfo.ruledTo == -1 then self.rulerInfo.ruledTo = parent.years end
+					rf:write("\nRuled "..tostring(self.rulerInfo.ruledFrom).." - "..tostring(self.rulerInfo.ruledTo).."\n")
+					if self.rulerInfo.royalGenerations < math.huge and self.rulerInfo.royalGenerations > 0 then
+						local genStr = parent:generationString(self.rulerInfo.royalGenerations, self.gender).." of "..self.rulerInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n"
 						local tmpStr = genStr:sub(1, 1):upper()
 						genStr = tmpStr..genStr:sub(2, genStr:len())
 						rf:write(genStr)
@@ -143,12 +144,12 @@ return
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.royalSystem
-					nn.LastRoyalAncestor = string.format(self.title.." "..self.royalName.." "..parent:roman(self.number).." of "..nl.name)
+					nn.LastRoyalAncestor = string.format(self.title.." "..self.rulerName.." "..parent:roman(self.number).." of "..nl.name)
 				elseif self.spouse.royalGenerations == 0 then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.spouse.royalSystem
-					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.royalName.." "..parent:roman(self.spouse.number).." of "..nl.name)
+					nn.LastRoyalAncestor = string.format(self.spouse.title.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..nl.name)
 				end
 				
 				if self.isruler or self.spouse.isruler then

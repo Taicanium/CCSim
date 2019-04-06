@@ -267,10 +267,10 @@ return
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.royalName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
+								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
 
-								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..parent:roman(namenum).." of "..c.name)
-							else c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.royalName.." "..newRuler.surname.." of "..c.name) end
+								c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
+							else c:event(parent, "End of civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..newRuler.surname.." of "..c.name) end
 						end
 
 						return -1
@@ -1356,7 +1356,7 @@ return
 				if data then
 					rString = data.title
 
-					if data.royalName and data.royalName ~= "" then rString = rString.." "..data.royalName else rString = rString.." "..data.name end
+					if data.rulerName and data.rulerName ~= "" then rString = rString.." "..data.rulerName else rString = rString.." "..data.name end
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
 						rString = rString.." "..self:roman(data.number)
