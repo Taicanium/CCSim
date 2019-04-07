@@ -745,7 +745,7 @@ return
 						if age > 100 then
 							self:delete(parent, i)
 							chn = true
-						elseif math.random(1, 25000-math.pow(age, 2)) < math.pow(age, 2) then
+						elseif math.random(1, 30000-math.pow(age, 2)) < math.pow(age, 2) then
 							self:delete(parent, i)
 							chn = true
 						end
