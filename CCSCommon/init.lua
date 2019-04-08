@@ -218,7 +218,7 @@ return
 					end,
 					endEvent=function(self, parent, c)
 						if self.status >= 100 then -- Government victory
-							c:event(parent, "End of "..parent:ordinal(c.civilWars).."civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
+							c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
 							for i=1,#self.govIntervened do
 								local opC = parent.thisWorld.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Victory with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
@@ -269,8 +269,8 @@ return
 							if parent.systems[c.system].dynastic then
 								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
 
-								c:event(parent, "End of "..parent:ordinal(c.civilWars).."civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
-							else c:event(parent, "End of "..parent:ordinal(c.civilWars).."civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..newRuler.surname.." of "..c.name) end
+								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
+							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..newRuler.surname.." of "..c.name) end
 						end
 
 						return -1
