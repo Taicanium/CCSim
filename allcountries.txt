@@ -158,7 +158,7 @@ P Bogota
 C Comoros
 R Moroni
 P Moroni
-C Congo
+C Congo-Brazzaville
 R Brazzaville
 P Brazzaville
 C Costa Rica
@@ -179,7 +179,7 @@ P Nicosia
 C Czechia
 R Prague
 P Prague
-C Democratic Republic of the Congo
+C Congo-Kinshasa
 R Kinshasa
 P Kinshasa
 C Denmark
