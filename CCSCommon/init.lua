@@ -123,6 +123,7 @@ return
 
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
+						if not c.snt[parent.systems[c.system].name] then c.snt[parent.systems[c.system].name] = 0 end
 						c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
@@ -249,6 +250,7 @@ return
 
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
+							if not c.snt[parent.systems[c.system].name] then c.snt[parent.systems[c.system].name] = 0 end
 							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
