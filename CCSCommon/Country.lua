@@ -80,11 +80,10 @@ return
 					n.spouse.parentRuler = false
 					table.insert(self.people, n.spouse)
 					n.spouse.pIndex = #self.people
-					self.population = self.population+1
 				end
 				table.insert(self.people, n)
 				n.pIndex = #self.people
-				self.population = self.population+1
+				self.population = #self.people
 			end,
 
 			checkRuler = function(self, parent, enthrone)
