@@ -55,8 +55,8 @@ return
 				end
 				if n.isruler then n.rulerInfo.ruledTo = parent.years end
 				n.nationality = self.name
-				n.region = ""
-				n.city = ""
+				n.region = nil
+				n.city = nil
 				n.level = 2
 				n.title = "Citizen"
 				n.military = false
@@ -71,8 +71,8 @@ return
 					end
 					if n.spouse.isruler then n.spouse.rulerInfo.ruledTo = parent.years end
 					n.spouse.nationality = self.name
-					n.spouse.region = ""
-					n.spouse.city = ""
+					n.spouse.region = nil
+					n.spouse.city = nil
 					n.spouse.level = 2
 					n.spouse.title = "Citizen"
 					n.spouse.military = false
