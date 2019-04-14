@@ -10,7 +10,7 @@ return
 				n.birthplace = ""
 				n.cbelief = 0
 				n.children = {}
-				n.city = ""
+				n.city = nil
 				n.death = 0
 				n.deathplace = ""
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
@@ -39,7 +39,7 @@ return
 				n.pIndex = 0
 				n.prevtitle = "Citizen"
 				n.recentbirth = false
-				n.region = ""
+				n.region = nil
 				n.removed = false
 				n.royalGenerations = math.huge
 				n.rulerName = ""
@@ -335,23 +335,23 @@ return
 					end
 				end
 
-				if math.random(1, 150) == 12 then self.region = "" end
+				if math.random(1, 150) == 12 then self.region = nil end
 
-				if self.region == "" or not nl.regions[self.region] then
-					self.region = parent:randomChoice(nl.regions, true)
-					self.city = ""
+				if not self.region then
+					self.region = parent:randomChoice(nl.regions)
+					self.city = nil
 				end
 
-				if self.city == "" or not nl.regions[self.region].cities[self.city] then
-					self.city = parent:randomChoice(nl.regions[self.region].cities, true)
+				if not self.city then
+					self.city = parent:randomChoice(nl.regions[self.region].cities)
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
 					end
 				end
 
-				nl.regions[self.region].population = nl.regions[self.region].population+1
-				nl.regions[self.region].cities[self.city].population = nl.regions[self.region].cities[self.city].population+1
+				if self.region then self.region.population = self.region.population+1 end
+				if self.city then self.city.population = self.city.population+1 end
 
 				if self.military then
 					self.militaryTraining = self.militaryTraining+1
