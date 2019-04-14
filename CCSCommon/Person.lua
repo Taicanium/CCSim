@@ -342,8 +342,8 @@ return
 					self.city = nil
 				end
 
-				if not self.city then
-					self.city = parent:randomChoice(nl.regions[self.region].cities)
+				if not self.city and self.region then
+					self.city = parent:randomChoice(self.region.cities)
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
