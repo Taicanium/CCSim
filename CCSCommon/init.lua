@@ -624,7 +624,7 @@ return
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
-							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region == newl.name then newl:add(parent, c.people[i]) end end
+							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then newl:add(parent, c.people[i]) end end
 
 							for i=1,math.floor(#c.people/5) do
 								local p = parent:randomChoice(c.people)
@@ -885,7 +885,7 @@ return
 										newr.name = c2.name
 
 										for i=#c2.people,1,-1 do
-											c2.people[i].region = c2.name
+											c2.people[i].region = newr
 											c2.people[i].nationality = c1.name
 											c2.people[i].military = false
 											c2.people[i].isruler = false
@@ -1765,7 +1765,7 @@ return
 						if c2.regions[r] then
 							local rn = c2.regions[r]
 
-							for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
+							for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
 
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
