@@ -1,5 +1,8 @@
 if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
-if not table.unpack then table.unpack = function(t, n) if not n then return table.unpack(t, 1) else if t[n] then return t[n], table.unpack(t, n+1) end end end end
+if not table.unpack then table.unpack = function(t, n)
+	if not n then return table.unpack(t, 1)
+	elseif t[n] then return t[n], table.unpack(t, n+1) end
+end end
 
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
@@ -711,22 +714,23 @@ return
 							if c.stability < 1 then c.stability = 1 end
 
 							if c.capitalregion == newl.name then
-								for i, j in pairs(newl.regions) do
-									for k, l in pairs(j.cities) do
-										if l.name == c.capitalcity then
-											local oldcap = c.capitalcity
-											local oldreg = c.capitalregion
+								local oldcap = c.capitalcity
+								local oldreg = c.capitalregion
 
-											local nr = parent:randomChoice(c.regions)
-											c.capitalregion = nr.name
-											c.capitalcity = parent:randomChoice(nr.cities, true)
+								local nr = parent:randomChoice(c.regions)
+								if nr then
+									c.capitalregion = nr.name
+									c.capitalcity = parent:randomChoice(nr.cities, true)
 
-											local msg = "Capital moved"
-											if oldcap ~= "" then msg = msg.." from "..oldcap end
-											msg = msg.." to "..c.capitalcity
+									if c.capitalcity then
+										local msg = "Capital moved"
+										if oldcap ~= "" then msg = msg.." from "..oldcap end
+										msg = msg.." to "..c.capitalcity
 
-											c:event(parent, msg)
-										end
+										c:event(parent, msg)
+									else
+										c.capitalregion = ""
+										c.capitalcity = ""
 									end
 								end
 							end
