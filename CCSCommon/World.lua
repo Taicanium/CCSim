@@ -9,6 +9,7 @@ return
 				nm.cColors = {}
 				nm.cTriplets = {}
 				nm.fromFile = false
+				nm.gPop = 0
 				nm.mtname = "World"
 				nm.planet = {}
 				nm.planetdefined = {}
@@ -595,8 +596,12 @@ return
 						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true) end end
 					end
 				end end
+				
+				self.gPop = 0
+				
 				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
+				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
 
 				local f1 = _time()-f0
 
