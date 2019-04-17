@@ -1389,7 +1389,7 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = string.format("Year %d: %d countries\n\n", self.years, self.numCountries)
+					msg = string.format("Year %d: %d countries - Global Population %d\n\n", self.years, self.numCountries, self.thisWorld.gPop)
 
 					if self.showinfo == 1 then
 						local f0 = _time()
