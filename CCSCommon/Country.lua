@@ -459,9 +459,9 @@ return
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
 
-					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName and self.rulers[i].title == self.people[newRuler].title then namenum = namenum+1 end end
+					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName and self.rulers[i].title == self.people[newRuler].rulerTitle then namenum = namenum+1 end end
 					
-					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].title.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
+					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
 					
 					self.people[newRuler].rulerInfo = {LastRoyalAncestor=self.people[newRuler].LastRoyalAncestor, royalGenerations=self.people[newRuler].royalGenerations, ruledFrom=parent.years, ruledTo=-1}
 					
@@ -473,11 +473,11 @@ return
 					
 					self.people[newRuler].gString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace.." "..tostring(self.people[newRuler].number)
 
-					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, string.format(self.people[newRuler].title.." "..self.people[newRuler].rulerName.." "..parent:roman(self.people[newRuler].number).." of "..self.name)) end
+					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, string.format(self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(self.people[newRuler].number).." of "..self.name)) end
 
-					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				else
-					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].title, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
 
 				self.hasruler = 0
