@@ -453,8 +453,13 @@ return
 				else
 					self.people[newRuler].rulerName = parent:randomChoice(self.rulernames)
 				end
-
+				
+				self.hasruler = 0
+				self.people[newRuler].isruler = true
+				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
+				self.rulerage = self.people[newRuler].age
+				self.rulerParty = self.people[newRuler].party
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
@@ -473,18 +478,12 @@ return
 					
 					self.people[newRuler].gString = self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace.." "..tostring(self.people[newRuler].number)
 
-					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, string.format(self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(self.people[newRuler].number).." of "..self.name)) end
+					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, string.format(self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(self.people[newRuler].number).." of "..self.people[newRuler].ruledCountry)) end
 
 					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
-
-				self.hasruler = 0
-				self.people[newRuler].isruler = true
-				self.people[newRuler].ruledCountry = self.name
-				self.rulerage = self.people[newRuler].age
-				self.rulerParty = self.people[newRuler].party
 			end,
 
 			setTerritory = function(self, parent, patron, patronRegion)
