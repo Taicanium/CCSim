@@ -621,8 +621,8 @@ return
 			end
 		}
 
-		World.__call = function() return World:new() end
 		World.__index = World
+		World.__call = function() return World:new() end
 
 		return World
 	end

@@ -804,8 +804,8 @@ return
 			end
 		}
 
-		Country.__call = function() return Country:new() end
 		Country.__index = Country
+		Country.__call = function() return Country:new() end
 
 		return Country
 	end

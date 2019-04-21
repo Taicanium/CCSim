@@ -77,7 +77,7 @@ return
 			c_events = {
 				{
 					name="Coup d'Etat",
-					chance=10,
+					chance=8,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -871,7 +871,7 @@ return
 					chance=10,
 					target=nil,
 					args=2,
-					inverse=false,
+					inverse=true,
 					performEvent=function(self, parent, c1, c2)
 						local patron = false
 

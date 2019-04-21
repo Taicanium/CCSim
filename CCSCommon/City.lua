@@ -20,8 +20,8 @@ return
 			end
 		}
 
-		City.__call = function() return City:new() end
 		City.__index = City
+		City.__call = function() return City:new() end
 
 		return City
 	end

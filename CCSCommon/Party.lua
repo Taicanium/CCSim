@@ -61,8 +61,8 @@ return
 			end
 		}
 
-		Party.__call = function() return Party:new() end
 		Party.__index = Party
+		Party.__call = function() return Party:new() end
 
 		return Party
 	end
