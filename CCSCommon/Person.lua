@@ -281,9 +281,9 @@ return
 
 				for i, j in pairs(nl.parties) do if j and not pmatch then
 					pmatch = j
-					if math.abs(pmatch.pfreedom-self.pbelief) > 35 then pmatch = nil end
-					if math.abs(pmatch.efreedom-self.ebelief) > 35 then pmatch = nil end
-					if math.abs(pmatch.cfreedom-self.cbelief) > 35 then pmatch = nil end
+					if math.abs(j.pfreedom-self.pbelief) > 35 then pmatch = nil end
+					if math.abs(j.efreedom-self.ebelief) > 35 then pmatch = nil end
+					if math.abs(j.cfreedom-self.cbelief) > 35 then pmatch = nil end
 				end end
 
 				if not pmatch then
