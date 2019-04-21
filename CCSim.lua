@@ -4,20 +4,6 @@ CCSCommon = require("CCSCommon")()
 if not CCSCommon then return -1 end
 
 function main()
-	CCSCommon.stamp = tostring(math.floor(_time()))
-
-	CCSCommon.clrcmd = "clear"
-	local clrarr = os.execute("clear")
-
-	if not clrarr then CCSCommon.clrcmd = "cls"
-	elseif type(clrarr) == "number" and clrarr ~= 0 then CCSCommon.clrcmd = "cls"
-	elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then CCSCommon.clrcmd = "cls" end end end
-
-	for i, j in pairs(CCSCommon.c_events) do
-		CCSCommon.disabled[j.name:lower()] = false
-		CCSCommon.disabled["!"..j.name:lower()] = false
-	end
-
 	CCSCommon:clearTerm()
 	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
 
@@ -78,7 +64,7 @@ function main()
 			end
 		end
 	end
-	
+
 	if lfsstatus then
 		lfs.mkdir(CCSCommon.stamp)
 		lfs.mkdir(CCSCommon.stamp.."/royals")

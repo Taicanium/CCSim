@@ -249,7 +249,7 @@ return
 
 			delete = function(self, parent, nz)
 				if not nz then return end
-			
+
 				self.cColors[nz.name] = nil
 				self.cTriplets[nz.name] = nil
 				self.countries[nz.name] = nil
@@ -524,7 +524,7 @@ return
 					local bh = 255-self.cTriplets[cp.name][3]
 					local invTrip = string.format("#%.2x%.2x%.2x", rh, gh, bh)
 
-					local cex = 0.5 + (#cp.nodes / 8000)
+					local cex = 0.5 + (#cp.nodes/8000)
 					cex = cex - math.fmod(cex, 0.1)
 
 					table.insert(cst, cp.name)
@@ -596,9 +596,9 @@ return
 						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true) end end
 					end
 				end end
-				
+
 				self.gPop = 0
-				
+
 				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end

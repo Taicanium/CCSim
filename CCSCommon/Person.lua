@@ -59,7 +59,7 @@ return
 				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
 					local rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "w+") end
-					
+
 					rf:write(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\nBorn "..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
 					rf:write(", "..self.birthplace)
@@ -151,7 +151,7 @@ return
 					nn.royalSystem = self.spouse.royalSystem
 					nn.LastRoyalAncestor = string.format(self.spouse.rulerTitle.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..self.ruledCountry)
 				end
-				
+
 				if self.isruler or self.spouse.isruler then
 					nn.level = self.level-1
 					nn.parentRuler = true
@@ -277,16 +277,14 @@ return
 				if self.cbelief < -100 then self.cbelief = -100 end
 				if self.cbelief > 100 then self.cbelief = 100 end
 
-				local pmatch = false
+				local pmatch = nil
 
-				if #nl.parties > 0 then
-					for i=1,#nl.parties do if not pmatch then
-						pmatch = true
-						if math.abs(nl.parties[i].pfreedom-self.pbelief) > 35 then pmatch = false end
-						if math.abs(nl.parties[i].efreedom-self.ebelief) > 35 then pmatch = false end
-						if math.abs(nl.parties[i].cfreedom-self.cbelief) > 35 then pmatch = false end
-					end end
-				end
+				for i, j in pairs(nl.parties) do if j and not pmatch then
+					pmatch = j
+					if math.abs(pmatch.pfreedom-self.pbelief) > 35 then pmatch = nil end
+					if math.abs(pmatch.efreedom-self.ebelief) > 35 then pmatch = nil end
+					if math.abs(pmatch.cfreedom-self.cbelief) > 35 then pmatch = nil end
+				end end
 
 				if not pmatch then
 					local newp = Party:new()
@@ -295,44 +293,21 @@ return
 					newp.efreedom = self.ebelief
 					newp.pfreedom = self.pbelief
 					local belieftotal = newp.cfreedom+newp.efreedom+newp.pfreedom
-
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
-					self.party = newp.name
-					if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
-
 					table.insert(nl.parties, newp)
+					pmatch = newp
 				end
+				
+				self.party = pmatch.name
+				if self.isruler then nl.rulers[#nl.rulers].party = self.party end
 
-				if self.party == "" then
-					local pi = parent:randomChoice(nl.parties)
-					pmatch = true
-					if math.abs(pi.pfreedom-self.pbelief) > 35 then pmatch = false end
-					if math.abs(pi.efreedom-self.ebelief) > 35 then pmatch = false end
-					if math.abs(pi.cfreedom-self.cbelief) > 35 then pmatch = false end
-					if pmatch then
-						self.party = pi.name
-						if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
-					end
-				else
-					for i=1,#nl.parties do
-						local pi = nl.parties[i]
-						local belieftotal = self.pbelief+self.ebelief+self.cbelief
-						local partytotal = pi.pfreedom+pi.efreedom+pi.cfreedom
-						local diff = math.abs(belieftotal-partytotal)
-						if diff < 165 then pi.popularity = pi.popularity+((100-(diff/3))/#nl.people) end
-						if pi.name == self.party then pi.membership = pi.membership+1
-						else
-							pmatch = true
-							if math.abs(pi.pfreedom-self.pbelief) > 50 then pmatch = false end
-							if math.abs(pi.efreedom-self.ebelief) > 50 then pmatch = false end
-							if math.abs(pi.cfreedom-self.cbelief) > 50 then pmatch = false end
-							if pmatch then
-								self.party = pi.name
-								if self.isruler then nl.rulers[#nl.rulers].Party = self.party end
-							end
-						end
-					end
+				for i, j in pairs(nl.parties) do
+					local belieftotal = self.pbelief+self.ebelief+self.cbelief
+					local partytotal = j.pfreedom+j.efreedom+j.cfreedom
+					local diff = math.abs(belieftotal-partytotal)
+					if diff < 175 then j.popularity = j.popularity+((100-(diff/3))/#nl.people) end
+					if j.name == self.party then j.membership = j.membership+1 end
 				end
 
 				if math.random(1, 150) == 12 then self.region = nil end
@@ -342,7 +317,7 @@ return
 					self.city = nil
 				end
 
-				if not self.city and self.region then
+				if self.region and not self.city then
 					self.city = parent:randomChoice(self.region.cities)
 					if self.spouse then
 						self.spouse.region = self.region
@@ -368,6 +343,7 @@ return
 				end
 
 				if self.age > 65 then self.military = false end
+				
 				local lEth = parent:randomChoice(self.ethnicity, true)
 				local lEthVal = self.ethnicity[lEth]
 

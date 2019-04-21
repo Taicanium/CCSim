@@ -189,7 +189,7 @@ return
 						end
 
 						local varistab = parent:strengthFactor(c)
-						
+
 						for i=1,#self.govIntervened do
 							local cp = parent.thisWorld.countries[self.govIntervened[i]]
 							if cp then
@@ -265,7 +265,7 @@ return
 
 							local namenum = 0
 							local prevtitle = ""
-							if newRuler.prevtitle then prevtitle = newRuler.prevtitle.." " end
+							if newRuler.prevtitle and newRuler.prevtitle ~= "" then prevtitle = newRuler.prevtitle.." " end
 
 							if prevtitle == "Homeless " then prevtitle = "" end
 							if prevtitle == "Citizen " then prevtitle = "" end
@@ -551,7 +551,7 @@ return
 							local newl = Country:new()
 							local nc = parent:randomChoice(c.regions)
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
-							
+
 							newl.name = nc.name
 							c.regions[newl.name] = nil
 
@@ -569,7 +569,7 @@ return
 
 							newl.rulernames = {}
 							newl.frulernames = {}
-							
+
 							for i=1,#c.rulernames do table.insert(newl.rulernames, c.rulernames[i]) end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
 							table.insert(newl.rulernames, parent:name(true))
@@ -652,7 +652,7 @@ return
 									end
 								end
 							end
-							
+
 							if not pR then pR = parent:randomChoice(c.regions) end
 
 							for i=1,#parent.thisWorld.planetdefined do
@@ -1253,7 +1253,7 @@ return
 						end
 					end
 				end
-				
+
 				f:close()
 				f = nil
 
@@ -1399,12 +1399,12 @@ return
 						local cLimit = 14
 						local eCount = 0
 						local eLimit = 4
-						
+
 						for i=#self.alpha,1,-1 do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cp then for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end else table.remove(self.alpha, i) end
 						end
-						
+
 						if cursesstatus then
 							cLimit = curses:lines()-#currentEvents-6
 							if #currentEvents == 0 then cLimit = cLimit-1 end
@@ -1985,6 +1985,20 @@ return
 				return (pop+(c.stability-50)+((c.military/#c.people)*100))
 			end
 		}
+		
+		CCSCommon.stamp = tostring(math.floor(_time()))
+
+		CCSCommon.clrcmd = "clear"
+		local clrarr = os.execute("clear")
+
+		if not clrarr then CCSCommon.clrcmd = "cls"
+		elseif type(clrarr) == "number" and clrarr ~= 0 then CCSCommon.clrcmd = "cls"
+		elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then CCSCommon.clrcmd = "cls" end end end
+
+		for i, j in pairs(CCSCommon.c_events) do
+			CCSCommon.disabled[j.name:lower()] = false
+			CCSCommon.disabled["!"..j.name:lower()] = false
+		end
 
 		return CCSCommon
 	end
