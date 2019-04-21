@@ -243,6 +243,16 @@ return
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
+				
+				if lfsstatus then
+					lfs.mkdir(parent.stamp)
+					lfs.mkdir(parent.stamp.."/royals")
+					if parent.doMaps then lfs.mkdir(parent.stamp.."/maps") end
+				else
+					os.execute("mkdir "..parent.stamp)
+					os.execute("mkdir "..parent.stamp.."/royals")
+					if parent.doMaps then os.execute("mkdir "..parent.stamp.."/maps") end
+				end
 
 				if parent.doMaps then self:rOutput(parent, "./maps/initial") end
 			end,
