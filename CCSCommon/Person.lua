@@ -67,7 +67,7 @@ return
 					if self.rulerInfo.ruledTo == -1 then self.rulerInfo.ruledTo = parent.years end
 					rf:write("\nRuled "..tostring(self.rulerInfo.ruledFrom).." - "..tostring(self.rulerInfo.ruledTo).."\n")
 					if self.rulerInfo.royalGenerations < math.huge and self.rulerInfo.royalGenerations > 0 then
-						local genStr = parent:generationString(self.rulerInfo.royalGenerations, self.gender).." of "..self.rulerInfo.LastRoyalAncestor:gsub(" of "..self.name, "").."\n"
+						local genStr = parent:generationString(self.rulerInfo.royalGenerations, self.gender).." of "..self.rulerInfo.LastRoyalAncestor:gsub(" of "..nl.name, "").."\n"
 						local tmpStr = genStr:sub(1, 1):upper()
 						genStr = tmpStr..genStr:sub(2, genStr:len())
 						rf:write(genStr)
