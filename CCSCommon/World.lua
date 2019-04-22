@@ -345,7 +345,7 @@ return
 
 				for i, cp in pairs(self.countries) do
 					for j, k in pairs(cp.regions) do
-						for l, m in pairs(k.cities) do if m.x and m.y and m.z then
+						for l, m in pairs(k.cities) do if m.name == cp.capitalcity and m.x and m.y and m.z then
 							table.insert(cCoords, {m.x, m.y, m.z})
 							table.insert(cTexts, m.name)
 						end end
@@ -451,7 +451,7 @@ return
 
 					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
 
-					while ratio < self.planetR+8 do
+					while ratio < self.planetR+12 do
 						xChange = xChange+(x*0.001)
 						yChange = yChange+(y*0.001)
 						zChange = zChange+(z*0.001)
@@ -491,7 +491,7 @@ return
 					if i < #cTexts then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.5, font=1)\n")
+				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=1)\n")
 
 				local ccs = {}
 				local css = {}
@@ -587,7 +587,7 @@ return
 					if i < #csz then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nview3d(theta=90, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T90.png\", fmt=\"png\")\nview3d(theta=180, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T180.png\", fmt=\"png\")\nview3d(theta=270, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T270.png\", fmt=\"png\")\nview3d(theta=0, phi=90, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_P90.png\", fmt=\"png\")\nview3d(theta=0, phi=-90, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_P-90.png\", fmt=\"png\")\nview3d(theta=0, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T0.png\", fmt=\"png\")\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
