@@ -1967,7 +1967,7 @@ return
 			end,
 
 			setGensChildren = function(self, t, v, a)
-				if t.royalGenerations > v then
+				if t.royalGenerations >= v then
 					t.royalGenerations = v
 					t.LastRoyalAncestor = a
 				end
