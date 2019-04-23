@@ -254,7 +254,7 @@ return
 					if parent.doMaps then os.execute("mkdir "..parent.stamp.."/maps") end
 				end
 
-				if parent.doMaps then self:rOutput(parent, "./maps/initial") end
+				if parent.doMaps then self:rOutput(parent, parent.stamp.."/maps/initial") end
 			end,
 
 			delete = function(self, parent, nz)
