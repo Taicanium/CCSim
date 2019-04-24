@@ -60,7 +60,9 @@ return
 				self.spouse = nil
 				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
 					local rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "a")
+					if not rf then rf = io.open(parent.stamp.."\\royals\\"..self.ruledCountry..".txt", "a") end
 					if not rf then rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "w+") end
+					if not rf then rf = io.open(parent.stamp.."\\royals\\"..self.ruledCountry..".txt", "w+") end
 					if not rf then return end
 
 					rf:write(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\nBorn "..math.abs(self.birth))
