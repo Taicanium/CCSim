@@ -587,7 +587,7 @@ return
 					if i < #csz then f:write(", ") end
 				end
 
-				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nview3d(theta=90, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T90.png\", fmt=\"png\")\nview3d(theta=180, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T180.png\", fmt=\"png\")\nview3d(theta=270, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T270.png\", fmt=\"png\")\nview3d(theta=0, phi=90, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_P90.png\", fmt=\"png\")\nview3d(theta=0, phi=-90, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_P-90.png\", fmt=\"png\")\nview3d(theta=0, phi=0, fov=25, zoom=0.65)\nsnapshot3d(\""..label:gsub(parent.stamp.."/maps/", "").."_T0.png\", fmt=\"png\")\nif (interactive() == FALSE) { Sys.sleep(10000) }")
+				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
 
 				f:flush()
 				f:close()
