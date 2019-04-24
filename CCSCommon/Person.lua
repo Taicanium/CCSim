@@ -56,9 +56,12 @@ return
 			destroy = function(self, parent, nl)
 				self.death = parent.years
 				self.deathplace = nl.name
+				self.def = nil -- See above.
+				self.spouse = nil
 				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
 					local rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "a")
 					if not rf then rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "w+") end
+					if not rf then return end
 
 					rf:write(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\nBorn "..math.abs(self.birth))
 					if self.birth < 0 then rf:write(" B.C.E.") end
@@ -77,8 +80,6 @@ return
 					rf:close()
 					rf = nil
 				end
-				self.def = nil -- See above.
-				self.spouse = nil
 			end,
 
 			dobirth = function(self, parent, nl)
