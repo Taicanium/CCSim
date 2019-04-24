@@ -244,14 +244,31 @@ return
 					cp:setTerritory(parent)
 				end
 				
+				parent.stamp = tostring(math.floor(_time()))
+
+				for i, j in pairs(parent.c_events) do
+					parent.disabled[j.name:lower()] = false
+					parent.disabled["!"..j.name:lower()] = false
+				end
+				
 				if lfsstatus then
 					lfs.mkdir(parent.stamp)
-					lfs.mkdir(parent.stamp.."/royals")
-					if parent.doMaps then lfs.mkdir(parent.stamp.."/maps") end
+					if parent.clrcmd == "cls" then
+						lfs.mkdir(parent.stamp.."\\royals")
+						if parent.doMaps then lfs.mkdir(parent.stamp.."\\maps") end
+					else
+						lfs.mkdir(parent.stamp.."/royals")
+						if parent.doMaps then lfs.mkdir(parent.stamp.."/maps") end
+					end
 				else
 					os.execute("mkdir "..parent.stamp)
-					os.execute("mkdir "..parent.stamp.."/royals")
-					if parent.doMaps then os.execute("mkdir "..parent.stamp.."/maps") end
+					if parent.clrcmd == "cls" then
+						os.execute("mkdir "..parent.stamp.."\\royals")
+						if parent.doMaps then os.execute("mkdir "..parent.stamp.."\\maps") end
+					else
+						os.execute("mkdir "..parent.stamp.."/royals")
+						if parent.doMaps then os.execute("mkdir "..parent.stamp.."/maps") end
+					end
 				end
 
 				if parent.doMaps then self:rOutput(parent, parent.stamp.."/maps/initial") end
