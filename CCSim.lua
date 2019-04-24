@@ -48,6 +48,7 @@ function main()
 			CCSCommon.numCountries = math.random(7, 12)
 
 			for j=1,CCSCommon.numCountries do
+				printl(CCSCommon.stdscr, "Country %d/%d", j, CCSCommon.numCountries)
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
