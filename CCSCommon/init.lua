@@ -8,8 +8,9 @@ socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 lfsstatus, lfs = pcall(require, "lfs")
 
-_time = os.clock
-if socketstatus then _time = socket.gettime end
+_time = os.time
+if socketstatus then _time = socket.gettime
+elseif _time() < 30 then _time = os.clock end
 
 Person = require("CCSCommon.Person")()
 Party = require("CCSCommon.Party")()
@@ -22,6 +23,7 @@ printf = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
+		stdscr:clrtoeol()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
@@ -36,6 +38,7 @@ printl = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
+		stdscr:clrtoeol()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
@@ -50,6 +53,7 @@ printp = function(stdscr, fmt, ...)
 	if stdscr then
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
+		stdscr:clrtoeol()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	else
@@ -60,6 +64,7 @@ end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
+		stdscr:clrtoeol()
 		stdscr:addstr(string.format(fmt, ...))
 		stdscr:refresh()
 	else io.write(string.format(fmt, ...)) end
@@ -1002,6 +1007,15 @@ return
 					curses.echo(true)
 					curses.nl(true)
 					self.stdscr = curses.initscr()
+				end
+				
+				if not self.clrcmd or self.clrcmd == "" then
+					self.clrcmd = "clear"
+					local clrarr = os.execute("clear")
+
+					if not clrarr then self.clrcmd = "cls"
+					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "cls"
+					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
 				end
 
 				if cursesstatus then
@@ -1985,20 +1999,6 @@ return
 				return (pop+(c.stability-50)+((c.military/#c.people)*100))
 			end
 		}
-		
-		CCSCommon.stamp = tostring(math.floor(_time()))
-
-		CCSCommon.clrcmd = "clear"
-		local clrarr = os.execute("clear")
-
-		if not clrarr then CCSCommon.clrcmd = "cls"
-		elseif type(clrarr) == "number" and clrarr ~= 0 then CCSCommon.clrcmd = "cls"
-		elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then CCSCommon.clrcmd = "cls" end end end
-
-		for i, j in pairs(CCSCommon.c_events) do
-			CCSCommon.disabled[j.name:lower()] = false
-			CCSCommon.disabled["!"..j.name:lower()] = false
-		end
 
 		return CCSCommon
 	end
