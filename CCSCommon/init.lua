@@ -1764,9 +1764,10 @@ return
 
 			randomChoice = function(self, t, doKeys)
 				local keys = {}
+				if t and t[1] then if doKeys then return math.random(1, #t) else return t[math.random(1, #t)] end end
 				for key, value in pairs(t) do table.insert(keys, key) end
-				if #keys == 0 then return nil end
-				if #keys == 1 then if doKeys then return keys[1] else return t[keys[1]] end end
+				if #keys == 0 then return nil
+				elseif #keys == 1 then if doKeys then return keys[1] else return t[keys[1]] end end
 				local index = keys[math.random(1, #keys)]
 				if doKeys then return index else return t[index] end
 			end,
