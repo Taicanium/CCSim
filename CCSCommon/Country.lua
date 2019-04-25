@@ -260,7 +260,7 @@ return
 
 				for i=1,#parent.systems do
 					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
-					if math.random(1, 100) < 51 then self.dfif[parent.systems[i].name] = true else self.dfif[parent.systems[i].name] = false end
+					self.dfif[parent.systems[i].name] = parent:randomChoice({true, false})
 				end
 
 				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
