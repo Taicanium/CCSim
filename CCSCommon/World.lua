@@ -251,24 +251,15 @@ return
 					parent.disabled["!"..j.name:lower()] = false
 				end
 				
+				local mapDir = parent.stamp.."/maps"
+				if parent.clrcmd == "cls" then mapDir = parent.stamp.."\\maps" end
+				
 				if lfsstatus then
 					lfs.mkdir(parent.stamp)
-					if parent.clrcmd == "cls" then
-						lfs.mkdir(parent.stamp.."\\royals")
-						if parent.doMaps then lfs.mkdir(parent.stamp.."\\maps") end
-					else
-						lfs.mkdir(parent.stamp.."/royals")
-						if parent.doMaps then lfs.mkdir(parent.stamp.."/maps") end
-					end
+					lfs.mkdir(mapDir)
 				else
 					os.execute("mkdir "..parent.stamp)
-					if parent.clrcmd == "cls" then
-						os.execute("mkdir "..parent.stamp.."\\royals")
-						if parent.doMaps then os.execute("mkdir "..parent.stamp.."\\maps") end
-					else
-						os.execute("mkdir "..parent.stamp.."/royals")
-						if parent.doMaps then os.execute("mkdir "..parent.stamp.."/maps") end
-					end
+					os.execute("mkdir "..mapDir)
 				end
 
 				if parent.doMaps then self:rOutput(parent, parent.stamp.."/maps/initial") end
