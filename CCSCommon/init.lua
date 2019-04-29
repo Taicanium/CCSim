@@ -1064,7 +1064,7 @@ return
 			finish = function(self)
 				self:clearTerm()
 
-				if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "final"})) end
+				if self.doMaps then self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "final"})) end
 
 				printf(self.stdscr, "Printing result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
@@ -1203,8 +1203,8 @@ return
 					index = index+1
 				end
 				
-				of:flush()
 				of:write("\n0 TRLR")
+				of:flush()
 				of:close()
 				of = nil
 			end,
