@@ -2045,29 +2045,33 @@ return
 			end,
 			
 			setGed = function(self, t, p)
-				if t.writeGed == 0 then
-					t.writeGed = -1
-					if p then t.writeGed = 1 end
-					if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
-					if t.writeGed == 1 then
-						if not self.fam[t.father.gString.." - "..t.mother.gString] then
-							self.fam[t.father.gString.." - "..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}}
-							self.famCount = self.famCount+1
+				if t then
+					if t.writeGed == 0 then
+						t.writeGed = -1
+						if p then t.writeGed = 1 end
+						if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
+						if t.writeGed == 1 then
+							if t.father and t.mother then
+								if not self.fam[t.father.gString.." - "..t.mother.gString] then
+									self.fam[t.father.gString.." - "..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}}
+									self.famCount = self.famCount+1
+								end
+								local found = false
+								for i=1,#self.fam[t.father.gString.." - "..t.mother.gString].chil do if self.fam[t.father.gString.." - "..t.mother.gString].chil[i] == t.gString then found = true end end
+								if not found then table.insert(self.fam[t.father.gString.." - "..t.mother.gString].chil, t.gString) end
+							end
+							if not self.indi[t.gString] then
+								self.indi[t.gString] = t
+								self.indiCount = self.indiCount+1
+							end
+							self:setGed(t.father, true)
+							self:setGed(t.mother, true)
+							for i, j in pairs(t.children) do self:setGed(j, false) end
 						end
-						local found = false
-						for i=1,#self.fam[t.father.gString.." - "..t.mother.gString].chil do if self.fam[t.father.gString.." - "..t.mother.gString].chil[i] == t.gString then found = true end end
-						if not found then table.insert(self.fam[t.father.gString.." - "..t.mother.gString].chil, t.gString) end
-						if not self.indi[t.gString] then
-							self.indi[t.gString] = t
-							self.indiCount = self.indiCount+1
-						end
-						self:setGed(t.father, true)
-						self:setGed(t.mother, true)
-						for i, j in pairs(t.children) do self:setGed(j, false) end
 					end
+					
+					if t.writeGed == -1 then t.writeGed = 0 end
 				end
-				
-				if t.writeGed == -1 then t.writeGed = 0 end
 			end,
 
 			setGensChildren = function(self, t, v, a)
