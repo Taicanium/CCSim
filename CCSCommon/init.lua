@@ -1165,7 +1165,7 @@ return
 				local index = 1
 				printf(self.stdscr, "Writing individual data...")
 				for i, j in pairs(self.indi) do
-					of:write("\n0 @I"..tostring(index).."@ INDI\n1 NAME ")
+					of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
 					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 					of:write(" /"..j.surname:upper().."/")
 					if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
@@ -1173,12 +1173,12 @@ return
 					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 					if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
 					if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-					of:write("\n1 SEX "..j.gender:sub(1, 1):upper().."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+					of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
 					if j.birth < 1 then of:write(" B.C.") end
 					of:write("\n2 PLAC "..j.birthplace)
 					if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
 					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
-					if j.famc ~= "" and self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
+					if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 					local nOne = false
 					for k, l in pairs(j.ethnicity) do
 						if nOne then of:write("\n2 CONT "..string.format("%.2f", l).."% "..k)
@@ -2060,14 +2060,15 @@ return
 						if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
 						if t.writeGed == 1 then
 							if t.father and t.mother then
-								if not self.fam[t.father.gString..":"..t.mother.gString] then
+								local fKey = t.father.gString..":"..t.mother.gString
+								if not self.fam[fKey] then
 									self.famCount = self.famCount+1
-									self.fam[t.father.gString..":"..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=self.famCount}
+									self.fam[fKey] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=self.famCount}
 								end
 								local found = false
-								for i=1,#self.fam[t.father.gString..":"..t.mother.gString].chil do if self.fam[t.father.gString..":"..t.mother.gString].chil[i] == t.gString then found = true end end
-								if not found then table.insert(self.fam[t.father.gString..":"..t.mother.gString].chil, t.gString) end
-								t.famc = t.father.gString..":"..t.mother.gString
+								for i=1,#self.fam[fKey].chil do if self.fam[fKey].chil[i] == t.gString then found = true end end
+								if not found then table.insert(self.fam[fKey].chil, t.gString) end
+								t.famc = fKey
 								found = false
 								for i=1,#t.father.fams do if t.father.fams[i] == t.famc then found = true end end
 								if not found then table.insert(t.father.fams, t.famc) end
