@@ -251,18 +251,20 @@ return
 					parent.disabled["!"..j.name:lower()] = false
 				end
 				
-				local mapDir = parent.stamp.."/maps"
-				if parent.clrcmd == "cls" then mapDir = parent.stamp.."\\maps" end
-				
-				if lfsstatus then
-					lfs.mkdir(parent.stamp)
-					lfs.mkdir(mapDir)
-				else
-					os.execute("mkdir "..parent.stamp)
-					os.execute("mkdir "..mapDir)
-				end
+				if parent.doMaps then
+					local mapDir = parent.stamp.."/maps"
+					if parent.clrcmd == "cls" then mapDir = parent.stamp.."\\maps" end
+					
+					if lfsstatus then
+						lfs.mkdir(parent.stamp)
+						lfs.mkdir(mapDir)
+					else
+						os.execute("mkdir "..parent.stamp)
+						os.execute("mkdir "..mapDir)
+					end
 
-				if parent.doMaps then self:rOutput(parent, parent.stamp.."/maps/initial") end
+					self:rOutput(parent, parent.stamp.."/maps/initial")
+				end
 			end,
 
 			delete = function(self, parent, nz)
