@@ -42,7 +42,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone+1
-							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", ((bdone/math.pow((bRad*2)+1, 3)*10000)/100)) end
+							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100) end
 						end
 					end
 				end
@@ -79,7 +79,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", ((rdone/math.pow((self.planetR*2)+1, 3)*10000)/100)) end
+							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", (rdone/math.pow((self.planetR*2)+1, 3)*10000)/100) end
 						end
 					end
 				end
@@ -152,7 +152,7 @@ return
 						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
 					end
 
-					if math.fmod(doneLand, 100) == 0 then printl(parent.stdscr, "%.2f%% done", ((doneLand/maxLand*10000)/100)) end
+					if math.fmod(doneLand, 100) == 0 then printl(parent.stdscr, "%.2f%% done", (doneLand/maxLand*10000)/100) end
 				end
 
 				for i=1,planetSize do

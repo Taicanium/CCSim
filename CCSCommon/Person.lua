@@ -16,6 +16,8 @@ return
 				n.def = {} -- A utility variable used to set whether this person has been destroyed.
 				n.ebelief = 0
 				n.ethnicity = {}
+				n.famc = ""
+				n.fams = {}
 				n.father = nil
 				n.gender = ""
 				n.rulerInfo = {}
@@ -42,13 +44,14 @@ return
 				n.region = nil
 				n.removed = false
 				n.royalGenerations = math.huge
-				n.rulerName = ""
 				n.royalSystem = ""
 				n.ruledCountry = ""
+				n.rulerName = ""
 				n.rulerTitle = ""
 				n.spouse = nil
 				n.surname = ""
 				n.title = "Citizen"
+				n.writeGed = 0
 
 				return n
 			end,
@@ -58,30 +61,7 @@ return
 				self.deathplace = nl.name
 				self.def = nil -- See above.
 				self.spouse = nil
-				if not parent.thisWorld.fromFile and self.royalGenerations == 0 then
-					local rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "a")
-					if not rf then rf = io.open(parent.stamp.."\\royals\\"..self.ruledCountry..".txt", "a") end
-					if not rf then rf = io.open(parent.stamp.."/royals/"..self.ruledCountry..".txt", "w+") end
-					if not rf then rf = io.open(parent.stamp.."\\royals\\"..self.ruledCountry..".txt", "w+") end
-					if not rf then return end
-
-					rf:write(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry.."\nBorn "..math.abs(self.birth))
-					if self.birth < 0 then rf:write(" B.C.E.") end
-					rf:write(", "..self.birthplace)
-					if self.death < parent.maxyears then rf:write(" - Died "..self.death..", "..self.deathplace) end
-					if self.rulerInfo.ruledTo == -1 then self.rulerInfo.ruledTo = parent.years end
-					rf:write("\nRuled "..tostring(self.rulerInfo.ruledFrom).." - "..tostring(self.rulerInfo.ruledTo).."\n")
-					if self.rulerInfo.royalGenerations < math.huge and self.rulerInfo.royalGenerations > 0 then
-						local genStr = parent:generationString(self.rulerInfo.royalGenerations, self.gender).." of "..self.rulerInfo.LastRoyalAncestor:gsub(" of "..nl.name, "").."\n"
-						local tmpStr = genStr:sub(1, 1):upper()
-						genStr = tmpStr..genStr:sub(2, genStr:len())
-						rf:write(genStr)
-					end
-					rf:write("\n")
-					rf:flush()
-					rf:close()
-					rf = nil
-				end
+				if self.royalGenerations == 0 then table.insert(parent.royals, self) end
 			end,
 
 			dobirth = function(self, parent, nl)

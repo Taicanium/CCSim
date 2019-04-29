@@ -418,7 +418,7 @@ return
 								for q, b in pairs(self.target.regions) do rcount = rcount+1 end
 								if rcount > 1 then
 									local rname = parent:randomChoice(self.target.regions).name
-									parent:RegionTransfer(c1, self.target, rname, false)
+									parent:regionTransfer(c1, self.target, rname, false)
 								end
 							end
 						elseif self.status <= -100 then
@@ -450,7 +450,7 @@ return
 								for q, b in pairs(c1.regions) do rcount = rcount+1 end
 								if rcount > 1 then
 									local rname = parent:randomChoice(c1.regions).name
-									parent:RegionTransfer(self.target, c1, rname, false)
+									parent:regionTransfer(self.target, c1, rname, false)
 								end
 							end
 						end
@@ -512,7 +512,7 @@ return
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
 						if c1.relations[self.target.name] and c1.relations[self.target.name] < 35 and math.random(1, 50) < 5 then return self:endEvent(parent, c1) end
-						if math.random(1, 500) < 5 then return self:endEvent(parent, c1) end
+						if math.random(1, 750) < 5 then return self:endEvent(parent, c1) end
 						return 0
 					end,
 					endEvent=function(self, parent, c1)
@@ -774,7 +774,7 @@ return
 								for q, b in pairs(c2.regions) do rcount = rcount+1 end
 								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
 									local rname = parent:randomChoice(c2.regions).name
-									parent:RegionTransfer(c1, c2, rname, false)
+									parent:regionTransfer(c1, c2, rname, false)
 								end
 							end
 						end
@@ -943,9 +943,13 @@ return
 			debugTimes = {},
 			disabled = {},
 			doMaps = false,
-			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra", "um"},
+			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra"},
+			fam = {},
+			famCount = 0,
 			final = {},
 			genLimit = 3,
+			indi = {},
+			indiCount = 0,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			maxyears = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
@@ -958,6 +962,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
 			popLimit = 2000,
+			royals = {},
 			showinfo = 0,
 			startyear = 1,
 			stdscr = nil,
@@ -1054,6 +1059,7 @@ return
 
 				printf(self.stdscr, "Printing result...")
 				local of = io.open(self.stamp.."/events.txt", "w+")
+				if not of then of = io.open(self.stamp.."\\events.txt", "w+") end
 
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
@@ -1134,6 +1140,63 @@ return
 					end
 				end
 
+				of:close()
+				of = nil
+				
+				of = io.open(self.stamp.."/royals.ged", "w+")
+				if not of then of = io.open(self.stamp.."\\royals.ged", "w+") end
+				if not of then return end
+				
+				printf(self.stdscr, "Sorting GEDCOM data...")
+				for i=1,#self.royals do
+					self:writeGed(self.royals[i], false)
+					printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
+				end
+				
+				of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
+				
+				local index = 1
+				for i, j in pairs(self.fam) do
+					if not j or not j.husb or not self.indi[j.husb] or not j.wife or not self.indi[j.wife] or #j.chil < 1 then self.fam[i] = nil
+					else
+						j.fIndex = index
+						index = index+1
+					end
+				end
+				index = 1
+				printf(self.stdscr, "Writing individual data...")
+				for i, j in pairs(self.indi) do
+					j.gIndex = index
+					of:write("\n0 @I"..tostring(index).."@ INDI\n1 NAME ")
+					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+					of:write(" /"..j.surname:upper().."/")
+					if j.number ~= 0 then of:write(" "..tostring(j.number)) end
+					of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
+					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+					if j.number ~= 0 then of:write("\n2 NSFX "..tostring(j.number)) end
+					if j.rulerTitle ~= 0 then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
+					of:write("\n1 SEX "..j.gender:sub(1, 1):upper().."\n1 BIRT\n2 DATE "..j.birth.."\n2 PLAC "..j.birthplace)
+					if j.death and j.death < self.years then of:write("\n1 DEAT\n2 DATE "..j.death.."\n2 PLAC "..j.deathplace)) end
+					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end
+					if j.famc ~= "" and self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
+					of:flush()
+					printl(self.stdscr, "%.2f%% done", (index/indiCount*10000)/100)
+					index = index+1
+				end
+				index = 1
+				printf(self.stdscr, "Writing family data...")
+				for i, j in pairs(self.fam) do
+					if j and j.husb and j.husb ~= "" and j.wife and j.wife ~= "" and #j.chil > 0 then
+						of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
+						for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
+						of:flush()
+					end
+					printl(self.stdscr, "%.2f%% done", (index/famCount*10000)/100)
+					index = index+1
+				end
+				
+				of:flush()
+				of:write("\n0 TRLR")
 				of:close()
 				of = nil
 			end,
@@ -1772,7 +1835,7 @@ return
 				if doKeys then return index else return t[index] end
 			end,
 
-			RegionTransfer = function(self, c1, c2, r, conq)
+			regionTransfer = function(self, c1, c2, r, conq)
 				if c1 and c2 then
 					local rCount = 0
 					for i, j in pairs(c2.regions) do rCount = rCount+1 end
@@ -1979,6 +2042,32 @@ return
 				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(12, 177000))) end
 				math.randomseed(math.ceil(n))
 				for i=1,3 do math.random(1, 100) end
+			end,
+			
+			setGed = function(self, t, p)
+				if t.writeGed == 0 then
+					t.writeGed = -1
+					if p then t.writeGed = 1 end
+					if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
+					if t.writeGed == 1 then
+						if not self.fam[t.father.gString.." - "..t.mother.gString] then
+							self.fam[t.father.gString.." - "..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}}
+							self.famCount = self.famCount+1
+						end
+						local found = false
+						for i=1,#self.fam[t.father.gString.." - "..t.mother.gString].chil do if self.fam[t.father.gString.." - "..t.mother.gString].chil[i] == t.gString then found = true end
+						if not found then table.insert(self.fam[t.father.gString.." - "..t.mother.gString].chil, t.gString) end
+						if not self.indi[t.gString] then
+							self.indi[t.gString] = t
+							self.indiCount = self.indiCount+1
+						end
+						self:setGed(t.father, true)
+						self:setGed(t.mother, true)
+						for i, j in pairs(t.children) do self:setGed(j, false) end
+					end
+				end
+				
+				if t.writeGed == -1 then t.writeGed = 0 end
 			end,
 
 			setGensChildren = function(self, t, v, a)
