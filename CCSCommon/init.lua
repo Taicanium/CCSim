@@ -1177,7 +1177,7 @@ return
 					if j.rulerTitle ~= 0 then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
 					of:write("\n1 SEX "..j.gender:sub(1, 1):upper().."\n1 BIRT\n2 DATE "..j.birth.."\n2 PLAC "..j.birthplace)
 					if j.death and j.death < self.years then of:write("\n1 DEAT\n2 DATE "..j.death.."\n2 PLAC "..j.deathplace) end
-					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end
+					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
 					if j.famc ~= "" and self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 					of:flush()
 					printl(self.stdscr, "%.2f%% done", (index/indiCount*10000)/100)
