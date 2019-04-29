@@ -1170,10 +1170,10 @@ return
 					of:write("\n0 @I"..tostring(index).."@ INDI\n1 NAME ")
 					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 					of:write(" /"..j.surname:upper().."/")
-					if j.number ~= 0 then of:write(" "..tostring(j.number)) end
+					if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
 					of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
 					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					if j.number ~= 0 then of:write("\n2 NSFX "..tostring(j.number)) end
+					if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
 					if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
 					of:write("\n1 SEX "..j.gender:sub(1, 1):upper().."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
 					if j.birth < 1 then of:write(" B.C.") end
@@ -1181,6 +1181,14 @@ return
 					if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
 					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
 					if j.famc ~= "" and self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
+					local nOne = false
+					for k, l in pairs(j.ethnicity) do
+						if nOne then of:write("\n2 CONT "..string.format("%.2f", l).."% "..k)
+						else
+							of:write("\n1 NOTE "..string.format("%.2f", l).."% "..k)
+							nOne = true
+						end
+					end
 					of:flush()
 					printl(self.stdscr, "%.2f%% done", (index/self.indiCount*10000)/100)
 					index = index+1
