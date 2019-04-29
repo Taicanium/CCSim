@@ -253,17 +253,13 @@ return
 				
 				local mapDir = parent.stamp.."/maps"
 				if parent.clrcmd == "cls" then mapDir = parent.stamp.."\\maps" end
-				local royalDir = parent.stamp.."/royals"
-				if parent.clrcmd == "cls" then royalDir = parent.stamp.."\\royals" end
 				
 				if lfsstatus then
 					lfs.mkdir(parent.stamp)
 					lfs.mkdir(mapDir)
-					lfs.mkdir(royalDir)
 				else
 					os.execute("mkdir "..parent.stamp)
 					os.execute("mkdir "..mapDir)
-					os.execute("mkdir "..royalDir)
 				end
 
 				if parent.doMaps then self:rOutput(parent, parent.stamp.."/maps/initial") end
