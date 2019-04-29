@@ -1149,7 +1149,7 @@ return
 				
 				printf(self.stdscr, "Sorting GEDCOM data...")
 				for i=1,#self.royals do
-					self:writeGed(self.royals[i], false)
+					self:setGed(self.royals[i], false)
 					printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
 				end
 				
