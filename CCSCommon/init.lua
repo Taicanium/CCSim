@@ -1156,17 +1156,8 @@ return
 				of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
 				
 				local index = 1
-				for i, j in pairs(self.fam) do
-					if not j or not j.husb or not self.indi[j.husb] or not j.wife or not self.indi[j.wife] or #j.chil < 1 then self.fam[i] = nil
-					else
-						j.fIndex = index
-						index = index+1
-					end
-				end
-				index = 1
 				printf(self.stdscr, "Writing individual data...")
 				for i, j in pairs(self.indi) do
-					j.gIndex = index
 					of:write("\n0 @I"..tostring(index).."@ INDI\n1 NAME ")
 					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 					of:write(" /"..j.surname:upper().."/")
@@ -2062,14 +2053,14 @@ return
 						if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
 						if t.writeGed == 1 then
 							if t.father and t.mother then
-								if not self.fam[t.father.gString.."-"..t.mother.gString] then
-									self.fam[t.father.gString.."-"..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=0}
+								if not self.fam[t.father.gString..":"..t.mother.gString] then
 									self.famCount = self.famCount+1
+									self.fam[t.father.gString..":"..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=self.famCount}
 								end
 								local found = false
-								for i=1,#self.fam[t.father.gString.."-"..t.mother.gString].chil do if self.fam[t.father.gString.."-"..t.mother.gString].chil[i] == t.gString then found = true end end
-								if not found then table.insert(self.fam[t.father.gString.."-"..t.mother.gString].chil, t.gString) end
-								t.famc = t.father.gString.."-"..t.mother.gString
+								for i=1,#self.fam[t.father.gString..":"..t.mother.gString].chil do if self.fam[t.father.gString..":"..t.mother.gString].chil[i] == t.gString then found = true end end
+								if not found then table.insert(self.fam[t.father.gString..":"..t.mother.gString].chil, t.gString) end
+								t.famc = t.father.gString..":"..t.mother.gString
 								found = false
 								for i=1,#t.father.fams do if t.father.fams[i] == t.famc then found = true end end
 								if not found then table.insert(t.father.fams, t.famc) end
@@ -2078,8 +2069,9 @@ return
 								if not found then table.insert(t.mother.fams, t.famc) end
 							end
 							if not self.indi[t.gString] then
-								self.indi[t.gString] = t
 								self.indiCount = self.indiCount+1
+								t.gIndex = self.indiCount
+								self.indi[t.gString] = t
 							end
 							self:setGed(t.father, true)
 							self:setGed(t.mother, true)

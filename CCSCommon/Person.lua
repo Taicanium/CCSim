@@ -154,7 +154,7 @@ return
 				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
 				else nn:SetFamily(self, self.spouse, parent) end
 
-				nn.gString = nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
+				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
 
 				nl:add(parent, nn)
 			end,
