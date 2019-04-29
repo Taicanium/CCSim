@@ -372,6 +372,6 @@ Emperor Meiji 1867 1912
 Emperor Taishou 1912 1926
 Emperor Shouwa 1926 1989
 Emperor Heisei 1989 2019
-Emperor Kisugi 2019 2034
+Emperor Reiwa 2019 2034
 Emperor Seiko 2034 2061
 Emperor Shison 2061 2094
