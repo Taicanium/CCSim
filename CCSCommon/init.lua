@@ -1056,6 +1056,7 @@ return
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end
 				local strOut = ""
+				if self.clrcmd == "clear" then strOut = "."..self.dirSeparator end
 				for i=1,#names-1 do strOut = strOut..names[i]..self.dirSeparator end
 				strOut = strOut..names[#names]
 				return strOut
