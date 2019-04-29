@@ -252,20 +252,17 @@ return
 				end
 				
 				if parent.clrcmd == "cls" then parent.dirSeparator = "\\" end
+				local mapDir = parent:directory({parent.stamp, "maps"})
 				
-				if parent.doMaps then
-					local mapDir = parent:directory({parent.stamp, "maps"})
-					
-					if lfsstatus then
-						lfs.mkdir(parent.stamp)
-						lfs.mkdir(mapDir)
-					else
-						os.execute("mkdir "..parent.stamp)
-						os.execute("mkdir "..mapDir)
-					end
-
-					self:rOutput(parent, parent:directory({mapDir, "initial"}))
+				if lfsstatus then
+					lfs.mkdir(parent.stamp)
+					if parent.doMaps then lfs.mkdir(mapDir) end
+				else
+					os.execute("mkdir "..parent.stamp)
+					if parent.doMaps then os.execute("mkdir "..mapDir) end
 				end
+
+				self:rOutput(parent, parent:directory({mapDir, "initial"}))
 			end,
 
 			delete = function(self, parent, nz)
