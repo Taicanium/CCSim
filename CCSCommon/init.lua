@@ -2055,7 +2055,7 @@ return
 							self.famCount = self.famCount+1
 						end
 						local found = false
-						for i=1,#self.fam[t.father.gString.." - "..t.mother.gString].chil do if self.fam[t.father.gString.." - "..t.mother.gString].chil[i] == t.gString then found = true end
+						for i=1,#self.fam[t.father.gString.." - "..t.mother.gString].chil do if self.fam[t.father.gString.." - "..t.mother.gString].chil[i] == t.gString then found = true end end
 						if not found then table.insert(self.fam[t.father.gString.." - "..t.mother.gString].chil, t.gString) end
 						if not self.indi[t.gString] then
 							self.indi[t.gString] = t
