@@ -251,9 +251,10 @@ return
 					parent.disabled["!"..j.name:lower()] = false
 				end
 				
+				if parent.clrcmd == "cls" then parent.dirSeparator = "\\" end
+				
 				if parent.doMaps then
-					local mapDir = parent.stamp.."/maps"
-					if parent.clrcmd == "cls" then mapDir = parent.stamp.."\\maps" end
+					local mapDir = parent:directory({parent.stamp, "maps"})
 					
 					if lfsstatus then
 						lfs.mkdir(parent.stamp)
@@ -263,7 +264,7 @@ return
 						os.execute("mkdir "..mapDir)
 					end
 
-					self:rOutput(parent, parent.stamp.."/maps/initial")
+					self:rOutput(parent, parent:directory({mapDir, "initial"}))
 				end
 			end,
 

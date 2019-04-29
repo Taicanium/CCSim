@@ -742,7 +742,7 @@ return
 
 							newl:checkRuler(parent, true)
 
-							if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
+							if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 						end
 
 						return -1
@@ -827,7 +827,7 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 
-								if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
+								if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 							end
 						end
 
@@ -928,7 +928,7 @@ return
 
 										parent.thisWorld:delete(parent, c2)
 
-										if parent.doMaps then parent.thisWorld:rOutput(parent, parent.stamp.."/maps/Year "..tostring(parent.years)) end
+										if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 									end
 								end
 							end
@@ -941,6 +941,7 @@ return
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
 			debugTimes = {},
+			dirSeparator = "/",
 			disabled = {},
 			doMaps = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra"},
@@ -1051,15 +1052,22 @@ return
 
 				return res
 			end,
+			
+			directory = function(self, names)
+				if not names or type(names) ~= "table" or #names == 0 then return "" end
+				local strOut = ""
+				for i=1,#names-1 do strOut = strOut..names[i]..self.dirSeparator end
+				strOut = strOut..names[#names]
+				return strOut
+			end,
 
 			finish = function(self)
 				self:clearTerm()
 
-				if self.doMaps then self.thisWorld:rOutput(self, self.stamp.."/maps/final") end
+				if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "final"})) end
 
 				printf(self.stdscr, "Printing result...")
-				local of = io.open(self.stamp.."/events.txt", "w+")
-				if not of then of = io.open(self.stamp.."\\events.txt", "w+") end
+				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
 
 				local cKeys = {}
 				local alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26}
@@ -1143,8 +1151,7 @@ return
 				of:close()
 				of = nil
 				
-				of = io.open(self.stamp.."/royals.ged", "w+")
-				if not of then of = io.open(self.stamp.."\\royals.ged", "w+") end
+				of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
 				if not of then return end
 				
 				printf(self.stdscr, "Sorting GEDCOM data...")
