@@ -1180,7 +1180,7 @@ return
 					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
 					if j.famc ~= "" and self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 					of:flush()
-					printl(self.stdscr, "%.2f%% done", (index/indiCount*10000)/100)
+					printl(self.stdscr, "%.2f%% done", (index/self.indiCount*10000)/100)
 					index = index+1
 				end
 				index = 1
@@ -1191,7 +1191,7 @@ return
 						for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
 						of:flush()
 					end
-					printl(self.stdscr, "%.2f%% done", (index/famCount*10000)/100)
+					printl(self.stdscr, "%.2f%% done", (index/self.famCount*10000)/100)
 					index = index+1
 				end
 				
@@ -2053,7 +2053,7 @@ return
 						if t.writeGed == 1 then
 							if t.father and t.mother then
 								if not self.fam[t.father.gString.." - "..t.mother.gString] then
-									self.fam[t.father.gString.." - "..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}}
+									self.fam[t.father.gString.." - "..t.mother.gString] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=0}
 									self.famCount = self.famCount+1
 								end
 								local found = false
