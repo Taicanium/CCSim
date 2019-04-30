@@ -2064,7 +2064,11 @@ return
 								end
 								local found = false
 								for i=1,#self.fam[fKey].chil do if self.fam[fKey].chil[i] == t.gString then found = true end end
-								if not found then table.insert(self.fam[fKey].chil, t.gString) end
+								if not found then
+									local nearest = -1
+									for i=1,#self.fam[fKey].chil do if nearest == -1 and t.birth < self.indi[self.fam[fKey].chil[i]].birth then nearest = i end end
+									if nearest == -1 then table.insert(self.fam[fKey].chil, t.gString) else table.insert(self.fam[fKey].chil, nearest, t.gString) end
+								end
 								t.famc = fKey
 								found = false
 								for i=1,#t.father.fams do if t.father.fams[i] == t.famc then found = true end end
