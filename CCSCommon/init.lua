@@ -600,16 +600,12 @@ return
 										retrieved = true
 
 										for k, l in pairs(j.events) do table.insert(newl.events, l) end
+										newl.rulers = {}
+										for k, l in pairs(j.rulers) do table.insert(newl.rulers, l) end
 
 										local found = parent.years
 										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
 										newl.founded = found
-
-										local rIndex = 1
-										for k, l in pairs(j.rulers) do
-											table.insert(newl.rulers, rIndex, l)
-											rIndex = rIndex+1
-										end
 
 										newl.snt = j.snt
 										newl.dfif = j.dfif
