@@ -161,6 +161,9 @@ P Moroni
 C Congo-Brazzaville
 R Brazzaville
 P Brazzaville
+C Congo-Kinshasa
+R Kinshasa
+P Kinshasa
 C Costa Rica
 R San Jose
 P San Jose
@@ -179,9 +182,6 @@ P Nicosia
 C Czechia
 R Prague
 P Prague
-C Congo-Kinshasa
-R Kinshasa
-P Kinshasa
 C Denmark
 R Jutland
 S Aarhus

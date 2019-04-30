@@ -939,6 +939,7 @@ return
 			debugTimes = {},
 			dirSeparator = "/",
 			disabled = {},
+			doGed = false,
 			doMaps = false,
 			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra"},
 			fam = {},
@@ -1145,65 +1146,68 @@ return
 					end
 				end
 
-				of:close()
-				of = nil
-				
-				of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
-				if not of then return end
-				
-				printf(self.stdscr, "Sorting GEDCOM data...")
-				for i=1,#self.royals do
-					self:setGed(self.royals[i], false)
-					printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
-				end
-				
-				of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
-				
-				local index = 1
-				printf(self.stdscr, "Writing individual data...")
-				for i, j in pairs(self.indi) do
-					of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					of:write(" /"..j.surname:upper().."/")
-					if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
-					of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
-					if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-					of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
-					if j.birth < 1 then of:write(" B.C.") end
-					of:write("\n2 PLAC "..j.birthplace)
-					if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
-					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
-					if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
-					local nOne = false
-					for k, l in pairs(j.ethnicity) do
-						if nOne then of:write("\n2 CONT "..string.format("%.2f", l).."% "..k)
-						else
-							of:write("\n1 NOTE "..string.format("%.2f", l).."% "..k)
-							nOne = true
-						end
-					end
-					of:flush()
-					printl(self.stdscr, "%.2f%% done", (index/self.indiCount*10000)/100)
-					index = index+1
-				end
-				index = 1
-				printf(self.stdscr, "Writing family data...")
-				for i, j in pairs(self.fam) do
-					if j and j.husb and j.husb ~= "" and j.wife and j.wife ~= "" and #j.chil > 0 then
-						of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
-						for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
-						of:flush()
-					end
-					printl(self.stdscr, "%.2f%% done", (index/self.famCount*10000)/100)
-					index = index+1
-				end
-				
-				of:write("\n0 TRLR")
 				of:flush()
 				of:close()
 				of = nil
+				
+				if self.doGed then
+					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
+					if not of then return end
+					
+					printf(self.stdscr, "Sorting GEDCOM data...")
+					for i=1,#self.royals do
+						self:setGed(self.royals[i], false)
+						printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
+					end
+					
+					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
+					
+					local index = 1
+					printf(self.stdscr, "Writing individual data...")
+					for i, j in pairs(self.indi) do
+						of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						of:write(" /"..j.surname:upper().."/")
+						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
+						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
+						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
+						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						if j.birth < 1 then of:write(" B.C.") end
+						of:write("\n2 PLAC "..j.birthplace)
+						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
+						for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
+						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
+						local nOne = false
+						for k, l in pairs(j.ethnicity) do
+							if nOne then of:write("\n2 CONT "..string.format("%.2f", l).."% "..k)
+							else
+								of:write("\n1 NOTE "..string.format("%.2f", l).."% "..k)
+								nOne = true
+							end
+						end
+						of:flush()
+						printl(self.stdscr, "%.2f%% done", (index/self.indiCount*10000)/100)
+						index = index+1
+					end
+					index = 1
+					printf(self.stdscr, "Writing family data...")
+					for i, j in pairs(self.fam) do
+						if j and j.husb and j.husb ~= "" and j.wife and j.wife ~= "" and #j.chil > 0 then
+							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
+							for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
+							of:flush()
+						end
+						printl(self.stdscr, "%.2f%% done", (index/self.famCount*10000)/100)
+						index = index+1
+					end
+					
+					of:write("\n0 TRLR")
+					of:flush()
+					of:close()
+					of = nil
+				end
 			end,
 
 			fncopy = function(self, fn)

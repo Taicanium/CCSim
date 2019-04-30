@@ -35,6 +35,13 @@ function main()
 	CCSCommon.doMaps = false
 	if datin == "y" then CCSCommon.doMaps = true end
 
+	printp(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+	datin = readl(CCSCommon.stdscr)
+	datin = datin:lower()
+
+	CCSCommon.doGed = false
+	if datin == "y" then CCSCommon.doGed = true end
+
 	local done = nil
 	while not done do
 		printp(CCSCommon.stdscr, "\nData > ")
