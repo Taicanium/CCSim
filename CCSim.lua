@@ -26,14 +26,14 @@ function main()
 	datin = datin:lower()
 
 	CCSCommon.showinfo = 0
-	if datin:lower() == "y" then CCSCommon.showinfo = 1 end
+	if datin == "y" then CCSCommon.showinfo = 1 end
 
 	printp(CCSCommon.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
 	datin = readl(CCSCommon.stdscr)
 	datin = datin:lower()
 
 	CCSCommon.doMaps = false
-	if datin:lower() == "y" then CCSCommon.doMaps = true end
+	if datin == "y" then CCSCommon.doMaps = true end
 
 	local done = nil
 	while not done do
