@@ -935,7 +935,7 @@ return
 				}
 			},
 			clrcmd = "",
-			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"},
+			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
 			debugTimes = {},
 			dirSeparator = "/",
 			disabled = {},
