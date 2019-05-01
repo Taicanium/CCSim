@@ -193,13 +193,6 @@ return
 					end
 				end
 
-				local revCount = 0
-				for i=1,#self.events do if self.events[i].Year > parent.years-50 and self.events[i].Event:sub(1, 10) == "Revolution" then revCount = revCount+1 end end
-				if revCount > 6 then
-					self:event(parent, "Collapsed")
-					for i=1,#parent.c_events do if parent.c_events[i].name == "Conquer" then self:triggerEvent(parent, i, true) end end
-				end
-
 				if _DEBUG then
 					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = {0, 0} end
 					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+_time()-f0
