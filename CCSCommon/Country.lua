@@ -732,10 +732,7 @@ return
 
 					if not chn then
 						local age = self.people[i].age
-						if age > 100 then
-							self:delete(parent, i)
-							chn = true
-						elseif math.random(1, 30000-math.pow(age, 2)) < math.pow(age, 2) then
+						if 35000-math.pow(age, 2) <= 1 or math.random(1, 35000-math.pow(age, 2)) < math.pow(age, 2) then
 							self:delete(parent, i)
 							chn = true
 						end
