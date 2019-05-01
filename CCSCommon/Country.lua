@@ -23,6 +23,7 @@ return
 				nl.frulernames = {}
 				nl.hasruler = -1
 				nl.majority = ""
+				nl.majorPol = nil -- Majority Political Party (in terms of popularity)
 				nl.military = 0
 				nl.mtname = "Country"
 				nl.name = ""
@@ -35,7 +36,7 @@ return
 				nl.relations = {}
 				nl.rulerage = 0
 				nl.rulernames = {}
-				nl.rulerParty = ""
+				nl.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
 				nl.rulers = {}
 				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
 				nl.stability = 50
@@ -452,7 +453,7 @@ return
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
 				self.rulerage = self.people[newRuler].age
-				self.rulerParty = self.people[newRuler].party
+				self.rulerParty = self.parties[self.people[newRuler].party]
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
@@ -675,12 +676,9 @@ return
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
-				if #self.parties > 0 then
-					for i=1,#self.parties do
-						self.parties[i].membership = 0
-						self.parties[i].popularity = 0
-						self.parties[i].leading = false
-					end
+				for i, j in pairs(self.parties) do
+					j.popularity = 0
+					j.leading = false
 				end
 
 				for i=#self.alliances,1,-1 do
@@ -757,7 +755,7 @@ return
 						if self.people[i].isruler then
 							self.hasruler = 0
 							self.rulerage = self.people[i].age
-							self.rulerParty = self.people[i].party
+							self.rulerParty = self.parties[self.people[i].party]
 						end
 					end
 				end
@@ -766,17 +764,16 @@ return
 
 				self:checkRuler(parent, false)
 
-				if #self.parties > 0 then
-					for i=#self.parties,1,-1 do self.parties[i].popularity = math.floor(self.parties[i].popularity) end
+				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
+				local largest = nil
+				for i, j in pairs(self.parties) do
+					if largest == nil then largest = j end
+					if j.popularity > largest.popularity then largest = j end
+				end
 
-					local largest = -1
-
-					for i=1,#self.parties do
-						if largest == -1 then largest = i end
-						if self.parties[i].membership > self.parties[largest].membership then largest = i end
-					end
-
-					if largest ~= -1 then self.parties[largest].leading = true end
+				if largest ~= nil then
+					self.majorPol = largest
+					largest.leading = true
 				end
 
 				local largest = ""

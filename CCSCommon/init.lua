@@ -2112,7 +2112,7 @@ return
 			strengthFactor = function(self, c)
 				if not c then return 0 end
 				local pop = 0
-				if c.rulerParty ~= "" and c.parties[c.rulerParty] then pop = c.parties[c.rulerParty].popularity-50 end
+				if c.rulerParty then pop = c.rulerParty.popularity-50 end
 				return (pop+(c.stability-50)+((c.military/#c.people)*100))
 			end
 		}

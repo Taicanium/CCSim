@@ -290,7 +290,6 @@ return
 					local partytotal = j.pfreedom+j.efreedom+j.cfreedom
 					local diff = math.abs(belieftotal-partytotal)
 					if diff < 175 then j.popularity = j.popularity+((100-(diff/3))/#nl.people) end
-					if j.name == self.party then j.membership = j.membership+1 end
 				end
 
 				if math.random(1, 150) == 12 then self.region = nil end
