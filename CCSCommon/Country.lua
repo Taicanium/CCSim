@@ -672,7 +672,7 @@ return
 				if self.founded < 1 then self.age = self.age-1 end
 
 				if self.population < parent.popLimit then self.birthrate = 3
-				else self.birthrate = 75 end
+				else self.birthrate = 40 end
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
@@ -701,7 +701,7 @@ return
 
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
-					self.relations[cp.name] = self.relations[cp.name]+math.random(-4, 4)
+					self.relations[cp.name] = self.relations[cp.name]+math.random(-3, 3)
 					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
 					if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 				end end
@@ -711,8 +711,8 @@ return
 
 				if not self.regions[self.capitalregion] then
 					oldreg = self.capitalregion
-					self.capitalregion = parent:randomChoice(self.regions, true)
 					oldcap = self.capitalcity
+					self.capitalregion = parent:randomChoice(self.regions, true)
 					self.capitalcity = nil
 				end
 
@@ -761,10 +761,10 @@ return
 
 				self:checkRuler(parent, false)
 
-				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
 				local largest = nil
 				for i, j in pairs(self.parties) do
 					if largest == nil then largest = j end
+					j.popularity = math.floor(j.popularity)
 					if j.popularity > largest.popularity then largest = j end
 				end
 
