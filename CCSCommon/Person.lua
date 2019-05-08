@@ -24,6 +24,7 @@ return
 				n.gensSet = false
 				n.gIndex = 0
 				n.gString = ""
+				n.ideoString = ""
 				n.isruler = false
 				n.LastRoyalAncestor = ""
 				n.level = 2
@@ -164,11 +165,9 @@ return
 				self.surname = parent:name(true)
 
 				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
-
-				self.pbelief = math.random(-100, 100)
-				self.ebelief = math.random(-100, 100)
-				self.cbelief = math.random(-100, 100)
-
+				
+				parent:setIdeology(self)
+				
 				self.birth = parent.years
 				if self.title == "" then
 					self.level = 2
@@ -249,19 +248,8 @@ return
 
 				self.recentbirth = false
 
-				self.pbelief = self.pbelief+math.random(-2, 2)
-				self.ebelief = self.ebelief+math.random(-2, 2)
-				self.cbelief = self.cbelief+math.random(-2, 2)
-
-				if self.pbelief < -100 then self.pbelief = -100 end
-				if self.pbelief > 100 then self.pbelief = 100 end
-				if self.ebelief < -100 then self.ebelief = -100 end
-				if self.ebelief > 100 then self.ebelief = 100 end
-				if self.cbelief < -100 then self.cbelief = -100 end
-				if self.cbelief > 100 then self.cbelief = 100 end
-
 				local pmatch = nil
-
+				
 				for i, j in pairs(nl.parties) do if j and not pmatch then
 					pmatch = j
 					if math.abs(j.pfreedom-self.pbelief) > 35 then pmatch = nil end

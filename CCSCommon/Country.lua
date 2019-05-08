@@ -34,6 +34,7 @@ return
 				nl.population = 0
 				nl.regions = {}
 				nl.relations = {}
+				nl.ruler = nil
 				nl.rulerage = 0
 				nl.rulernames = {}
 				nl.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
@@ -89,6 +90,7 @@ return
 
 			checkRuler = function(self, parent, enthrone)
 				if self.hasruler == -1 then
+					self.ruler = nil
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
@@ -444,11 +446,10 @@ return
 						self.people[newRuler].level = #parent.systems[self.system].franks
 						self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
 					end
-				else
-					self.people[newRuler].rulerName = parent:randomChoice(self.rulernames)
-				end
+				else self.people[newRuler].rulerName = parent:randomChoice(self.rulernames) end
 
 				self.hasruler = 0
+				self.ruler = self.people[newRuler]
 				self.people[newRuler].isruler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
@@ -751,6 +752,7 @@ return
 						if self.people[i].military then self.military = self.military+1 end
 						if self.people[i].isruler then
 							self.hasruler = 0
+							self.ruler = self.people[i]
 							self.rulerage = self.people[i].age
 							self.rulerParty = self.parties[self.people[i].party]
 						end

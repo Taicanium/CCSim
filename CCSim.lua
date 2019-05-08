@@ -1,7 +1,7 @@
 _DEBUG = false
 
 CCSCommon = require("CCSCommon")()
-if not CCSCommon then os.exit(-1) end
+if not CCSCommon then os.exit(1) end
 
 function main()
 	CCSCommon:clearTerm()
