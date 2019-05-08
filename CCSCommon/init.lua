@@ -1529,6 +1529,7 @@ return
 								if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
 								msg = msg..string.format(" - Population %d - %s", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
 								if cp.ruler and cp.ruler.ideoString ~= "" then msg = msg.." ("..cp.ruler.ideoString..")" end
+								msg = msg.."\n"
 								cCount = cCount+1
 							end
 						end
