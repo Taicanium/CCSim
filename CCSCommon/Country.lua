@@ -197,9 +197,8 @@ return
 				end
 
 				if _DEBUG then
-					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = {0, 0} end
-					parent.debugTimes["Country:eventloop"][1] = parent.debugTimes["Country:eventloop"][1]+_time()-f0
-					parent.debugTimes["Country:eventloop"][2] = parent.debugTimes["Country:eventloop"][2]+1
+					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = 0 end
+					parent.debugTimes["Country:eventloop"] = parent.debugTimes["Country:eventloop"]+_time()-f0
 				end
 			end,
 
@@ -787,9 +786,8 @@ return
 				self.majority = largest
 
 				if _DEBUG then
-					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = {0, 0} end
-					parent.debugTimes["Country:update"][1] = parent.debugTimes["Country:update"][1]+_time()-f0
-					parent.debugTimes["Country:update"][2] = parent.debugTimes["Country:update"][2]+1
+					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = 0 end
+					parent.debugTimes["Country:update"] = parent.debugTimes["Country:update"]+_time()-f0
 				end
 			end
 		}

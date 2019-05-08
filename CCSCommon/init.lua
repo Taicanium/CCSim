@@ -1551,8 +1551,8 @@ return
 						msg = msg.."\n"
 
 						if _DEBUG then
-							self.debugTimes["PRINT"] = {_time()-f0, 1}
-							for i, j in pairs(self.debugTimes) do msg = msg..i..": "..tostring(j[1]/j[2]).."\n" end
+							self.debugTimes["PRINT"] = _time()-f0
+							for i, j in pairs(self.debugTimes) do msg = msg..i..": "..tostring(j).."\n" end
 						end
 					end
 

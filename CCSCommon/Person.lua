@@ -328,9 +328,8 @@ return
 				nl.ethnicities[lEth] = nl.ethnicities[lEth]+1
 
 				if _DEBUG then
-					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = {0, 0} end
-					parent.debugTimes["Person:update"][1] = parent.debugTimes["Person:update"][1]+_time()-f0
-					parent.debugTimes["Person:update"][2] = parent.debugTimes["Person:update"][2]+1
+					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = 0 end
+					parent.debugTimes["Person:update"] = parent.debugTimes["Person:update"]+_time()-f0
 				end
 			end
 		}
