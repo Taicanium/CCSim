@@ -611,6 +611,7 @@ return
 			update = function(self, parent)
 				parent.numCountries = 0
 				for i, cp in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
+				for i, j in pairs(parent.debugTimes) do parent.debugTimes[i] = 0 end
 
 				local f0 = _time()
 
@@ -641,7 +642,7 @@ return
 					end
 				end
 
-				parent.debugTimes["TOTAL"] = {f1, 1}
+				parent.debugTimes["TOTAL"] = f1
 			end
 		}
 
