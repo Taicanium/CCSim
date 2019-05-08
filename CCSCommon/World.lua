@@ -32,7 +32,7 @@ return
 				local t0 = _time()
 				local bdone = 0
 
-				for x=-bRad,bRad do
+				if not _DEBUG then for x=-bRad,bRad do
 					for y=-bRad,bRad do
 						for z=-bRad,bRad do
 							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
@@ -45,12 +45,18 @@ return
 							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100) end
 						end
 					end
-				end
+				end end
 
 				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 50 then benchAdjust = 50 end
+				if benchAdjust > 50 or _DEBUG then benchAdjust = 50 end
 
-				self.planetR = math.floor(math.random(100-benchAdjust, 125-benchAdjust))
+				local rMin = 100
+				local rMax = 125
+				if _DEBUG then
+					rMin = 51
+					rMax = 75
+				end
+				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 
 				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", self.planetR)
 
