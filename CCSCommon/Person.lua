@@ -165,9 +165,9 @@ return
 				self.surname = parent:name(true)
 
 				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
-				
+
 				parent:setIdeology(self)
-				
+
 				self.birth = parent.years
 				if self.title == "" then
 					self.level = 2
@@ -249,7 +249,7 @@ return
 				self.recentbirth = false
 
 				local pmatch = nil
-				
+
 				for i, j in pairs(nl.parties) do if j and not pmatch then
 					pmatch = j
 					if math.abs(j.pfreedom-self.pbelief) > 35 then pmatch = nil end
@@ -269,7 +269,7 @@ return
 					table.insert(nl.parties, newp)
 					pmatch = newp
 				end
-				
+
 				self.party = pmatch.name
 				if self.isruler then nl.rulers[#nl.rulers].party = self.party end
 
@@ -313,7 +313,7 @@ return
 				end
 
 				if self.age > 65 then self.military = false end
-				
+
 				local lEth = parent:randomChoice(self.ethnicity, true)
 				local lEthVal = self.ethnicity[lEth]
 

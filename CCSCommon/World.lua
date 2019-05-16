@@ -249,17 +249,17 @@ return
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
-				
+
 				parent.stamp = tostring(math.floor(_time()))
 
 				for i, j in pairs(parent.c_events) do
 					parent.disabled[j.name:lower()] = false
 					parent.disabled["!"..j.name:lower()] = false
 				end
-				
+
 				if parent.clrcmd == "cls" then parent.dirSeparator = "\\" end
 				local mapDir = parent:directory({parent.stamp, "maps"})
-				
+
 				if lfsstatus then
 					lfs.mkdir(parent.stamp)
 					if parent.doMaps then lfs.mkdir(mapDir) end
@@ -366,95 +366,48 @@ return
 					end
 				end
 
-				for i=1,planetSize,2000 do
-					if i < planetSize-2000 then
-						f:write(")\nx <- c(")
+				f:write(")\nx <- c(")
 
-						for j=i,i+1999 do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
-							f:write(x)
-							if j < i+1999 then f:write(", ") end
-						end
-
-						f:write(")\ny <- c(")
-
-						for j=i,i+1999 do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
-							f:write(y)
-							if j < i+1999 then f:write(", ") end
-						end
-
-						f:write(")\nz <- c(")
-
-						for j=i,i+1999 do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
-							f:write(z)
-							if j < i+1999 then f:write(", ") end
-						end
-
-						f:write(")\ncsc <- c(")
-
-						for j=i,i+1999 do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-							if isCity then f:write("\"#888888\"") else
-								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
-								else f:write("\"#1616AA\"") end
-							end
-							if j < i+1999 then f:write(", ") end
-						end
-					else
-						f:write(")\nx <- c(")
-
-						for j=i,planetSize do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
-							f:write(x)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\ny <- c(")
-
-						for j=i,planetSize do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
-							f:write(y)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\nz <- c(")
-
-						for j=i,planetSize do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
-							f:write(z)
-							if j < planetSize then f:write(", ") end
-						end
-
-						f:write(")\ncsc <- c(")
-
-						for j=i,planetSize do
-							local x, y, z = table.unpack(self.planetdefined[j])
-							local isCity = false
-							for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-							if isCity then f:write("\"#888888\"") else
-								if self.planet[x][y][z].land then
-									if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
-								else f:write("\"#1616AA\"") end
-							end
-							if j < planetSize then f:write(", ") end
-						end
-					end
-
-					f:write(")\nspheres3d(x=x, y=y, z=z, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE")
+				for j=1,planetSize do
+					local x, y, z = table.unpack(self.planetdefined[j])
+					if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
+					f:write(x)
+					if j < planetSize then f:write(", ") end
 				end
 
-				f:write(")\ncityx <- c(")
+				f:write(")\ny <- c(")
+
+				for j=1,planetSize do
+					local x, y, z = table.unpack(self.planetdefined[j])
+					if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
+					f:write(y)
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\nz <- c(")
+
+				for j=1,planetSize do
+					local x, y, z = table.unpack(self.planetdefined[j])
+					if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
+					f:write(z)
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\ncsc <- c(")
+
+				for j=1,planetSize do
+					local x, y, z = table.unpack(self.planetdefined[j])
+					local isCity = false
+					for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
+					if isCity then f:write("\"#888888\"") else
+						if self.planet[x][y][z].land then
+							if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
+						else f:write("\"#1616AA\"") end
+					end
+					if j < planetSize then f:write(", ") end
+				end
+
+				f:write(")\nspheres3d(x=x, y=y, z=z, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE)\ncityx <- c(")
 
 				for i=1,#cCoords do
 					local x, y, z = table.unpack(cCoords[i])

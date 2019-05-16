@@ -1022,7 +1022,7 @@ return
 					curses.nl(true)
 					self.stdscr = curses.initscr()
 				end
-				
+
 				if not self.clrcmd or self.clrcmd == "" then
 					self.clrcmd = "clear"
 					local clrarr = os.execute("clear")
@@ -1060,7 +1060,7 @@ return
 
 				return res
 			end,
-			
+
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end
 				local strOut = ""
@@ -1160,19 +1160,19 @@ return
 				of:flush()
 				of:close()
 				of = nil
-				
+
 				if self.doGed then
 					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
 					if not of then return end
-					
+
 					printf(self.stdscr, "Sorting GEDCOM data...")
 					for i=1,#self.royals do
 						self:setGed(self.royals[i], false)
 						printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
 					end
-					
+
 					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
-					
+
 					local index = 1
 					printf(self.stdscr, "Writing individual data...")
 					for i, j in pairs(self.indi) do
@@ -1192,9 +1192,9 @@ return
 						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 						local nOne = false
 						for k, l in pairs(j.ethnicity) do
-							if nOne then of:write("\n2 CONT "..string.format("%.2f", l).."% "..k)
+							if nOne then of:write("\n2 CONT "..string.format("%.2f%% %s", l, k))
 							else
-								of:write("\n1 NOTE "..string.format("%.2f", l).."% "..k)
+								of:write("\n1 NOTE "..string.format("%.2f%% %s", l, k))
 								nOne = true
 							end
 						end
@@ -1213,7 +1213,7 @@ return
 						printl(self.stdscr, "%.2f%% done", (index/self.famCount*10000)/100)
 						index = index+1
 					end
-					
+
 					of:write("\n0 TRLR")
 					of:flush()
 					of:close()
@@ -1452,7 +1452,7 @@ return
 					self.alpha = cKeys
 				end
 			end,
-			
+
 			setIdeology = function(self, n)
 				if not n then return "" end
 				n.ideoString = self:randomChoice(self.ideovals, true)
@@ -2077,7 +2077,7 @@ return
 				math.randomseed(math.ceil(n))
 				for i=1,3 do math.random(1, 100) end
 			end,
-			
+
 			setGed = function(self, t, p)
 				if t then
 					if t.writeGed == 0 then
@@ -2116,7 +2116,7 @@ return
 							for i, j in pairs(t.children) do self:setGed(j, false) end
 						end
 					end
-					
+
 					if t.writeGed == -1 then t.writeGed = 0 end
 				end
 			end,
