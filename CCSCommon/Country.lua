@@ -169,7 +169,7 @@ return
 			eventloop = function(self, parent)
 				local f0 = _time()
 
-				local rFactor = math.random(175, 375)
+				local rFactor = math.random(125, 175)
 				local v = math.floor(rFactor*self.stability)
 				local vi = math.floor(rFactor*(100-self.stability))
 				if v < 1 then v = 1 end
