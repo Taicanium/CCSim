@@ -1511,8 +1511,7 @@ return
 								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
 								if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-								msg = msg..string.format(" - Population %d - %s", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
-								msg = msg.."\n"
+								msg = msg..string.format(" - Pop. %d, Str. %d, Stabil. %d - %s\n", cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
 								cCount = cCount+1
 							end
 						end
