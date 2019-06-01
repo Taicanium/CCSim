@@ -946,17 +946,6 @@ return
 			famCount = 0,
 			final = {},
 			genLimit = 3,
-			ideovals = {
-				Centrist={{-20, 20}, {-20, 20}, {-20, 20}},
-				Liberal={{20, 40}, {-20, 20}, {20, 40}},
-				Egalitarian={{40, 60}, {-40, 0}, {0, 40}},
-				Libertarian={{20, 60}, {20, 60}, {20, 60}},
-				Anarchist={{60, 100}, {60, 100}, {60, 100}},
-				Authoritarian={{-50, -20}, {-50, -20}, {-50, -20}},
-				Totalitarian={{-100, -50}, {-100, -50}, {-100, -50}},
-				Tribalist={{-20, 40}, {-20, 40}, {-100, -40}},
-				Nationalist={{-40, -20}, {20, 100}, {-40, -20}},
-			},
 			indi = {},
 			indiCount = 0,
 			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
@@ -1455,14 +1444,9 @@ return
 
 			setIdeology = function(self, n)
 				if not n then return "" end
-				n.ideoString = self:randomChoice(self.ideovals, true)
-				local ideo = self.ideovals[n.ideoString]
-				local p = ideo[1]
-				local e = ideo[2]
-				local c = ideo[3]
-				n.pbelief = math.random(p[1], p[2])
-				n.ebelief = math.random(e[1], e[2])
-				n.cbelief = math.random(c[1], c[2])
+				n.pbelief = math.random(-100, 100)
+				n.ebelief = math.random(-100, 100)
+				n.cbelief = math.random(-100, 100)
 			end,
 
 			getRulerString = function(self, data)
@@ -1528,7 +1512,6 @@ return
 								local sysName = self.systems[cp.system].name
 								if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
 								msg = msg..string.format(" - Population %d - %s", cp.population, self:getRulerString(cp.rulers[#cp.rulers]))
-								if cp.ruler and cp.ruler.ideoString ~= "" then msg = msg.." ("..cp.ruler.ideoString..")" end
 								msg = msg.."\n"
 								cCount = cCount+1
 							end

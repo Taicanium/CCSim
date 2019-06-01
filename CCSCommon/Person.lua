@@ -24,7 +24,6 @@ return
 				n.gensSet = false
 				n.gIndex = 0
 				n.gString = ""
-				n.ideoString = ""
 				n.isruler = false
 				n.LastRoyalAncestor = ""
 				n.level = 2
