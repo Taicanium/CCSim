@@ -23,7 +23,6 @@ return
 				nl.frulernames = {}
 				nl.hasruler = -1
 				nl.majority = ""
-				nl.majorPol = nil -- Majority Political Party (in terms of popularity)
 				nl.military = 0
 				nl.mtname = "Country"
 				nl.name = ""
@@ -675,11 +674,7 @@ return
 				else self.birthrate = 40 end
 
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
-
-				for i, j in pairs(self.parties) do
-					j.popularity = 0
-					j.leading = false
-				end
+				for i, j in pairs(self.parties) do j.popularity = 0 end
 
 				for i=#self.alliances,1,-1 do
 					local found = false
@@ -758,21 +753,10 @@ return
 					end
 				end
 
+				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
+				
 				self.averageAge = self.averageAge/#self.people
-
 				self:checkRuler(parent, false)
-
-				local largest = nil
-				for i, j in pairs(self.parties) do
-					if largest == nil then largest = j end
-					j.popularity = math.floor(j.popularity)
-					if j.popularity > largest.popularity then largest = j end
-				end
-
-				if largest ~= nil then
-					self.majorPol = largest
-					largest.leading = true
-				end
 
 				local largest = ""
 				local largestN = 0

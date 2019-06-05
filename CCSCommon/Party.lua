@@ -7,7 +7,6 @@ return
 
 				p.cfreedom = 0
 				p.efreedom = 0
-				p.leading = false
 				p.mtname = "Party"
 				p.name = ""
 				p.pfreedom = 0

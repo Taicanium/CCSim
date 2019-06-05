@@ -599,12 +599,13 @@ return
 									if retrieve then										
 										retrieved = true
 
-										for k, l in pairs(j.events) do table.insert(newl.events, l) end
+										newl.events = {}
 										newl.rulers = {}
-										for k, l in pairs(j.rulers) do table.insert(newl.rulers, l) end
+										for k=1,#j.events do table.insert(newl.events, j.events[k]) end
+										for k=1,#j.rulers do table.insert(newl.rulers, j.rulers[k]) end
 
 										local found = parent.years
-										for i=1,#newl.rulers do if newl.rulers[i].Country == newl.name and newl.rulers[i].From <= found then found = newl.rulers[i].From end end
+										for k=1,#newl.rulers do if newl.rulers[k].Country == newl.name and newl.rulers[k].From <= found then found = newl.rulers[k].From end end
 										newl.founded = found
 
 										newl.snt = j.snt
@@ -616,9 +617,9 @@ return
 										newl.rulernames = j.rulernames
 										newl.frulernames = j.frulernames
 
-										for i, j in pairs(nc.subregions) do newl.regions[j.name] = j end
+										for k, l in pairs(nc.subregions) do newl.regions[l.name] = l end
 
-										for i, j in pairs(newl.regions) do for k, l in pairs(c.regions) do for m, n in pairs(l.cities) do if j.cities[n.name] then l.cities[n.name] = nil end end end end
+										for k, l in pairs(newl.regions) do for m, n in pairs(c.regions) do for o, p in pairs(n.cities) do if l.cities[p.name] then n.cities[p.name] = nil end end end end
 
 										parent.final[i] = nil
 									end
