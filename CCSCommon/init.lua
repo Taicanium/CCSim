@@ -585,44 +585,32 @@ return
 							local retrieved = false
 
 							for i, j in pairs(parent.final) do
-								if j.name == newl.name then
-									local conqYear = nil
-									local retrieve = true
-									for k, l in pairs(j.events) do
-										if conqYear and l.Year > conqYear then retrieve = false end
-										if l.Event:match("Conquered") then if not conqYear or l.Year > conqYear then
-											conqYear = l.Year
-											retrieve = true
-										end end
-									end
+								if j.name == newl.name and not retrieved then									
+									retrieved = true
 
-									if retrieve then										
-										retrieved = true
+									newl.events = {}
+									newl.rulers = {}
+									for k=1,#j.events do table.insert(newl.events, j.events[k]) end
+									for k=1,#j.rulers do table.insert(newl.rulers, j.rulers[k]) end
 
-										newl.events = {}
-										newl.rulers = {}
-										for k=1,#j.events do table.insert(newl.events, j.events[k]) end
-										for k=1,#j.rulers do table.insert(newl.rulers, j.rulers[k]) end
+									local found = parent.years
+									for k=1,#newl.rulers do if newl.rulers[k].Country == newl.name and newl.rulers[k].From <= found then found = newl.rulers[k].From end end
+									newl.founded = found
 
-										local found = parent.years
-										for k=1,#newl.rulers do if newl.rulers[k].Country == newl.name and newl.rulers[k].From <= found then found = newl.rulers[k].From end end
-										newl.founded = found
+									newl.snt = j.snt
+									newl.dfif = j.dfif
+									newl.formalities = j.formalities
+									newl.civilWars = j.civilWars
+									newl.agPrim = j.agPrim
 
-										newl.snt = j.snt
-										newl.dfif = j.dfif
-										newl.formalities = j.formalities
-										newl.civilWars = j.civilWars
-										newl.agPrim = j.agPrim
+									newl.rulernames = j.rulernames
+									newl.frulernames = j.frulernames
 
-										newl.rulernames = j.rulernames
-										newl.frulernames = j.frulernames
+									for k, l in pairs(nc.subregions) do newl.regions[l.name] = l end
 
-										for k, l in pairs(nc.subregions) do newl.regions[l.name] = l end
+									for k, l in pairs(newl.regions) do for m, n in pairs(c.regions) do for o, p in pairs(n.cities) do if l.cities[p.name] then n.cities[p.name] = nil end end end end
 
-										for k, l in pairs(newl.regions) do for m, n in pairs(c.regions) do for o, p in pairs(n.cities) do if l.cities[p.name] then n.cities[p.name] = nil end end end end
-
-										parent.final[i] = nil
-									end
+									parent.final[i] = nil
 								end
 							end
 

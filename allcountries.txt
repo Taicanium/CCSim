@@ -192,6 +192,9 @@ S Lubeck
 R Funen
 P Copenhagen
 S Odense
+R Greenland
+S Nuuk
+S Sisimiut
 King Gorm 936 958
 King Harald 958 986
 King Sweyn 986 1014
@@ -603,9 +606,6 @@ P Vilnius
 C Luxembourg
 R Luxembourg
 P Luxembourg
-C North Macedonia
-R Skopje
-P Skopje
 C Madagascar
 R Antananarivo
 P Antananarivo
@@ -759,6 +759,9 @@ S Lagos
 C North Korea
 R Pyongyang
 P Pyongyang
+C North Macedonia
+R Skopje
+P Skopje
 C Norway
 R Sorlandet
 P Oslo
@@ -1086,6 +1089,8 @@ S San Diego
 R Colorado
 S Denver
 S Colorado Springs
+R Columbia
+P Washington
 R Connecticut
 S Hartford
 R Delaware
@@ -1196,8 +1201,6 @@ S Madison
 S Milwaukee
 R Wyoming
 S Cheyenne
-R Columbia
-P Washington
 C Uruguay
 R Montevideo
 P Montevideo
