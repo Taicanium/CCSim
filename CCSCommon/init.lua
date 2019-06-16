@@ -2085,9 +2085,11 @@ return
 								if not found then table.insert(t.mother.fams, t.famc) end
 							end
 							if not self.indi[t.gString] then
-								self.indiCount = self.indiCount+1
-								t.gIndex = self.indiCount
-								self.indi[t.gString] = t
+								if #t.fams > 0 or #t.famc > 0 then
+									self.indiCount = self.indiCount+1
+									t.gIndex = self.indiCount
+									self.indi[t.gString] = t
+								end
 							end
 							self:setGed(t.father, true)
 							self:setGed(t.mother, true)
