@@ -1142,18 +1142,27 @@ return
 				if self.doGed then
 					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
 					if not of then return end
+					
+					local indiSorted = {}
+					local famSorted = {}
 
-					printf(self.stdscr, "Sorting GEDCOM data...")
+					printf(self.stdscr, "Generating GEDCOM data...")
 					for i=1,#self.royals do
 						self:setGed(self.royals[i], false)
 						printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
 					end
 
+					printf(self.stdscr, "Sorting GEDCOM individual data...")
+					for i, j in pairs(self.indi) do indiSorted[j.gIndex] = j end
+
+					printf(self.stdscr, "Sorting GEDCOM family data...")
+					for i, j in pairs(self.fam) do famSorted[j.fIndex] = j end
+
 					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
 
-					local index = 1
 					printf(self.stdscr, "Writing individual data...")
-					for i, j in pairs(self.indi) do
+					for i=1,#indiSorted do
+						local j = indiSorted[i]
 						of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
 						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 						of:write(" /"..j.surname:upper().."/")
@@ -1177,19 +1186,17 @@ return
 							end
 						end
 						of:flush()
-						printl(self.stdscr, "%.2f%% done", (index/self.indiCount*10000)/100)
-						index = index+1
+						printl(self.stdscr, "%.2f%% done", (i/#indiSorted*10000)/100)
 					end
-					index = 1
 					printf(self.stdscr, "Writing family data...")
-					for i, j in pairs(self.fam) do
+					for i=1,#famSorted do
+						local j = famSorted[i]
 						if j and j.husb and j.husb ~= "" and j.wife and j.wife ~= "" and #j.chil > 0 then
 							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
 							for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
 							of:flush()
 						end
-						printl(self.stdscr, "%.2f%% done", (index/self.famCount*10000)/100)
-						index = index+1
+						printl(self.stdscr, "%.2f%% done", (i/#famSorted*10000)/100)
 					end
 
 					of:write("\n0 TRLR")
