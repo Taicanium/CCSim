@@ -2085,7 +2085,7 @@ return
 								if not found then table.insert(t.mother.fams, t.famc) end
 							end
 							if not self.indi[t.gString] then
-								if #t.fams > 0 or #t.famc > 0 then
+								if #t.fams > 0 or t.famc ~= "" then
 									self.indiCount = self.indiCount+1
 									t.gIndex = self.indiCount
 									self.indi[t.gString] = t
