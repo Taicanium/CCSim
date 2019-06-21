@@ -306,12 +306,10 @@ return
 						for j=1,#nl.ongoing do if nl.ongoing[j].name == "War" then threshold = 25 end end
 						if math.random(1, 250) < threshold then
 							self.military = true
-							self.militaryTraining = 1
+							self.militaryTraining = 0
 						end
-					end
+					elseif self.age > 65 then self.military = false end
 				end
-
-				if self.age > 65 then self.military = false end
 
 				local lEth = parent:randomChoice(self.ethnicity, true)
 				local lEthVal = self.ethnicity[lEth]
