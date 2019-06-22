@@ -1191,9 +1191,9 @@ return
 					printf(self.stdscr, "Writing family data...")
 					for i=1,#famSorted do
 						local j = famSorted[i]
-						if j and j.husb and j.husb ~= "" and j.wife and j.wife ~= "" and #j.chil > 0 then
+						if j and j.husb and self.indi[j.husb] and j.wife and self.indi[j.wife] and #j.chil > 0 then
 							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
-							for k=1,#j.chil do of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end
+							for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
 							of:flush()
 						end
 						printl(self.stdscr, "%.2f%% done", (i/#famSorted*10000)/100)
@@ -2078,18 +2078,16 @@ return
 								end
 								t.famc = fKey
 								found = false
-								for i=1,#t.father.fams do if t.father.fams[i] == t.famc then found = true end end
-								if not found then table.insert(t.father.fams, t.famc) end
+								for i=1,#t.father.fams do if t.father.fams[i] == fKey then found = true end end
+								if not found then table.insert(t.father.fams, fKey) end
 								found = false
-								for i=1,#t.mother.fams do if t.mother.fams[i] == t.famc then found = true end end
-								if not found then table.insert(t.mother.fams, t.famc) end
+								for i=1,#t.mother.fams do if t.mother.fams[i] == fKey then found = true end end
+								if not found then table.insert(t.mother.fams, fKey) end
 							end
 							if not self.indi[t.gString] then
-								if #t.fams > 0 or t.famc ~= "" then
-									self.indiCount = self.indiCount+1
-									t.gIndex = self.indiCount
-									self.indi[t.gString] = t
-								end
+								self.indiCount = self.indiCount+1
+								t.gIndex = self.indiCount
+								self.indi[t.gString] = t
 							end
 							self:setGed(t.father, true)
 							self:setGed(t.mother, true)
