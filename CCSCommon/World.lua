@@ -501,8 +501,8 @@ return
 					local bh = 255-self.cTriplets[cp.name][3]
 					local invTrip = string.format("#%.2x%.2x%.2x", rh, gh, bh)
 
-					local cex = 0.5 + (#cp.nodes/8000)
-					cex = cex - math.fmod(cex, 0.1)
+					local cex = 0.5+(#cp.nodes/8000)
+					cex = cex-math.fmod(cex, 0.1)
 
 					table.insert(cst, cp.name)
 					table.insert(ccs, invTrip)
