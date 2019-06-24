@@ -24,12 +24,12 @@ printf = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtoeol()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(fmt:format(...))
 		stdscr:addstr("\n")
 		stdscr:refresh()
 	else
 		io.write("\r")
-		io.write(string.format(fmt, ...))
+		io.write(fmt:format(...))
 		io.write("\n")
 	end
 end
@@ -39,12 +39,12 @@ printl = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtoeol()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(fmt:format(...))
 		stdscr:move(y, 0)
 		stdscr:refresh()
 	else
 		io.write("\r")
-		io.write(string.format(fmt, ...))
+		io.write(fmt:format(...))
 		io.write("\r")
 	end
 end
@@ -54,20 +54,20 @@ printp = function(stdscr, fmt, ...)
 		local y, x = stdscr:getyx()
 		stdscr:move(y, 0)
 		stdscr:clrtoeol()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(fmt:format(...))
 		stdscr:refresh()
 	else
 		io.write("\r")
-		io.write(string.format(fmt, ...))
+		io.write(fmt:format(...))
 	end
 end
 
 printc = function(stdscr, fmt, ...)
 	if stdscr then
 		stdscr:clrtoeol()
-		stdscr:addstr(string.format(fmt, ...))
+		stdscr:addstr(fmt:format(...))
 		stdscr:refresh()
-	else io.write(string.format(fmt, ...)) end
+	else io.write(fmt:format(...)) end
 end
 
 readl = function(stdscr)
@@ -1091,7 +1091,7 @@ return
 					if cp then
 						local newc = false
 						local pr = 1
-						of:write(string.format("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n"))
+						of:write("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n")
 
 						local rWritten = 1
 						local rDone = {}
@@ -1104,14 +1104,14 @@ return
 						end end
 
 						if newc then
-							of:write(string.format(self:getRulerString(cp.rulers[1]).."\n"))
+							of:write(self:getRulerString(cp.rulers[1]).."\n")
 							local nextFound = false
 							for k=1,#cp.rulers do
 								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name and not nextFound then
 									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
 										nextFound = true
 										of:write("...\n")
-										of:write(string.format(self:getRulerString(cp.rulers[k]).."\n"))
+										of:write(self:getRulerString(cp.rulers[k]).."\n")
 										k = #cp.rulers+1
 									end
 								end
@@ -1119,15 +1119,15 @@ return
 						end
 
 						for j=1,self.maxyears do
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then of:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then of:write(cp.events[k].Year..": "..cp.events[k].Event.."\n") end end
 
 							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name and not rDone[self:getRulerString(cp.rulers[k])] then
-								of:write(string.format(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n"))
+								of:write(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n")
 								rWritten = rWritten+1
 								rDone[self:getRulerString(cp.rulers[k])] = true
 							end end
 
-							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then of:write(string.format(cp.events[k].Year..": "..cp.events[k].Event.."\n")) end end
+							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then of:write(cp.events[k].Year..": "..cp.events[k].Event.."\n") end end
 						end
 
 						of:write("\n\n\n")
@@ -1179,9 +1179,15 @@ return
 						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 						local nOne = false
 						for k, l in pairs(j.ethnicity) do
-							if nOne then of:write("\n2 CONT "..string.format("%.2f%% %s", l, k))
+							if nOne then of:write("\n2 CONT ".."%.2f%% %s", l:format(k))
 							else
-								of:write("\n1 NOTE "..string.format("%.2f%% %s", l, k))
+								local eF = 2
+								local eS = "%.2f":format(l)
+								while eS:sub(eS:len(), eS:len()) == "0" do
+									eF = eF+1
+									eS = "%."..tostring(eF).."f":format(l)
+								end
+								of:write("\n1 NOTE "..eS.."% "..k)
 								nOne = true
 							end
 						end
@@ -1236,7 +1242,7 @@ return
 					if not l then done = true
 					else
 						local mat = {}
-						for q in string.gmatch(l, "%S+") do table.insert(mat, tostring(q)) end
+						for q in l:gmatch("%S+") do table.insert(mat, tostring(q)) end
 						if mat[1] == "Year" then
 							self.startyear = tonumber(mat[2])
 							self.years = tonumber(mat[2])
@@ -1478,7 +1484,7 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = string.format("Year %d: %d countries - Global Population %d\n\n", self.years, self.numCountries, self.thisWorld.gPop)
+					msg = "Year %d: %d countries - Global Population %d\n\n":format(self.years, self.numCountries, self.thisWorld.gPop)
 
 					if self.showinfo == 1 then
 						local f0 = _time()
@@ -1504,27 +1510,27 @@ return
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cCount < cLimit or cCount == self.numCountries then
-								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..string.format("%s ", self:ordinal(cp.snt[self.systems[cp.system].name])) end
+								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg.."%s ":format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then msg = msg..string.format("%s %s", cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..string.format("%s of %s", cp.formalities[self.systems[cp.system].name], cp.name) end
-								msg = msg..string.format(" - Pop. %d, Str. %d, Stabil. %d - %s\n", cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
+								if cp.dfif[sysName] then msg = msg.."%s %s":format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg.."%s of %s":format(cp.formalities[self.systems[cp.system].name], cp.name) end
+								msg = msg.." - Pop. %d, Str. %d, Stabil. %d - %s\n":format(cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
 								cCount = cCount+1
 							end
 						end
 
-						if cCount < self.numCountries then msg = msg..string.format("[+%d more]\n", self.numCountries-cCount) end
+						if cCount < self.numCountries then msg = msg.."[+%d more]\n":format(self.numCountries-cCount) end
 
-						msg = msg..string.format("\nOngoing events:")
+						msg = msg.."\nOngoing events:"
 
 						for i=1,#currentEvents do
 							if eCount < eLimit or eCount == #currentEvents then
-								msg = msg..string.format("\n%s", currentEvents[i])
+								msg = msg.."\n%s":format(currentEvents[i])
 								eCount = eCount+1
 							end
 						end
 
-						if #currentEvents == 0 then msg = msg..string.format("\nNone")
-						elseif eCount < #currentEvents then msg = msg..string.format("\n[+%d more]", #currentEvents-eCount) end
+						if #currentEvents == 0 then msg = msg.."\nNone"
+						elseif eCount < #currentEvents then msg = msg.."\n[+%d more]":format(#currentEvents-eCount) end
 
 						msg = msg.."\n"
 

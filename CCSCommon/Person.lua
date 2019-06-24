@@ -127,12 +127,12 @@ return
 					if self.gender == "Male" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.royalSystem
-					nn.LastRoyalAncestor = string.format(self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry)
+					nn.LastRoyalAncestor = self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry
 				elseif self.spouse.royalGenerations == 0 then
 					if self.gender == "Female" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.spouse.royalSystem
-					nn.LastRoyalAncestor = string.format(self.spouse.rulerTitle.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..self.spouse.ruledCountry)
+					nn.LastRoyalAncestor = self.spouse.rulerTitle.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..self.spouse.ruledCountry
 				end
 
 				if self.isruler or self.spouse.isruler then
