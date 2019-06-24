@@ -345,9 +345,9 @@ return
 							end
 						end
 
-						local rh = "%.2x":format(r)
-						local gh = "%.2x":format(g)
-						local bh = "%.2x":format(b)
+						local rh = ("%.2x"):format(r)
+						local gh = ("%.2x"):format(g)
+						local bh = ("%.2x"):format(b)
 
 						self.cColors[cp.name] = "#"..rh..gh..bh
 						self.cTriplets[cp.name] = {r, g, b}
@@ -499,7 +499,7 @@ return
 					local rh = 255-self.cTriplets[cp.name][1]
 					local gh = 255-self.cTriplets[cp.name][2]
 					local bh = 255-self.cTriplets[cp.name][3]
-					local invTrip = "#%.2x%.2x%.2x":format(rh, gh, bh)
+					local invTrip = ("#%.2x%.2x%.2x"):format(rh, gh, bh)
 
 					local cex = 0.5+(#cp.nodes/8000)
 					cex = cex-math.fmod(cex, 0.1)
