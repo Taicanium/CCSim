@@ -1182,10 +1182,10 @@ return
 							if nOne then of:write("\n2 CONT ".."%.2f%% %s", l:format(k))
 							else
 								local eF = 2
-								local eS = "%.2f":format(l)
+								local eS = ("%.2f"):format(l)
 								while eS:sub(eS:len(), eS:len()) == "0" do
 									eF = eF+1
-									eS = "%."..tostring(eF).."f":format(l)
+									eS = ("%."..tostring(eF).."f"):format(l)
 								end
 								of:write("\n1 NOTE "..eS.."% "..k)
 								nOne = true
@@ -1484,7 +1484,7 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = "Year %d: %d countries - Global Population %d\n\n":format(self.years, self.numCountries, self.thisWorld.gPop)
+					msg = ("Year %d: %d countries - Global Population %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop)
 
 					if self.showinfo == 1 then
 						local f0 = _time()
@@ -1510,27 +1510,27 @@ return
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cCount < cLimit or cCount == self.numCountries then
-								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg.."%s ":format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
+								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then msg = msg.."%s %s":format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg.."%s of %s":format(cp.formalities[self.systems[cp.system].name], cp.name) end
-								msg = msg.." - Pop. %d, Str. %d, Stabil. %d - %s\n":format(cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
+								if cp.dfif[sysName] then msg = msg..("%s %s":format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg.."%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
+								msg = msg..(" - Pop. %d, Str. %d, Stabil. %d - %s\n"):format(cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
 								cCount = cCount+1
 							end
 						end
 
-						if cCount < self.numCountries then msg = msg.."[+%d more]\n":format(self.numCountries-cCount) end
+						if cCount < self.numCountries then msg = msg..("[+%d more]\n"):format(self.numCountries-cCount) end
 
 						msg = msg.."\nOngoing events:"
 
 						for i=1,#currentEvents do
 							if eCount < eLimit or eCount == #currentEvents then
-								msg = msg.."\n%s":format(currentEvents[i])
+								msg = msg..("\n%s"):format(currentEvents[i])
 								eCount = eCount+1
 							end
 						end
 
 						if #currentEvents == 0 then msg = msg.."\nNone"
-						elseif eCount < #currentEvents then msg = msg.."\n[+%d more]":format(#currentEvents-eCount) end
+						elseif eCount < #currentEvents then msg = msg..("\n[+%d more]"):format(#currentEvents-eCount) end
 
 						msg = msg.."\n"
 
