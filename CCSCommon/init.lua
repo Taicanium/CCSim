@@ -1512,7 +1512,7 @@ return
 							if cCount < cLimit or cCount == self.numCountries then
 								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then msg = msg..("%s %s":format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg.."%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
+								if cp.dfif[sysName] then msg = msg..("%s %s"):format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..("%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
 								msg = msg..(" - Pop. %d, Str. %d, Stabil. %d - %s\n"):format(cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
 								cCount = cCount+1
 							end
