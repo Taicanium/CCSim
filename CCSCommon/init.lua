@@ -1179,16 +1179,19 @@ return
 						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
 						local nOne = false
 						for k, l in pairs(j.ethnicity) do
-							if nOne then of:write("\n2 CONT ".."%.2f%% %s", l:format(k))
-							else
-								local eF = 2
-								local eS = ("%.2f"):format(l)
-								while eS:sub(eS:len(), eS:len()) == "0" do
-									eF = eF+1
-									eS = ("%."..tostring(eF).."f"):format(l)
+							local perF = 2
+							local perS = ("%.2f"):format(l)
+							local pStatus = true
+							while pStatus and perS:sub(perS:len(), perS:len()) == "0" do
+								perF = perF+1
+								pStatus, perS = pcall(string.format, "%."..tostring(perF).."f", l)
+							end
+							if pStatus then
+								if nOne then of:write("\n2 CONT "..perS.."% "..k)
+								else
+									of:write("\n1 NOTE "..perS.."% "..k)
+									nOne = true
 								end
-								of:write("\n1 NOTE "..eS.."% "..k)
-								nOne = true
 							end
 						end
 						of:flush()
