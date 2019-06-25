@@ -1182,7 +1182,7 @@ return
 							local perF = 2
 							local perS = ("%.2f"):format(l)
 							local pStatus = true
-							while pStatus and perS:sub(perS:len(), perS:len()) == "0" do
+							while pStatus and perS:sub(perS:len(), perS:len()) == "0" and perS:sub(1, 1) == "0" do
 								perF = perF+1
 								pStatus, perS = pcall(string.format, "%."..tostring(perF).."f", l)
 							end
