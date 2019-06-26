@@ -12,6 +12,70 @@ _time = os.time
 if socketstatus then _time = socket.gettime
 elseif _time() < 30 then _time = os.clock end
 
+cursesstatus, curses = pcall(require, "curses")
+
+printf = function(stdscr, fmt, ...)
+	if stdscr then
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
+		stdscr:clrtoeol()
+		stdscr:addstr(fmt:format(...))
+		stdscr:addstr("\n")
+		stdscr:refresh()
+	else
+		io.write("\r")
+		io.write(fmt:format(...))
+		io.write("\n")
+	end
+end
+
+printl = function(stdscr, fmt, ...)
+	if stdscr then
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
+		stdscr:clrtoeol()
+		stdscr:addstr(fmt:format(...))
+		stdscr:move(y, 0)
+		stdscr:refresh()
+	else
+		io.write("\r")
+		io.write(fmt:format(...))
+		io.write("\r")
+	end
+end
+
+printp = function(stdscr, fmt, ...)
+	if stdscr then
+		local y, x = stdscr:getyx()
+		stdscr:move(y, 0)
+		stdscr:clrtoeol()
+		stdscr:addstr(fmt:format(...))
+		stdscr:refresh()
+	else
+		io.write("\r")
+		io.write(fmt:format(...))
+	end
+end
+
+printc = function(stdscr, fmt, ...)
+	if stdscr then
+		stdscr:clrtoeol()
+		stdscr:addstr(fmt:format(...))
+		stdscr:refresh()
+	else io.write(fmt:format(...)) end
+end
+
+readl = function(stdscr)
+	if stdscr then return stdscr:getstr() end
+	return io.read()
+end
+
+readn = function(stdscr)
+	local x = ""
+	if stdscr then x = stdscr:getstr() else x = io.read() end
+	return tonumber(x)
+end
+
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
 Party = require("CCSCommon.Party")()
