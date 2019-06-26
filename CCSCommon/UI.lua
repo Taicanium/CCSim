@@ -52,12 +52,12 @@ printc = function(stdscr, fmt, ...)
 end
 
 readl = function(stdscr)
-	if stdscr then return stdscr:getstr()
+	if stdscr then return stdscr:getstr() end
 	return io.read()
 end
 
 readn = function(stdscr)
-	if stdscr then return tonumber(stdscr:getstr())
+	if stdscr then return tonumber(stdscr:getstr()) end
 	return tonumber(io.read())
 end
 
