@@ -1531,7 +1531,6 @@ return
 
 					UI:clear(true)
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
-					UI:refresh()
 				end
 
 				self:finish()
