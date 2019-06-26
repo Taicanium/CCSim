@@ -24,7 +24,7 @@ printf = function(stdscr, fmt, ...)
 	else
 		io.write("\r")
 		io.write(fmt:format(...))
-		io.write("\r\n")
+		io.write("\n")
 	end
 end
 
