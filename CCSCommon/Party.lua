@@ -2,18 +2,18 @@ return
 	function()
 		local Party = {
 			new = function(self)
-				local p = {}
-				setmetatable(p, self)
+				local o = {}
+				setmetatable(o, self)
 
-				p.cfreedom = 0
-				p.efreedom = 0
-				p.mtname = "Party"
-				p.name = ""
-				p.pfreedom = 0
-				p.popularity = 50
-				p.radical = false
+				o.cfreedom = 0
+				o.efreedom = 0
+				o.mtname = "Party"
+				o.name = ""
+				o.pfreedom = 0
+				o.popularity = 50
+				o.radical = false
 
-				return p
+				return o
 			end,
 
 			makename = function(self, parent, n)

@@ -1,21 +1,21 @@
 _DEBUG = false
 
-CCSCommon = require("CCSCommon")()
+CCSMStatus, CCSModule = pcall(require, "CCSCommon")
+if not CCSModule then os.exit(1) end
+CCSFStatus, CCSCommon = pcall(CCSModule)
 if not CCSCommon then os.exit(1) end
 
 function main()
-	CCSCommon:clearTerm()
+	UI:clear()
 	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
 
 	printp(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
 	local datin = readl(CCSCommon.stdscr)
 
-	CCSCommon.maxyears = tonumber(datin)
+	CCSCommon.maxyears = readn(CCSCommon.stdscr)
 	while not CCSCommon.maxyears do
 		printp(CCSCommon.stdscr, "Please enter a number. > ")
-		datin = readl(CCSCommon.stdscr)
-
-		CCSCommon.maxyears = tonumber(datin)
+		CCSCommon.maxyears = readn(CCSCommon.stdscr)
 	end
 
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
@@ -61,11 +61,11 @@ function main()
 				CCSCommon.thisWorld:add(nl)
 				CCSCommon:getAlphabeticalCountries()
 			end
-
+			
 			done = true
 		else
-			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			done = true
+			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			if not i then
 				printf(CCSCommon.stdscr, "\nUnable to load data file! Please try again.")
 				done = nil

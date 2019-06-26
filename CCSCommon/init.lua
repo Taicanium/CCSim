@@ -2,78 +2,23 @@ if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setup
 if not table.unpack then table.unpack = function(t, n)
 	if not n then return table.unpack(t, 1)
 	elseif t[n] then return t[n], table.unpack(t, n+1) end
+	return t
 end end
 
 socketstatus, socket = pcall(require, "socket")
-cursesstatus, curses = pcall(require, "curses")
 lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.time
 if socketstatus then _time = socket.gettime
 elseif _time() < 30 then _time = os.clock end
 
-Person = require("CCSCommon.Person")()
-Party = require("CCSCommon.Party")()
 City = require("CCSCommon.City")()
-Region = require("CCSCommon.Region")()
 Country = require("CCSCommon.Country")()
+Party = require("CCSCommon.Party")()
+Person = require("CCSCommon.Person")()
+Region = require("CCSCommon.Region")()
+UI = require("CCSCommon.UI")()
 World = require("CCSCommon.World")()
-
-printf = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:addstr("\n")
-		stdscr:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-		io.write("\n")
-	end
-end
-
-printl = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:move(y, 0)
-		stdscr:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-		io.write("\r")
-	end
-end
-
-printp = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-	end
-end
-
-printc = function(stdscr, fmt, ...)
-	if stdscr then
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:refresh()
-	else io.write(fmt:format(...)) end
-end
-
-readl = function(stdscr)
-	if stdscr then return stdscr:getstr()
-	else return io.read() end
-end
 
 return
 	function()
@@ -937,7 +882,7 @@ return
 			genLimit = 3,
 			indi = {},
 			indiCount = 0,
-			initialgroups = {"Ab", "Ac", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
+			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			maxyears = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
 			numCountries = 0,
@@ -955,28 +900,9 @@ return
 			stdscr = nil,
 			systems = {
 				{
-					name="Monarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
-					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marquess", "Duchess", "Princess", "Queen"},
-					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship", "Domain"},
-					dynastic=true
-				},
-				{
-					name="Republic",
-					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
-					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation", "Federal Republic"},
-					dynastic=false
-				},
-				{
 					name="Democracy",
 					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Speaker", "Prime Minister"},
 					formalities={"Union", "Democratic Republic", "Free State", "Realm", "Electorate", "State"},
-					dynastic=false
-				},
-				{
-					name="Oligarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
-					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy", "Collective"},
 					dynastic=false
 				},
 				{
@@ -985,37 +911,31 @@ return
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
 					formalities={"Empire", "Emirate", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
 					dynastic=true
+				},
+				{
+					name="Monarchy",
+					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
+					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marquess", "Duchess", "Princess", "Queen"},
+					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship", "Domain"},
+					dynastic=true
+				},
+				{
+					name="Oligarchy",
+					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
+					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy", "Collective"},
+					dynastic=false
+				},
+				{
+					name="Republic",
+					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
+					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation", "Federal Republic"},
+					dynastic=false
 				}
 			},
 			thisWorld = {},
 			vowels = {"a", "e", "i", "o", "u", "y"},
 			years = 1,
 			yearstorun = 0,
-
-			-- Although a console clear command will wipe the visible part of the screen, some terminals will clear scrollback only if the clear command is repeated. Most require only two, but for certainty, execute the clear command three times in rapid succession. All of this assuming we don't have Curses, of course.
-			clearTerm = function(self)
-				if not self.stdscr and cursesstatus then
-					curses.cbreak(true)
-					curses.echo(true)
-					curses.nl(true)
-					self.stdscr = curses.initscr()
-				end
-
-				if not self.clrcmd or self.clrcmd == "" then
-					self.clrcmd = "clear"
-					local clrarr = os.execute("clear")
-
-					if not clrarr then self.clrcmd = "cls"
-					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "cls"
-					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
-				end
-
-				if cursesstatus then
-					self.stdscr:refresh()
-					self.stdscr:clear()
-					self.stdscr:move(0, 0)
-				else for i=1,3 do os.execute(self.clrcmd) end end
-			end,
 
 			deepcopy = function(self, obj)
 				local res = nil
@@ -1042,14 +962,14 @@ return
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end
 				local strOut = ""
-				if self.clrcmd == "clear" then strOut = "."..self.dirSeparator end
+				if UI.clrcmd == "clear" then strOut = "."..self.dirSeparator end
 				for i=1,#names-1 do strOut = strOut..names[i]..self.dirSeparator end
 				strOut = strOut..names[#names]
 				return strOut
 			end,
 
 			finish = function(self)
-				self:clearTerm()
+				UI:clear()
 
 				if self.doMaps then self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "final"})) end
 
@@ -1504,10 +1424,10 @@ return
 						end
 
 						if cursesstatus then
-							cLimit = curses:lines()-#currentEvents-6
+							cLimit = UI.y-#currentEvents-6
 							if #currentEvents == 0 then cLimit = cLimit-1 end
-							if cLimit < math.floor(curses:lines()/2) then cLimit = math.floor(curses:lines()/2) end
-							eLimit = curses:lines()-cLimit-6
+							if cLimit < math.floor(UI.y/2) then cLimit = math.floor(UI.y/2) end
+							eLimit = UI.y-cLimit-6
 						end
 
 						for i=1,#self.alpha do
@@ -1546,9 +1466,9 @@ return
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
 
-					self:clearTerm()
+					UI:clear(true)
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
-					if cursesstatus then self.stdscr:refresh() end
+					UI:refresh()
 				end
 
 				self:finish()

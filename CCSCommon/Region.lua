@@ -2,17 +2,17 @@ return
 	function()
 		local Region = {
 			new = function(self)
-				local r = {}
-				setmetatable(r, self)
+				local o = {}
+				setmetatable(o, self)
 
-				r.cities = {}
-				r.mtname = "Region"
-				r.name = ""
-				r.nodes = {}
-				r.population = 0
-				r.subregions = {}
+				o.cities = {}
+				o.mtname = "Region"
+				o.name = ""
+				o.nodes = {}
+				o.population = 0
+				o.subregions = {}
 
-				return r
+				return o
 			end,
 
 			makename = function(self, country, parent)

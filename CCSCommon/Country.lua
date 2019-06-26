@@ -2,48 +2,48 @@ return
 	function()
 		local Country = {
 			new = function(self)
-				local nl = {}
-				setmetatable(nl, self)
+				local o = {}
+				setmetatable(o, self)
 
-				nl.age = 0
-				nl.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system. 
-				nl.alliances = {}
-				nl.allyOngoing = {}
-				nl.averageAge = 0
-				nl.birthrate = 3
-				nl.capitalcity = ""
-				nl.capitalregion = ""
-				nl.civilWars = 0
-				nl.demonym = ""
-				nl.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
-				nl.ethnicities = {}
-				nl.events = {}
-				nl.formalities = {}
-				nl.founded = 0
-				nl.frulernames = {}
-				nl.hasruler = -1
-				nl.majority = ""
-				nl.military = 0
-				nl.mtname = "Country"
-				nl.name = ""
-				nl.nodes = {}
-				nl.ongoing = {}
-				nl.parties = {}
-				nl.people = {}
-				nl.population = 0
-				nl.regions = {}
-				nl.relations = {}
-				nl.ruler = nil
-				nl.rulerage = 0
-				nl.rulernames = {}
-				nl.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
-				nl.rulers = {}
-				nl.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
-				nl.stability = 50
-				nl.strength = 0
-				nl.system = 0
+				o.age = 0
+				o.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system. 
+				o.alliances = {}
+				o.allyOngoing = {}
+				o.averageAge = 0
+				o.birthrate = 3
+				o.capitalcity = ""
+				o.capitalregion = ""
+				o.civilWars = 0
+				o.demonym = ""
+				o.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
+				o.ethnicities = {}
+				o.events = {}
+				o.formalities = {}
+				o.founded = 0
+				o.frulernames = {}
+				o.hasruler = -1
+				o.majority = ""
+				o.military = 0
+				o.mtname = "Country"
+				o.name = ""
+				o.nodes = {}
+				o.ongoing = {}
+				o.parties = {}
+				o.people = {}
+				o.population = 0
+				o.regions = {}
+				o.relations = {}
+				o.ruler = nil
+				o.rulerage = 0
+				o.rulernames = {}
+				o.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
+				o.rulers = {}
+				o.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
+				o.stability = 50
+				o.strength = 0
+				o.system = 0
 
-				return nl
+				return o
 			end,
 
 			add = function(self, parent, n)

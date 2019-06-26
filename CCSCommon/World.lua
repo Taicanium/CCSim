@@ -2,20 +2,20 @@ return
 	function()
 		local World = {
 			new = function(self)
-				local nm = {}
-				setmetatable(nm, self)
+				local o = {}
+				setmetatable(o, self)
 
-				nm.countries = {}
-				nm.cColors = {}
-				nm.cTriplets = {}
-				nm.fromFile = false
-				nm.gPop = 0
-				nm.mtname = "World"
-				nm.planet = {}
-				nm.planetdefined = {}
-				nm.planetR = 0
+				o.countries = {}
+				o.cColors = {}
+				o.cTriplets = {}
+				o.fromFile = false
+				o.gPop = 0
+				o.mtname = "World"
+				o.planet = {}
+				o.planetdefined = {}
+				o.planetR = 0
 
-				return nm
+				return o
 			end,
 
 			add = function(self, nd)

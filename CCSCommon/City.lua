@@ -2,17 +2,17 @@ return
 	function()
 		local City = {
 			new = function(self)
-				local c = {}
-				setmetatable(c, self)
+				local o = {}
+				setmetatable(o, self)
 
-				c.mtname = "City"
-				c.name = ""
-				c.population = 0
-				c.x = nil
-				c.y = nil
-				c.z = nil
+				o.mtname = "City"
+				o.name = ""
+				o.population = 0
+				o.x = nil
+				o.y = nil
+				o.z = nil
 
-				return c
+				return o
 			end,
 
 			makename = function(self, country, parent)
