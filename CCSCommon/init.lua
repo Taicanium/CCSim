@@ -6,13 +6,12 @@ if not table.unpack then table.unpack = function(t, n)
 end end
 
 socketstatus, socket = pcall(require, "socket")
+cursesstatus, curses = pcall(require, "curses")
 lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.time
 if socketstatus then _time = socket.gettime
 elseif _time() < 30 then _time = os.clock end
-
-cursesstatus, curses = pcall(require, "curses")
 
 printf = function(stdscr, fmt, ...)
 	if stdscr then
