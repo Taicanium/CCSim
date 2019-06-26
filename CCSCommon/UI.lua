@@ -57,8 +57,9 @@ readl = function(stdscr)
 end
 
 readn = function(stdscr)
-	if stdscr then return tonumber(stdscr:getstr()) end
-	return tonumber(io.read())
+	local x = ""
+	if stdscr then x = stdscr:getstr() else x = io.read() end
+	return tonumber(x)
 end
 
 return
