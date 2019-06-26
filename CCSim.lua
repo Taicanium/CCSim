@@ -10,8 +10,6 @@ function main()
 	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
 
 	printp(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
-	local datin = readl(CCSCommon.stdscr)
-
 	CCSCommon.maxyears = readn(CCSCommon.stdscr)
 	while not CCSCommon.maxyears do
 		printp(CCSCommon.stdscr, "Please enter a number. > ")
