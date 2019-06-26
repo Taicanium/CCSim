@@ -18,7 +18,6 @@ return
 					if not holdRef then self:refresh() end
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
-					if not holdRef then self:refresh() end
 				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
 			
@@ -28,6 +27,8 @@ return
 					curses.echo(true)
 					curses.nl(true)
 					self.stdscr = curses.initscr()
+					self.x = curses:cols()
+					self.y = curses:lines()
 				end
 				
 				if not self.clrcmd or self.clrcmd == "" then
