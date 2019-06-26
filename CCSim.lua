@@ -7,34 +7,34 @@ if not CCSFStatus or not CCSCommon then error(tostring(CCSCommon)) os.exit(1) en
 
 function main()
 	UI:clear()
-	printf(CCSCommon.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
+	printf(UI.stdscr, "\n\n\tCCSIM : Compact Country Simulator\n")
 
-	printp(CCSCommon.stdscr, "\nHow many years should the simulation run? > ")
-	CCSCommon.maxyears = readn(CCSCommon.stdscr)
+	printp(UI.stdscr, "\nHow many years should the simulation run? > ")
+	CCSCommon.maxyears = readn(UI.stdscr)
 	while not CCSCommon.maxyears do
-		printp(CCSCommon.stdscr, "Please enter a number. > ")
-		CCSCommon.maxyears = readn(CCSCommon.stdscr)
+		printp(UI.stdscr, "Please enter a number. > ")
+		CCSCommon.maxyears = readn(UI.stdscr)
 	end
 
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
-	printc(CCSCommon.stdscr, "\nDo you want to show detailed info in the console (y/n)?\n")
-	printp(CCSCommon.stdscr, "Answering N may result in a slight speedup. > ")
-	datin = readl(CCSCommon.stdscr)
+	printc(UI.stdscr, "\nDo you want to show detailed info in the console (y/n)?\n")
+	printp(UI.stdscr, "Answering N may result in a slight speedup. > ")
+	datin = readl(UI.stdscr)
 	datin = datin:lower()
 
 	CCSCommon.showinfo = 0
 	if datin == "y" then CCSCommon.showinfo = 1 end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
-	datin = readl(CCSCommon.stdscr)
+	printp(UI.stdscr, "\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
+	datin = readl(UI.stdscr)
 	datin = datin:lower()
 
 	CCSCommon.doMaps = false
 	if datin == "y" then CCSCommon.doMaps = true end
 
-	printp(CCSCommon.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
-	datin = readl(CCSCommon.stdscr)
+	printp(UI.stdscr, "\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+	datin = readl(UI.stdscr)
 	datin = datin:lower()
 
 	CCSCommon.doGed = false
@@ -42,18 +42,18 @@ function main()
 
 	local done = nil
 	while not done do
-		printp(CCSCommon.stdscr, "\nData > ")
-		datin = readl(CCSCommon.stdscr)
+		printp(UI.stdscr, "\nData > ")
+		datin = readl(UI.stdscr)
 
 		if datin:lower() == "random" then
-			printf(CCSCommon.stdscr, "\nDefining countries...")
+			printf(UI.stdscr, "\nDefining countries...")
 
 			CCSCommon:rseed()
 			CCSCommon.thisWorld = World:new()
 			CCSCommon.numCountries = math.random(7, 12)
 
 			for j=1,CCSCommon.numCountries do
-				printl(CCSCommon.stdscr, "Country %d/%d", j, CCSCommon.numCountries)
+				printl(UI.stdscr, "Country %d/%d", j, CCSCommon.numCountries)
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
@@ -65,7 +65,7 @@ function main()
 			done = true
 			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			if not i then
-				printf(CCSCommon.stdscr, "\nUnable to load data file! Please try again.")
+				printf(UI.stdscr, "\nUnable to load data file! Please try again.")
 				done = nil
 			end
 		end
