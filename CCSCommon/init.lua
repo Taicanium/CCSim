@@ -19,12 +19,12 @@ printf = function(stdscr, fmt, ...)
 		stdscr:move(y, 0)
 		stdscr:clrtoeol()
 		stdscr:addstr(fmt:format(...))
-		stdscr:addstr("\n")
+		stdscr:move(y+1, 0)
 		stdscr:refresh()
 	else
 		io.write("\r")
 		io.write(fmt:format(...))
-		io.write("\n")
+		io.write("\r\n")
 	end
 end
 
