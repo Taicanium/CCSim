@@ -15,6 +15,7 @@ return
 			clear = function(self, holdRef)
 				if cursesstatus then
 					if not self.stdscr then self:init() end
+					if not holdRef then self:refresh() end
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
 					if not holdRef then self:refresh() end
