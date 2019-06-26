@@ -1,9 +1,9 @@
 _DEBUG = false
 
 CCSMStatus, CCSModule = pcall(require, "CCSCommon")
-if not CCSMStatus or not CCSModule then error("Could not locate CCSCommon module!") os.exit(1) end
+if not CCSMStatus or not CCSModule then error("Could not locate CCSCommon module : "..tostring(CCSMStatus)..tostring(CCSCommon)) os.exit(1) end
 CCSFStatus, CCSCommon = pcall(CCSModule)
-if not CCSFStatus or not CCSCommon then error("Could not load CCSCommon module!") os.exit(1) end
+if not CCSFStatus or not CCSCommon then error("Could not load CCSCommon module : "..tostring(CCSFStatus)..tostring(CCSCommon)) os.exit(1) end
 
 function main()
 	UI:clear()
