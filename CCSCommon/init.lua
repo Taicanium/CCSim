@@ -62,7 +62,6 @@ printc = function(stdscr, fmt, ...)
 	if stdscr then
 		stdscr:clrtoeol()
 		stdscr:addstr(fmt:format(...))
-		UI:refresh()
 	else io.write(fmt:format(...)) end
 end
 
