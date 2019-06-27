@@ -22,6 +22,7 @@ printf = function(stdscr, fmt, ...)
 		stdscr:addstr("\n")
 		y, x = stdscr:getyx()
 		stdscr:move(y, 0)
+		UI:refresh()
 	else
 		io.write("\r")
 		io.write(fmt:format(...))
@@ -36,6 +37,7 @@ printl = function(stdscr, fmt, ...)
 		stdscr:clrtoeol()
 		stdscr:addstr(fmt:format(...))
 		stdscr:move(y, 0)
+		UI:refresh()
 	else
 		io.write("\r")
 		io.write(fmt:format(...))
@@ -49,6 +51,7 @@ printp = function(stdscr, fmt, ...)
 		stdscr:move(y, 0)
 		stdscr:clrtoeol()
 		stdscr:addstr(fmt:format(...))
+		UI:refresh()
 	else
 		io.write("\r")
 		io.write(fmt:format(...))
@@ -59,6 +62,7 @@ printc = function(stdscr, fmt, ...)
 	if stdscr then
 		stdscr:clrtoeol()
 		stdscr:addstr(fmt:format(...))
+		UI:refresh()
 	else io.write(fmt:format(...)) end
 end
 
