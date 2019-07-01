@@ -257,7 +257,7 @@ return
 					parent.disabled["!"..j.name:lower()] = false
 				end
 
-				if parent.clrcmd == "cls" then parent.dirSeparator = "\\" end
+				if UI.clrcmd == "cls" then parent.dirSeparator = "\\" end
 				local mapDir = parent:directory({parent.stamp, "maps"})
 
 				if lfsstatus then
