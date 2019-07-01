@@ -25,7 +25,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 
-				printf(parent.stdscr, "Benchmarking...")
+				UI:printf("Benchmarking...")
 				local bRad = 175
 				local bench = {}
 
@@ -42,7 +42,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone+1
-							if math.fmod(bdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100) end
+							if math.fmod(bdone, 10000) == 0 then UI:printl("%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100) end
 						end
 					end
 				end end
@@ -58,7 +58,7 @@ return
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 
-				printf(parent.stdscr, "Constructing voxel planet with radius of %d units...", self.planetR)
+				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
 
 				local rdone = 0
 
@@ -85,7 +85,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then printl(parent.stdscr, "%.2f%% done", (rdone/math.pow((self.planetR*2)+1, 3)*10000)/100) end
+							if math.fmod(rdone, 10000) == 0 then UI:printl("%.2f%% done", (rdone/math.pow((self.planetR*2)+1, 3)*10000)/100) end
 						end
 					end
 				end
@@ -98,7 +98,7 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf(parent.stdscr, "Defining land masses...")
+				UI:printf("Defining land masses...")
 
 				local maxLand = math.random(math.floor(planetSize/2.85), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
@@ -158,7 +158,7 @@ return
 						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
 					end
 
-					if math.fmod(doneLand, 100) == 0 then printl(parent.stdscr, "%.2f%% done", (doneLand/maxLand*10000)/100) end
+					if math.fmod(doneLand, 100) == 0 then UI:printl("%.2f%% done", (doneLand/maxLand*10000)/100) end
 				end
 
 				for i=1,planetSize do
@@ -169,11 +169,11 @@ return
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
-				printf(parent.stdscr, "Rooting countries...")
+				UI:printf("Rooting countries...")
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
-					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
+					UI:printl("Country %d/%d", ci, parent.numCountries)
 					ci = ci+1
 
 					local located = true
@@ -195,7 +195,7 @@ return
 					self.planet[x][y][z].country = cp.name
 				end
 
-				printf(parent.stdscr, "Setting territories...")
+				UI:printf("Setting territories...")
 
 				local allDefined = false
 				local defined = 0
@@ -233,7 +233,7 @@ return
 					if defined == prevDefined then allDefined = true end
 					prevDefined = defined
 
-					printl(parent.stdscr, "%.2f%% done", (defined/planetSize*10000)/100)
+					UI:printl("%.2f%% done", (defined/planetSize*10000)/100)
 				end
 
 				for i=1,planetSize do
@@ -242,10 +242,10 @@ return
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
-				printf(parent.stdscr, "Defining regional boundaries...")
+				UI:printf("Defining regional boundaries...")
 
 				for i, cp in pairs(self.countries) do
-					printl(parent.stdscr, "Country %d/%d", ci, parent.numCountries)
+					UI:printl("Country %d/%d", ci, parent.numCountries)
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
@@ -291,7 +291,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
-				printf(parent.stdscr, "Writing R data...")
+				UI:printf("Writing R data...")
 
 				local f = io.open(label..".r", "w+")
 				if not f then return end

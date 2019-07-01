@@ -39,6 +39,69 @@ return
 					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
 				end
 			end,
+
+			printc = function(fmt, ...)
+				if stdscr then
+					stdscr:clrtoeol()
+					stdscr:addstr(fmt:format(...))
+				else io.write(fmt:format(...)) end
+			end,
+			
+			printf = function(fmt, ...)
+				if stdscr then
+					local y, x = stdscr:getyx()
+					stdscr:move(y, 0)
+					stdscr:clrtoeol()
+					stdscr:addstr(fmt:format(...))
+					stdscr:addstr("\n")
+					local y2, x2 = stdscr:getyx()
+					stdscr:move(y2, 0)
+					UI:refresh()
+				else
+					io.write("\r")
+					io.write(fmt:format(...))
+					io.write("\n")
+				end
+			end,
+
+			printl = function(fmt, ...)
+				if stdscr then
+					local y, x = stdscr:getyx()
+					stdscr:move(y, 0)
+					stdscr:clrtoeol()
+					stdscr:addstr(fmt:format(...))
+					stdscr:move(y, 0)
+					UI:refresh()
+				else
+					io.write("\r")
+					io.write(fmt:format(...))
+					io.write("\r")
+				end
+			end,
+
+			printp = function(fmt, ...)
+				if stdscr then
+					local y, x = stdscr:getyx()
+					stdscr:move(y, 0)
+					stdscr:clrtoeol()
+					stdscr:addstr(fmt:format(...))
+					UI:refresh()
+				else
+					io.write("\r")
+					io.write(fmt:format(...))
+				end
+			end,
+
+			readl = function(stdscr)
+				if stdscr then return stdscr:getstr() end
+				return io.read()
+			end,
+
+			readn = function(stdscr)
+				local x = ""
+				if stdscr then x = stdscr:getstr() else x = io.read() end
+				return tonumber(x)
+			end,
 			
 			refresh = function(self)
 				if cursesstatus then self.stdscr:refresh() end

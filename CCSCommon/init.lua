@@ -13,69 +13,6 @@ _time = os.time
 if socketstatus then _time = socket.gettime
 elseif _time() < 30 then _time = os.clock end
 
-printf = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:addstr("\n")
-		local y2, x2 = stdscr:getyx()
-		stdscr:move(y2, 0)
-		UI:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-		io.write("\n")
-	end
-end
-
-printl = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		stdscr:move(y, 0)
-		UI:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-		io.write("\r")
-	end
-end
-
-printp = function(stdscr, fmt, ...)
-	if stdscr then
-		local y, x = stdscr:getyx()
-		stdscr:move(y, 0)
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-		UI:refresh()
-	else
-		io.write("\r")
-		io.write(fmt:format(...))
-	end
-end
-
-printc = function(stdscr, fmt, ...)
-	if stdscr then
-		stdscr:clrtoeol()
-		stdscr:addstr(fmt:format(...))
-	else io.write(fmt:format(...)) end
-end
-
-readl = function(stdscr)
-	if stdscr then return stdscr:getstr() end
-	return io.read()
-end
-
-readn = function(stdscr)
-	local x = ""
-	if stdscr then x = stdscr:getstr() else x = io.read() end
-	return tonumber(x)
-end
-
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
 Party = require("CCSCommon.Party")()
@@ -961,7 +898,6 @@ return
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
-			stdscr = nil,
 			systems = {
 				{
 					name="Democracy",
@@ -1037,7 +973,7 @@ return
 
 				if self.doMaps then self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "final"})) end
 
-				printf(self.stdscr, "Printing result...")
+				UI:printf("Printing result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
 
 				local cKeys = {}
@@ -1130,21 +1066,21 @@ return
 					local indiSorted = {}
 					local famSorted = {}
 
-					printf(self.stdscr, "Generating GEDCOM data...")
+					UI:printf("Generating GEDCOM data...")
 					for i=1,#self.royals do
 						self:setGed(self.royals[i], false)
-						printl(self.stdscr, "%.2f%% done", (i/#self.royals*10000)/100)
+						UI:printl("%.2f%% done", (i/#self.royals*10000)/100)
 					end
 
-					printf(self.stdscr, "Sorting GEDCOM individual data...")
+					UI:printf("Sorting GEDCOM individual data...")
 					for i, j in pairs(self.indi) do indiSorted[j.gIndex] = j end
 
-					printf(self.stdscr, "Sorting GEDCOM family data...")
+					UI:printf("Sorting GEDCOM family data...")
 					for i, j in pairs(self.fam) do famSorted[j.fIndex] = j end
 
 					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
 
-					printf(self.stdscr, "Writing individual data...")
+					UI:printf("Writing individual data...")
 					for i=1,#indiSorted do
 						local j = indiSorted[i]
 						of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
@@ -1179,9 +1115,9 @@ return
 							end
 						end
 						of:flush()
-						printl(self.stdscr, "%.2f%% done", (i/#indiSorted*10000)/100)
+						UI:printl("%.2f%% done", (i/#indiSorted*10000)/100)
 					end
-					printf(self.stdscr, "Writing family data...")
+					UI:printf("Writing family data...")
 					for i=1,#famSorted do
 						local j = famSorted[i]
 						if j and j.husb and self.indi[j.husb] and j.wife and self.indi[j.wife] and #j.chil > 0 then
@@ -1189,7 +1125,7 @@ return
 							for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
 							of:flush()
 						end
-						printl(self.stdscr, "%.2f%% done", (i/#famSorted*10000)/100)
+						UI:printl("%.2f%% done", (i/#famSorted*10000)/100)
 					end
 
 					of:write("\n0 TRLR")
@@ -1213,12 +1149,12 @@ return
 			end,
 
 			fromFile = function(self, datin)
-				printf(self.stdscr, "Opening data file...")
+				UI:printf("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
 				self.thisWorld = World:new()
 
-				printf(self.stdscr, "Reading data file...")
+				UI:printf("Reading data file...")
 
 				local fc = nil
 				local fr = nil
@@ -1334,7 +1270,7 @@ return
 
 				self:getAlphabeticalCountries()
 
-				printf(self.stdscr, "Constructing initial populations...\n")
+				UI:printf("Constructing initial populations...\n")
 				self.numCountries = 0
 				local cDone = 0
 
@@ -1359,7 +1295,7 @@ return
 					end
 
 					cDone = cDone+1
-					printl(self.stdscr, "Country %d/%d", cDone, self.numCountries)
+					UI:printl("Country %d/%d", cDone, self.numCountries)
 				end
 
 				self.thisWorld.fromFile = true
@@ -1461,7 +1397,7 @@ return
 				local _running = true
 				local msg = ""
 
-				printf(self.stdscr, "\nBegin Simulation!")
+				UI:printf("\nBegin Simulation!")
 
 				while _running do
 					self.thisWorld:update(self)
@@ -1531,13 +1467,13 @@ return
 					if self.years > self.maxyears then _running = false end
 
 					UI:clear(true)
-					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do printc(self.stdscr, sx) end
+					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do UI:printc(sx) end
 					UI:refresh()
 				end
 
 				self:finish()
 
-				printf(self.stdscr, "\nEnd Simulation!")
+				UI:printf("\nEnd Simulation!")
 			end,
 
 			name = function(self, personal, l)
