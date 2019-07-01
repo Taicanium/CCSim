@@ -40,22 +40,22 @@ return
 				end
 			end,
 
-			printc = function(fmt, ...)
-				if stdscr then
-					stdscr:clrtoeol()
-					stdscr:addstr(string.format(fmt, ...))
+			printc = function(self, fmt, ...)
+				if self.stdscr then
+					self.stdscr:clrtoeol()
+					self.stdscr:addstr(string.format(fmt, ...))
 				else io.write(string.format(fmt, ...)) end
 			end,
 			
-			printf = function(fmt, ...)
-				if stdscr then
-					local y, x = stdscr:getyx()
-					stdscr:move(y, 0)
-					stdscr:clrtoeol()
-					stdscr:addstr(string.format(fmt, ...))
-					stdscr:addstr("\n")
-					local y2, x2 = stdscr:getyx()
-					stdscr:move(y2, 0)
+			printf = function(self, fmt, ...)
+				if self.stdscr then
+					local y, x = self.stdscr:getyx()
+					self.stdscr:move(y, 0)
+					self.stdscr:clrtoeol()
+					self.stdscr:addstr(string.format(fmt, ...))
+					self.stdscr:addstr("\n")
+					local y2, x2 = self.stdscr:getyx()
+					self.stdscr:move(y2, 0)
 					UI:refresh()
 				else
 					io.write("\r")
@@ -64,13 +64,13 @@ return
 				end
 			end,
 
-			printl = function(fmt, ...)
-				if stdscr then
-					local y, x = stdscr:getyx()
-					stdscr:move(y, 0)
-					stdscr:clrtoeol()
-					stdscr:addstr(string.format(fmt, ...))
-					stdscr:move(y, 0)
+			printl = function(self, fmt, ...)
+				if self.stdscr then
+					local y, x = self.stdscr:getyx()
+					self.stdscr:move(y, 0)
+					self.stdscr:clrtoeol()
+					self.stdscr:addstr(string.format(fmt, ...))
+					self.stdscr:move(y, 0)
 					UI:refresh()
 				else
 					io.write("\r")
@@ -79,12 +79,12 @@ return
 				end
 			end,
 
-			printp = function(fmt, ...)
-				if stdscr then
-					local y, x = stdscr:getyx()
-					stdscr:move(y, 0)
-					stdscr:clrtoeol()
-					stdscr:addstr(string.format(fmt, ...))
+			printp = function(self, fmt, ...)
+				if self.stdscr then
+					local y, x = self.stdscr:getyx()
+					self.stdscr:move(y, 0)
+					self.stdscr:clrtoeol()
+					self.stdscr:addstr(string.format(fmt, ...))
 					UI:refresh()
 				else
 					io.write("\r")
@@ -92,14 +92,14 @@ return
 				end
 			end,
 
-			readl = function(stdscr)
-				if stdscr then return stdscr:getstr() end
+			readl = function(self)
+				if self.stdscr then return self.stdscr:getstr() end
 				return io.read()
 			end,
 
-			readn = function(stdscr)
+			readn = function(self)
 				local x = ""
-				if stdscr then x = stdscr:getstr() else x = io.read() end
+				if self.stdscr then x = self.stdscr:getstr() else x = io.read() end
 				return tonumber(x)
 			end,
 			
