@@ -1417,6 +1417,14 @@ return
 						local cLimit = 14
 						local eCount = 0
 						local eLimit = 4
+						
+						local names = {}
+						local longestName = -1
+						local longestNameN = -1
+						local stats = {}
+						local longestStat = -1
+						local longestStatN = -1
+						local rulers = {}
 
 						for i=#self.alpha,1,-1 do
 							local cp = self.thisWorld.countries[self.alpha[i]]
@@ -1433,14 +1441,39 @@ return
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
 							if cCount < cLimit or cCount == self.numCountries then
-								if cp.snt[self.systems[cp.system].name] > 1 then msg = msg..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
+								local name = ""
+								if cp.snt[self.systems[cp.system].name] > 1 then name = name..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then msg = msg..("%s %s"):format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..("%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
-								msg = msg..(" - Pop. %d, Str. %d, Stabil. %d - %s\n"):format(cp.population, cp.strength, cp.stability, self:getRulerString(cp.rulers[#cp.rulers]))
+								if cp.dfif[sysName] then name = name..("%s %s"):format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..("%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
+								local stat = (" - Pop. %d, Str. %d, Stabil. %d"):format(cp.population, cp.strength, cp.stability)
+								local ruler = (" - %s\n"):format(self:getRulerString(cp.rulers[#cp.rulers]))
+								table.insert(names, name)
+								table.insert(stats, stat)
+								table.insert(rulers, ruler)
 								cCount = cCount+1
-							end
+							else i = #self.alpha+1 end
 						end
 
+						for i=1,#names do
+							if names[i]:len() > longestNameN then
+								longestName = i
+								longestNameN = names[i]:len()
+							end
+							
+							if stats[i]:len() > longestStatN then
+								longestStat = i
+								longestStatN = stats[i]:len()
+							end
+						end
+						
+						for i=1,#names do
+							msg = msg..names[i]
+							for j=1,longestNameN-names[i]:len() do msg = msg.." " end
+							msg = msg..stats[i]
+							for j=1,longestStatN-stats[i]:len() do msg = msg.." " end
+							msg = msg..rulers[i]
+						end
+						
 						if cCount < self.numCountries then msg = msg..("[+%d more]\n"):format(self.numCountries-cCount) end
 
 						msg = msg.."\nOngoing events:"
