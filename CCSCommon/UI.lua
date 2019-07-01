@@ -43,8 +43,8 @@ return
 			printc = function(fmt, ...)
 				if stdscr then
 					stdscr:clrtoeol()
-					stdscr:addstr(fmt:format(...))
-				else io.write(fmt:format(...)) end
+					stdscr:addstr(string.format(fmt, ...))
+				else io.write(string.format(fmt, ...)) end
 			end,
 			
 			printf = function(fmt, ...)
@@ -52,14 +52,14 @@ return
 					local y, x = stdscr:getyx()
 					stdscr:move(y, 0)
 					stdscr:clrtoeol()
-					stdscr:addstr(fmt:format(...))
+					stdscr:addstr(string.format(fmt, ...))
 					stdscr:addstr("\n")
 					local y2, x2 = stdscr:getyx()
 					stdscr:move(y2, 0)
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(fmt:format(...))
+					io.write(string.format(fmt, ...))
 					io.write("\n")
 				end
 			end,
@@ -69,12 +69,12 @@ return
 					local y, x = stdscr:getyx()
 					stdscr:move(y, 0)
 					stdscr:clrtoeol()
-					stdscr:addstr(fmt:format(...))
+					stdscr:addstr(string.format(fmt, ...))
 					stdscr:move(y, 0)
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(fmt:format(...))
+					io.write(string.format(fmt, ...))
 					io.write("\r")
 				end
 			end,
@@ -84,11 +84,11 @@ return
 					local y, x = stdscr:getyx()
 					stdscr:move(y, 0)
 					stdscr:clrtoeol()
-					stdscr:addstr(fmt:format(...))
+					stdscr:addstr(string.format(fmt, ...))
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(fmt:format(...))
+					io.write(string.format(fmt, ...))
 				end
 			end,
 
