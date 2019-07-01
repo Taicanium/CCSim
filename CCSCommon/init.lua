@@ -1444,7 +1444,7 @@ return
 								local name = ""
 								if cp.snt[self.systems[cp.system].name] > 1 then name = name..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
-								if cp.dfif[sysName] then name = name..("%s %s"):format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else msg = msg..("%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
+								if cp.dfif[sysName] then name = name..("%s %s"):format(cp.demonym, cp.formalities[self.systems[cp.system].name]) else name = name..("%s of %s"):format(cp.formalities[self.systems[cp.system].name], cp.name) end
 								local stat = (" - Pop. %d, Str. %d, Stabil. %d"):format(cp.population, cp.strength, cp.stability)
 								local ruler = (" - %s\n"):format(self:getRulerString(cp.rulers[#cp.rulers]))
 								table.insert(names, name)
