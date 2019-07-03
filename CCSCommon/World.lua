@@ -10,6 +10,8 @@ return
 				o.cTriplets = {}
 				o.fromFile = false
 				o.gPop = 0
+				o.initialPop = -1
+				o.initialState = true
 				o.mtname = "World"
 				o.planet = {}
 				o.planetdefined = {}
@@ -261,10 +263,10 @@ return
 				local mapDir = parent:directory({parent.stamp, "maps"})
 
 				if lfsstatus then
-					lfs.mkdir(parent.stamp)
+					lfs.mkdir(parent:directory({parent.stamp}))
 					if parent.doMaps then lfs.mkdir(mapDir) end
 				else
-					os.execute("mkdir "..parent.stamp)
+					os.execute("mkdir "..parent:directory({parent.stamp}))
 					if parent.doMaps then os.execute("mkdir "..mapDir) end
 				end
 
@@ -576,8 +578,20 @@ return
 				end end
 
 				self.gPop = 0
+				self.initialPop = 1
+				
+				if self.initialState then UI:printf("Constructing initial populations...") end
 
-				for i, cp in pairs(self.countries) do if cp then cp:update(parent) end end
+				for i, cp in pairs(self.countries) do if cp then
+					if self.initialState then
+						UI:printf("Country %d/%d", self.initialPop, parent.numCountries)
+						self.initialPop = self.initialPop+1
+					end
+					cp:update(parent)
+				end end
+				
+				self.initialState = false
+				
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
 

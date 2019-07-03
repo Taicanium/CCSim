@@ -5,6 +5,7 @@ return
 				local o = {}
 				
 				o.clrcmd = nil
+				o.ready = false
 				o.stdscr = nil
 				o.x = -1
 				o.y = -1
@@ -13,8 +14,8 @@ return
 			end,
 			
 			clear = function(self, holdRef)
+				if not self.ready then self:init() end
 				if cursesstatus then
-					if not self.stdscr then self:init() end
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
 					if not holdRef then self:refresh() end
@@ -38,9 +39,12 @@ return
 					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "cls"
 					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
 				end
+				
+				self.ready = true
 			end,
 
 			printc = function(self, fmt, ...)
+				if not self.ready then self:init() end
 				if self.stdscr then
 					self.stdscr:clrtoeol()
 					self.stdscr:addstr(string.format(fmt, ...))
@@ -48,6 +52,7 @@ return
 			end,
 			
 			printf = function(self, fmt, ...)
+				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -65,6 +70,7 @@ return
 			end,
 
 			printl = function(self, fmt, ...)
+				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -80,6 +86,7 @@ return
 			end,
 
 			printp = function(self, fmt, ...)
+				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -93,20 +100,25 @@ return
 			end,
 
 			readl = function(self)
+				if not self.ready then self:init() end
 				if self.stdscr then return self.stdscr:getstr() end
 				return io.read()
 			end,
 
 			readn = function(self)
+				if not self.ready then self:init() end
 				local x = ""
 				if self.stdscr then x = self.stdscr:getstr() else x = io.read() end
 				return tonumber(x)
 			end,
 			
 			refresh = function(self)
-				if cursesstatus then self.stdscr:refresh() end
-				self.x = curses:cols()
-				self.y = curses:lines()
+				if not self.ready then self:init() end
+				if cursesstatus then
+					self.stdscr:refresh()
+					self.x = curses:cols()
+					self.y = curses:lines()
+				end
 			end
 		}
 		

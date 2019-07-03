@@ -1298,6 +1298,7 @@ return
 					UI:printl("Country %d/%d", cDone, self.numCountries)
 				end
 
+				self.thisWorld.initialState = false
 				self.thisWorld.fromFile = true
 			end,
 
@@ -1396,8 +1397,8 @@ return
 			loop = function(self)
 				local _running = true
 				local msg = ""
-
-				UI:printf("\nBegin Simulation!")
+				local cLimit = 14
+				local eLimit = 4
 
 				while _running do
 					self.thisWorld:update(self)
@@ -1414,9 +1415,7 @@ return
 
 						local currentEvents = {}
 						local cCount = 0
-						local cLimit = 14
 						local eCount = 0
-						local eLimit = 4
 						
 						local names = {}
 						local longestName = -1
@@ -1492,7 +1491,7 @@ return
 
 						if _DEBUG then
 							self.debugTimes["PRINT"] = _time()-f0
-							for i, j in pairs(self.debugTimes) do msg = msg..i..": "..tostring(j).."\n" end
+							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %d\n"):format(i, j) end
 						end
 					end
 
