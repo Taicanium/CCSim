@@ -210,12 +210,6 @@ return
 						if self.name:sub(self.name:len()-4, self.name:len()) == "zicia" then self.name = self.name:sub(1, self.name:len()-5).."zcia" end
 						if self.name:sub(self.name:len()-4, self.name:len()) == "zhicia" then self.name = self.name:sub(1, self.name:len()-5).."zcia" end
 						if self.name:sub(self.name:len()-2, self.name:len()) == "lan" then self.name = self.name.."d" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "ay" then self.name = self.name:sub(1, self.name:len()-2).."any" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "ey" then self.name = self.name:sub(1, self.name:len()-2).."eny" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "oy" then self.name = self.name:sub(1, self.name:len()-2).."ony" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "uy" then self.name = self.name:sub(1, self.name:len()-2).."uny" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "ya" then self.name = self.name:sub(1, self.name:len()-2).."ia" end
-						if self.name:sub(self.name:len()-1, self.name:len()) == "wy" then self.name = self.name:sub(1, self.name:len()-2).."wia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "b" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "c" then self.name = self.name.."ia" end
 						if self.name:sub(self.name:len(), self.name:len()) == "d" and self.name:sub(self.name:len()-3, self.name:len()) ~= "land" then self.name = self.name.."ia" end
@@ -236,6 +230,12 @@ return
 						if self.name:sub(self.name:len(), self.name:len()) == "v" then self.name = self.name.."y" end
 						if self.name:sub(self.name:len(), self.name:len()) == "w" then self.name = self.name.."y" end
 						if self.name:sub(self.name:len(), self.name:len()) == "z" then self.name = self.name.."ia" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ay" then self.name = self.name:sub(1, self.name:len()-2).."any" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ey" then self.name = self.name:sub(1, self.name:len()-2).."eny" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "oy" then self.name = self.name:sub(1, self.name:len()-2).."ony" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "uy" then self.name = self.name:sub(1, self.name:len()-2).."uny" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "ya" then self.name = self.name:sub(1, self.name:len()-2).."ia" end
+						if self.name:sub(self.name:len()-1, self.name:len()) == "wy" then self.name = self.name:sub(1, self.name:len()-2).."wia" end
 						found = false
 						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") then found = true end end
 					end
