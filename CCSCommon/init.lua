@@ -1369,13 +1369,6 @@ return
 				end
 			end,
 
-			setIdeology = function(self, n)
-				if not n then return "" end
-				n.pbelief = math.random(-100, 100)
-				n.ebelief = math.random(-100, 100)
-				n.cbelief = math.random(-100, 100)
-			end,
-
 			getRulerString = function(self, data)
 				local rString = ""
 				if data then
@@ -1543,8 +1536,6 @@ return
 
 				nom = self:namecheck(nom)
 
-				if nom:len() < 2 then nom = nom..string.lower(self:randomChoice(self.vowels)) end
-
 				return nom
 			end,
 
@@ -1663,6 +1654,8 @@ return
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
+				
+					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
 
 					if nomlower ~= nomin:lower() then check = true end
 
@@ -1962,6 +1955,13 @@ return
 					t.LastRoyalAncestor = a
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
+			end,
+
+			setIdeology = function(self, n)
+				if not n then return "" end
+				n.pbelief = math.random(-100, 100)
+				n.ebelief = math.random(-100, 100)
+				n.cbelief = math.random(-100, 100)
 			end,
 
 			sleep = function(self, t)
