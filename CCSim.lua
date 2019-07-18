@@ -143,6 +143,15 @@ function gedReview(f)
 				fe = ""
 			end
 		end
+		if split[2] == "NAME" then
+			local name = ""
+			for i=3,#split do name = name.." "..split[i] end
+			for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end
+			for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end
+			name = name:gsub("/%C+/ %C+", "")
+			for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end
+			fe = ""
+		end
 		if split[2] == "SURN" then
 			indi[fi].surn = split[3]
 			for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
