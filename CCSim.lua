@@ -149,6 +149,7 @@ function gedReview(f)
 			for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end
 			for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end
 			name = name:gsub("/%C+/ %C+", "")
+			name = name:gsub("/%C+/, "")
 			for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
 			fe = ""
 		end
