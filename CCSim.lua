@@ -379,7 +379,7 @@ function main()
 		UI:printp(" > ")
 		
 		local datin = UI:readl()
-		if datin == "1" then simNew()
+		if datin == "1" then simNew() _RUNNING = false
 		elseif datin == "2" and lfsstatus then simReview()
 		--[[ elseif datin == "3" and lfsstatus then simRemove() ]]
 		elseif datin:lower() == "q" then _RUNNING = false end
