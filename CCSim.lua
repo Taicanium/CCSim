@@ -70,7 +70,6 @@ function simNew()
 
 	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 	CCSCommon:loop()
-	CCSCommon = nil
 end
 
 function printIndi(i, f)
@@ -129,14 +128,18 @@ function gedReview(f)
 		if split[3] and split[3] == "INDI" then
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			local index = tonumber(ifs)
-			indi[index] = {gIndex=index}
-			fi = index
+			if index then
+				indi[index] = {gIndex=index}
+				fi = index
+			end
 		end
 		if split[3] and split[3] == "FAM" then
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
-			fam[index] = {fIndex=index}
-			fi = index
+			if index then
+				fam[index] = {fIndex=index}
+				fi = index
+			end
 		end
 		if split[2] == "SURN" then
 			indi[fi].surn = split[3]
