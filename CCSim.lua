@@ -143,7 +143,7 @@ function gedReview(f)
 				fe = ""
 			end
 		end
-		if split[2] == "NAME" then
+		if split[2] == "NAME" and indi[fi] and not indi[fi].surn and not indi[fi].givn then
 			local name = ""
 			for i=3,#split do name = name.." "..split[i] end
 			for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end
