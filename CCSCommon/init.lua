@@ -937,7 +937,7 @@ return
 			vowels = {"a", "e", "i", "o", "u", "y"},
 			years = 1,
 			yearstorun = 0,
-			
+
 			clearData = function(self, t)
 				if not t then
 					self:clearData(self.alpha)
@@ -1086,7 +1086,7 @@ return
 				if self.doGed then
 					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
 					if not of then return end
-					
+
 					local indiSorted = {}
 					local famSorted = {}
 
@@ -1433,7 +1433,7 @@ return
 						local currentEvents = {}
 						local cCount = 0
 						local eCount = 0
-						
+
 						local names = {}
 						local longestName = -1
 						local longestNameN = -1
@@ -1475,13 +1475,13 @@ return
 								longestName = i
 								longestNameN = names[i]:len()
 							end
-							
+
 							if stats[i]:len() > longestStatN then
 								longestStat = i
 								longestStatN = stats[i]:len()
 							end
 						end
-						
+
 						for i=1,#names do
 							msg = msg..names[i]
 							for j=1,longestNameN-names[i]:len() do msg = msg.." " end
@@ -1489,7 +1489,7 @@ return
 							for j=1,longestStatN-stats[i]:len() do msg = msg.." " end
 							msg = msg..rulers[i]
 						end
-						
+
 						if cCount < self.numCountries then msg = msg..("[+%d more]\n"):format(self.numCountries-cCount) end
 
 						msg = msg.."\nOngoing events:"
@@ -1677,7 +1677,7 @@ return
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
-				
+
 					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
 
 					if nomlower ~= nomin:lower() then check = true end

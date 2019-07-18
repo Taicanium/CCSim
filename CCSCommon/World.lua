@@ -60,7 +60,7 @@ return
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				self.planetR = self.planetR+math.fmod(self.planetR, 2) -- Make the radius an even number for calcuation simplicity's sake.
-				
+
 				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
 
 				local rdone = 0
@@ -562,24 +562,24 @@ return
 				f:flush()
 				f:close()
 				f = nil
-				
+
 --[[			local bmpString = "424ds000000003600000028000000wh0100180000000000r130b0000130b00000000000000000000"
 				local bmpData = {}
-				
+
 				local dx = -self.planetR
 				local dy = -self.planetR
 				local dz = -self.planetR
-				
+
 				for i=1,(self.planetR*2)+1 do
 					bmpData[i] = {0, 0, 0}
 					for j=1,(self.planetR*2)+1 do bmpData[i][j] = {0, 0, 0} end
 				end
-				
+
 				local bx = self.planetR
 				local by = 1
 				local maxW = (self.planetR*2)+1
 				local maxH = (self.planetR*2)+1
-				
+
 				while dx <= self.planetR do
 					while dy <= self.planetR do
 						while dz <= self.planetR do
@@ -601,7 +601,7 @@ return
 					dy = -self.planetR
 					bx = bx+1
 				end
-				
+
 				local hStringLE = ("%08x"):format(maxH)
 				local wStringLE = ("%08x"):format(maxW)
 				local rStringLE = ""
@@ -614,7 +614,7 @@ return
 				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
 				bmpString = bmpString:gsub("w", wStringBE)
 				bmpString = bmpString:gsub("h", hStringBE)
-				
+
 				local bmpDataString = ""
 				local btWritten = 0
 				for y=1,#bmpData do
@@ -628,7 +628,7 @@ return
 					end
 					btWritten = 0
 				end
-				
+
 				bmpString = bmpString..bmpDataString
 				rStringLE = ("%08x"):format(bmpDataString:len()/2)
 				sStringLE = ("%08x"):format(((bmpString:len()-2)/2)+8)
@@ -636,10 +636,10 @@ return
 				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
 				bmpString = bmpString:gsub("s", sStringBE)
 				bmpString = bmpString:gsub("r", rStringBE)
-				
+
 				local byteString = ""
 				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
-				
+
 				f = io.open(label..".bmp", "w+")
 				f:write(byteString)
 				f:flush()
@@ -663,7 +663,7 @@ return
 
 				self.gPop = 0
 				self.initialPop = 1
-				
+
 				if self.initialState then UI:printf("Constructing initial populations...") end
 
 				for i, cp in pairs(self.countries) do if cp then
@@ -673,9 +673,9 @@ return
 					end
 					cp:update(parent)
 				end end
-				
+
 				self.initialState = false
-				
+
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
 

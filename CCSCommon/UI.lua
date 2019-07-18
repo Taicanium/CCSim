@@ -3,16 +3,16 @@ return
 		local UI = {
 			new = function(self)
 				local o = {}
-				
+
 				o.clrcmd = nil
 				o.ready = false
 				o.stdscr = nil
 				o.x = -1
 				o.y = -1
-				
+
 				return o
 			end,
-			
+
 			clear = function(self, holdRef)
 				if not self.ready then self:init() end
 				if cursesstatus then
@@ -21,7 +21,7 @@ return
 					if not holdRef then self:refresh() end
 				else for i=1,3 do os.execute(self.clrcmd) end end
 			end,
-			
+
 			init = function(self)
 				if cursesstatus and not self.stdscr then
 					curses.cbreak(true)
@@ -30,7 +30,7 @@ return
 					self.stdscr = curses.initscr()
 					self:refresh()
 				end
-				
+
 				if not self.clrcmd or self.clrcmd == "" then
 					self.clrcmd = "clear"
 					local clrarr = os.execute("clear")
@@ -39,7 +39,7 @@ return
 					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "cls"
 					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
 				end
-				
+
 				self.ready = true
 			end,
 
@@ -50,7 +50,7 @@ return
 					self.stdscr:addstr(string.format(fmt, ...))
 				else io.write(string.format(fmt, ...)) end
 			end,
-			
+
 			printf = function(self, fmt, ...)
 				if not self.ready then self:init() end
 				if self.stdscr then
@@ -111,7 +111,7 @@ return
 				if self.stdscr then x = self.stdscr:getstr() else x = io.read() end
 				return tonumber(x)
 			end,
-			
+
 			refresh = function(self)
 				if not self.ready then self:init() end
 				if cursesstatus then
@@ -121,9 +121,9 @@ return
 				end
 			end
 		}
-		
+
 		UI.__index = UI
 		UI.__call = function() return UI:new() end
-		
+
 		return UI
 	end

@@ -56,7 +56,7 @@ function simNew()
 				CCSCommon.thisWorld:add(nl)
 				CCSCommon:getAlphabeticalCountries()
 			end
-			
+
 			done = true
 		else
 			done = true
@@ -108,19 +108,19 @@ function printIndi(i, f)
 		end
 		sOut = sOut..")"
 	end
-	
+
 	UI:printc(sOut.."\n")
 end
 
 function gedReview(f)
 	local indi = {}
 	local fam = {}
-	
+
 	local fi = 1
 	local fe = ""
-	
+
 	UI:printf("\nLoading GEDCOM data...")
-	
+
 	local l = f:read("*l")
 	while l do
 		local split = {}
@@ -187,82 +187,56 @@ function gedReview(f)
 			local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			table.insert(fam[fi].chil, tonumber(ifs))
 		end
-		
+
 		l = f:read("*l")
 	end
-	
+
 	local _REVIEWING = true
 	fi = 1
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
-		local grandparents = false
-		local parents = false
-		if i.famc then
-			local iFam = fam[i.famc]
-			if iFam then
-				parents = true
-				local p1 = indi[iFam.husb]
-				local p2 = indi[iFam.wife]
-				if p1 and p1.famc then
-					local p1fam = fam[p1.famc]
-					if p1fam then grandparents = true end
-				end
-				if p2 and p2.famc then
-					local p2fam = fam[p2.famc]
-					if p2fam then grandparents = true end
-				end
-			end
-		end
-		
-		if parents then
+		if i.famc and fam[i.famc] then
 			local husb = indi[fam[i.famc].husb]
 			local wife = indi[fam[i.famc].wife]
-			if grandparents then
-				local p1fam = fam[husb.famc]
-				if p1fam then
-					printIndi(indi[p1fam.husb])
-					printIndi(indi[p1fam.wife])
-				end
-				UI:printc("    ")
+			local p1fam = fam[husb.famc]
+			if p1fam then
+				UI:printc("\t\t")
+				printIndi(indi[p1fam.husb])
+				UI:printc("\t\t")
+				printIndi(indi[p1fam.wife])
 			end
+			UI:printc("\t")
 			printIndi(husb)
-			if grandparents then
-				local p2fam = fam[wife.famc]
-				if p2fam then
-					printIndi(indi[p2fam.husb])
-					printIndi(indi[p2fam.wife])
-				end
-				UI:printc("    ")
+			local p2fam = fam[wife.famc]
+			if p2fam then
+				UI:printc("\t\t")
+				printIndi(indi[p2fam.husb])
+				UI:printc("\t\t")
+				printIndi(indi[p2fam.wife])
 			end
+			UI:printc("\t")
 			printIndi(wife)
 		end
-		
-		UI:printc(" - ")
-		if parents then UI:printc(" ") end
-		if grandparents then UI:printc("    ") end
+
 		printIndi(i, true)
-		
+
 		if i.fams then for j=1,#i.fams do
 			local fams = fam[i.fams[j]]
 			if fams then
 				local spouse = nil
 				if i.gender:sub(1, 1) == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
 				if spouse then
-					if parents then UI:printc("    ") end
-					if grandparents then UI:printc("    ") end
 					UI:printc("+ ")
 					printIndi(spouse)
 					for k=1,#fams.chil do if indi[fams.chil[k]] then
-						if parents then UI:printc("    ") end
-						if grandparents then UI:printc("    ") end
 						UI:printc("    ")
 						printIndi(indi[fams.chil[k]])
 					end end
 				end
 			end
 		end end
-		
+
 		UI:printp("\n\nEnter an individual number or a name to search by, or:\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\nB to return to the previous menu.\n > ")
 		local datin = UI:readl()
 		if datin:lower() == "b" then _REVIEWING = false
@@ -314,13 +288,13 @@ function simReview()
 				end
 			end
 		end end
-		
+
 		if sCount == 0 then UI:printf("None") end
-		
+
 		UI:printf("\nEnter the number of a simulation, or B to return to the main menu.\n")
 		UI:printp(" > ")
 		local datin = UI:readl()
-		
+
 		if datin:lower() == "b" then _REVIEWING = false return end
 		if tonumber(datin) and sims[tonumber(datin)] then
 			local dirStamp = sims[tonumber(datin)]
@@ -331,7 +305,7 @@ function simReview()
 				elseif x:match("royals.ged") then gedFile = true end
 			end
 			UI:clear()
-			
+
 			local _SELECTED = true
 			while _SELECTED do
 				UI:clear()
@@ -340,7 +314,7 @@ function simReview()
 				local thisOp = 1
 				-- if eventFile then ops[thisOp] = "events.txt" UI:printf("%d\t-\t%s", thisOp, "Events and history") thisOp = thisOp+1 end
 				if gedFile then ops[thisOp] = "royals.ged" UI:printf("%d\t-\t%s", thisOp, "Royal families and relations") thisOp = thisOp+1 end
-				
+
 				UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
 				UI:printp(" > ")
 				datin = UI:readl()
@@ -349,7 +323,7 @@ function simReview()
 					local f = io.open(CCSCommon:directory({dirStamp, op}))
 					if f then
 						if op == "royals.ged" then gedReview(f) end
-					
+
 						f:close()
 						f = nil
 					end
@@ -360,7 +334,7 @@ function simReview()
 end
 
 --[[ function simRemove()
-	
+
 	
 	UI:printp("")
 end ]]
@@ -377,14 +351,14 @@ function main()
 			UI:printf("Q\t-\tExit the program.")
 		end
 		UI:printp(" > ")
-		
+
 		local datin = UI:readl()
 		if datin == "1" then simNew() _RUNNING = false
 		elseif datin == "2" and lfsstatus then simReview()
 		--[[ elseif datin == "3" and lfsstatus then simRemove() ]]
 		elseif datin:lower() == "q" then _RUNNING = false end
 	end
-	
+
 	CCSCommon = nil
 	if cursesstatus then curses.endwin() end
 end

@@ -754,7 +754,7 @@ return
 				end
 
 				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
-				
+
 				self.averageAge = self.averageAge/#self.people
 				self:checkRuler(parent, false)
 
