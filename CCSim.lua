@@ -131,6 +131,7 @@ function gedReview(f)
 			if index then
 				indi[index] = {gIndex=index}
 				fi = index
+				fe = ""
 			end
 		end
 		if split[3] and split[3] == "FAM" then
@@ -139,53 +140,69 @@ function gedReview(f)
 			if index then
 				fam[index] = {fIndex=index}
 				fi = index
+				fe = ""
 			end
 		end
 		if split[2] == "SURN" then
 			indi[fi].surn = split[3]
-			for i=4,#split do indi[fi].surn = indi[fi].surn..split[i] end
+			for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
+			fe = ""
 		end
 		if split[2] == "GIVN" then
 			indi[fi].givn = split[3]
-			for i=4,#split do indi[fi].givn = indi[fi].givn..split[i] end
+			for i=4,#split do indi[fi].givn = indi[fi].givn.." "..split[i] end
+			fe = ""
 		end
 		if split[2] == "NPFX" then
 			indi[fi].title = split[3]
-			for i=4,#split do indi[fi].title = indi[fi].title..split[i] end
+			for i=4,#split do indi[fi].title = indi[fi].title.." "..split[i] end
+			fe = ""
 		end
 		if split[2] == "NSFX" then
 			indi[fi].number = split[3]
-			for i=4,#split do indi[fi].number = indi[fi].number..split[i] end
+			for i=4,#split do indi[fi].number = indi[fi].number.." "..split[i] end
+			fe = ""
 		end
-		if split[2] == "SEX" then indi[fi].gender = split[3] end
+		if split[2] == "SEX" then indi[fi].gender = split[3] fe = "" end
 		if split[2] == "BIRT" then fe = split[2]:lower() indi[fi][fe] = {} end
 		if split[2] == "DEAT" then fe = split[2]:lower() indi[fi][fe] = {} end
+		if split[2] == "BURI" then fe = split[2]:lower() indi[fi][fe] = {} end
+		if split[2] == "MARR" then fe = split[2]:lower() fam[fi][fe] = {} end
 		if split[2] == "DATE" then
 			indi[fi][fe].dat = split[3]
-			if split[4] and split[4] == "BC" or split[4] == "B.C." or split[4] == "B.C.E." or split[4] == "B." then indi[fi][fe].dat = -(indi[fi][fe].dat) end
+			for i=4,#split do indi[fi][fe].dat = indi[fi][fe].dat.." "..split[i] end
+			if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." then indi[fi][fe].dat = -(tonumber(split[#split-1])) elseif not tonumber(split[#split]) then indi[fi][fe].dat = tonumber(split[#split-1]) else indi[fi][fe].dat = tonumber(split[#split]) end
 		end
-		if split[2] == "PLAC" then indi[fi][fe].plac = split[3] end
+		if split[2] == "PLAC" then
+			indi[fi][fe].plac = split[3]
+			for i=4,#split do indi[fi][fe].plac = indi[fi][fe].plac.." "..split[i] end
+		end
 		if split[2] == "FAMS" then
 			if not indi[fi].fams then indi[fi].fams = {} end
 			local ifs = split[3]:gsub("@", ""):gsub("F", "")
 			table.insert(indi[fi].fams, tonumber(ifs))
+			fe = ""
 		end
 		if split[2] == "FAMC" then
 			local ifs = split[3]:gsub("@", ""):gsub("F", "")
 			indi[fi].famc = tonumber(ifs)
+			fe = ""
 		end
 		if split[2] == "HUSB" then
 			local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			fam[fi].husb = tonumber(ifs)
+			fe = ""
 		end
 		if split[2] == "WIFE" then
 			local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			fam[fi].wife = tonumber(ifs)
+			fe = ""
 		end
 		if split[2] == "CHIL" then
 			if not fam[fi].chil then fam[fi].chil = {} end
 			local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			table.insert(fam[fi].chil, tonumber(ifs))
+			fe = ""
 		end
 
 		l = f:read("*l")
