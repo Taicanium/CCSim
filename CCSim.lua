@@ -168,14 +168,18 @@ function gedReview(f)
 		if split[2] == "DEAT" then fe = split[2]:lower() indi[fi][fe] = {} end
 		if split[2] == "BURI" then fe = split[2]:lower() indi[fi][fe] = {} end
 		if split[2] == "MARR" then fe = split[2]:lower() fam[fi][fe] = {} end
-		if split[2] == "DATE" then
-			indi[fi][fe].dat = split[3]
-			for i=4,#split do indi[fi][fe].dat = indi[fi][fe].dat.." "..split[i] end
-			if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." then indi[fi][fe].dat = -(tonumber(split[#split-1])) elseif not tonumber(split[#split]) then indi[fi][fe].dat = tonumber(split[#split-1]) else indi[fi][fe].dat = tonumber(split[#split]) end
+		if split[2] == "DATE" and fe ~= "" then
+			local target = indi
+			if fe == "marr" then target = fam end
+			target[fi][fe].dat = split[3]
+			for i=4,#split do target[fi][fe].dat = target[fi][fe].dat.." "..split[i] end
+			if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." then target[fi][fe].dat = -(tonumber(split[#split-1])) elseif not tonumber(split[#split]) then target[fi][fe].dat = tonumber(split[#split-1]) else target[fi][fe].dat = tonumber(split[#split]) end
 		end
-		if split[2] == "PLAC" then
-			indi[fi][fe].plac = split[3]
-			for i=4,#split do indi[fi][fe].plac = indi[fi][fe].plac.." "..split[i] end
+		if split[2] == "PLAC" and fe ~= "" then
+			local target = indi
+			if fe == "marr" then target = fam end
+			target[fi][fe].plac = split[3]
+			for i=4,#split do target[fi][fe].plac = target[fi][fe].plac.." "..split[i] end
 		end
 		if split[2] == "FAMS" then
 			if not indi[fi].fams then indi[fi].fams = {} end
