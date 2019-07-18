@@ -59,7 +59,8 @@ return
 					rMax = 75
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
-
+				self.planetR = self.planetR+math.fmod(self.planetR, 2) -- Make the radius an even number for calcuation simplicity's sake.
+				
 				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
 
 				local rdone = 0
@@ -561,6 +562,89 @@ return
 				f:flush()
 				f:close()
 				f = nil
+				
+--[[			local bmpString = "424ds000000003600000028000000wh0100180000000000r130b0000130b00000000000000000000"
+				local bmpData = {}
+				
+				local dx = -self.planetR
+				local dy = -self.planetR
+				local dz = -self.planetR
+				
+				for i=1,(self.planetR*2)+1 do
+					bmpData[i] = {0, 0, 0}
+					for j=1,(self.planetR*2)+1 do bmpData[i][j] = {0, 0, 0} end
+				end
+				
+				local bx = self.planetR
+				local by = 1
+				local maxW = (self.planetR*2)+1
+				local maxH = (self.planetR*2)+1
+				
+				while dx <= self.planetR do
+					while dy <= self.planetR do
+						while dz <= self.planetR do
+							if not bmpData[by][bx] then bmpData[by][bx] = {0, 0, 0} end
+							if by > maxH then maxH = by end
+							if bx > maxW then maxW = bx end
+							if self.planet[dx] and self.planet[dx][dy] and self.planet[dx][dy][dz] and bmpData[by][bx][1] == 0 and bmpData[by][bx][2] == 0 and bmpData[by][bx][3] == 0 then
+								if self.planet[dx][dy][dz].land and self.planet[dx][dy][dz].country ~= "" then bmpData[by][bx] = self.cTriplets[self.planet[dx][dy][dz].country]
+								else bmpData[by][bx] = {22, 22, 170} end
+							end
+							dz = dz+1
+							by = by+1
+						end
+						dy = dy+1
+						dz = -self.planetR
+						by = 1
+					end
+					dx = dx+1
+					dy = -self.planetR
+					bx = bx+1
+				end
+				
+				local hStringLE = ("%08x"):format(maxH)
+				local wStringLE = ("%08x"):format(maxW)
+				local rStringLE = ""
+				local sStringLE = ""
+				local hStringBE = ""
+				local wStringBE = ""
+				local rStringBE = ""
+				local sStringBE = ""
+				for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
+				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
+				bmpString = bmpString:gsub("w", wStringBE)
+				bmpString = bmpString:gsub("h", hStringBE)
+				
+				local bmpDataString = ""
+				local btWritten = 0
+				for y=1,#bmpData do
+					for x=1,#bmpData[y] do
+						bmpDataString = bmpDataString..("%02x%02x%02x"):format(bmpData[y][x][3], bmpData[y][x][2], bmpData[y][x][1])
+						btWritten = btWritten+3
+					end
+					while math.fmod(btWritten, 4) ~= 0 do
+						bmpDataString = bmpDataString.."00"
+						btWritten = btWritten+1
+					end
+					btWritten = 0
+				end
+				
+				bmpString = bmpString..bmpDataString
+				rStringLE = ("%08x"):format(bmpDataString:len()/2)
+				sStringLE = ("%08x"):format(((bmpString:len()-2)/2)+8)
+				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
+				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
+				bmpString = bmpString:gsub("s", sStringBE)
+				bmpString = bmpString:gsub("r", rStringBE)
+				
+				local byteString = ""
+				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
+				
+				f = io.open(label..".bmp", "w+")
+				f:write(byteString)
+				f:flush()
+				f:close()
+				f = nil ]]
 			end,
 
 			update = function(self, parent)
