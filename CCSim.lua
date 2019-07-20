@@ -111,8 +111,8 @@ function printIndi(i, f)
 
 	local indent = ""
 	if f == 1 then indent = "+ "
-	elseif f == 2 then indent = "    "
-	elseif f == 3 then indent = "        "
+	elseif f == 2 then indent = "\t"
+	elseif f == 3 then indent = "\t\t"
 	elseif f == -1 then indent = "    " end
 	UI:printc(indent..sOut.."\n")
 end
