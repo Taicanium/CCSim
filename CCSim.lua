@@ -296,9 +296,9 @@ function gedReview(f)
 				for j, k in pairs(indi) do if not found then
 					fullName = k.givn
 					if k.title then fullName = k.title.." "..fullName end
-					if k.number then fullName = fullName.." "..k.number.." "..k.givn end
-					fullName = fullName.." "..k.surn.." "
 					if k.number then fullName = fullName.." "..k.number end
+					fullName = fullName.." "..k.surn
+					if k.number then fullName = fullName.." "..k.givn.." "..k.surn.." "..k.number end
 					fullName = fullName:lower() -- We duplicate the name and number in different places to account for searches such as, e.g., "Person I", "Person Surname I", "Person I Surname".
 					if fullName:match(datin:lower()) then
 						fi = j
