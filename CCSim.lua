@@ -76,7 +76,7 @@ function printIndi(i, f)
 	if not i then return end
 	local sOut = tostring(i.gIndex)..". ("..i.gender..") "
 	if i.title then
-		if not f then for x in i.title:gmatch("%S+") do sOut = sOut..x:sub(1, 1).."." end
+		if f ~= 0 then for x in i.title:gmatch("%S+") do sOut = sOut..x:sub(1, 1).."." end
 		else sOut = sOut..i.title end
 		sOut = sOut.." "
 	end
@@ -89,7 +89,7 @@ function printIndi(i, f)
 		if i.birt.dat then sOut = sOut..i.birt.dat end
 		if i.birt.dat and i.birt.plac then sOut = sOut..", " end
 		if i.birt.plac then
-			if not f then
+			if f ~= 0 then
 				sOut = sOut..i.birt.plac:sub(1, 3)
 				if i.birt.plac:len() > 3 then sOut = sOut.."." end
 			else sOut = sOut..i.birt.plac end
@@ -101,7 +101,7 @@ function printIndi(i, f)
 		if i.deat.dat then sOut = sOut..i.deat.dat end
 		if i.deat.dat and i.deat.plac then sOut = sOut..", " end
 		if i.deat.plac then
-			if not f then
+			if f ~= 0 then
 				sOut = sOut..i.deat.plac:sub(1, 3)
 				if i.deat.plac:len() > 3 then sOut = sOut.."." end
 			else sOut = sOut..i.deat.plac end
@@ -109,7 +109,12 @@ function printIndi(i, f)
 		sOut = sOut..")"
 	end
 
-	UI:printc(sOut.."\n")
+	local indent = ""
+	if f == 1 then indent = "+ "
+	elseif f == 2 then indent = "\t"
+	elseif f == 3 then indent = "\t\t"
+	elseif f == -1 then indent = "    " end
+	UI:printc(indent..sOut.."\n")
 end
 
 function gedReview(f)
@@ -121,11 +126,28 @@ function gedReview(f)
 
 	UI:printf("\nLoading GEDCOM data...")
 
+	local ic = 0
+	local fc = 0
+
 	local l = f:read("*l")
 	while l do
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
-		if split[3] and split[3] == "INDI" then
+		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then ic = ic+1
+		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 end
+		if math.fmod(ic+fc, 10000) == 0 and ic > 1 then UI:printl("%d People, %d Families", ic, fc) end
+		l = f:read("*l")
+	end
+
+	f:seek("set")
+	UI:printf("\n")
+
+	l = f:read("*l")
+	while l do
+		local split = {}
+		for x in l:gmatch("%S+") do table.insert(split, x) end
+		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
+			if math.fmod(fi, 10000) == 0 and fi > 0 and indi[fi] then UI:printl("%d/%d People", fi, ic) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			local index = tonumber(ifs)
 			if index then
@@ -134,7 +156,8 @@ function gedReview(f)
 				fe = ""
 			end
 		end
-		if split[3] and split[3] == "FAM" then
+		if split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then
+			if math.fmod(fi, 10000) == 0 and fi > 0 and fam[fi] then UI:printl("%d/%d Families", fi, fc) end
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
 			if index then
@@ -233,25 +256,19 @@ function gedReview(f)
 			local wife = indi[fam[i.famc].wife]
 			local p1fam = fam[husb.famc]
 			if p1fam then
-				UI:printc("\t\t")
-				printIndi(indi[p1fam.husb])
-				UI:printc("\t\t")
-				printIndi(indi[p1fam.wife])
+				printIndi(indi[p1fam.husb], 3)
+				printIndi(indi[p1fam.wife], 3)
 			end
-			UI:printc("\t")
-			printIndi(husb)
+			printIndi(husb, 2)
 			local p2fam = fam[wife.famc]
 			if p2fam then
-				UI:printc("\t\t")
-				printIndi(indi[p2fam.husb])
-				UI:printc("\t\t")
-				printIndi(indi[p2fam.wife])
+				printIndi(indi[p2fam.husb], 3)
+				printIndi(indi[p2fam.wife], 3)
 			end
-			UI:printc("\t")
-			printIndi(wife)
+			printIndi(wife, 2)
 		end
 
-		printIndi(i, true)
+		printIndi(i, 0)
 
 		if i.fams then for j=1,#i.fams do
 			local fams = fam[i.fams[j]]
@@ -259,11 +276,9 @@ function gedReview(f)
 				local spouse = nil
 				if i.gender:sub(1, 1) == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
 				if spouse then
-					UI:printc("+ ")
-					printIndi(spouse)
+					printIndi(spouse, 1)
 					for k=1,#fams.chil do if indi[fams.chil[k]] then
-						UI:printc("    ")
-						printIndi(indi[fams.chil[k]])
+						printIndi(indi[fams.chil[k]], -1)
 					end end
 				end
 			end
