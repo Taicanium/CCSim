@@ -405,13 +405,13 @@ return
 			setPop = function(self, parent, u)
 				if u < 100 then return end
 
-				while self.population > u do
+				while #self.people > u do
 					local r = math.random(1, #self.people)
 					if #self.people > 1 then while self.people[r].isruler do r = math.random(1, #self.people) end end
 					self:delete(parent, r)
 				end
 
-				for i=1,u-self.population do
+				for i=1,u-#self.people do
 					local n = Person:new()
 					n:makename(parent, self)
 					n.age = math.random(16, 80)
