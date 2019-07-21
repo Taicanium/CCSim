@@ -286,9 +286,10 @@ function gedReview(f)
 
 		UI:printp("\n\nEnter an individual number or a name to search by, or:\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\nB to return to the previous menu.\n > ")
 		local datin = UI:readl()
+		local oldFI = fi
 		if datin:lower() == "b" then _REVIEWING = false
-		elseif datin:lower() == "f" then if i.famc then fi = fam[i.famc].husb or 1 end
-		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or 1 end else
+		elseif datin:lower() == "f" then if i.famc then fi = fam[i.famc].husb or oldFI end
+		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end else
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
 				local found = false
@@ -305,7 +306,7 @@ function gedReview(f)
 						found = true
 					end
 				end end
-				if not found then fi = 1 end
+				if not found then fi = oldFI end
 			end
 		end
 	end
