@@ -168,8 +168,8 @@ return
 			eventloop = function(self, parent)
 				local f0 = _time()
 
-				local v = math.floor(math.random(125, 175)*self.stability)
-				local vi = math.floor(math.random(125, 175)*(100-self.stability))
+				local v = math.floor(math.random(90, 180)*self.stability)
+				local vi = math.floor(math.random(90, 180)*(100-self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
@@ -655,7 +655,7 @@ return
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
 
-				self.stability = self.stability+math.random(-3, 3)
+				self.stability = self.stability+math.random(-3, 4)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
