@@ -126,20 +126,20 @@ function gedReview(f)
 	local ic = 0
 	local fc = 0
 
-	UI:printf("\nLoading GEDCOM data...")
+	UI:printf("\nCounting GEDCOM objects...")
 
 	local l = f:read("*l")
 	while l do
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
-		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then ic = ic+1
-		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 end
-		if math.fmod(ic+fc, 10000) == 0 and ic > 1 then UI:printl("%d People, %d Families", ic, fc) end
+		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then ic = ic+1 fi = ic
+		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 fi = fc end
+		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl("%d People, %d Families", ic, fc) end
 		l = f:read("*l")
 	end
 
 	f:seek("set")
-	UI:printf("\n")
+	UI:printf("\nLoading GEDCOM data...")
 
 	l = f:read("*l")
 	while l do
