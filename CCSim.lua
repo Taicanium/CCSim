@@ -255,7 +255,7 @@ function gedReview(f)
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
-		if i.givn then i.givn = i.givn:gsub(i.title.." ", ""):gsub(i.title, "") end
+		if i.givn and i.title then i.givn = i.givn:gsub(i.title.." ", ""):gsub(i.title, "") end
 		if i.famc and fam[i.famc] then
 			local husb = indi[fam[i.famc].husb]
 			local wife = indi[fam[i.famc].wife]
