@@ -259,18 +259,22 @@ function gedReview(f)
 		if i.famc and fam[i.famc] then
 			local husb = indi[fam[i.famc].husb]
 			local wife = indi[fam[i.famc].wife]
-			local p1fam = fam[husb.famc]
-			if p1fam then
-				printIndi(indi[p1fam.husb], 3)
-				printIndi(indi[p1fam.wife], 3)
+			if husb then
+				local p1fam = fam[husb.famc]
+				if p1fam then
+					printIndi(indi[p1fam.husb], 3)
+					printIndi(indi[p1fam.wife], 3)
+				end
+				printIndi(husb, 2)
 			end
-			printIndi(husb, 2)
-			local p2fam = fam[wife.famc]
-			if p2fam then
-				printIndi(indi[p2fam.husb], 3)
-				printIndi(indi[p2fam.wife], 3)
+			if wife then
+				local p2fam = fam[wife.famc]
+				if p2fam then
+					printIndi(indi[p2fam.husb], 3)
+					printIndi(indi[p2fam.wife], 3)
+				end
+				printIndi(wife, 2)
 			end
-			printIndi(wife, 2)
 		end
 
 		printIndi(i, 0)
