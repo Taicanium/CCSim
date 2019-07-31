@@ -319,8 +319,9 @@ function gedReview(f)
 					local allMatch = true
 					local fullName = ""
 					if k.title then fullName = k.title.." " end
-					fullName = fullName..k.givn.." "..k.surn
-					if k.number then fullName = fullName.." "..k.number end
+					if k.givn then fullName = fullName..k.givn.." " end
+					if k.surn then fullName = fullName..k.surn.." " end
+					if k.number then fullName = fullName..k.number end
 					fullName = fullName:lower()
 					for x in string.gmatch(datin:lower(), "%S+") do if not fullName:match(x) then allMatch = false end end
 					if allMatch then table.insert(matches, j) end
