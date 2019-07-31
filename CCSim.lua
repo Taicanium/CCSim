@@ -175,6 +175,8 @@ function gedReview(f)
 			name = name:gsub("/%C+/", "")
 			name = name:gsub("//", "")
 			for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
+			if not indi[fi].givn then indi[fi].givn = "" end
+			if not indi[fi].surn then indi[fi].surn = "" end
 			fe = ""
 		end
 		if split[2] == "SURN" then
@@ -253,6 +255,7 @@ function gedReview(f)
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
+		if i.givn then i.givn = i.givn:gsub(i.title.." ", ""):gsub(i.title, "") end
 		if i.famc and fam[i.famc] then
 			local husb = indi[fam[i.famc].husb]
 			local wife = indi[fam[i.famc].wife]
@@ -293,7 +296,7 @@ function gedReview(f)
 		elseif datin:lower() == "f" then if i.famc then fi = fam[i.famc].husb or oldFI end
 		elseif datin:lower() == "n" then mi = mi+1 if mi > #matches then mi = #matches end if mi == 0 then mi = 1 end fi = matches[mi]
 		elseif datin:lower() == "p" then mi = mi-1 if mi < 1 then mi = 1 end fi = matches[mi]
-		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end else
+		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end elseif datin ~= "" then
 			matches = {}
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
