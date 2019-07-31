@@ -305,7 +305,7 @@ function gedReview(f)
 					fullName = fullName..k.givn.." "..k.surn
 					if k.number then fullName = fullName.." "..k.number end
 					for x in string.gmatch(datin:lower(), "%S+") do if not fullName:match(x) then allMatch = false end end
-					if allMatch then table.insert(matches, fi)
+					if allMatch then table.insert(matches, fi) end
 				end
 			end
 		end
