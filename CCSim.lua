@@ -125,6 +125,9 @@ function gedReview(f)
 	local fe = ""
 	local ic = 0
 	local fc = 0
+	local mi = 1
+	local matches = {}
+	local _REVIEWING = true
 
 	UI:printf("\nCounting GEDCOM objects...")
 
@@ -145,7 +148,7 @@ function gedReview(f)
 	l = f:read("*l")
 	while l do
 		local split = {}
-		for x in l:gmatch("%S+") do table.insert(split, x) end
+		for x in l:gmatch("%w+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
 			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", fi, ic) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
@@ -258,10 +261,7 @@ function gedReview(f)
 		l = f:read("*l")
 	end
 
-	local _REVIEWING = true
 	fi = 1
-	local matches = {}
-	local mi = 1
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
@@ -299,7 +299,9 @@ function gedReview(f)
 			end
 		end end
 
-		UI:printp("\n\nEnter an individual number or a name to search by, or:\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\nN to move to the next match.\nP to move to the previous match.\nB to return to the previous menu.\n > ")
+		UI:printc("\n\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
+		if #matches > 0 then UI:printc("N to move to the next match.\nP to move to the previous match.") end
+		UI:printp("\n\n > ")
 		local datin = UI:readl()
 		local oldFI = fi
 		if datin:lower() == "b" then matches = {} _REVIEWING = false
@@ -319,7 +321,7 @@ function gedReview(f)
 					if k.surn then fullName = fullName..k.surn.." " end
 					if k.number then fullName = fullName..k.number end
 					fullName = fullName:lower()
-					for x in string.gmatch(datin:lower(), "%S+") do if not fullName:match(x) then allMatch = false end end
+					for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
 					if allMatch then table.insert(matches, j) end
 					scanned = scanned + 1
 					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl("Scanned %d/%d people...", scanned, ic) end
