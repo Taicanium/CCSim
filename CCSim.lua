@@ -294,6 +294,7 @@ function gedReview(f)
 		elseif datin:lower() == "p" then mi = mi-1 if mi < 1 then mi = 1 end fi = matches[mi]
 		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end else
 			matches = {}
+			mi = 1
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
 				local found = false
