@@ -147,7 +147,7 @@ function gedReview(f)
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
-			if math.fmod(fi, 10000) == 0 and fi > 0 and indi[fi] then UI:printl("%d/%d People", fi, ic) end
+			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", fi, ic) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			local index = tonumber(ifs)
 			if index then
@@ -157,7 +157,7 @@ function gedReview(f)
 			end
 		end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then
-			if math.fmod(fi, 10000) == 0 and fi > 0 and fam[fi] then UI:printl("%d/%d Families", fi, fc) end
+			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d Families", fi, fc) end
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
 			if index then
@@ -295,22 +295,24 @@ function gedReview(f)
 		elseif datin:lower() == "p" then mi = mi-1 if mi < 1 then mi = 1 end fi = matches[mi]
 		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end else
 			matches = {}
-			mi = 1
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
-				local found = false
+				local scanned = 0
 				for j, k in pairs(indi) do
 					local allMatch = true
 					local fullName = ""
 					if k.title then fullName = k.title.." " end
 					fullName = fullName..k.givn.." "..k.surn
 					if k.number then fullName = fullName.." "..k.number end
+					fullName = fullName:lower()
 					for x in string.gmatch(datin:lower(), "%S+") do if not fullName:match(x) then allMatch = false end end
-					if allMatch then table.insert(matches, fi) end
+					if allMatch then table.insert(matches, j) end
+					scanned = scanned + 1
+					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl("Scanned %d/%d people...", scanned, ic) end
 				end
+				if #matches > 0 then fi = matches[1] mi = 1 end
 			end
 		end
-		if not indi[fi] then fi = matches[mi] or fi end
 		if not indi[fi] then fi = oldFI end
 		if not indi[fi] then fi = 1 end
 	end
