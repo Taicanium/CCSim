@@ -123,11 +123,10 @@ function gedReview(f)
 
 	local fi = 1
 	local fe = ""
-
-	UI:printf("\nLoading GEDCOM data...")
-
 	local ic = 0
 	local fc = 0
+
+	UI:printf("\nLoading GEDCOM data...")
 
 	local l = f:read("*l")
 	while l do
@@ -248,6 +247,8 @@ function gedReview(f)
 
 	local _REVIEWING = true
 	fi = 1
+	local matches = {}
+	local mi = 1
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
@@ -284,31 +285,32 @@ function gedReview(f)
 			end
 		end end
 
-		UI:printp("\n\nEnter an individual number or a name to search by, or:\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\nB to return to the previous menu.\n > ")
+		UI:printp("\n\nEnter an individual number or a name to search by, or:\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\nN to move to the next match.\nP to move to the previous match.\nB to return to the previous menu.\n > ")
 		local datin = UI:readl()
 		local oldFI = fi
-		if datin:lower() == "b" then _REVIEWING = false
+		if datin:lower() == "b" then matches = {} _REVIEWING = false
 		elseif datin:lower() == "f" then if i.famc then fi = fam[i.famc].husb or oldFI end
+		elseif datin:lower() == "n" then mi = mi+1 if mi > #matches then mi = #matches end if mi == 0 then mi = 1 end fi = matches[mi]
+		elseif datin:lower() == "p" then mi = mi-1 if mi < 1 then mi = 1 end fi = matches[mi]
 		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end else
+			matches = {}
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
 				local found = false
-				local fullName = ""
-				for j, k in pairs(indi) do if not found then
-					fullName = k.givn
-					if k.title then fullName = k.title.." "..fullName end
+				for j, k in pairs(indi) do
+					local allMatch = true
+					local fullName = ""
+					if k.title then fullName = k.title.." " end
+					fullName = fullName..k.givn.." "..k.surn
 					if k.number then fullName = fullName.." "..k.number end
-					fullName = fullName.." "..k.surn
-					if k.number then fullName = fullName.." "..k.givn.." "..k.surn.." "..k.number end
-					fullName = fullName:lower() -- We duplicate the name and number in different places to account for searches such as, e.g., "Person I", "Person Surname I", "Person I Surname".
-					if fullName:match(datin:lower()) then
-						fi = j
-						found = true
-					end
-				end end
-				if not found then fi = oldFI end
+					for x in string.gmatch(datin:lower(), "%S+") do if not fullName:match(x) then allMatch = false end end
+					if allMatch then table.insert(matches, fi)
+				end
 			end
 		end
+		if not indi[fi] then fi = matches[mi] or fi end
+		if not indi[fi] then fi = oldFI end
+		if not indi[fi] then fi = 1 end
 	end
 end
 

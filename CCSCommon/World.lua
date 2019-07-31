@@ -59,7 +59,9 @@ return
 					rMax = 75
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
-				self.planetR = self.planetR+math.fmod(self.planetR, 2) -- Make the radius an even number for calcuation simplicity's sake.
+				local planetC = 2*self.planetR*math.pi
+				local APU = 360/planetC
+				local SPU = 1/self.planetR
 
 				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
 
@@ -83,6 +85,7 @@ return
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = false
 								self.planet[x][y][z].waterNeighbors = true
+								self.planet[x][y][z].cardinals = {}
 								self.planet[x][y][z].neighbors = {}
 
 								table.insert(self.planetdefined, {x, y, z})
@@ -98,7 +101,7 @@ return
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
 
-					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
+					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
 				end
 
 				UI:printf("Defining land masses...")
@@ -295,6 +298,9 @@ return
 
 			rOutput = function(self, parent, label)
 				UI:printf("Writing R data...")
+				
+				local planetC = 2*self.planetR*math.pi
+				local APU = 360/planetC
 
 				local f = io.open(label..".r", "w+")
 				if not f then return end
