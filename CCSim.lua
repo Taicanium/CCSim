@@ -294,12 +294,8 @@ function gedReview(f)
 			if fams then
 				local spouse = nil
 				if i.gender:sub(1, 1) == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
-				if spouse then
-					printIndi(spouse, 1)
-					for k=1,#fams.chil do if indi[fams.chil[k]] then
-						printIndi(indi[fams.chil[k]], -1)
-					end end
-				end
+				if spouse then printIndi(spouse, 1) end
+				if fams.chil then for k=1,#fams.chil do if indi[fams.chil[k]] then printIndi(indi[fams.chil[k]], -1) end end end
 			end
 		end end
 
