@@ -341,7 +341,7 @@ function simReview()
 		UI:clear()
 		local sCount = 0
 		local sims = {}
-		UI:printf("\nAvailable simulations:\n\n")
+		UI:printf("\nAvailable simulations:\n")
 
 		for x in lfs.dir(".") do if lfs.attributes(x, "mode") == "directory" then
 			local xn = tonumber(x)
@@ -420,7 +420,7 @@ function main()
 			-- UI:printf("3\t-\tRemove previous simulations.\n")
 			UI:printf("Q\t-\tExit the program.")
 		end
-		UI:printp(" > ")
+		UI:printp("\n > ")
 
 		local datin = UI:readl()
 		if datin == "1" then simNew() _RUNNING = false
