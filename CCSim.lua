@@ -177,26 +177,34 @@ function gedReview(f)
 			for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
 			if not indi[fi].givn then indi[fi].givn = "" end
 			if not indi[fi].surn then indi[fi].surn = "" end
+			if not indi[fi].number then indi[fi].number = "" end
+			if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
+			if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
+			if not indi[fi].number:match("%w") then indi[fi].number = nil end
 			fe = ""
 		end
 		if split[2] == "SURN" then
 			indi[fi].surn = split[3]
 			for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
+			if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
 			fe = ""
 		end
 		if split[2] == "GIVN" then
 			indi[fi].givn = split[3]
 			for i=4,#split do indi[fi].givn = indi[fi].givn.." "..split[i] end
+			if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
 			fe = ""
 		end
 		if split[2] == "NPFX" then
 			indi[fi].title = split[3]
 			for i=4,#split do indi[fi].title = indi[fi].title.." "..split[i] end
+			if not indi[fi].title:match("%w") then indi[fi].title = nil end
 			fe = ""
 		end
 		if split[2] == "NSFX" then
 			indi[fi].number = split[3]
 			for i=4,#split do indi[fi].number = indi[fi].number.." "..split[i] end
+			if not indi[fi].number:match("%w") then indi[fi].number = nil end
 			fe = ""
 		end
 		if split[2] == "SEX" then indi[fi].gender = split[3] fe = "" end
@@ -216,6 +224,8 @@ function gedReview(f)
 			if fe == "marr" then target = fam end
 			target[fi][fe].plac = split[3]
 			for i=4,#split do target[fi][fe].plac = target[fi][fe].plac.." "..split[i] end
+			while target[fi][fe].plac:match(", ,") do target[fi][fe].plac = target[fi][fe].plac:gsub(", ,", ",") end
+			if not target[fi][fe].plac:match("%w") then target[fi][fe].plac = nil end
 		end
 		if split[2] == "FAMS" then
 			if not indi[fi].fams then indi[fi].fams = {} end
