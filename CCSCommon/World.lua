@@ -62,6 +62,7 @@ return
 				local planetC = 2*self.planetR*math.pi
 				local APU = 360/planetC
 				local SPU = 1/self.planetR
+				local gridVol = math.pow((self.planetR*2)+1, 3)
 
 				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
 
@@ -91,7 +92,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then UI:printl("%.2f%% done", (rdone/math.pow((self.planetR*2)+1, 3)*10000)/100) end
+							if math.fmod(rdone, 10000) == 0 then UI:printl("%.2f%% done", (rdone/gridVol*10000)/100) end
 						end
 					end
 				end
