@@ -138,6 +138,7 @@ function gedReview(f)
 		l = f:read("*l")
 	end
 
+	fi = 1
 	f:seek("set")
 	UI:printf("\nLoading GEDCOM data...")
 
