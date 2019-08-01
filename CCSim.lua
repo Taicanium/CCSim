@@ -221,7 +221,15 @@ function gedReview(f)
 			if fe == "marr" then target = fam end
 			target[fi][fe].dat = split[3]
 			for i=4,#split do target[fi][fe].dat = target[fi][fe].dat.." "..split[i] end
-			if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." then target[fi][fe].dat = -(tonumber(split[#split-1])) elseif not tonumber(split[#split]) then target[fi][fe].dat = tonumber(split[#split-1]) else target[fi][fe].dat = tonumber(split[#split]) end
+			if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." or split[#split] == "C." or split[#split] == "E." then
+				local sI = #split
+				while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
+				if split[sI] then target[fi][fe].dat = -(tonumber(split[sI])) else target[fi][fe].dat = nil end
+			elseif not tonumber(split[#split]) then
+				local sI = #split
+				while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
+				if split[sI] then target[fi][fe].dat = tonumber(split[sI]) else target[fi][fe].dat = nil end
+			else target[fi][fe].dat = tonumber(split[#split]) end
 		end
 		if split[2] == "PLAC" and fe ~= "" then
 			local target = indi
