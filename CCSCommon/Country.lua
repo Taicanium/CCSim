@@ -131,6 +131,8 @@ return
 										local p = math.random(1, #self.people)
 										if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
 									else self:setRuler(parent, closest.pIndex, enthrone) end
+									
+									possibles = nil
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
 									self:setRuler(parent, child.pIndex, enthrone)
@@ -293,19 +295,6 @@ return
 					self.demonym = self.demonym:gsub("oia", "ia")
 					self.demonym = self.demonym:gsub("uia", "ia")
 					self.demonym = self.demonym:gsub("dby", "dy")
-				end
-
-				local ends = {"ch", "rt", "gh", "ct", "rl", "rn", "rm", "rd", "rs", "lc", "ld", "ln", "lm", "ls", "sc", "nd", "nc", "st", "sh", "ds", "ck", "lg", "lk", "ng"}
-				local hasend = false
-
-				while not hasend do
-					local cEnd = self.demonym:sub(self.demonym:len()-1, self.demonym:len())
-					local cBegin = self.demonym:sub(self.demonym:len()-1, self.demonym:len()-2)
-					for i, j in pairs(ends) do if cEnd == j then hasend = true end end
-					local c1 = cEnd:sub(1, 1)
-					local c2 = cEnd:sub(2, 2)
-					for i, j in pairs(parent.vowels) do if c1:lower() == j:lower() then hasend = true elseif c2:lower() == j:lower() then hasend = true end end
-					if not hasend then self.demonym = self.demonym.."ian" end
 				end
 			end,
 
