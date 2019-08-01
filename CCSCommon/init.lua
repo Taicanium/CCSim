@@ -1,9 +1,10 @@
-if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
+if not loadstring then loadstring = load end
 if not table.unpack then table.unpack = function(t, n)
 	if not n then return table.unpack(t, 1)
 	elseif t[n] then return t[n], table.unpack(t, n+1) end
 	return t
 end end
+if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
 
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
