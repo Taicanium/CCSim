@@ -139,6 +139,7 @@ function gedReview(f)
 		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 fi = fc end
 		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl("%d People, %d Families", ic, fc) end
 		l = f:read("*l")
+		split = nil
 	end
 
 	fi = 1
@@ -258,6 +259,7 @@ function gedReview(f)
 			fe = ""
 		end
 
+		split = nil
 		l = f:read("*l")
 	end
 
@@ -300,8 +302,8 @@ function gedReview(f)
 		end end
 
 		UI:printc("\n\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
-		if #matches > 0 then UI:printc("N to move to the next match.\nP to move to the previous match.") end
-		UI:printp("\n\n > ")
+		if #matches > 0 then UI:printc("N to move to the next match.\nP to move to the previous match.\n") end
+		UI:printp("\n > ")
 		local datin = UI:readl()
 		local oldFI = fi
 		if datin:lower() == "b" then matches = {} _REVIEWING = false
