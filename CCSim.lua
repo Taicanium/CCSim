@@ -149,7 +149,7 @@ function gedReview(f)
 	l = f:read("*l")
 	while l do
 		local split = {}
-		for x in l:gmatch("%w+") do table.insert(split, x) end
+		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
 			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", fi, ic) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
