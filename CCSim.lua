@@ -428,8 +428,8 @@ function main()
 		if lfsstatus then
 			UI:printf("2\t-\tReview the output of a previous simulation.")
 			-- UI:printf("3\t-\tRemove previous simulations.\n")
-			UI:printf("Q\t-\tExit the program.")
 		end
+		UI:printf("Q\t-\tExit the program.")
 		UI:printp("\n > ")
 
 		local datin = UI:readl()
