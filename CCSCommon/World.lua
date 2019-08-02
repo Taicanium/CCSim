@@ -28,7 +28,7 @@ return
 				parent:rseed()
 
 				UI:printf("Benchmarking...")
-				local bRad = 150
+				local bRad = 125
 				local bench = {}
 
 				local t0 = _time()
@@ -52,8 +52,8 @@ return
 				local benchAdjust = math.floor(_time()-t0)
 				if benchAdjust > 50 or _DEBUG then benchAdjust = 50 end
 
-				local rMin = 125
-				local rMax = 150
+				local rMin = 100
+				local rMax = 125
 				if _DEBUG then
 					rMin = 51
 					rMax = 75
