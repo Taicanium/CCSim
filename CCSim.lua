@@ -395,7 +395,7 @@ function simReview()
 			local _SELECTED = true
 			while _SELECTED do
 				UI:clear()
-				UI:printf("\nSelected simulation performed %s", os.date('%Y-%m-%d %H:%M:%S', dirStamp))
+				UI:printf("\nSelected simulation performed %s\n", os.date('%Y-%m-%d %H:%M:%S', dirStamp))
 				local ops = {}
 				local thisOp = 1
 				-- if eventFile then ops[thisOp] = "events.txt" UI:printf("%d\t-\t%s", thisOp, "Events and history") thisOp = thisOp+1 end
