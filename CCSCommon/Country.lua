@@ -681,7 +681,7 @@ return
 				for i=#self.people,1,-1 do
 					local chn = false
 					if self.people[i] then self.people[i]:update(parent, self) else chn = true end
-					if parent.thisWorld.initialState then UI:printl("%.2f%%", (((#self.people-i)+1)/#self.people)*100) end
+					if parent.thisWorld.initialState and math.fmod(#self.people-i+1, 50) == 0 then UI:printl("%.2f%%", ((#self.people-i+1)/#self.people)*100) end
 
 					if not chn then
 						local age = self.people[i].age
