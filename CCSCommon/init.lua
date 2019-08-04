@@ -1244,17 +1244,17 @@ return
 							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
-								fc.system = 1
+								fc.system = 3
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "President" then
 								local oldsystem = fc.system
-								fc.system = 2
+								fc.system = 5
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Prime Minister" then
 								local oldsystem = fc.system
-								fc.system = 3
+								fc.system = 1
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Premier" then
@@ -1264,18 +1264,18 @@ return
 							end
 							if mat[1] == "Emperor" then
 								local oldsystem = fc.system
-								fc.system = 5
+								fc.system = 2
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							end
 							if mat[1] == "Queen" then
 								local oldsystem = fc.system
-								fc.system = 1
+								fc.system = 3
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 								gend = "Female"
 							end
 							if mat[1] == "Empress" then
 								local oldsystem = fc.system
-								fc.system = 5
+								fc.system = 2
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 								gend = "Female"
 							end
