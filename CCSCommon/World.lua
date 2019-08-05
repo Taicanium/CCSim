@@ -298,6 +298,7 @@ return
 			end,
 
 			rOutput = function(self, parent, label)
+				if not parent.doMaps then return end
 				UI:printf("Writing R data...")
 				
 				local planetC = 2*self.planetR*math.pi
