@@ -112,9 +112,7 @@ return
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
-
 					local cSeed = parent:randomChoice(self.planetdefined)
-
 					local x, y, z = table.unpack(cSeed)
 
 					if self.planet[x][y][z].land then located = false end
@@ -657,7 +655,7 @@ return
 
 			update = function(self, parent)
 				parent.numCountries = 0
-				for i, cp in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
+				for i, j in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
 				for i, j in pairs(parent.debugTimes) do parent.debugTimes[i] = 0 end
 
 				local f0 = _time()
