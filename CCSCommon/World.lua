@@ -86,7 +86,7 @@ return
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = false
 								self.planet[x][y][z].waterNeighbors = true
-								self.planet[x][y][z].cardinals = {}
+								self.planet[x][y][z].mapWritten = false
 								self.planet[x][y][z].neighbors = {}
 
 								table.insert(self.planetdefined, {x, y, z})
@@ -297,10 +297,7 @@ return
 
 			rOutput = function(self, parent, label)
 				if not parent.doMaps then return end
-				UI:printf("Writing R data...")
-				
-				local planetC = 2*self.planetR*math.pi
-				local APU = 360/planetC
+				UI:printf("Writing map data...")
 
 				local f = io.open(label..".r", "w+")
 				if not f then return end
@@ -337,8 +334,7 @@ return
 								end
 							end
 
-							if r > 225 and g > 225 and b > 225 then
-								unique = false
+							if r > 225 and g > 225 and b > 225 then unique = false
 
 								r = math.random(0, 255)
 								g = math.random(0, 255)
@@ -362,6 +358,187 @@ return
 						self.cTriplets[cp.name] = {r, g, b}
 					end
 				end
+				
+				local unwrapped = {}
+				local columnCount = 0
+
+				local p = 1
+				local q = -self.planetR
+				local r = -self.planetR
+				local quad = 1
+				local vox = false
+				local iColumn = 1
+				while r <= self.planetR do
+					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
+						while not unwrapped[iColumn] do table.insert(unwrapped, {}) end
+						table.insert(unwrapped[iColumn], self.planet[p][q][r])
+						self.planet[p][q][r].mapWritten = true
+						vox = true
+					end
+					if not vox then
+						if quad == 1 then
+							q = q+1
+							if q > 0 then
+								q = -self.planetR
+								p = p+1
+							end
+						elseif quad == 2 then
+							p = p-1
+							if p < 0 then
+								p = self.planetR
+								q = q+1
+							end
+						elseif quad == 3 then
+							q = q-1
+							if q < 0 then
+								q = self.planetR
+								p = p-1
+							end
+						elseif quad == 4 then
+							p = p+1
+							if p > 0 then
+								p = -self.planetR
+								q = q-1
+							end
+						end
+					else
+						if quad == 1 then p = p+1
+						elseif quad == 2 then q = q+1
+						elseif quad == 3 then p = p-1
+						elseif quad == 4 then q = q-1 end
+					end
+					if quad == 1 and p > self.planetR then
+						quad = 2
+						p = self.planetR
+						q = 1
+					elseif quad == 2 and q > self.planetR then
+						quad = 3
+						p = -1
+						q = self.planetR
+					elseif quad == 3 and p < -self.planetR then
+						quad = 4
+						p = -self.planetR
+						q = -1
+					elseif quad == 4 and q < -self.planetR then
+						quad = 1
+						p = 1
+						q = -self.planetR
+						r = r+1
+						iColumn = iColumn+1
+					end
+					vox = false
+				end
+				
+				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
+				
+				local columnCount = #unwrapped
+				
+				iColumn = 1
+				local planetC = 0
+				local stretched = {}
+				for i=1,columnCount do
+					stretched[i] = {} 
+					local col = unwrapped[i]
+					if #col > planetC then planetC = #col end
+				end
+				for i=1,columnCount do
+					local column = unwrapped[i]
+					local pixelsPerUnit = math.floor(planetC/#column)
+					local deviation = ((planetC/#column)-pixelsPerUnit)*pixelsPerUnit
+					local deviated = 0
+					for j=1,#column do
+						for k=1,pixelsPerUnit do if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end end
+						deviated = deviated+deviation
+						while deviated >= 1 do
+							if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end
+							deviated = deviated-1
+						end
+					end
+				end
+				
+				planetC = math.huge
+				for i=1,columnCount do
+					local col = stretched[i]
+					if #col < planetC then planetC = #col end
+				end
+				
+				local planetD = 0
+				local yi = 1
+				local adjusted = {}
+				for i=1,columnCount do
+					planetD = planetD+1
+					adjusted[yi*2] = {}
+					adjusted[(yi*2)-1] = {}
+					local col = stretched[i]
+					for j=1,planetC do
+						adjusted[yi*2][j*2] = col[j]
+						adjusted[(yi*2)-1][j*2] = col[j]
+						adjusted[yi*2][(j*2)-1] = col[j]
+						adjusted[(yi*2)-1][(j*2)-1] = col[j]
+					end
+					yi = yi+1
+				end
+				
+				local bf = io.open(label..".bmp", "w+")
+				local bmpString = "424ds000000003600000028000000wh0100180000000000r130b0000130b00000000000000000000"
+				local bmpDataString = ""
+				local hStringLE = ("%08x"):format(planetD*2)
+				local wStringLE = ("%08x"):format(planetC*2)
+				local rStringLE = ""
+				local sStringLE = ""
+				local hStringBE = ""
+				local wStringBE = ""
+				local rStringBE = ""
+				local sStringBE = ""
+				for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
+				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
+				bmpString = bmpString:gsub("w", wStringBE)
+				bmpString = bmpString:gsub("h", hStringBE)
+				
+				local byteCount = 54
+				local btWritten = 0 
+				for y=1,planetD*2 do
+					for x=1,planetC*2 do
+						btWritten = btWritten+3
+						byteCount = byteCount+3
+					end
+					while math.fmod(btWritten, 4) ~= 0 do
+						btWritten = btWritten+1
+						byteCount = byteCount+1
+					end
+					btWritten = 0
+				end
+				
+				rStringLE = ("%08x"):format(byteCount-54)
+				sStringLE = ("%08x"):format(byteCount)
+				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
+				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
+				bmpString = bmpString:gsub("s", sStringBE)
+				bmpString = bmpString:gsub("r", rStringBE)
+
+				local byteString = ""
+				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
+				bf:write(byteString)
+				
+				btWritten = 0
+				for y=1,planetD*2 do
+					for x=1,planetC*2 do
+						if adjusted[y] and adjusted[y][x] then bmpDataString = ("%02x%02x%02x"):format(adjusted[y][x][3], adjusted[y][x][2], adjusted[y][x][1])
+						else bmpDataString = "000000" end
+						for z in bmpDataString:gmatch("%w%w") do bf:write(string.char(tonumber(z, 16))) end
+						btWritten = btWritten+3
+						bmpDataString = ""
+					end
+					while math.fmod(btWritten, 4) ~= 0 do
+						bf:write(string.char(0))
+						btWritten = btWritten+1
+					end
+					btWritten = 0
+				end
+				
+				bf:flush()
+				bf:close()
+				bf = nil
 
 				local cCoords = {}
 				local cTexts = {}
@@ -568,89 +745,6 @@ return
 				f:flush()
 				f:close()
 				f = nil
-
---[[			local bmpString = "424ds000000003600000028000000wh0100180000000000r130b0000130b00000000000000000000"
-				local bmpData = {}
-
-				local dx = -self.planetR
-				local dy = -self.planetR
-				local dz = -self.planetR
-
-				for i=1,(self.planetR*2)+1 do
-					bmpData[i] = {0, 0, 0}
-					for j=1,(self.planetR*2)+1 do bmpData[i][j] = {0, 0, 0} end
-				end
-
-				local bx = self.planetR
-				local by = 1
-				local maxW = (self.planetR*2)+1
-				local maxH = (self.planetR*2)+1
-
-				while dx <= self.planetR do
-					while dy <= self.planetR do
-						while dz <= self.planetR do
-							if not bmpData[by][bx] then bmpData[by][bx] = {0, 0, 0} end
-							if by > maxH then maxH = by end
-							if bx > maxW then maxW = bx end
-							if self.planet[dx] and self.planet[dx][dy] and self.planet[dx][dy][dz] and bmpData[by][bx][1] == 0 and bmpData[by][bx][2] == 0 and bmpData[by][bx][3] == 0 then
-								if self.planet[dx][dy][dz].land and self.planet[dx][dy][dz].country ~= "" then bmpData[by][bx] = self.cTriplets[self.planet[dx][dy][dz].country]
-								else bmpData[by][bx] = {22, 22, 170} end
-							end
-							dz = dz+1
-							by = by+1
-						end
-						dy = dy+1
-						dz = -self.planetR
-						by = 1
-					end
-					dx = dx+1
-					dy = -self.planetR
-					bx = bx+1
-				end
-
-				local hStringLE = ("%08x"):format(maxH)
-				local wStringLE = ("%08x"):format(maxW)
-				local rStringLE = ""
-				local sStringLE = ""
-				local hStringBE = ""
-				local wStringBE = ""
-				local rStringBE = ""
-				local sStringBE = ""
-				for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
-				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
-				bmpString = bmpString:gsub("w", wStringBE)
-				bmpString = bmpString:gsub("h", hStringBE)
-
-				local bmpDataString = ""
-				local btWritten = 0
-				for y=1,#bmpData do
-					for x=1,#bmpData[y] do
-						bmpDataString = bmpDataString..("%02x%02x%02x"):format(bmpData[y][x][3], bmpData[y][x][2], bmpData[y][x][1])
-						btWritten = btWritten+3
-					end
-					while math.fmod(btWritten, 4) ~= 0 do
-						bmpDataString = bmpDataString.."00"
-						btWritten = btWritten+1
-					end
-					btWritten = 0
-				end
-
-				bmpString = bmpString..bmpDataString
-				rStringLE = ("%08x"):format(bmpDataString:len()/2)
-				sStringLE = ("%08x"):format(((bmpString:len()-2)/2)+8)
-				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
-				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
-				bmpString = bmpString:gsub("s", sStringBE)
-				bmpString = bmpString:gsub("r", rStringBE)
-
-				local byteString = ""
-				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
-
-				f = io.open(label..".bmp", "w+")
-				f:write(byteString)
-				f:flush()
-				f:close()
-				f = nil ]]
 			end,
 
 			update = function(self, parent)
