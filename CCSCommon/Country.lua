@@ -668,10 +668,10 @@ return
 					self.capitalcity = nil
 				end
 
-				if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
+				if self.regions[self.capitalregion] then if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
 					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 					if oldcap and self.regions[oldreg] and self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
-				end
+				end end
 
 				for i, j in pairs(self.regions) do
 					j.population = 0
