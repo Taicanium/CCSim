@@ -342,15 +342,16 @@ return
 									table.insert(newr.subregions, j)
 									for k, l in pairs(j.cities) do newr.cities[k] = l end
 								end
-
-								for i=#c2.nodes,1,-1 do
-									local x, y, z = table.unpack(c2.nodes[i])
-									parent.thisWorld.planet[x][y][z].country = c1.name
-									parent.thisWorld.planet[x][y][z].region = c2.name
-									table.insert(c1.nodes, {x, y, z})
-									table.insert(newr.nodes, {x, y, z})
-									c2.nodes[i] = nil
+								
+								for i=1,#parent.thisWorld.planetdefined do
+									local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
+									if parent.thisWorld.planet[x][y][z].country == c2.name then
+										parent.thisWorld.planet[x][y][z].country = c1.name
+										parent.thisWorld.planet[x][y][z].region = c2.name
+									end
 								end
+								
+								c2.nodes = nil
 
 								c1.stability = c1.stability-5
 								if c1.stability < 1 then c1.stability = 1 end
@@ -490,6 +491,7 @@ return
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
+							newl.nodes = {}
 
 							for i=1,#parent.thisWorld.planetdefined do
 								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
@@ -497,6 +499,7 @@ return
 								if node.region == newl.name then
 									node.country = newl.name
 									node.region = ""
+									table.insert(newl.nodes, {x, y, z})
 									for j=#c.nodes,1,-1 do if c.nodes[j].x == x and c.nodes[j].y == y and c.nodes[j].z == z then table.remove(c.nodes, j) end end
 								end
 							end
