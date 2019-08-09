@@ -571,10 +571,8 @@ return
 									c.capitalregion = nr.name
 									c.capitalcity = parent:randomChoice(nr.cities, true)
 
-									if c.capitalcity then
-										local msg = "Capital moved"
-										if oldcap ~= "" then msg = msg.." from "..oldcap end
-										msg = msg.." to "..c.capitalcity
+									if oldcap and oldcap ~= "" and c.capitalcity then
+										local msg = "Capital moved from "..oldcap.." to "..c.capitalcity
 
 										c:event(parent, msg)
 									else
