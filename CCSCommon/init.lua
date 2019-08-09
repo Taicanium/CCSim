@@ -500,7 +500,7 @@ return
 									node.country = newl.name
 									node.region = ""
 									table.insert(newl.nodes, {x, y, z})
-									for j=#c.nodes,1,-1 do if c.nodes[j].x == x and c.nodes[j].y == y and c.nodes[j].z == z then table.remove(c.nodes, j) end end
+									for j=#c.nodes,1,-1 do if c.nodes[j][1] == x and c.nodes[j][2] == y and c.nodes[j][3] == z then table.remove(c.nodes, j) end end
 								end
 							end
 							
