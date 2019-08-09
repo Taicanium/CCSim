@@ -413,7 +413,7 @@ return
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
 							newl.name = nc.name
-							c.regions[newl.name] = nil
+							c.regions[nc.name] = nil
 
 							newl.rulers = {}
 							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
@@ -559,7 +559,7 @@ return
 							c.stability = c.stability-math.random(3, 10)
 							if c.stability < 1 then c.stability = 1 end
 
-							if c.capitalregion == newl.name then
+							if not c.regions[c.capitalregion] or not c.regions[c.capitalregion].cities[c.capitalcity] then
 								local oldcap = c.capitalcity
 								local oldreg = c.capitalregion
 
