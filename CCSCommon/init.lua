@@ -415,15 +415,6 @@ return
 							newl.name = nc.name
 							c.regions[newl.name] = nil
 
-							for i=#nc.nodes,1,-1 do
-								local x, y, z = table.unpack(nc.nodes[i])
-
-								parent.thisWorld.planet[x][y][z].country = newl.name
-								parent.thisWorld.planet[x][y][z].region = ""
-
-								table.remove(nc.nodes, i)
-							end
-
 							newl.rulers = {}
 							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
 
@@ -508,6 +499,16 @@ return
 									node.region = ""
 									for j=#c.nodes,1,-1 do if c.nodes[j].x == x and c.nodes[j].y == y and c.nodes[j].z == z then table.remove(c.nodes, j) end end
 								end
+							end
+							
+							for i=#c.nodes,1,-1 do
+								local x, y, z = table.unpack(c.nodes[i])
+								if parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(c.nodes, i) end
+							end
+							
+							for i=#nc.nodes,1,-1 do
+								local x, y, z = table.unpack(nc.nodes[i])
+								if parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(nc.nodes, i) end
 							end
 
 							local nrCount = 0
