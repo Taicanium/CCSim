@@ -449,13 +449,10 @@ return
 									newl.dfif = j.dfif
 									newl.formalities = j.formalities
 									newl.civilWars = j.civilWars
-									newl.agPrim = j.agPrim
-
 									newl.rulernames = j.rulernames
 									newl.frulernames = j.frulernames
 
 									for k, l in pairs(nc.subregions) do newl.regions[l.name] = l end
-
 									for k, l in pairs(newl.regions) do for m, n in pairs(c.regions) do for o, p in pairs(n.cities) do if l.cities[p.name] then n.cities[p.name] = nil end end end end
 
 									parent.final[i] = nil
@@ -492,29 +489,11 @@ return
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
-							newl.nodes = {}
-
-							for i=1,#parent.thisWorld.planetdefined do
-								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-								local node = parent.thisWorld.planet[x][y][z]
-								if node.region == nc.name then
-									node.country = newl.name
-									node.region = ""
-								end
-							end
 							
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
 								if parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(c.nodes, i) end
 							end
-							
-							for i=#nc.nodes,1,-1 do
-								local x, y, z = table.unpack(nc.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(nc.nodes, i) end
-							end
-
-							local nrCount = 0
-							for i=1,#newl.nodes,35 do nrCount = nrCount+1 end
 
 							newl:set(parent)
 							newl:setTerritory(parent, c, pR)
@@ -536,7 +515,7 @@ return
 								end
 							end
 
-							nrCount = 0
+							local nrCount = 0
 							for i, j in pairs(newl.regions) do nrCount = nrCount+1 end
 
 							for i, j in pairs(newl.regions) do

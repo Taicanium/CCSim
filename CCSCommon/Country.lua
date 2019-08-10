@@ -443,8 +443,10 @@ return
 				for i=1,#parent.thisWorld.planetdefined do
 					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 
-					if parent.thisWorld.planet[x][y][z].country == self.name then table.insert(self.nodes, {x, y, z}) end
-					parent.thisWorld.planet[x][y][z].region = ""
+					if parent.thisWorld.planet[x][y][z].country == self.name then
+						table.insert(self.nodes, {x, y, z})
+						parent.thisWorld.planet[x][y][z].region = ""
+					end
 				end
 
 				local rCount = 0
@@ -508,7 +510,7 @@ return
 					end
 
 					if defined == prevDefined then allDefined = true end
-					defined = prevDefined
+					prevDefined = defined
 
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])

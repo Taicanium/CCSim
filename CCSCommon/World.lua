@@ -540,7 +540,7 @@ return
 				bf:write(byteString)
 				
 				btWritten = 0
-				for y=1,planetD*2 do
+				for y=planetD*2,1,-1 do
 					for x=1,planetC*2 do
 						if adjusted[y] and adjusted[y][x] then bmpDataString = ("%02x%02x%02x"):format(adjusted[y][x][3], adjusted[y][x][2], adjusted[y][x][1])
 						else bmpDataString = "000000" end
