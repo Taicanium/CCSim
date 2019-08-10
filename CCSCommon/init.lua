@@ -467,7 +467,7 @@ return
 								if parent.thisWorld.planet[x][y][z].region == newl.name then
 									parent.thisWorld.planet[x][y][z].country = newl.name
 									parent.thisWorld.planet[x][y][z].region = ""
-									table.remove(c.nodes, i) end
+									table.remove(c.nodes, i)
 								end
 							end
 
