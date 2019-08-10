@@ -109,13 +109,14 @@ return
 											for k, l in pairs(j.cities) do newr.cities[k] = l end
 										end
 
-										for i=#c2.nodes,1,-1 do
-											local x, y, z = table.unpack(c2.nodes[i])
-											parent.thisWorld.planet[x][y][z].country = c1.name
-											parent.thisWorld.planet[x][y][z].region = c2.name
-											table.insert(c1.nodes, {x, y, z})
-											table.insert(newr.nodes, {x, y, z})
-											c2.nodes[i] = nil
+										for i=1,#parent.thisWorld.planetdefined do
+											local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
+											if parent.thisWorld.planet[x][y][z].country == c2.name then
+												parent.thisWorld.planet[x][y][z].country = c1.name
+												parent.thisWorld.planet[x][y][z].region = c2.name
+												table.insert(c1.nodes, {x, y, z})
+												table.insert(newr.nodes, {x, y, z})
+											end
 										end
 
 										c1.stability = c1.stability-5
