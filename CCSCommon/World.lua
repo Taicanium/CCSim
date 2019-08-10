@@ -461,6 +461,25 @@ return
 					local col = stretched[i]
 					if #col < planetC then planetC = #col end
 				end
+				for i=1,columnCount do
+					local col = stretched[i]
+					local sCol = #col
+					local diff = sCol-planetC
+					while diff > 1 do
+						local ratio = sCol/diff
+						local rate = 0
+						for j=#col,1,-1 do
+							if rate >= ratio then
+								table.remove(col, j)
+								diff = diff-1
+								rate = rate-ratio
+							end
+							rate = rate+1
+						end
+						sCol = #col
+						diff = sCol-planetC
+					end
+				end
 				
 				local planetD = 0
 				local yi = 1

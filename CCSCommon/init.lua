@@ -476,7 +476,7 @@ return
 
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country ~= newl.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
+								if parent.thisWorld.planet[x][y][z].country == c.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
 									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 										local nx, ny, nz = table.unpack(neighbor)
@@ -496,11 +496,9 @@ return
 							for i=1,#parent.thisWorld.planetdefined do
 								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 								local node = parent.thisWorld.planet[x][y][z]
-								if node.region == newl.name then
+								if node.region == nc.name then
 									node.country = newl.name
 									node.region = ""
-									table.insert(newl.nodes, {x, y, z})
-									for j=#c.nodes,1,-1 do if c.nodes[j][1] == x and c.nodes[j][2] == y and c.nodes[j][3] == z then table.remove(c.nodes, j) end end
 								end
 							end
 							
