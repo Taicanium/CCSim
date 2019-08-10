@@ -1738,13 +1738,18 @@ return
 							c1.regions[rn.name] = rn
 							c2.regions[rn.name] = nil
 
-							for i, j in pairs(c1.regions[rn.name].nodes) do
-								local x, y, z = table.unpack(j)
+							for i=1,#self.thisWorld.planetdefined do
+								local x, y, z = table.unpack(self.thisWorld.planetdefined[i])
 
-								if self.thisWorld.planet[x] and self.thisWorld.planet[x][y] and self.thisWorld.planet[x][y][z] then
+								if self.thisWorld.planet[x][y][z].country == c2.name and self.thisWorld.planet[x][y][z].region == rn.name then
 									self.thisWorld.planet[x][y][z].country = c1.name
 									self.thisWorld.planet[x][y][z].region = rn.name
 								end
+							end
+
+							for i=#c2.nodes,1,-1 do
+								local x, y, z = table.unpack(c2.nodes[i])
+								if self.thisWorld.planet[x][y][z].country == c1.name then table.remove(c2.nodes, i) end
 							end
 
 							if not conq then
