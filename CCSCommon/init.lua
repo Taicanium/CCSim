@@ -462,6 +462,15 @@ return
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
+							for i=#c.nodes,1,-1 do
+								local x, y, z = table.unpack(c.nodes[i])
+								if parent.thisWorld.planet[x][y][z].region == newl.name then
+									parent.thisWorld.planet[x][y][z].country = newl.name
+									parent.thisWorld.planet[x][y][z].region = ""
+									table.remove(c.nodes, i) end
+								end
+							end
+
 							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then newl:add(parent, c.people[i]) end end
 
 							for i=1,math.floor(#c.people/5) do
@@ -489,11 +498,6 @@ return
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
-							
-							for i=#c.nodes,1,-1 do
-								local x, y, z = table.unpack(c.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(c.nodes, i) end
-							end
 
 							newl:set(parent)
 							newl:setTerritory(parent, c, pR)
