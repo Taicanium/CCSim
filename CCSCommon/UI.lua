@@ -32,12 +32,12 @@ return
 				end
 
 				if not self.clrcmd or self.clrcmd == "" then
-					self.clrcmd = "clear"
-					local clrarr = os.execute("clear")
+					self.clrcmd = "cls"
+					local clrarr = os.execute("cls")
 
-					if not clrarr then self.clrcmd = "cls"
-					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "cls"
-					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "cls" end end end
+					if not clrarr then self.clrcmd = "clear"
+					elseif type(clrarr) == "number" and clrarr ~= 0 then self.clrcmd = "clear"
+					elseif type(clrarr) == "table" then for i, j in pairs(clrarr) do if not i or not j then self.clrcmd = "clear" end end end
 				end
 
 				self.ready = true
