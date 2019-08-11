@@ -358,7 +358,7 @@ return
 								if c1.stability < 1 then c1.stability = 1 end
 								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
-								c1.regions[newr.name] = newr
+								c1.regions[c2.name] = newr
 
 								parent.thisWorld:delete(parent, c2)
 
@@ -1818,6 +1818,8 @@ return
 
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
+							
+							self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
 						end
 					end
 				end
