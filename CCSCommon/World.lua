@@ -432,6 +432,7 @@ return
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
 				
 				local columnCount = #unwrapped
+				local colors = {}
 				
 				iColumn = 1
 				local planetC = 0
@@ -450,7 +451,10 @@ return
 						for k=1,pixelsPerUnit do if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end end
 						deviated = deviated+deviation
 						while deviated >= 1 do
-							if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end
+							if column[j].land and self.cTriplets[column[j].country] then
+								table.insert(stretched[i], self.cTriplets[column[j].country])
+								if not colors[column[j].country] then colors[column[j].country] = self.cTriplets[column[j].country] end
+							else table.insert(stretched[i], {22, 22, 170}) end
 							deviated = deviated-1
 						end
 					end
@@ -480,7 +484,67 @@ return
 						diff = sCol-planetC
 					end
 				end
+
+				local tLineCount = 1
+				local tCols = {{}}
+				local tColWidths = {}
+				local top = 2
+				local bottom = 9
+				local lineLen = 2
+				for i, j in pairs(colors) do
+					lineLen = lineLen+10
+					if lineLen >= columnCount then
+						lineLen = 12
+						tLineCount = tLineCount+1
+					end
+					if not tCols[tLineCount] then tCols[tLineCount] = {} end
+					if not tColWidths[tLineCount] then tColWidths[tLineCount] = -1 end
+					table.insert(tCols[tLineCount], i)
+					local nameLen = i:len()
+					if nameLen > tColWidths[tLineCount] then tColWidths[tLineCount] = nameLen end
+				end
+				local colSum = 0
+				local margin = planetC+2
+				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end
+				for i=1,#stretched do for j=1,colSum do table.insert(stretched[i], {0, 0, 0}) end end
+				for i=1,tLineCount do
+					local tCol = tCols[i]
+					for j=1,#tCol do
+						local colMargin = margin
+						local name = tCol[j]
+						if name then
+							local nameLen = name:len()
+							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = colors[name] end end
+							margin = margin+10
+							local oldMargin = margin
+							for k=1,nameLen do
+								local letter = name:sub(k, k):lower()
+								local glyph = parent.glyphs[letter]
+								if not glyph then glyph = parent.glyphs[" "] end
+								local letterRow = 6
+								local letterColumn = 1
+								for l=top+1,bottom-1 do
+									for m=margin,margin+5 do
+										if glyph[letterRow][letterColumn] == 0 then stretched[l][m] = {0, 0, 0}
+										else stretched[l][m] = {255, 255, 255} end
+										letterColumn = letterColumn+1
+									end
+									letterColumn = 1
+									letterRow = letterRow-1
+								end
+								margin = margin+6
+							end
+							margin = colMargin
+							top = top+10
+							bottom = bottom+10
+						end
+					end
+					margin = margin+20+(tColWidths[i]*6)
+					top = 2
+					bottom = 9
+				end
 				
+				planetC = planetC+colSum
 				local planetD = 0
 				local yi = 1
 				local adjusted = {}
@@ -540,7 +604,7 @@ return
 				bf:write(byteString)
 				
 				btWritten = 0
-				for y=planetD*2,1,-1 do
+				for y=1,planetD*2 do
 					for x=1,planetC*2 do
 						if adjusted[y] and adjusted[y][x] then bmpDataString = ("%02x%02x%02x"):format(adjusted[y][x][3], adjusted[y][x][2], adjusted[y][x][1])
 						else bmpDataString = "000000" end
