@@ -99,7 +99,7 @@ return
 						for j=1,#node1.neighbors do
 							local x2, y2, z2 = table.unpack(node1.neighbors[j])
 							local node2 = parent.thisWorld.planet[x2][y2][z2]
-							if node2.country == other.name then border = 2 end
+							if node2.country == other.name then return 2 end
 							if node2.land == false and border < 1 then
 								for k=1,#parent.thisWorld.planetdefined do
 									local x3, y3, z3 = table.unpack(parent.thisWorld.planetdefined[k])
