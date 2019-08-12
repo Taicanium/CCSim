@@ -350,6 +350,8 @@ return
 									if parent.thisWorld.planet[x][y][z].country == c2.name then
 										parent.thisWorld.planet[x][y][z].country = c1.name
 										parent.thisWorld.planet[x][y][z].region = c2.name
+										table.insert(newr.nodes, {x, y, z})
+										table.insert(c1.nodes, {x, y, z})
 									end
 								end
 								
@@ -463,12 +465,11 @@ return
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
-							for i=#c.nodes,1,-1 do
-								local x, y, z = table.unpack(c.nodes[i])
+							for i=1,#parent.thisWorld.planetdefined do
+								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 								if parent.thisWorld.planet[x][y][z].region == newl.name then
 									parent.thisWorld.planet[x][y][z].country = newl.name
 									parent.thisWorld.planet[x][y][z].region = ""
-									table.remove(c.nodes, i)
 								end
 							end
 
@@ -495,7 +496,7 @@ return
 											i = 0
 										end
 									end
-								end
+								elseif parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(c.nodes, i) end
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
