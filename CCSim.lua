@@ -302,7 +302,7 @@ function simNew()
 	CCSCommon.showinfo = 0
 	if datin:lower() == "y" then CCSCommon.showinfo = 1 end
 
-	UI:printp("\nDo you want to produce 3D maps of the world at major events (y/n)? > ")
+	UI:printp("\nDo you want to produce maps of the world at major events (y/n)? > ")
 	datin = UI:readl()
 
 	CCSCommon.doMaps = false

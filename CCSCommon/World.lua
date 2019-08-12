@@ -273,7 +273,7 @@ return
 					if parent.doMaps then os.execute("mkdir "..mapDir) end
 				end
 
-				self:rOutput(parent, parent:directory({mapDir, "initial"}))
+				self:mapOutput(parent, parent:directory({mapDir, "initial"}))
 			end,
 
 			delete = function(self, parent, nz)
@@ -295,7 +295,7 @@ return
 				end
 			end,
 
-			rOutput = function(self, parent, label)
+			mapOutput = function(self, parent, label)
 				if not parent.doMaps then return end
 				UI:printf("Writing map data...")
 

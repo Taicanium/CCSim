@@ -127,7 +127,7 @@ return
 
 										parent.thisWorld:delete(parent, c2)
 
-										if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+										if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 									end
 								end
 							end
@@ -362,7 +362,7 @@ return
 
 								parent.thisWorld:delete(parent, c2)
 
-								if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+								if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 							end
 						end
 
@@ -566,7 +566,7 @@ return
 
 							newl:checkRuler(parent, true)
 
-							if parent.doMaps then parent.thisWorld:rOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+							if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
 						end
 
 						return -1
@@ -1001,7 +1001,7 @@ return
 					{0, 1, 1, 1, 1, 0},
 					{0, 0, 1, 1, 0, 0}},
 				w={{0, 0, 0, 0, 0, 0},
-					{0, 1, 0, 0, 0, 0},
+					{0, 1, 0, 0, 1, 0},
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 1, 0, 1, 0},
 					{0, 1, 1, 1, 1, 0},
@@ -1175,7 +1175,7 @@ return
 			finish = function(self)
 				UI:clear()
 
-				if self.doMaps then self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "final"})) end
+				if self.doMaps then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"})) end
 
 				UI:printf("Printing result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
@@ -2013,7 +2013,7 @@ return
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
 							
-							self.thisWorld:rOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
+							self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
 						end
 					end
 				end
