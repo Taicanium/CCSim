@@ -261,19 +261,6 @@ return
 					parent.disabled[j.name:lower()] = false
 					parent.disabled["!"..j.name:lower()] = false
 				end
-
-				if UI.clrcmd == "cls" then parent.dirSeparator = "\\" end
-				local mapDir = parent:directory({parent.stamp, "maps"})
-
-				if lfsstatus then
-					lfs.mkdir(parent:directory({parent.stamp}))
-					if parent.doMaps then lfs.mkdir(mapDir) end
-				else
-					os.execute("mkdir "..parent:directory({parent.stamp}))
-					if parent.doMaps then os.execute("mkdir "..mapDir) end
-				end
-
-				self:mapOutput(parent, parent:directory({mapDir, "initial"}))
 			end,
 
 			delete = function(self, parent, nz)

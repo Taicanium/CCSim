@@ -124,10 +124,8 @@ return
 										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 										c1.regions[newr.name] = newr
-
 										parent.thisWorld:delete(parent, c2)
-
-										if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+										parent.writeMap = true
 									end
 								end
 							end
@@ -362,10 +360,8 @@ return
 								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 								c1.regions[c2.name] = newr
-
 								parent.thisWorld:delete(parent, c2)
-
-								if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+								parent.writeMap = true
 							end
 						end
 
@@ -523,7 +519,6 @@ return
 
 							local nrCount = 0
 							for i, j in pairs(newl.regions) do nrCount = nrCount+1 end
-
 							for i, j in pairs(newl.regions) do
 								local cCount = 0
 								for k, l in pairs(j.cities) do cCount = cCount+1 end
@@ -567,8 +562,7 @@ return
 							end
 
 							newl:checkRuler(parent, true)
-
-							if parent.doMaps then parent.thisWorld:mapOutput(parent, parent:directory({parent.stamp, "maps", "Year "..tostring(parent.years)})) end
+							parent.writeMap = true
 						end
 
 						return -1
@@ -1092,6 +1086,7 @@ return
 			},
 			thisWorld = {},
 			vowels = {"a", "e", "i", "o", "u", "y"},
+			writeMap = false,
 			years = 1,
 			yearstorun = 0,
 
@@ -1151,8 +1146,6 @@ return
 
 			finish = function(self)
 				UI:clear()
-
-				if self.doMaps then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"})) end
 
 				UI:printf("Printing result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
@@ -1571,6 +1564,19 @@ return
 				local msg = ""
 				local cLimit = 14
 				local eLimit = 4
+				
+				if UI.clrcmd == "cls" then self.dirSeparator = "\\" end
+				local mapDir = self:directory({self.stamp, "maps"})
+
+				if lfsstatus then
+					lfs.mkdir(self:directory({self.stamp}))
+					if self.doMaps then lfs.mkdir(mapDir) end
+				else
+					os.execute("mkdir "..self:directory({self.stamp}))
+					if self.doMaps then os.execute("mkdir "..mapDir) end
+				end
+				
+				self:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				while _running do
 					self.thisWorld:update(self)
@@ -1666,7 +1672,9 @@ return
 							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %d\n"):format(i, j) end
 						end
 					end
-
+					
+					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({parent.stamp, "maps", "Year "..tostring(self.years)})) end
+					self.writeMap = false
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
 
@@ -1675,6 +1683,7 @@ return
 					UI:refresh()
 				end
 
+				self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"}))
 				self:finish()
 
 				UI:printf("\nEnd Simulation!")
@@ -1990,7 +1999,7 @@ return
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
 							
-							self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
+							self.writeMap = true
 						end
 					end
 				end
