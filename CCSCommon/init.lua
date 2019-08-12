@@ -312,6 +312,7 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c)
+						if math.random(1, 100) < 51 then return -1 end
 						for i=1,#c.ongoing-1 do if c.ongoing[i].name == self.name then return -1 end end
 						return 0
 					end
@@ -598,6 +599,7 @@ return
 								for q, b in pairs(c2.regions) do rcount = rcount+1 end
 								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
 									local rname = parent:randomChoice(c2.regions).name
+									while not c2.regions[rname]:borders(self, c1) do rname = parent:randomChoice(c2.regions).name end
 									parent:regionTransfer(c1, c2, rname, false)
 								end
 							end
@@ -805,6 +807,7 @@ return
 								for q, b in pairs(c1.regions) do rcount = rcount+1 end
 								if rcount > 1 then
 									local rname = parent:randomChoice(c1.regions).name
+									while not c1.regions[rname]:borders(self, c2) do rname = parent:randomChoice(c1.regions).name end
 									parent:regionTransfer(self.target, c1, rname, false)
 								end
 							end
@@ -815,34 +818,7 @@ return
 					performEvent=function(self, parent, c1, c2)
 						for i=1,#c1.ongoing-1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
 						for i=1,#c2.ongoing do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
-
-						local border = false
-						local water = {}
-						for i=1,#c1.nodes do
-							local x, y, z = table.unpack(c1.nodes[i])
-
-							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-								local nx, ny, nz = table.unpack(neighbor)
-								local nnode = parent.thisWorld.planet[nx][ny][nz]
-								if nnode.country == c2.name then border = true end
-								if not nnode.land then water[1] = 1 end
-							end
-						end
-
-						for i=1,#c2.nodes do
-							local x, y, z = table.unpack(c2.nodes[i])
-
-							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-								local nx, ny, nz = table.unpack(neighbor)
-								local nnode = parent.thisWorld.planet[nx][ny][nz]
-								if nnode.country == c1.name then border = true end
-								if not nnode.land then water[2] = 1 end
-							end
-						end
-
-						if not border then if not water[1] or not water[2] then return -1 end end
+						if not c1:borders(self, c2) then return -1 end end
 
 						if c1.relations[c2.name] then
 							if c1.relations[c2.name] < 30 then
