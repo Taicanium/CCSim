@@ -1576,7 +1576,7 @@ return
 					if self.doMaps then os.execute("mkdir "..mapDir) end
 				end
 				
-				self:mapOutput(self, self:directory({mapDir, "initial"}))
+				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				while _running do
 					self.thisWorld:update(self)
