@@ -1673,7 +1673,7 @@ return
 						end
 					end
 					
-					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({parent.stamp, "maps", "Year "..tostring(self.years)})) end
+					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
 					self.writeMap = false
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
