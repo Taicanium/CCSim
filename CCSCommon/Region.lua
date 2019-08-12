@@ -36,7 +36,7 @@ return
 									local x3, y3, z3 = table.unpack(parent.thisWorld.planetdefined[k])
 									local node3 = parent.thisWorld.planet[x3][y3][z3]
 									if node3.region == other.name or node3.country == other.name then for l=1,#node3.neighbors do
-										local x4, y4, z4 = table.unpack(node3.neighbors[j])
+										local x4, y4, z4 = table.unpack(node3.neighbors[l])
 										local node4 = parent.thisWorld.planet[x4][y4][z4]
 										if node4.region == other.name and border < 2 then border = 2 end
 										if node4.country == other.name and border < 1 then border = 1 end
