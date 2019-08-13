@@ -29,14 +29,13 @@ return
 						for j=1,#node1.neighbors do
 							local x2, y2, z2 = table.unpack(node1.neighbors[j])
 							local node2 = parent.thisWorld.planet[x2][y2][z2]
-							if node2.region == other.name and border < 4 then return 4 end
-							if node2.country == other.name and border < 3 then border = 3 end
+							if node2.region == other.name then return 4 end
+							if node2.country == other.name then return 3 end
 							if node2.land == false and border < 2 then border = 2 end
 						end
 					end
 				end
 				if border == 2 then
-					border = 0
 					for i=1,#parent.thisWorld.planetdefined do
 						local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 						local node1 = parent.thisWorld.planet[x][y][z]
@@ -46,14 +45,14 @@ return
 								local node2 = parent.thisWorld.planet[x2][y2][z2]
 								if node2.land == false then
 									if node1.region == other.name then return 2 end
-									if node1.country == other.name then border = 1 end
+									if node1.country == other.name then return 1 end
 								end
 							end
 						end
 					end
 				end
 				
-				return border
+				return 0
 			end,
 
 			makename = function(self, country, parent)
