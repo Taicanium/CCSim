@@ -119,7 +119,7 @@ return
 					end
 				end
 				
-				return border
+				return 0
 			end,
 
 			checkRuler = function(self, parent, enthrone)
