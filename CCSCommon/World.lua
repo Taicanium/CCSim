@@ -285,18 +285,8 @@ return
 			mapOutput = function(self, parent, label)
 				if not parent.doMaps then return end
 				UI:printf("Writing map data...")
-
-				local f = io.open(label..".r", "w+")
-				if not f then return end
-				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
-
+				
 				local planetSize = #self.planetdefined
-
-				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[i])
-					f:write("\""..self.planet[x][y][z].country.."\"")
-					if i < planetSize then f:write(", ") end
-				end
 
 				for i, cp in pairs(self.countries) do
 					if not self.cColors[cp.name] or not self.cTriplets[cp.name] then
@@ -324,7 +314,8 @@ return
 								end
 							end
 
-							if r > 225 and g > 225 and b > 225 then unique = false
+							if r > 225 and g > 225 and b > 225 then
+								unique = false
 
 								r = math.random(0, 255)
 								g = math.random(0, 255)
@@ -459,7 +450,7 @@ return
 					local col = stretched[i]
 					local sCol = #col
 					local diff = sCol-planetC
-					while diff > 0 do
+					while diff > 1 do
 						local ratio = sCol/diff
 						local rate = 0
 						for j=#col,1,-1 do
@@ -473,6 +464,7 @@ return
 						sCol = #col
 						diff = sCol-planetC
 					end
+					if diff == 1 then table.remove(col, #col) end
 				end
 
 				local tLineCount = 1
@@ -614,6 +606,16 @@ return
 				bf:flush()
 				bf:close()
 				bf = nil
+				
+				local f = io.open(label..".r", "w+")
+				if not f then return end
+				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
+
+				for i=1,planetSize do
+					local x, y, z = table.unpack(self.planetdefined[i])
+					f:write("\""..self.planet[x][y][z].country.."\"")
+					if i < planetSize then f:write(", ") end
+				end
 
 				local cCoords = {}
 				local cTexts = {}
