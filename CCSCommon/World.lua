@@ -842,12 +842,10 @@ return
 					end
 
 					local defCount = 0
-					local lastDef = ""
-					for j, k in pairs(cp.events) do if k.Year >= parent.years-20 and k.Event:match("Defeat in war") then
-						defCount = defCount+1
-						if lastDef == "" then lastDef = k.Event:gsub("Defeat in war with ", "") end
-					end end
+					for j=#cp.events,1,-1 do if cp.events[j].Year >= parent.years-20 and cp.events[j].Event:match("Defeat in war") then defCount = defCount+1 end end
 					if defCount > 3 then
+						local lastDef = ""
+						for j=1,#cp.events do if cp.events[j].Event:match("Defeat in war") then lastDef = cp.events[j].Event:gsub("Defeat in war with ", "") end end
 						for j, k in pairs(self.countries) do if k.name == lastDef then for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j) end end end end
 					end
 				end end
@@ -864,7 +862,7 @@ return
 						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
 
 						if parent.popLimit < 1500 then parent.popLimit = 1500 end
-						if f1 > 1.4 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+						if f1 > 1.5 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 					else
 						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(f1*2))) end
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
