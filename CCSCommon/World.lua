@@ -459,7 +459,7 @@ return
 					local col = stretched[i]
 					local sCol = #col
 					local diff = sCol-planetC
-					while diff > 1 do
+					while diff > 0 do
 						local ratio = sCol/diff
 						local rate = 0
 						for j=#col,1,-1 do
@@ -482,7 +482,7 @@ return
 				local bottom = 9
 				local lineLen = 2
 				local colorKeys = parent:getAlphabetical(colors)
-				for i=1,#colorKeys do
+				for i=#colorKeys,1,-1 do
 					local cA = colorKeys[i]
 					lineLen = lineLen+10
 					if lineLen >= columnCount then
