@@ -593,9 +593,11 @@ return
 								local rcount = 0
 								for q, b in pairs(c2.regions) do rcount = rcount+1 end
 								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
-									local rname = parent:randomChoice(c2.regions).name
-									while c2.regions[rname]:borders(parent, c1) == 0 do rname = parent:randomChoice(c2.regions).name end
-									parent:regionTransfer(c1, c2, rname, false)
+									local c = parent:randomChoice(c2.regions)
+									if reg then
+										while reg:borders(parent, c1) == 0 do reg = parent:randomChoice(c2.regions) end
+										parent:regionTransfer(c1, c2, reg.name, false)
+									end
 								end
 							end
 						end
@@ -801,9 +803,11 @@ return
 								local rcount = 0
 								for q, b in pairs(c1.regions) do rcount = rcount+1 end
 								if rcount > 1 then
-									local rname = parent:randomChoice(c1.regions).name
-									while c1.regions[rname]:borders(parent, c2) == 0 do rname = parent:randomChoice(c1.regions).name end
-									parent:regionTransfer(self.target, c1, rname, false)
+									local reg = parent:randomChoice(c1.regions)
+									if reg then
+										while reg:borders(parent, c2) == 0 do reg = parent:randomChoice(c1.regions) end
+										parent:regionTransfer(self.target, c1, reg.name, false)
+									end
 								end
 							end
 						end
