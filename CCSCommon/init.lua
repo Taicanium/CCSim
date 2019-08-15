@@ -57,13 +57,11 @@ return
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
-						if c1.relations[c2.name] then
-							if c1.relations[c2.name] > 80 then
-								self.target = c2
-								table.insert(c2.alliances, c1.name)
-								table.insert(c1.alliances, c2.name)
-								return 0
-							end
+						if c1.relations[c2.name] and c1.relations[c2.name] > 80 then
+							self.target = c2
+							table.insert(c2.alliances, c1.name)
+							table.insert(c1.alliances, c2.name)
+							return 0
 						end
 
 						return -1
@@ -83,50 +81,48 @@ return
 
 						if not patron then
 							if c1.majority == c2.majority then
-								if c1.relations[c2.name] then
-									if c1.relations[c2.name] > 85 then
-										c1:event(parent, "Annexed "..c2.name)
-										c2:event(parent, "Annexed by "..c1.name)
+								if c1.relations[c2.name] and c1.relations[c2.name] > 85 then
+									c1:event(parent, "Annexed "..c2.name)
+									c2:event(parent, "Annexed by "..c1.name)
 
-										local newr = Region:new()
-										newr.name = c2.name
+									local newr = Region:new()
+									newr.name = c2.name
 
-										for i=#c2.people,1,-1 do
-											c2.people[i].region = newr
-											c2.people[i].nationality = c1.name
-											c2.people[i].military = false
-											c2.people[i].isruler = false
-											c2.people[i].level = 2
-											c2.people[i].title = "Citizen"
-											c2.people[i].parentRuler = false
-											table.insert(c1.people, table.remove(c2.people, i))
-										end
-
-										c2.people = nil
-
-										for i, j in pairs(c2.regions) do
-											table.insert(newr.subregions, j)
-											for k, l in pairs(j.cities) do newr.cities[k] = l end
-										end
-
-										for i=1,#parent.thisWorld.planetdefined do
-											local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-											if parent.thisWorld.planet[x][y][z].country == c2.name then
-												parent.thisWorld.planet[x][y][z].country = c1.name
-												parent.thisWorld.planet[x][y][z].region = c2.name
-												table.insert(c1.nodes, {x, y, z})
-												table.insert(newr.nodes, {x, y, z})
-											end
-										end
-
-										c1.stability = c1.stability-5
-										if c1.stability < 1 then c1.stability = 1 end
-										if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-
-										c1.regions[newr.name] = newr
-										parent.thisWorld:delete(parent, c2)
-										parent.writeMap = true
+									for i=#c2.people,1,-1 do
+										c2.people[i].region = newr
+										c2.people[i].nationality = c1.name
+										c2.people[i].military = false
+										c2.people[i].isruler = false
+										c2.people[i].level = 2
+										c2.people[i].title = "Citizen"
+										c2.people[i].parentRuler = false
+										table.insert(c1.people, table.remove(c2.people, i))
 									end
+
+									c2.people = nil
+
+									for i, j in pairs(c2.regions) do
+										table.insert(newr.subregions, j)
+										for k, l in pairs(j.cities) do newr.cities[k] = l end
+									end
+
+									for i=1,#parent.thisWorld.planetdefined do
+										local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
+										if parent.thisWorld.planet[x][y][z].country == c2.name then
+											parent.thisWorld.planet[x][y][z].country = c1.name
+											parent.thisWorld.planet[x][y][z].region = c2.name
+											table.insert(c1.nodes, {x, y, z})
+											table.insert(newr.nodes, {x, y, z})
+										end
+									end
+
+									c1.stability = c1.stability-5
+									if c1.stability < 1 then c1.stability = 1 end
+									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
+
+									c1.regions[newr.name] = newr
+									parent.thisWorld:delete(parent, c2)
+									parent.writeMap = true
 								end
 							end
 						end
@@ -578,26 +574,24 @@ return
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
-						if c1.relations[c2.name] then
-							if c1.relations[c2.name] < 21 then
-								c1:event(parent, "Invaded "..c2.name)
-								c2:event(parent, "Invaded by "..c1.name)
+						if c1.relations[c2.name] and c1.relations[c2.name] < 21 then
+							c1:event(parent, "Invaded "..c2.name)
+							c2:event(parent, "Invaded by "..c1.name)
 
-								c1.stability = c1.stability-5
-								c2.stability = c2.stability-10
-								if c1.stability < 1 then c1.stability = 1 end
-								if c2.stability < 1 then c2.stability = 1 end
-								c1:setPop(parent, math.ceil(c1.population/1.25))
-								c2:setPop(parent, math.ceil(c2.population/1.75))
+							c1.stability = c1.stability-5
+							c2.stability = c2.stability-10
+							if c1.stability < 1 then c1.stability = 1 end
+							if c2.stability < 1 then c2.stability = 1 end
+							c1:setPop(parent, math.ceil(c1.population/1.25))
+							c2:setPop(parent, math.ceil(c2.population/1.75))
 
-								local rcount = 0
-								for q, b in pairs(c2.regions) do rcount = rcount+1 end
-								if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
-									local c = parent:randomChoice(c2.regions)
-									if reg then
-										while reg:borders(parent, c1) == 0 do reg = parent:randomChoice(c2.regions) end
-										parent:regionTransfer(c1, c2, reg.name, false)
-									end
+							local rcount = 0
+							for q, b in pairs(c2.regions) do rcount = rcount+1 end
+							if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
+								local c = parent:randomChoice(c2.regions)
+								if reg then
+									while reg:borders(parent, c1) == 0 do reg = parent:randomChoice(c2.regions) end
+									parent:regionTransfer(c1, c2, reg.name, false)
 								end
 							end
 						end
@@ -819,11 +813,9 @@ return
 						for i=1,#c2.ongoing do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
 						if c1:borders(parent, c2) == 0 then return -1 end
 
-						if c1.relations[c2.name] then
-							if c1.relations[c2.name] < 30 then
-								self.target = c2
-								return 0
-							end
+						if c1.relations[c2.name] and c1.relations[c2.name] < 30 then
+							self.target = c2
+							return 0
 						end
 
 						return -1
