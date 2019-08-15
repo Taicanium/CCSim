@@ -299,7 +299,10 @@ return
 				end
 
 				for i, cp in pairs(self.countries) do
-					if not self.cColors[cp.name] then
+					if not self.cColors[cp.name] or not self.cTriplets[cp.name] then
+						self.cColors[cp.name] = nil
+						self.cTriplets[cp.name] = nil
+						
 						local r = math.random(0, 255)
 						local g = math.random(0, 255)
 						local b = math.random(0, 255)
@@ -478,7 +481,9 @@ return
 				local top = 2
 				local bottom = 9
 				local lineLen = 2
-				for i, j in pairs(colors) do
+				local colorKeys = parent:getAlphabetical(colors)
+				for i=1,#colorKeys do
+					local cA = colorKeys[i]
 					lineLen = lineLen+10
 					if lineLen >= columnCount then
 						lineLen = 12
@@ -486,8 +491,8 @@ return
 					end
 					if not tCols[tLineCount] then tCols[tLineCount] = {} end
 					if not tColWidths[tLineCount] then tColWidths[tLineCount] = -1 end
-					table.insert(tCols[tLineCount], i)
-					local nameLen = i:len()
+					table.insert(tCols[tLineCount], cA)
+					local nameLen = cA:len()
 					if nameLen > tColWidths[tLineCount] then tColWidths[tLineCount] = nameLen end
 				end
 				local colSum = 0

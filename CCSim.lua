@@ -332,7 +332,7 @@ function simNew()
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
-				CCSCommon:getAlphabeticalCountries()
+				CCSCommon:getAlphabetical()
 			end
 
 			done = true

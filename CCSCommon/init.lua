@@ -536,7 +536,7 @@ return
 							end
 
 							parent.thisWorld:add(newl)
-							parent:getAlphabeticalCountries()
+							parent:getAlphabetical()
 
 							c.stability = c.stability-math.random(3, 10)
 							if c.stability < 1 then c.stability = 1 end
@@ -1441,7 +1441,7 @@ return
 				f:close()
 				f = nil
 
-				self:getAlphabeticalCountries()
+				self:getAlphabetical()
 
 				UI:printf("Constructing initial populations...\n")
 				self.numCountries = 0
@@ -1506,38 +1506,39 @@ return
 				return acOut
 			end,
 
-			getAlphabeticalCountries = function(self)
-				if self.showinfo == 1 then
-					local cKeys = {}
-					for i, cp in pairs(self.thisWorld.countries) do
-						if #cKeys ~= 0 then
-							local found = false
-							for j=1,#cKeys do if not found then
-								local ind = 1
-								local chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-								local chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
-								while chr2 == chr1 do
-									ind = ind+1
-									chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-									chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
-								end
-								if not chr1 then
-									table.insert(cKeys, j+1, i)
-									found = true
-								elseif not chr2 then
-									table.insert(cKeys, j, i)
-									found = true
-								elseif chr2 < chr1 then
-									table.insert(cKeys, j, i)
-									found = true
-								end
-							end end
-							if not found then table.insert(cKeys, i) end
-						else table.insert(cKeys, i) end
-					end
-
-					self.alpha = cKeys
+			getAlphabetical = function(self, t)
+				local data = t
+				if not data then data = self.thisWorld.countries end
+				local cKeys = {}
+				for i, cp in pairs(data) do
+					if #cKeys ~= 0 then
+						local found = false
+						for j=1,#cKeys do if not found then
+							local ind = 1
+							local chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+							local chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
+							while chr2 == chr1 do
+								ind = ind+1
+								chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
+								chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
+							end
+							if not chr1 then
+								table.insert(cKeys, j+1, i)
+								found = true
+							elseif not chr2 then
+								table.insert(cKeys, j, i)
+								found = true
+							elseif chr2 < chr1 then
+								table.insert(cKeys, j, i)
+								found = true
+							end
+						end end
+						if not found then table.insert(cKeys, i) end
+					else table.insert(cKeys, i) end
 				end
+
+				if not t then self.alpha = cKeys end
+				return cKeys
 			end,
 
 			getRulerString = function(self, data)
