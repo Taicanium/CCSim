@@ -650,7 +650,7 @@ return
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
 
-				self.stability = self.stability+math.random(-2, 3)
+				self.stability = self.stability+math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
