@@ -432,12 +432,11 @@ return
 						for k=1,pixelsPerUnit do if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end end
 						deviated = deviated+deviation
 						while deviated >= 1 do
-							if column[j].land and self.cTriplets[column[j].country] then
-								table.insert(stretched[i], self.cTriplets[column[j].country])
-								if not colors[column[j].country] then colors[column[j].country] = self.cTriplets[column[j].country] end
+							if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country])
 							else table.insert(stretched[i], {22, 22, 170}) end
 							deviated = deviated-1
 						end
+						if self.cTriplets[column[j].country] and not colors[column[j].country] then colors[column[j].country] = self.cTriplets[column[j].country] end
 					end
 				end
 				
