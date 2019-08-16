@@ -91,6 +91,7 @@ return
 			--    1: This country borders the specified other country over water.
 			--    2: This country borders the specified other country directly.
 			borders = function(self, parent, other)
+				if not other then return 0 end
 				local border = 0
 				for i=1,#parent.thisWorld.planetdefined do
 					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])

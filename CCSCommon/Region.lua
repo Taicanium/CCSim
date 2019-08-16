@@ -21,6 +21,7 @@ return
 			--    3: This region borders the specified country directly.
 			--    4: This region borders the specified region directly.
 			borders = function(self, parent, other)
+				if not other then return 0 end
 				local border = 0
 				for i=1,#parent.thisWorld.planetdefined do
 					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
