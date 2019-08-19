@@ -249,8 +249,13 @@ function gedReview(f)
 			end
 		end end
 
-		UI:printc("\n\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
-		if #matches > 0 then UI:printc("N to move to the next match.\nP to move to the previous match.\n") end
+		UI:printc("\n")
+		if #matches > 0 then UI:printc("\nViewing match %d/%d.", mi, #matches) end
+		UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
+		if #matches > 0 then
+			if mi < #matches then UI:printc("N to move to the next match.\n") end
+			if mi > 1 then UI:printc("P to move to the previous match.\n") end
+		end
 		UI:printp("\n > ")
 		local datin = UI:readl()
 		local oldFI = fi
