@@ -1086,29 +1086,6 @@ return
 			years = 1,
 			yearstorun = 0,
 
-			clearData = function(self, t)
-				if not t then
-					self:clearData(self.alpha)
-					self:clearData(self.disabled)
-					self:clearData(self.fam)
-					self:clearData(self.final)
-					self:clearData(self.indi)
-					self:clearData(self.royals)
-					self:clearData(self.thisWorld.countries)
-					self:clearData(self.thisWorld.planet)
-					self:clearData(self.thisWorld)
-					self.famCount = 0
-					self.indiCount = 0
-					self.maxyears = 1
-					self.numCountries = 0
-					self.years = 1
-					self.yearstorun = 0
-				else for i, j in pairs(t) do
-					t[i] = nil
-					j = nil
-				end end
-			end,
-
 			deepcopy = function(self, obj)
 				local res = nil
 				local t = type(obj)
