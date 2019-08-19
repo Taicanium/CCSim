@@ -300,8 +300,7 @@ function simNew()
 
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
-	UI:printc("\nDo you want to show detailed info in the console (y/n)?\n")
-	UI:printp("Answering N may result in a slight speedup. > ")
+	UI:printp("\nDo you want to show detailed info in the console (y/n)? > ")
 	local datin = UI:readl()
 
 	CCSCommon.showinfo = 0
