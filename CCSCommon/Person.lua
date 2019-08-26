@@ -88,7 +88,23 @@ return
 							else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 						end
 
-						if surnames[1] == surnames[2] then nn.surname = surnames[1] else nn.surname = surnames[1].."-"..surnames[2] end
+						if surnames[1] == surnames[2] then nn.surname = surnames[1] else
+							local lastAnc = self
+							local thisAnc = self.father
+							while thisAnc do
+								lastAnc = thisAnc
+								thisAnc = lastAnc.father
+							end
+							local anc1 = lastAnc
+							lastAnc = self.spouse
+							thisAnc = self.spouse.father
+							while thisAnc do
+								lastAnc = thisAnc
+								thisAnc = lastAnc.father
+							end
+							local anc2 = lastAnc
+							if anc1.surname ~= anc2.surname then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
+						end
 					end
 				end
 

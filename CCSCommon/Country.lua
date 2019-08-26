@@ -431,13 +431,13 @@ return
 				parent:rseed()
 
 				if self.people[newRuler].gender == "Female" then
-					self.people[newRuler].rulerName = parent:randomChoice(self.frulernames)
+					if parent.systems[self.system].dynastic then self.people[newRuler].rulerName = parent:randomChoice(self.frulernames) end
 
 					if parent.systems[self.system].franks then
 						self.people[newRuler].level = #parent.systems[self.system].franks
 						self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
 					end
-				else self.people[newRuler].rulerName = parent:randomChoice(self.rulernames) end
+				else if parent.systems[self.system].dynastic then self.people[newRuler].rulerName = parent:randomChoice(self.rulernames) end end
 
 				self.hasruler = 0
 				self.ruler = self.people[newRuler]
@@ -469,7 +469,7 @@ return
 
 					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				else
-					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
 			end,
 
