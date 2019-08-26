@@ -117,7 +117,10 @@ return
 						o1 = parent:randomChoice(op, true)
 						o2 = parent:randomChoice(op, true)
 					end
-					nn.surname = parent:namecheck(nn.surname:gsub(op[o1], op[o2], 1))
+					local segments = {}
+					for x in nn.surname:match("%a+") do table.insert(segments, parent:namecheck(x:gsub(op[o1], op[o2], 1))) end
+					for x=1,#segments-1 do nn.surname = nn.surname..segments[x].."-" end
+					nn.surname = nn.surname..segments[#segments]
 				end
 
 				local sys = parent.systems[nl.system]
