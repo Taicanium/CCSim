@@ -27,3 +27,6 @@ Perhaps use something like this format:
 00 00 00 01						(Number of entries in the data table)
 00 00 00 00						(Length of this entry in the data table in bytes)
 (etc.)
+
+A LOT of RAM could be saved by recording people and their families in a file, reading that file back at the end of the simulation, and using the data to generate the GEDCOM output; in contrast to keeping all of this information in memory. Over the course of a 10,000-year simulation, RAM usage approaches over 60 GB, and while genetic data is not responsible for all of this, it is an extremely significant part: I estimate it may account for as much as three-quarters. Granted, this could probably be reduced quite a bit by making the whole thing more efficient in and of itself; but disk usage would free up far, far more resources for longer simulations.
+I'd prefer to assign this priority, but it will take a fair amount of re-writing. And knowing my organizational levels these days it may be more of a "when I'm awake and not exhausted" type of situation.
