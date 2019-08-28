@@ -44,63 +44,58 @@ return
 			end,
 
 			printc = function(self, fmt, args)
-				if not args then args = {0} end
 				if not self.ready then self:init() end
-				if self.stdscr then
-					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
-				else io.write(string.format(fmt, table.unpack(args))) end
+				local str = fmt
+				if args then str = string.format(fmt, table.unpack(args)) end
+				if self.stdscr then self.stdscr:clrtoeol() end
+				self:write(str)
 			end,
 
 			printf = function(self, fmt, args)
-				if not args then args = {0} end
 				if not self.ready then self:init() end
+				local str = fmt
+				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
+				else io.write("\r") end
+				self:write(str)
+				if self.stdscr() then
 					self.stdscr:addstr("\n")
-					local y2, x2 = self.stdscr:getyx()
-					self.stdscr:move(y2, 0)
-					UI:refresh()
-				else
-					io.write("\r")
-					io.write(string.format(fmt, table.unpack(args)))
-					io.write("\n")
-				end
+					local y, x = self.stdscr:getyx()
+					self.stdscr:move(y, 0)
+					self.stdscr:clrtoeol()
+				else io.write("\r\n") end
 			end,
 
 			printl = function(self, fmt, args)
-				if not args then args = {0} end
 				if not self.ready then self:init() end
+				local str = fmt
+				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
+				else io.write("\r") end
+				self:write(str)
+				if self.stdscr then
+					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
-					UI:refresh()
-				else
-					io.write("\r")
-					io.write(string.format(fmt, table.unpack(args)))
-					io.write("\r")
-				end
+					self.stdscr:clrtoeol()
+				else io.write("\r") end
 			end,
 
 			printp = function(self, fmt, args)
-				if not args then args = {0} end
 				if not self.ready then self:init() end
+				local str = fmt
+				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
-					UI:refresh()
-				else
-					io.write("\r")
-					io.write(string.format(fmt, table.unpack(args)))
-				end
+				else io.write("\r") end
+				self:write(str)
 			end,
 
 			readl = function(self)
@@ -123,6 +118,13 @@ return
 					self.x = curses:cols()
 					self.y = curses:lines()
 				end
+			end,
+			
+			write = function(self, fmt)
+				if self.stdscr then
+					self.stdscr:addstr(fmt)
+					UI:refresh()
+				else io.write(fmt) end
 			end
 		}
 
