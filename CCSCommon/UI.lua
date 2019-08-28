@@ -46,7 +46,7 @@ return
 			printc = function(self, fmt)
 				if not self.ready then self:init() end
 				if self.stdscr then self.stdscr:clrtoeol() end
-				self:write(str)
+				self:write(fmt)
 			end,
 
 			printf = function(self, fmt)
@@ -56,7 +56,7 @@ return
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
 				else io.write("\r") end
-				self:write(str)
+				self:write(fmt)
 				if self.stdscr then
 					self.stdscr:addstr("\n")
 					local y, x = self.stdscr:getyx()
@@ -72,7 +72,7 @@ return
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
 				else io.write("\r") end
-				self:write(str)
+				self:write(fmt)
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -87,7 +87,7 @@ return
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
 				else io.write("\r") end
-				self:write(str)
+				self:write(fmt)
 			end,
 
 			readl = function(self)
