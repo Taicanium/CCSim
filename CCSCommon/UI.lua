@@ -43,59 +43,59 @@ return
 				self.ready = true
 			end,
 
-			printc = function(self, fmt, ...)
+			printc = function(self, fmt, args)
 				if not self.ready then self:init() end
 				if self.stdscr then
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, ...))
-				else io.write(string.format(fmt, ...)) end
+					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
+				else io.write(string.format(fmt, table.unpack(args))) end
 			end,
 
-			printf = function(self, fmt, ...)
+			printf = function(self, fmt, args)
 				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, ...))
+					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
 					self.stdscr:addstr("\n")
 					local y2, x2 = self.stdscr:getyx()
 					self.stdscr:move(y2, 0)
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(string.format(fmt, ...))
+					io.write(string.format(fmt, table.unpack(args)))
 					io.write("\n")
 				end
 			end,
 
-			printl = function(self, fmt, ...)
+			printl = function(self, fmt, args)
 				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, ...))
+					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
 					self.stdscr:move(y, 0)
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(string.format(fmt, ...))
+					io.write(string.format(fmt, table.unpack(args)))
 					io.write("\r")
 				end
 			end,
 
-			printp = function(self, fmt, ...)
+			printp = function(self, fmt, args)
 				if not self.ready then self:init() end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-					self.stdscr:addstr(string.format(fmt, ...))
+					self.stdscr:addstr(string.format(fmt, table.unpack(args)))
 					UI:refresh()
 				else
 					io.write("\r")
-					io.write(string.format(fmt, ...))
+					io.write(string.format(fmt, table.unpack(args)))
 				end
 			end,
 

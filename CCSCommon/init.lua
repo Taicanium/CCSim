@@ -1215,7 +1215,7 @@ return
 					UI:printf("Generating GEDCOM data...")
 					for i=1,#self.royals do
 						self:setGed(self.royals[i], false)
-						UI:printl("%.2f%% done", (i/#self.royals*10000)/100)
+						UI:printl("%.2f%% done", {(i/#self.royals*10000)/100})
 					end
 
 					UI:printf("Sorting GEDCOM individual data...")
@@ -1261,7 +1261,7 @@ return
 							end
 						end
 						of:flush()
-						UI:printl("%.2f%% done", (i/#indiSorted*10000)/100)
+						UI:printl("%.2f%% done", {(i/#indiSorted*10000)/100})
 					end
 					UI:printf("Writing family data...")
 					for i=1,#famSorted do
@@ -1271,7 +1271,7 @@ return
 							for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
 							of:flush()
 						end
-						UI:printl("%.2f%% done", (i/#famSorted*10000)/100)
+						UI:printl("%.2f%% done", {(i/#famSorted*10000)/100})
 					end
 
 					of:write("\n0 TRLR")

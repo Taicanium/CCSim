@@ -77,7 +77,7 @@ function gedReview(f)
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then ic = ic+1 fi = ic
 		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 fi = fc end
-		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl("%d People, %d Families", ic, fc) end
+		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl("%d People, %d Families", {ic, fc}) end
 		l = f:read("*l")
 		split = nil
 	end
@@ -373,7 +373,7 @@ function simReview()
 					if eventFile then
 						sCount = sCount+1
 						table.insert(sims, x)
-						UI:printf("%d\t-\t%s", sCount, os.date('%Y-%m-%d %H:%M:%S', xn))
+						UI:printf("%d\t-\t%s", {sCount, os.date('%Y-%m-%d %H:%M:%S', xn)})
 					end
 				end
 			end
@@ -399,11 +399,11 @@ function simReview()
 			local _SELECTED = true
 			while _SELECTED do
 				UI:clear()
-				UI:printf("\nSelected simulation performed %s\n", os.date('%Y-%m-%d %H:%M:%S', dirStamp))
+				UI:printf("\nSelected simulation performed %s\n", {os.date('%Y-%m-%d %H:%M:%S', dirStamp)})
 				local ops = {}
 				local thisOp = 1
-				-- if eventFile then ops[thisOp] = "events.txt" UI:printf("%d\t-\t%s", thisOp, "Events and history") thisOp = thisOp+1 end
-				if gedFile then ops[thisOp] = "royals.ged" UI:printf("%d\t-\t%s", thisOp, "Royal families and relations") thisOp = thisOp+1 end
+				-- if eventFile then ops[thisOp] = "events.txt" UI:printf("%d\t-\t%s", {thisOp, "Events and history"}) thisOp = thisOp+1 end
+				if gedFile then ops[thisOp] = "royals.ged" UI:printf("%d\t-\t%s", {thisOp, "Royal families and relations"}) thisOp = thisOp+1 end
 
 				UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
 				UI:printp(" > ")

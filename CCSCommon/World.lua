@@ -44,7 +44,7 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone+1
-							if math.fmod(bdone, 10000) == 0 then UI:printl("%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100) end
+							if math.fmod(bdone, 10000) == 0 then UI:printl("%.2f%% done", {(bdone/math.pow((bRad*2)+1, 3)*10000)/100}) end
 						end
 					end
 				end end
@@ -64,7 +64,7 @@ return
 				local SPU = 1/self.planetR
 				local gridVol = math.pow((self.planetR*2)+1, 3)
 
-				UI:printf("Constructing voxel planet with radius of %d units...", self.planetR)
+				UI:printf("Constructing voxel planet with radius of %d units...", {self.planetR})
 
 				local rdone = 0
 
@@ -92,7 +92,7 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then UI:printl("%.2f%% done", (rdone/gridVol*10000)/100) end
+							if math.fmod(rdone, 10000) == 0 then UI:printl("%.2f%% done", {(rdone/gridVol*10000)/100}) end
 						end
 					end
 				end
@@ -163,7 +163,7 @@ return
 						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
 					end
 
-					if math.fmod(doneLand, 100) == 0 then UI:printl("%.2f%% done", (doneLand/maxLand*10000)/100) end
+					if math.fmod(doneLand, 100) == 0 then UI:printl("%.2f%% done", {(doneLand/maxLand*10000)/100}) end
 				end
 
 				for i=1,planetSize do
@@ -238,7 +238,7 @@ return
 					if defined == prevDefined then allDefined = true end
 					prevDefined = defined
 
-					UI:printl("%.2f%% done", (defined/planetSize*10000)/100)
+					UI:printl("%.2f%% done", {(defined/planetSize*10000)/100})
 				end
 
 				for i=1,planetSize do
