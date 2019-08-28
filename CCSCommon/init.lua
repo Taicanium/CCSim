@@ -1441,7 +1441,7 @@ return
 					end
 
 					cDone = cDone+1
-					UI:printl("Country %d/%d", cDone, self.numCountries)
+					UI:printl("Country %d/%d", {cDone, self.numCountries})
 				end
 
 				self.thisWorld.initialState = false

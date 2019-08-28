@@ -91,7 +91,7 @@ function gedReview(f)
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
-			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", fi, ic) end
+			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", {fi, ic}) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			local index = tonumber(ifs)
 			if index then
@@ -101,7 +101,7 @@ function gedReview(f)
 			end
 		end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then
-			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d Families", fi, fc) end
+			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d Families", {fi, ic}) end
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
 			if index then
@@ -250,7 +250,7 @@ function gedReview(f)
 		end end
 
 		UI:printc("\n")
-		if #matches > 0 then UI:printc("\nViewing match %d/%d.", mi, #matches) end
+		if #matches > 0 then UI:printc("\nViewing match %d/%d.", {mi, #matches}) end
 		UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
 		if #matches > 0 then
 			if mi < #matches then UI:printc("N to move to the next match.\n") end
@@ -279,7 +279,7 @@ function gedReview(f)
 					for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
 					if allMatch then table.insert(matches, j) end
 					scanned = scanned + 1
-					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl("Scanned %d/%d people...", scanned, ic) end
+					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl("Scanned %d/%d people...", {scanned, ic}) end
 				end
 				if #matches > 0 then fi = matches[1] mi = 1 end
 			end
@@ -332,7 +332,7 @@ function simNew()
 			CCSCommon.numCountries = math.random(7, 12)
 
 			for j=1,CCSCommon.numCountries do
-				UI:printl("Country %d/%d", j, CCSCommon.numCountries)
+				UI:printl("Country %d/%d", {j, CCSCommon.numCountries})
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)

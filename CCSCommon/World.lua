@@ -178,7 +178,7 @@ return
 				local ci = 1
 
 				for i, cp in pairs(self.countries) do
-					UI:printl("Country %d/%d", ci, parent.numCountries)
+					UI:printl("Country %d/%d", {ci, parent.numCountries})
 					ci = ci+1
 
 					local located = true
@@ -250,7 +250,7 @@ return
 				UI:printf("Defining regional boundaries...")
 
 				for i, cp in pairs(self.countries) do
-					UI:printl("Country %d/%d", ci, parent.numCountries)
+					UI:printl("Country %d/%d", {ci, parent.numCountries})
 					ci = ci+1
 					cp:setTerritory(parent)
 				end
@@ -837,7 +837,7 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then
 					if self.initialState then
-						UI:printf("Country %d/%d", self.initialPop, parent.numCountries)
+						UI:printf("Country %d/%d", {self.initialPop, parent.numCountries})
 						self.initialPop = self.initialPop+1
 					end
 					cp:update(parent)
