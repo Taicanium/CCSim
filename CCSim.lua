@@ -300,19 +300,19 @@ function simNew()
 
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
-	UI:printp("\nDo you want to show detailed info in the console (y/n? > "))
+	UI:printp("\nDo you want to show detailed info in the console (y/n? > ")
 	local datin = UI:readl()
 
 	CCSCommon.showinfo = 0
 	if datin:lower() == "y" then CCSCommon.showinfo = 1 end
 
-	UI:printp("\nDo you want to produce maps of the world at major events (y/n? > "))
+	UI:printp("\nDo you want to produce maps of the world at major events (y/n? > ")
 	datin = UI:readl()
 
 	CCSCommon.doMaps = false
 	if datin:lower() == "y" then CCSCommon.doMaps = true end
 
-	UI:printp("\nDo you want to produce a GEDCOM file for royal lines (y/n? > "))
+	UI:printp("\nDo you want to produce a GEDCOM file for royal lines (y/n? > ")
 	datin = UI:readl()
 
 	CCSCommon.doGed = false
