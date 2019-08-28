@@ -77,7 +77,7 @@ function gedReview(f)
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then ic = ic+1 fi = ic
 		elseif split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then fc = fc+1 fi = fc end
-		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl("%d People, %d Families", {ic, fc}) end
+		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People, %d Families", ic, fc)) end
 		l = f:read("*l")
 		split = nil
 	end
@@ -91,7 +91,7 @@ function gedReview(f)
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "INDI" then
-			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d People", {fi, ic}) end
+			if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d People", fi, ic)) end
 			local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 			local index = tonumber(ifs)
 			if index then
@@ -101,7 +101,7 @@ function gedReview(f)
 			end
 		end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then
-			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl("%d/%d Families", {fi, ic}) end
+			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, ic)) end
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
 			if index then
@@ -250,7 +250,7 @@ function gedReview(f)
 		end end
 
 		UI:printc("\n")
-		if #matches > 0 then UI:printc("\nViewing match %d/%d.", {mi, #matches}) end
+		if #matches > 0 then UI:printc(string.format("\nViewing match %d/%d.", mi, #matches)) end
 		UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
 		if #matches > 0 then
 			if mi < #matches then UI:printc("N to move to the next match.\n") end
@@ -279,7 +279,7 @@ function gedReview(f)
 					for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
 					if allMatch then table.insert(matches, j) end
 					scanned = scanned + 1
-					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl("Scanned %d/%d people...", {scanned, ic}) end
+					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, ic)) end
 				end
 				if #matches > 0 then fi = matches[1] mi = 1 end
 			end
@@ -300,19 +300,19 @@ function simNew()
 
 	CCSCommon.maxyears = CCSCommon.maxyears+1 -- We start at year 1.
 
-	UI:printp("\nDo you want to show detailed info in the console (y/n)? > ")
+	UI:printp("\nDo you want to show detailed info in the console (y/n? > "))
 	local datin = UI:readl()
 
 	CCSCommon.showinfo = 0
 	if datin:lower() == "y" then CCSCommon.showinfo = 1 end
 
-	UI:printp("\nDo you want to produce maps of the world at major events (y/n)? > ")
+	UI:printp("\nDo you want to produce maps of the world at major events (y/n? > "))
 	datin = UI:readl()
 
 	CCSCommon.doMaps = false
 	if datin:lower() == "y" then CCSCommon.doMaps = true end
 
-	UI:printp("\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+	UI:printp("\nDo you want to produce a GEDCOM file for royal lines (y/n? > "))
 	datin = UI:readl()
 
 	CCSCommon.doGed = false
@@ -332,7 +332,7 @@ function simNew()
 			CCSCommon.numCountries = math.random(7, 12)
 
 			for j=1,CCSCommon.numCountries do
-				UI:printl("Country %d/%d", {j, CCSCommon.numCountries})
+				UI:printl(string.format("Country %d/%d", j, CCSCommon.numCountries))
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
@@ -373,7 +373,7 @@ function simReview()
 					if eventFile then
 						sCount = sCount+1
 						table.insert(sims, x)
-						UI:printf("%d\t-\t%s", {sCount, os.date('%Y-%m-%d %H:%M:%S', xn)})
+						UI:printf(string.format("%d\t-\t%s", sCount, os.date('%Y-%m-%d %H:%M:%S', xn)))
 					end
 				end
 			end
@@ -399,11 +399,11 @@ function simReview()
 			local _SELECTED = true
 			while _SELECTED do
 				UI:clear()
-				UI:printf("\nSelected simulation performed %s\n", {os.date('%Y-%m-%d %H:%M:%S', dirStamp)})
+				UI:printf(string.format("\nSelected simulation performed %s\n", os.date('%Y-%m-%d %H:%M:%S', dirStamp)))
 				local ops = {}
 				local thisOp = 1
-				-- if eventFile then ops[thisOp] = "events.txt" UI:printf("%d\t-\t%s", {thisOp, "Events and history"}) thisOp = thisOp+1 end
-				if gedFile then ops[thisOp] = "royals.ged" UI:printf("%d\t-\t%s", {thisOp, "Royal families and relations"}) thisOp = thisOp+1 end
+				-- if eventFile then ops[thisOp] = "events.txt" UI:printf(string.format("%d\t-\t%s", thisOp, "Events and history")) thisOp = thisOp+1 end
+				if gedFile then ops[thisOp] = "royals.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
 
 				UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
 				UI:printp(" > ")

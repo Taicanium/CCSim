@@ -43,18 +43,14 @@ return
 				self.ready = true
 			end,
 
-			printc = function(self, fmt, args)
+			printc = function(self, fmt)
 				if not self.ready then self:init() end
-				local str = fmt
-				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then self.stdscr:clrtoeol() end
 				self:write(str)
 			end,
 
-			printf = function(self, fmt, args)
+			printf = function(self, fmt)
 				if not self.ready then self:init() end
-				local str = fmt
-				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -69,10 +65,8 @@ return
 				else io.write("\r\n") end
 			end,
 
-			printl = function(self, fmt, args)
+			printl = function(self, fmt)
 				if not self.ready then self:init() end
-				local str = fmt
-				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
@@ -86,10 +80,8 @@ return
 				else io.write("\r") end
 			end,
 
-			printp = function(self, fmt, args)
+			printp = function(self, fmt)
 				if not self.ready then self:init() end
-				local str = fmt
-				if args then str = string.format(fmt, table.unpack(args)) end
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
