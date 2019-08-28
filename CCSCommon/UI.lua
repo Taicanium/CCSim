@@ -61,7 +61,7 @@ return
 					self.stdscr:clrtoeol()
 				else io.write("\r") end
 				self:write(str)
-				if self.stdscr() then
+				if self.stdscr then
 					self.stdscr:addstr("\n")
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
