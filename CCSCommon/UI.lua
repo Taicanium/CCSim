@@ -15,7 +15,7 @@ return
 
 			clear = function(self, holdRef)
 				if not self.ready then self:init() end
-				if cursesstatus then
+				if self.stdscr then
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
 					if not holdRef then self:refresh() end
@@ -55,14 +55,14 @@ return
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-				else io.write("\r") end
+				else self:write("\r") end
 				self:write(fmt)
 				if self.stdscr then
 					self.stdscr:addstr("\n")
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-				else io.write("\r\n") end
+				else self:write("\r\n") end
 			end,
 
 			printl = function(self, fmt)
@@ -71,13 +71,13 @@ return
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-				else io.write("\r") end
+				else self:write("\r") end
 				self:write(fmt)
 				if self.stdscr then
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-				else io.write("\r") end
+				else self:write("\r") end
 			end,
 
 			printp = function(self, fmt)
@@ -86,7 +86,7 @@ return
 					local y, x = self.stdscr:getyx()
 					self.stdscr:move(y, 0)
 					self.stdscr:clrtoeol()
-				else io.write("\r") end
+				else self:write("\r") end
 				self:write(fmt)
 			end,
 
@@ -105,7 +105,7 @@ return
 
 			refresh = function(self)
 				if not self.ready then self:init() end
-				if cursesstatus then
+				if self.stdscr then
 					self.stdscr:refresh()
 					self.x = curses:cols()
 					self.y = curses:lines()
@@ -113,9 +113,10 @@ return
 			end,
 			
 			write = function(self, fmt)
+				if not self.ready then self:init() end
 				if self.stdscr then
 					self.stdscr:addstr(fmt)
-					UI:refresh()
+					self:refresh()
 				else io.write(fmt) end
 			end
 		}
