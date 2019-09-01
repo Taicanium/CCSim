@@ -34,7 +34,6 @@ return
 				o.regions = {}
 				o.relations = {}
 				o.ruler = nil
-				o.rulerage = 0
 				o.rulernames = {}
 				o.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
 				o.rulers = {}
@@ -54,7 +53,6 @@ return
 					table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
 					for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
 				end
-				if n.isruler then n.rulerInfo.ruledTo = parent.years end
 				n.nationality = self.name
 				n.region = nil
 				n.city = nil
@@ -70,7 +68,6 @@ return
 							for i=n.spouse.pIndex,#parent.thisWorld.countries[n.spouse.nationality].people do parent.thisWorld.countries[n.spouse.nationality].people[i].pIndex = i end
 						end
 					end
-					if n.spouse.isruler then n.spouse.rulerInfo.ruledTo = parent.years end
 					n.spouse.nationality = self.name
 					n.spouse.region = nil
 					n.spouse.city = nil
@@ -424,7 +421,6 @@ return
 				for i=1,#self.people do self.people[i].isruler = false end
 
 				self.people[newRuler].prevtitle = self.people[newRuler].title
-
 				self.people[newRuler].level = #parent.systems[self.system].ranks
 				self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
 
@@ -432,7 +428,6 @@ return
 
 				if self.people[newRuler].gender == "Female" then
 					if parent.systems[self.system].dynastic then self.people[newRuler].rulerName = parent:randomChoice(self.frulernames) end
-
 					if parent.systems[self.system].franks then
 						self.people[newRuler].level = #parent.systems[self.system].franks
 						self.people[newRuler].title = parent.systems[self.system].franks[self.people[newRuler].level]
@@ -444,7 +439,6 @@ return
 				self.people[newRuler].isruler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
-				self.rulerage = self.people[newRuler].age
 				self.rulerParty = self.parties[self.people[newRuler].party]
 
 				if parent.systems[self.system].dynastic then
@@ -452,19 +446,15 @@ return
 
 					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName and self.rulers[i].title == self.people[newRuler].rulerTitle then namenum = namenum+1 end end
 
-					self.people[newRuler].number = namenum
-					self.people[newRuler].maternalLineTimes = 0
-					self.people[newRuler].royalSystem = parent.systems[self.system].name
-
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name) end
 
 					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
 
-					self.people[newRuler].rulerInfo = {LastRoyalAncestor=self.people[newRuler].LastRoyalAncestor, royalGenerations=self.people[newRuler].royalGenerations, ruledFrom=parent.years, ruledTo=-1}
-
+					self.people[newRuler].number = namenum
+					self.people[newRuler].maternalLineTimes = 0
+					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
-
 					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace.." "..tostring(self.people[newRuler].number)
 
 					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
@@ -478,7 +468,6 @@ return
 
 				for i=1,#parent.thisWorld.planetdefined do
 					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-
 					if parent.thisWorld.planet[x][y][z].country == self.name then
 						table.insert(self.nodes, {x, y, z})
 						parent.thisWorld.planet[x][y][z].region = ""
@@ -486,9 +475,8 @@ return
 				end
 
 				local rCount = 0
-				for i, j in pairs(self.regions) do rCount = rCount+1 end
-
 				local maxR = math.ceil(#self.nodes/35)
+				for i, j in pairs(self.regions) do rCount = rCount+1 end
 
 				while rCount > maxR or rCount > #self.nodes do
 					local r = parent:randomChoice(self.regions, true)
@@ -573,9 +561,8 @@ return
 
 				if not patron then for i, j in pairs(self.regions) do
 					local cCount = 0
-					for k, l in pairs(j.cities) do cCount = cCount+1 end
-
 					local maxC = math.ceil(#j.nodes/25)
+					for k, l in pairs(j.cities) do cCount = cCount+1 end
 
 					while cCount > maxC or cCount > #j.nodes do
 						local c = parent:randomChoice(j.cities, true)
@@ -594,7 +581,6 @@ return
 						if not patron then
 							for m=1,#self.nodes do
 								local x, y, z = table.unpack(self.nodes[m])
-
 								if parent.thisWorld.planet[x][y][z].city == l.name then
 									l.x = x
 									l.y = y
@@ -606,12 +592,10 @@ return
 							if not l.x or not l.y or not l.z then
 								local pd = parent:randomChoice(j.nodes)
 								local x, y, z = table.unpack(pd)
-
 								local cFound = false
 								while not cFound do
 									pd = parent:randomChoice(j.nodes)
 									x, y, z = table.unpack(pd)
-
 									if parent.thisWorld.planet[x][y][z].city == "" or parent.thisWorld.planet[x][y][z].city == l.name then cFound = true end
 								end
 
@@ -646,11 +630,9 @@ return
 
 			update = function(self, parent)
 				local f0 = _time()
-
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
-
 				self.stability = self.stability+math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
@@ -664,10 +646,8 @@ return
 				self.hasruler = -1
 				self.age = parent.years-self.founded
 				if self.founded < 1 then self.age = self.age-1 end
-
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 40 end
-
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 				for i, j in pairs(self.parties) do j.popularity = 0 end
 
@@ -743,17 +723,14 @@ return
 						if self.people[i].isruler then
 							self.hasruler = 0
 							self.ruler = self.people[i]
-							self.rulerage = self.people[i].age
 							self.rulerParty = self.parties[self.people[i].party]
 						end
 					end
 				end
 
 				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
-
 				self.averageAge = self.averageAge/#self.people
 				self:checkRuler(parent, false)
-
 				local largest = ""
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do

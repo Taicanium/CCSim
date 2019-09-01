@@ -59,9 +59,6 @@ return
 					rMax = 75
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
-				local planetC = 2*self.planetR*math.pi
-				local APU = 360/planetC
-				local SPU = 1/self.planetR
 				local gridVol = math.pow((self.planetR*2)+1, 3)
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
@@ -101,7 +98,6 @@ return
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
-
 					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
 				end
 
@@ -118,9 +114,7 @@ return
 					if self.planet[x][y][z].land then located = false end
 					while not located do
 						cSeed = parent:randomChoice(self.planetdefined)
-
 						x, y, z = table.unpack(cSeed)
-
 						located = true
 						if self.planet[x][y][z].land then located = false end
 					end
@@ -135,9 +129,7 @@ return
 
 					while not self.planet[x][y][z].waterNeighbors do
 						table.remove(freeNodes, node)
-
 						node = math.random(1, #freeNodes)
-
 						x, y, z = table.unpack(freeNodes[node])
 					end
 
@@ -168,9 +160,7 @@ return
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
-
 					self.planet[x][y][z].neighbors = {}
-
 					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
 				end
 
@@ -182,17 +172,13 @@ return
 					ci = ci+1
 
 					local located = true
-
 					local rnd = parent:randomChoice(self.planetdefined)
-
 					local x, y, z = table.unpack(rnd)
 
 					if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
 					while not located do
 						rnd = parent:randomChoice(self.planetdefined)
-
 						x, y, z = table.unpack(rnd)
-
 						located = true
 						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
 					end
@@ -243,7 +229,6 @@ return
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
-
 					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
 				end
 
@@ -271,7 +256,6 @@ return
 				self.countries[nz.name] = nil
 
 				nz:destroy(parent)
-
 				parent.numCountries = parent.numCountries-1
 			end,
 
@@ -301,20 +285,17 @@ return
 						while not unique do
 							unique = true
 							for k, j in pairs(self.cTriplets) do
-								if j[1] > r-25 and j[1] < r+25 then
-									if j[2] > g-25 and j[2] < g+25 then
-										if j[3] > b-25 and j[3] < b+25 then
-											r = math.random(0, 255)
-											g = math.random(0, 255)
-											b = math.random(0, 255)
+								local unq = (math.abs(r-j[1]))+(math.abs(g-j[2]))+(math.abs(b-j[3]))
+								if unq < 55 then
+									r = math.random(0, 255)
+									g = math.random(0, 255)
+									b = math.random(0, 255)
 
-											unique = false
-										end
-									end
+									unique = false
 								end
 							end
 
-							if r > 225 and g > 225 and b > 225 then
+							if r > 230 and g > 230 and b > 230 then
 								unique = false
 
 								r = math.random(0, 255)
@@ -840,6 +821,7 @@ return
 						UI:printf(string.format("Country %d/%d", self.initialPop, parent.numCountries))
 						self.initialPop = self.initialPop+1
 					end
+					
 					cp:update(parent)
 					
 					if cp.population < 20 then

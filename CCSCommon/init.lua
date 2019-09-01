@@ -232,7 +232,6 @@ return
 						end
 
 						self.status = self.status+(math.random(math.floor(varistab-5), math.ceil(varistab+5))/2)
-
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."%% opposition"
 						elseif self.status >= 10 then statString = tostring(math.abs(math.floor(self.status))).."%% government"
@@ -274,14 +273,13 @@ return
 								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 
-							c.hasruler = -1
-
 							local oldsys = parent.systems[c.system].name
 							c.system = math.random(1, #parent.systems)
 							if not c.snt[parent.systems[c.system].name] then c.snt[parent.systems[c.system].name] = 0 end
 							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
+							c.hasruler = -1
 							c:checkRuler(parent, true)
 
 							local newRuler = nil
@@ -413,11 +411,9 @@ return
 							c.regions[nc.name] = nil
 
 							newl.rulers = {}
-							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
-
 							newl.rulernames = {}
 							newl.frulernames = {}
-
+							for i=1,#c.rulers do table.insert(newl.rulers, c.rulers[i]) end
 							for i=1,#c.rulernames do table.insert(newl.rulernames, c.rulernames[i]) end
 							table.remove(newl.rulernames, math.random(1, #newl.rulernames))
 							table.insert(newl.rulernames, parent:name(true))
@@ -474,7 +470,6 @@ return
 							end
 
 							local pR = nil
-
 							for i=#c.nodes,1,-1 do
 								local x, y, z = table.unpack(c.nodes[i])
 								if parent.thisWorld.planet[x][y][z].country == c.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
@@ -492,7 +487,6 @@ return
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
-
 							newl:set(parent)
 							newl:setTerritory(parent, c, pR)
 
@@ -577,7 +571,6 @@ return
 						if c1.relations[c2.name] and c1.relations[c2.name] < 21 then
 							c1:event(parent, "Invaded "..c2.name)
 							c2:event(parent, "Invaded by "..c1.name)
-
 							c1.stability = c1.stability-5
 							c2.stability = c2.stability-10
 							if c1.stability < 1 then c1.stability = 1 end
@@ -618,8 +611,6 @@ return
 							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 						end
 
-						c.hasruler = -1
-
 						local oldsys = parent.systems[c.system].name
 						while parent.systems[c.system].name == oldsys do c.system = math.random(1, #parent.systems) end
 						if not c.snt[parent.systems[c.system].name] then c.snt[parent.systems[c.system].name] = 0 end
@@ -628,6 +619,7 @@ return
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
+						c.hasruler = -1
 						c:checkRuler(parent, true)
 
 						c.stability = c.stability-15
@@ -702,21 +694,18 @@ return
 						local varistab = parent:strengthFactor(c1)-parent:strengthFactor(self.target)
 
 						ao = parent:getAllyOngoing(c1, self.target, self.name)
-
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
 							if extFactor > 0 then varistab = varistab+(extFactor/10) end
 						end
 
 						ao = parent:getAllyOngoing(self.target, c1, self.name)
-
 						for i=1,#ao do
 							local extFactor = parent:strengthFactor(ao[i])
 							if extFactor < 0 then varistab = varistab+(extFactor/10) end
 						end
 
 						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
-
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..c1.name
@@ -862,7 +851,7 @@ return
 				e={{0, 0, 0, 0, 0, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 1, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 1, 1, 1, 0, 0},
 					{0, 1, 0, 0, 0, 0},
 					{0, 1, 1, 1, 1, 0}},
 				f={{0, 0, 0, 0, 0, 0},
@@ -872,11 +861,11 @@ return
 					{0, 1, 0, 0, 0, 0},
 					{0, 1, 0, 0, 0, 0}},
 				g={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 1, 0},
 					{0, 1, 0, 0, 0, 0},
 					{0, 1, 0, 1, 1, 0},
 					{0, 1, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 0, 1, 1, 1, 0}},
 				h={{0, 0, 0, 0, 0, 0},
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 0, 0, 1, 0},
@@ -999,22 +988,22 @@ return
 					{0, 0, 0, 0, 0, 0}},
 				["-"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 0, 0, 0, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0}},
 				["&"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 1, 1, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 0, 1, 1, 0, 0},
-					{0, 0, 0, 0, 0, 0}},
+					{0, 0, 1, 1, 0, 0}},
 				["+"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 1, 1, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 0, 1, 1, 0, 0},
-					{0, 0, 0, 0, 0, 0}},
+					{0, 0, 1, 1, 0, 0}},
 				["'"]={{0, 0, 0, 0, 0, 0},
 					{0, 1, 1, 0, 0, 0},
 					{0, 1, 1, 0, 0, 0},
@@ -1298,13 +1287,12 @@ return
 				UI:printf("Opening data file...")
 				local f = assert(io.open(datin, "r"))
 				local done = false
-				self.thisWorld = World:new()
-
-				UI:printf("Reading data file...")
-
 				local fc = nil
 				local fr = nil
 				local sysChange = true
+				self.thisWorld = World:new()
+
+				UI:printf("Reading data file...")
 
 				while not done do
 					local l = f:read()
@@ -1461,7 +1449,6 @@ return
 				end
 
 				if gender == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
-
 				return msgout
 			end,
 
@@ -1472,7 +1459,6 @@ return
 				for i=1,ac do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-
 					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
@@ -1564,11 +1550,9 @@ return
 
 					if self.showinfo == 1 then
 						local f0 = _time()
-
 						local currentEvents = {}
 						local cCount = 0
 						local eCount = 0
-
 						local names = {}
 						local longestName = -1
 						local longestNameN = -1
@@ -1669,7 +1653,6 @@ return
 				if not l then length = math.random(2, 3) else length = math.random(1, l) end
 
 				local taken = {}
-
 				nom = self:randomChoice(self.initialgroups)
 				table.insert(taken, nom:lower())
 
@@ -1696,7 +1679,6 @@ return
 				end
 
 				nom = self:namecheck(nom)
-
 				return nom
 			end,
 
@@ -1984,7 +1966,6 @@ return
 				for i=1,ac do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-
 					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.remove(c3.allyOngoing, j) end end end
 				end
 			end,
@@ -2124,14 +2105,7 @@ return
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
 			end,
-
-			setIdeology = function(self, n)
-				if not n then return "" end
-				n.pbelief = math.random(-100, 100)
-				n.ebelief = math.random(-100, 100)
-				n.cbelief = math.random(-100, 100)
-			end,
-
+			
 			sleep = function(self, t)
 				local n = _time()
 				while _time() < n+t do end

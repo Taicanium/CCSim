@@ -20,8 +20,6 @@ return
 				o.fams = {}
 				o.father = nil
 				o.gender = ""
-				o.rulerInfo = {}
-				o.gensSet = false
 				o.gIndex = 0
 				o.gString = ""
 				o.isruler = false
@@ -42,7 +40,6 @@ return
 				o.prevtitle = "Citizen"
 				o.recentbirth = false
 				o.region = nil
-				o.removed = false
 				o.royalGenerations = math.huge
 				o.royalSystem = ""
 				o.ruledCountry = ""
@@ -123,12 +120,7 @@ return
 					for x=1,#segments-1 do nn.surname = nn.surname..segments[x].."-" end
 					nn.surname = nn.surname..segments[#segments]
 				end
-
-				local sys = parent.systems[nl.system]
-
-				nn.birthplace = nl.name
-				nn.age = 0
-
+				
 				if self.royalGenerations < math.huge or self.spouse.royalGenerations < math.huge then
 					if self.spouse.royalGenerations < self.royalGenerations then
 						nn.royalGenerations = self.spouse.royalGenerations+1
@@ -160,6 +152,7 @@ return
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
+				local sys = parent.systems[nl.system]
 				if nn.gender == "Male" or not sys.dynastic then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
 
 				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
@@ -169,12 +162,13 @@ return
 				end
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i]/2 end
 
-				nn.nationality = nl.name
-
 				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
 				else nn:SetFamily(self, self.spouse, parent) end
 
+				nn.birthplace = nl.name
+				nn.age = 0
 				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
+				nn.nationality = nl.name
 
 				nl:add(parent, nn)
 			end,
@@ -185,7 +179,9 @@ return
 
 				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
 
-				parent:setIdeology(self)
+				n.pbelief = math.random(-100, 100)
+				n.ebelief = math.random(-100, 100)
+				n.cbelief = math.random(-100, 100)
 
 				self.birth = parent.years
 				if self.title == "" then
@@ -215,7 +211,7 @@ return
 				local rankLim = 2
 				if not sys.dynastic then rankLim = 1 end
 
-				if not self.spouse or not self.spouse.def or not self.spouse.spouse or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
+				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
 				local ranks = sys.ranks
 				if sys.dynastic and self.gender == "Female" then ranks = sys.franks end
