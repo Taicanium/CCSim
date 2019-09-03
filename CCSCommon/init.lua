@@ -182,12 +182,12 @@ return
 						c:event(parent, "Beginning of "..parent:ordinal(c.civilWars).." civil war")
 						self.status = parent:strengthFactor(c) -- -100 is victory for the opposition side; 100 is victory for the present government.
 						local statString = ""
-						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% opposition"
-						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% government"
+						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
+						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."% government"
 						else statString = "tossup" end
 						if self.status <= -100 then statString = "opposition victory"
 						elseif self.status >= 100 then statString = "government victory" end
-						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
+						self.eString = string.format("%s %s civil war (%s)", parent:ordinal(c.civilWars), c.demonym, statString)
 						self.opIntervened = {}
 						self.govIntervened = {}
 					end,
@@ -233,12 +233,12 @@ return
 
 						self.status = self.status+(math.random(math.floor(varistab-5), math.ceil(varistab+5))/2)
 						local statString = ""
-						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."%% opposition"
-						elseif self.status >= 10 then statString = tostring(math.abs(math.floor(self.status))).."%% government"
+						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."% opposition"
+						elseif self.status >= 10 then statString = tostring(math.abs(math.floor(self.status))).."% government"
 						else statString = "tossup" end
 						if self.status <= -100 then statString = "opposition victory"
 						elseif self.status >= 100 then statString = "government victory" end
-						self.eString = parent:ordinal(c.civilWars).." "..c.demonym.." civil war ("..statString..")"
+						self.eString = string.format("%s %s civil war (%s)", parent:ordinal(c.civilWars), c.demonym, statString)
 
 						if self.status <= -100 then return self:endEvent(parent, c) end
 						if self.status >= 100 then return self:endEvent(parent, c) end
@@ -643,12 +643,12 @@ return
 						self.target:event(parent, "War declared by "..c1.name)
 						self.status = parent:strengthFactor(c1)-parent:strengthFactor(self.target) -- -100 is victory for the target; 100 is victory for the initiator.
 						local statString = ""
-						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
-						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..c1.name
+						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
 						else statString = "tossup" end
 						if self.status <= -100 then statString = self.target.demonym.." victory"
 						elseif self.status >= 100 then statString = c1.demonym.." victory" end
-						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
+						self.eString = string.format("%s-%s war (%s)", c1.demonym, self.target.demonym, statString)
 					end,
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
@@ -707,12 +707,12 @@ return
 
 						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
 						local statString = ""
-						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..self.target.name
-						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."%% "..c1.name
+						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
+						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
 						else statString = "tossup" end
 						if self.status <= -100 then statString = self.target.demonym.." victory"
 						elseif self.status >= 100 then statString = c1.demonym.." victory" end
-						self.eString = c1.demonym.."-"..self.target.demonym.." war ("..statString..")"
+						self.eString = string.format("%s-%s war (%s)", c1.demonym, self.target.demonym, statString)
 
 						if self.status <= -100 then return self:endEvent(parent, c1) end
 						if self.status >= 100 then return self:endEvent(parent, c1) end
