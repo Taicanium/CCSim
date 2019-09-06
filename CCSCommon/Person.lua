@@ -179,9 +179,9 @@ return
 
 				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
 
-				n.pbelief = math.random(-100, 100)
-				n.ebelief = math.random(-100, 100)
-				n.cbelief = math.random(-100, 100)
+				self.pbelief = math.random(-100, 100)
+				self.ebelief = math.random(-100, 100)
+				self.cbelief = math.random(-100, 100)
 
 				self.birth = parent.years
 				if self.title == "" then
