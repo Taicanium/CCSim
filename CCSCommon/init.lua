@@ -1096,6 +1096,14 @@ return
 
 				return res
 			end,
+			
+			deepnil = function(self, obj)
+				if type(obj) == "table" then for i, j in pairs(obj) do
+					if type(j) == "table" then self:deepnil(j) end
+					j = nil
+				end end
+				obj = nil
+			end,
 
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end

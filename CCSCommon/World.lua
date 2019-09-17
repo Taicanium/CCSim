@@ -60,6 +60,7 @@ return
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				local gridVol = math.pow((self.planetR*2)+1, 3)
+				parent:deepnil(bench)
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
 
@@ -157,6 +158,8 @@ return
 
 					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand*10000)/100)) end
 				end
+				
+				parent:deepnil(freeNodes)
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
@@ -454,7 +457,7 @@ return
 				local bottom = 9
 				local lineLen = 2
 				local colorKeys = parent:getAlphabetical(colors)
-				for i=#colorKeys,1,-1 do
+				for i=1,#colorKeys do
 					local cA = colorKeys[i]
 					lineLen = lineLen+10
 					if lineLen >= columnCount then
@@ -485,7 +488,7 @@ return
 								local letter = name:sub(k, k):lower()
 								local glyph = parent.glyphs[letter]
 								if not glyph then glyph = parent.glyphs[" "] end
-								local letterRow = 6
+								local letterRow = 1
 								local letterColumn = 1
 								for l=top+1,bottom-1 do
 									for m=margin,margin+5 do
@@ -494,7 +497,7 @@ return
 										letterColumn = letterColumn+1
 									end
 									letterColumn = 1
-									letterRow = letterRow-1
+									letterRow = letterRow+1
 								end
 								margin = margin+6
 							end
@@ -543,8 +546,8 @@ return
 				bmpString = bmpString:gsub("h", hStringBE)
 				
 				local byteCount = 54
-				local btWritten = 0 
-				for y=1,planetD*2 do
+				for y=planetD*2,1,-1 do
+					local btWritten = 0
 					for x=1,planetC*2 do
 						btWritten = btWritten+3
 						byteCount = byteCount+3
@@ -553,7 +556,6 @@ return
 						btWritten = btWritten+1
 						byteCount = byteCount+1
 					end
-					btWritten = 0
 				end
 				
 				rStringLE = ("%08x"):format(byteCount-54)
@@ -567,8 +569,8 @@ return
 				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
 				bf:write(byteString)
 				
-				btWritten = 0
-				for y=1,planetD*2 do
+				for y=planetD*2,1,-1 do
+					local btWritten = 0
 					for x=1,planetC*2 do
 						if adjusted[y] and adjusted[y][x] then bmpDataString = ("%02x%02x%02x"):format(adjusted[y][x][3], adjusted[y][x][2], adjusted[y][x][1])
 						else bmpDataString = "000000" end
@@ -580,7 +582,6 @@ return
 						bf:write(string.char(0))
 						btWritten = btWritten+1
 					end
-					btWritten = 0
 				end
 				
 				bf:flush()
@@ -802,6 +803,21 @@ return
 				f:flush()
 				f:close()
 				f = nil
+				
+				parent:deepnil(unwrapped)
+				parent:deepnil(colors)
+				parent:deepnil(stretched)
+				parent:deepnil(tCols)
+				parent:deepnil(tColWidths)
+				parent:deepnil(adjusted)
+				parent:deepnil(bmpString)
+				parent:deepnil(bmpDataString)
+				parent:deepnil(ccs)
+				parent:deepnil(css)
+				parent:deepnil(cst)
+				parent:deepnil(csx)
+				parent:deepnil(csy)
+				parent:deepnil(csz)
 			end,
 
 			update = function(self, parent)
