@@ -4,7 +4,7 @@ Border checking scans for whether two countries or regions have respective coast
 
 The program leaks intense amounts of memory over longer simulations, much more than would be expected from storing the info needed for its output. Should check on garbage collection for temporary table values used in various functions, these may be related.
 
-Correct suffixes for countries. "Tusalv" does not sound pleasant even by fantasy standards.
+Some country demonyms might sound better if they end in "ian" rather than "an". They used to end in "ian", but recent corrections to suffix generation caused all such endings to be shortened to "an".
 
 # Possible Features
 
