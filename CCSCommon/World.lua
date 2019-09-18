@@ -270,7 +270,7 @@ return
 			end,
 
 			mapOutput = function(self, parent, label)
-				if not parent.doMaps then return end
+				if _DEBUG or not parent.doMaps then return end
 				UI:printf("Writing map data...")
 				
 				local planetSize = #self.planetdefined

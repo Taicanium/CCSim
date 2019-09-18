@@ -1431,7 +1431,7 @@ return
 						end
 
 						cp:makename(self, 3)
-						cp:setPop(self, 1500)
+						if _DEBUG then cp:setPop(self, 200) else cp:setPop(self, 1500) end
 
 						table.insert(self.final, cp)
 					end
@@ -2077,7 +2077,6 @@ return
 			end,
 
 			rseed = function(self)
-				self:sleep(0.005)
 				local tc = _time()
 				local ts = tostring(tc)
 				local n = tonumber(ts:reverse())
@@ -2137,11 +2136,6 @@ return
 					t.LastRoyalAncestor = a
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
-			end,
-			
-			sleep = function(self, t)
-				local n = _time()
-				while _time() < n+t do end
 			end,
 
 			strengthFactor = function(self, c)

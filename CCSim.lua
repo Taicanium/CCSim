@@ -1,4 +1,4 @@
-_DEBUG = false
+_DEBUG = true
 _RUNNING = true
 
 CCSMStatus, CCSModule = pcall(require, "CCSCommon")

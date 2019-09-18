@@ -281,8 +281,8 @@ return
 					local belieftotal = newp.cfreedom+newp.efreedom+newp.pfreedom
 					if math.abs(belieftotal) > 225 then newp.radical = true end
 
-					table.insert(nl.parties, newp)
-					pmatch = newp
+					nl.parties[newp.name] = newp
+					pmatch = nl.parties[newp.name]
 				end
 
 				self.party = pmatch.name
