@@ -291,6 +291,7 @@ end
 
 function simNew()
 	UI:clear()
+	
 	UI:printp("\nHow many years should the simulation run? > ")
 	CCSCommon.maxyears = UI:readn()
 	while not CCSCommon.maxyears do

@@ -11,8 +11,8 @@ cursesstatus, curses = pcall(require, "curses")
 lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.time
-if socketstatus then _time = socket.gettime
-elseif _time() < 30 then _time = os.clock end
+if _time() < 30 then _time = os.clock end
+if socketstatus then _time = socket.gettime end
 
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
@@ -818,7 +818,7 @@ return
 			disabled = {},
 			doGed = false,
 			doMaps = false,
-			endgroups = {"land", "ia", "lia", "gia", "ria", "nia", "cia", "y", "ar", "ic", "a", "us", "es", "is", "ec", "tria", "tra"},
+			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium", "en", "ic", "is", "im"},
 			fam = {},
 			famCount = 0,
 			final = {},
@@ -1031,7 +1031,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
 			popLimit = 2000,
-			repGroups = {{"ki", "ci"}, {"nj", "ng"}, {"jr", "dr"}, {"aia", "ia"}, {"eia", "ia"}, {"oia", "ia"}, {"uia", "ia"}, {"aio", "io"}, {"eio", "io"}, {"oio", "io"}, {"uio", "io"}, {"aa", "a"}, {"ee", "i"}, {"ii", "i"}, {"oo", "u"}, {"uu", "u"}, {"ou", "o"}, {"kg", "g"}, {"gk", "g"}, {"sz", "s"}, {"ue", "e"}, {"zs", "z"}, {"rz", "z"}, {"dl", "l"}, {"tl", "l"}, {"cg", "c"}, {"gc", "g"}, {"tp", "t"}, {"dt", "t"}, {"td", "t"}, {"tc", "t"}, {"hc", "c"}, {"fd", "d"}, {"df", "d"}, {"ae", "a"}, {"gl", "l"}, {"bt", "b"}, {"tb", "t"}, {"ua", "a"}, {"oe", "e"}, {"pg", "g"}, {"db", "b"}, {"bd", "d"}, {"ui", "i"}, {"mt", "m"}, {"lt", "l"}, {"gj", "g"}, {"tn", "t"}, {"jz", "j"}, {"js", "j"}, {"zt", "t"}, {"gd", "d"}, {"dg", "g"}, {"jg", "j"}, {"gt", "t"}, {"jc", "j"}, {"hg", "g"}, {"tm", "t"}, {"oa", "a"}, {"cp", "c"}, {"pb", "b"}, {"tg", "t"}, {"bp", "b"}, {"iy", "y"}, {"yi", "y"}, {"fh", "f"}, {"uo", "o"}, {"vh", "v"}, {"vd", "v"}, {"fv", "v"}, {"vf", "f"}, {"vt", "t"}, {"tv", "t"}, {"dk", "d"}, {"cd", "d"}, {"kd", "d"}, {"jd", "j"}, {"dj", "j"}, {"sj", "s"}, {"tj", "t"}, {"cj", "c"}, {"mj", "m"}, {"hj", "h"}, {"fj", "f"}, {"kj", "k"}, {"vj", "v"}, {"wj", "w"}, {"pj", "p"}, {"jt", "t"}, {"eu", "e"}, {"iu", "i"}, {"ia", "a"}, {"ea", "a"}, {"ai", "i"}, {"ei", "i"}, {"ie", "i"}, {"ao", "o"}, {"oi", "i"}, {"aie", "a"}, {"eie", "e"}, {"oie", "o"}, {"uie", "u"}, {"aiu", "a"}, {"eiu", "e"}, {"oiu", "o"}, {"uiu", "u"}},
+			repGroups = {{"ki", "ci"}, {"nj", "ng"}, {"jr", "dr"}, {"aia", "ia"}, {"eia", "ia"}, {"oia", "ia"}, {"uia", "ia"}, {"aio", "io"}, {"eio", "io"}, {"oio", "io"}, {"uio", "io"}, {"aa", "a"}, {"ee", "i"}, {"ii", "i"}, {"oo", "u"}, {"uu", "u"}, {"ou", "o"}, {"kg", "g"}, {"gk", "g"}, {"sz", "s"}, {"ue", "e"}, {"zs", "z"}, {"rz", "z"}, {"dl", "l"}, {"tl", "l"}, {"cg", "c"}, {"gc", "g"}, {"tp", "t"}, {"dt", "t"}, {"td", "t"}, {"tc", "t"}, {"hc", "c"}, {"fd", "d"}, {"df", "d"}, {"ae", "a"}, {"gl", "l"}, {"bt", "b"}, {"tb", "t"}, {"ua", "a"}, {"oe", "e"}, {"pg", "g"}, {"db", "b"}, {"bd", "d"}, {"ui", "i"}, {"mt", "m"}, {"lt", "l"}, {"gj", "g"}, {"tn", "t"}, {"jz", "j"}, {"js", "j"}, {"zt", "t"}, {"gd", "d"}, {"dg", "g"}, {"jg", "j"}, {"gt", "t"}, {"jc", "j"}, {"hg", "g"}, {"tm", "t"}, {"oa", "a"}, {"cp", "c"}, {"pb", "b"}, {"tg", "t"}, {"bp", "b"}, {"iy", "y"}, {"yi", "y"}, {"fh", "f"}, {"uo", "o"}, {"vh", "v"}, {"vd", "v"}, {"fv", "v"}, {"vf", "f"}, {"vt", "t"}, {"tv", "t"}, {"dk", "d"}, {"dby", "dy"}, {"cd", "d"}, {"kd", "d"}, {"jd", "j"}, {"dj", "j"}, {"sj", "s"}, {"tj", "t"}, {"cj", "c"}, {"mj", "m"}, {"hj", "h"}, {"fj", "f"}, {"kj", "k"}, {"vj", "v"}, {"wj", "w"}, {"pj", "p"}, {"jt", "t"}, {"eu", "e"}, {"iu", "i"}, {"ia", "a"}, {"ea", "a"}, {"ai", "i"}, {"ei", "i"}, {"ie", "i"}, {"ao", "o"}, {"oi", "i"}, {"aie", "a"}, {"eie", "e"}, {"oie", "o"}, {"uie", "u"}, {"aiu", "a"}, {"eiu", "e"}, {"oiu", "o"}, {"uiu", "u"}},
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
@@ -1658,14 +1658,13 @@ return
 			name = function(self, personal, l)
 				local nom = ""
 				local length = 0
-				if not l then length = math.random(2, 3) else length = math.random(1, l) end
+				if not l or l < 2 then length = math.random(2, 3) else length = math.random(2, l) end
 
 				local taken = {}
 				nom = self:randomChoice(self.initialgroups)
 				table.insert(taken, nom:lower())
 
 				local groups = 1
-
 				while groups < length do
 					local mid = ""
 					local istaken = true
@@ -1680,13 +1679,41 @@ return
 					groups = groups+1
 					table.insert(taken, mid:lower())
 				end
+				
+				nom = self:namecheck(nom)
 
 				if not personal then
 					local ending = self:randomChoice(self.endgroups)
+					local oldnom = nom
+					local oldend = ending
+					local fin = false
+					while not fin do
+						local lc = nom:sub(nom:len(), nom:len())
+						local fc = ending:sub(1, 1)
+						if lc == fc then nom = nom:sub(1, nom:len()-1) end
+						if ending == "y" then
+							lc = nom:sub(nom:len(), nom:len())
+							for i=1,#self.vowels do if lc == self.vowels[i] then ending = "ny" end end
+						elseif ending == "es" then
+							lc = nom:sub(nom:len(), nom:len())
+							for i=1,#self.vowels do if lc == self.vowels[i] then ending = "nes" end end
+						elseif ending == "tria" then
+							lc = nom:sub(nom:len(), nom:len())
+							for i=1,#self.consonants do if lc == self.consonants[i] then ending = "itria" end end
+						elseif ending == "tra" then
+							lc = nom:sub(nom:len(), nom:len())
+							for i=1,#self.consonants do if lc == self.consonants[i] then ending = "itra" end end
+						end
+						fin = true
+						if oldnom ~= nom or oldend ~= ending then
+							fin = false
+							oldnom = nom
+							oldend = ending
+						end
+					end
 					nom = nom..ending:lower()
 				end
-
-				nom = self:namecheck(nom)
+				
 				return nom
 			end,
 
@@ -1778,7 +1805,6 @@ return
 							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, nomlower:len()) end
 							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, nomlower:len()) end
 							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "r" then nomlower = nomlower:sub(2, nomlower:len()) end
 							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, nomlower:len()) end
 							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, nomlower:len()) end
 							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, nomlower:len()) end
@@ -1797,7 +1823,6 @@ return
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "m" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "n" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "p" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "r" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "s" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "t" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1) end

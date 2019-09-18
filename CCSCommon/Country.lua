@@ -311,24 +311,7 @@ return
 					else self.demonym = self.name.."ian" end
 				end
 
-				for i=1,3 do
-					self.demonym = self.demonym:gsub("ii", "i")
-					self.demonym = self.demonym:gsub("aa", "a")
-					self.demonym = self.demonym:gsub("uu", "u")
-					self.demonym = self.demonym:gsub("yi", "i")
-					self.demonym = self.demonym:gsub("iy", "i")
-					self.demonym = self.demonym:gsub("ais", "is")
-					self.demonym = self.demonym:gsub("eis", "is")
-					self.demonym = self.demonym:gsub("iis", "is")
-					self.demonym = self.demonym:gsub("ois", "is")
-					self.demonym = self.demonym:gsub("uis", "is")
-					self.demonym = self.demonym:gsub("aia", "ia")
-					self.demonym = self.demonym:gsub("eia", "ia")
-					self.demonym = self.demonym:gsub("iia", "ia")
-					self.demonym = self.demonym:gsub("oia", "ia")
-					self.demonym = self.demonym:gsub("uia", "ia")
-					self.demonym = self.demonym:gsub("dby", "dy")
-				end
+				for i=1,3 do for j, k in pairs(parent.repGroups) do self.demonym = self.demonym:gsub(k[1], k[2]) end end
 			end,
 
 			recurseRoyalChildren = function(self, t)
