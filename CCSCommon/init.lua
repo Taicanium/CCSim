@@ -1714,6 +1714,7 @@ return
 					nom = nom..ending:lower()
 				end
 				
+				for i, j in pairs(self.repGroups) do nom = nom:gsub(j[1], j[2]) end
 				return nom
 			end,
 
