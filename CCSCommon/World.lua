@@ -29,6 +29,7 @@ return
 
 				UI:printf("Benchmarking...")
 				local bRad = 125
+				local bVol = math.pow((bRad*2)+1, 3)/100
 				local bench = {}
 
 				local t0 = _time()
@@ -44,9 +45,9 @@ return
 								bench[x][y][z] = {}
 							end
 							bdone = bdone+1
-							if math.fmod(bdone, 10000) == 0 then UI:printl(string.format("%.2f%% done", (bdone/math.pow((bRad*2)+1, 3)*10000)/100)) end
 						end
 					end
+					UI:printl(string.format("%.2f%% done", (bdone/bVol)))
 				end end
 
 				local benchAdjust = math.floor(_time()-t0)
@@ -59,7 +60,7 @@ return
 					rMax = 75
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
-				local gridVol = math.pow((self.planetR*2)+1, 3)
+				local gridVol = math.pow((self.planetR*2)+1, 3)/100
 				parent:deepnil(bench)
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
@@ -78,9 +79,11 @@ return
 								self.planet[x][y][z].y = y
 								self.planet[x][y][z].z = z
 								self.planet[x][y][z].country = ""
-								self.planet[x][y][z].countryset = false
+								self.planet[x][y][z].countrySet = false
+								self.planet[x][y][z].countryDone = false
 								self.planet[x][y][z].region = ""
-								self.planet[x][y][z].regionset = false
+								self.planet[x][y][z].regionSet = false
+								self.planet[x][y][z].regionDone = false
 								self.planet[x][y][z].city = ""
 								self.planet[x][y][z].land = false
 								self.planet[x][y][z].waterNeighbors = true
@@ -90,9 +93,9 @@ return
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
-							if math.fmod(rdone, 10000) == 0 then UI:printl(string.format("%.2f%% done", (rdone/gridVol*10000)/100)) end
 						end
 					end
+					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
 				end
 
 				local planetSize = #self.planetdefined
@@ -137,7 +140,7 @@ return
 					if math.random(1, 10) == math.random(1, 10) then
 						for neighbor=1,#self.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
-							if not self.planet[nx][ny][nz].land and math.random(1, 14) == math.random(1, 14) then
+							if not self.planet[nx][ny][nz].land and math.random(1, 7) == math.random(1, 7) then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
@@ -156,7 +159,7 @@ return
 						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
 					end
 
-					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand*10000)/100)) end
+					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
 				end
 				
 				parent:deepnil(freeNodes)
@@ -169,6 +172,7 @@ return
 
 				UI:printf("Rooting countries...")
 				local ci = 1
+				local defined = 0
 
 				for i, cp in pairs(self.countries) do
 					UI:printl(string.format("Country %d/%d", ci, parent.numCountries))
@@ -187,47 +191,42 @@ return
 					end
 
 					self.planet[x][y][z].country = cp.name
+					defined = defined+1
 				end
 
 				UI:printf("Setting territories...")
 
 				local allDefined = false
-				local defined = 0
-				local prevDefined = 0
+				local prevDefined = defined
 				ci = 1
 
 				while not allDefined do
-					allDefined = true
-					defined = 0
-
 					for i=1,planetSize do
 						local x, y, z = table.unpack(self.planetdefined[i])
 
-						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countryset then
+						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countrySet and not self.planet[x][y][z].countryDone then
 							for j=1,#self.planet[x][y][z].neighbors do
 								local neighbor = self.planet[x][y][z].neighbors[j]
 								local nx, ny, nz = table.unpack(neighbor)
 								if self.planet[nx][ny][nz].land and self.planet[nx][ny][nz].country == "" then
-									if not self.planet[nx][ny][nz].countryset then
-										self.planet[nx][ny][nz].country = self.planet[x][y][z].country
-										self.planet[nx][ny][nz].countryset = true
-									end
+									self.planet[nx][ny][nz].country = self.planet[x][y][z].country
+									self.planet[nx][ny][nz].countrySet = true
+									defined = defined+1
 								end
 							end
+							self.planet[x][y][z].countryDone = true
 						end
 					end
-
+					
 					for i=1,planetSize do
 						local x, y, z = table.unpack(self.planetdefined[i])
-
-						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then defined = defined+1 else allDefined = false end
-						self.planet[x][y][z].countryset = false
+						self.planet[x][y][z].countrySet = false
 					end
 
 					if defined == prevDefined then allDefined = true end
 					prevDefined = defined
 
-					UI:printl(string.format("%.2f%% done", (defined/planetSize*10000)/100))
+					UI:printl(string.format("%.2f%% done", (defined/doneLand)*100))
 				end
 
 				for i=1,planetSize do
@@ -530,10 +529,9 @@ return
 				end
 				
 				local bf = io.open(label..".bmp", "w+")
-				local bmpString = "424ds000000003600000028000000wh0100180000000000r130b0000130b00000000000000000000"
-				local bmpDataString = ""
-				local hStringLE = ("%08x"):format(planetD*2)
-				local wStringLE = ("%08x"):format(planetC*2)
+				local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
+				local hStringLE = string.format("%08x", planetD*2)
+				local wStringLE = string.format("%08x", planetC*2)
 				local rStringLE = ""
 				local sStringLE = ""
 				local hStringBE = ""
@@ -545,7 +543,7 @@ return
 				bmpString = bmpString:gsub("w", wStringBE)
 				bmpString = bmpString:gsub("h", hStringBE)
 				
-				local byteCount = 54
+				local byteCount = 0
 				for y=planetD*2,1,-1 do
 					local btWritten = 0
 					for x=1,planetC*2 do
@@ -558,8 +556,8 @@ return
 					end
 				end
 				
-				rStringLE = ("%08x"):format(byteCount-54)
-				sStringLE = ("%08x"):format(byteCount)
+				rStringLE = string.format("%08x", byteCount)
+				sStringLE = string.format("%08x", byteCount+54)
 				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
 				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
 				bmpString = bmpString:gsub("s", sStringBE)
@@ -572,11 +570,16 @@ return
 				for y=planetD*2,1,-1 do
 					local btWritten = 0
 					for x=1,planetC*2 do
-						if adjusted[y] and adjusted[y][x] then bmpDataString = ("%02x%02x%02x"):format(adjusted[y][x][3], adjusted[y][x][2], adjusted[y][x][1])
-						else bmpDataString = "000000" end
-						for z in bmpDataString:gmatch("%w%w") do bf:write(string.char(tonumber(z, 16))) end
+						if adjusted[y] and adjusted[y][x] then
+							bf:write(string.char(adjusted[y][x][3]))
+							bf:write(string.char(adjusted[y][x][2]))
+							bf:write(string.char(adjusted[y][x][1]))
+						else
+							bf:write(string.char(0))
+							bf:write(string.char(0))
+							bf:write(string.char(0))
+						end
 						btWritten = btWritten+3
-						bmpDataString = ""
 					end
 					while math.fmod(btWritten, 4) ~= 0 do
 						bf:write(string.char(0))
@@ -872,6 +875,8 @@ return
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
+				
+				collectgarbage("collect")
 
 				parent.debugTimes["TOTAL"] = f1
 			end

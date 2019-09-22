@@ -495,34 +495,33 @@ return
 				end
 
 				local allDefined = false
-				local prevDefined = 0
+				local prevDefined = defined
 
 				while not allDefined do
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])
 
-						if parent.thisWorld.planet[x][y][z].region ~= "" then
+						if parent.thisWorld.planet[x][y][z].region ~= "" and not parent.thisWorld.planet[x][y][z].regionSet and not parent.thisWorld.planet[x][y][z].regionDone then
 							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 								local nx, ny, nz = table.unpack(neighbor)
 								if parent.thisWorld.planet[nx][ny][nz].region == "" then
-									if not parent.thisWorld.planet[x][y][z].regionset then
-										parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
-										parent.thisWorld.planet[nx][ny][nz].regionset = true
-										defined = defined+1
-									end
+									parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
+									parent.thisWorld.planet[nx][ny][nz].regionSet = true
+									defined = defined+1
 								end
 							end
+							parent.thisWorld.planet[x][y][z].regionDone = true
 						end
+					end
+					
+					for i=1,#self.nodes do
+						local x, y, z = table.unpack(self.nodes[i])
+						parent.thisWorld.planet[x][y][z].regionSet = false
 					end
 
 					if defined == prevDefined then allDefined = true end
 					prevDefined = defined
-
-					for i=1,#self.nodes do
-						local x, y, z = table.unpack(self.nodes[i])
-						parent.thisWorld.planet[x][y][z].regionset = false
-					end
 				end
 
 				for i=#self.nodes,1,-1 do
