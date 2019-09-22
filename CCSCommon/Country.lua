@@ -260,7 +260,7 @@ return
 					self.dfif[parent.systems[i].name] = parent:randomChoice({true, false})
 				end
 
-				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
+				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name.."n"
 				elseif self.name:sub(self.name:len(), self.name:len()) == "y" then
 					local split = self.name:sub(1, self.name:len()-1)
 					if split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
@@ -505,7 +505,7 @@ return
 							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 								local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
 								local nx, ny, nz = table.unpack(neighbor)
-								if parent.thisWorld.planet[nx][ny][nz].region == "" then
+								if parent.thisWorld.planet[nx][ny][nz].country == self.name and parent.thisWorld.planet[nx][ny][nz].region == "" then
 									parent.thisWorld.planet[nx][ny][nz].region = parent.thisWorld.planet[x][y][z].region
 									parent.thisWorld.planet[nx][ny][nz].regionSet = true
 									defined = defined+1
