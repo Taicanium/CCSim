@@ -248,8 +248,6 @@ return
 					parent.disabled[j.name:lower()] = false
 					parent.disabled["!"..j.name:lower()] = false
 				end
-				
-				collectgarbage("collect")
 			end,
 
 			delete = function(self, parent, nz)
@@ -880,8 +878,6 @@ return
 						if parent.popLimit > 3500 then parent.popLimit = 3500 end
 					end
 				end
-				
-				collectgarbage("collect")
 
 				parent.debugTimes["TOTAL"] = f1
 			end
