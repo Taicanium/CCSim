@@ -28,7 +28,7 @@ return
 				parent:rseed()
 
 				UI:printf("Benchmarking...")
-				local bRad = 125
+				local bRad = 175
 				local bVol = math.pow((bRad*2)+1, 3)/100
 				local bench = {}
 
@@ -51,13 +51,13 @@ return
 				end end
 
 				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 50 or _DEBUG then benchAdjust = 50 end
+				if benchAdjust > 100 or _DEBUG then benchAdjust = 100 end
 
-				local rMin = 100
-				local rMax = 125
+				local rMin = 130
+				local rMax = 175
 				if _DEBUG then
-					rMin = 51
-					rMax = 75
+					rMin = 105
+					rMax = 125
 				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				local gridVol = math.pow((self.planetR*2)+1, 3)/100
@@ -140,7 +140,7 @@ return
 					if math.random(1, 10) == math.random(1, 10) then
 						for neighbor=1,#self.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
-							if not self.planet[nx][ny][nz].land and math.random(1, 7) == math.random(1, 7) then
+							if not self.planet[nx][ny][nz].land and math.random(1, 10) == math.random(1, 10) then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
@@ -248,6 +248,8 @@ return
 					parent.disabled[j.name:lower()] = false
 					parent.disabled["!"..j.name:lower()] = false
 				end
+				
+				collectgarbage("collect")
 			end,
 
 			delete = function(self, parent, nz)
@@ -592,6 +594,7 @@ return
 				bf:close()
 				bf = nil
 				
+				--[[
 				local f = io.open(label..".r", "w+")
 				if not f then return end
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
@@ -822,6 +825,7 @@ return
 				parent:deepnil(csx)
 				parent:deepnil(csy)
 				parent:deepnil(csz)
+				]]
 			end,
 
 			update = function(self, parent)
