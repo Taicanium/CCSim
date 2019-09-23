@@ -74,22 +74,21 @@ return
 							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
 								if not self.planet[x] then self.planet[x] = {} end
 								if not self.planet[x][y] then self.planet[x][y] = {} end
-								self.planet[x][y][z] = {}
-								self.planet[x][y][z].x = x
-								self.planet[x][y][z].y = y
-								self.planet[x][y][z].z = z
-								self.planet[x][y][z].country = ""
-								self.planet[x][y][z].countrySet = false
-								self.planet[x][y][z].countryDone = false
-								self.planet[x][y][z].region = ""
-								self.planet[x][y][z].regionSet = false
-								self.planet[x][y][z].regionDone = false
-								self.planet[x][y][z].city = ""
-								self.planet[x][y][z].land = false
-								self.planet[x][y][z].waterNeighbors = true
-								self.planet[x][y][z].mapWritten = false
-								self.planet[x][y][z].neighbors = {}
-
+								self.planet[x][y][z] = {x=x,
+									y=y,
+									z=z,
+									country="",
+									countrySet=false,
+									countryDone=false,
+									region="",
+									regionSet=false,
+									regionDone=false,
+									city="",
+									land=false,
+									waterNeighbors=true,
+									mapWritten=false,
+									neighbors={}
+								}
 								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
