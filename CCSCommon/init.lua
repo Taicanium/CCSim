@@ -1127,7 +1127,6 @@ return
 					j = nil
 				end end
 				obj = nil
-				collectgarbage("collect")
 			end,
 
 			directory = function(self, names)
