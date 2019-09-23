@@ -454,6 +454,8 @@ return
 					if parent.thisWorld.planet[x][y][z].country == self.name then
 						table.insert(self.nodes, {x, y, z})
 						parent.thisWorld.planet[x][y][z].region = ""
+						parent.thisWorld.planet[x][y][z].regionSet = false
+						parent.thisWorld.planet[x][y][z].regionDone = false
 					end
 				end
 
