@@ -455,7 +455,7 @@ return
 
 							for i=1,#parent.thisWorld.planetdefined do
 								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-								if parent.thisWorld.planet[x][y][z].region == newl.name then
+								if parent.thisWorld.planet[x][y][z].region == newl.name or parent.thisWorld.planet[x][y][z].country == newl.name then
 									parent.thisWorld.planet[x][y][z].country = newl.name
 									parent.thisWorld.planet[x][y][z].region = ""
 								end
