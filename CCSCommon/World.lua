@@ -449,7 +449,7 @@ return
 					if diff == 1 then table.remove(col, #col) end
 				end
 
-				local tLineCount = 1
+				local tColCount = 1
 				local tCols = {{}}
 				local tColWidths = {}
 				local top = 2
@@ -461,60 +461,61 @@ return
 					lineLen = lineLen+10
 					if lineLen >= columnCount then
 						lineLen = 12
-						tLineCount = tLineCount+1
+						tColCount = tColCount+1
 					end
-					if not tCols[tLineCount] then tCols[tLineCount] = {} end
-					if not tColWidths[tLineCount] then tColWidths[tLineCount] = -1 end
-					table.insert(tCols[tLineCount], cA)
+					if not tCols[tColCount] then tCols[tColCount] = {} end
+					if not tColWidths[tColCount] then tColWidths[tColCount] = 0 end
+					table.insert(tCols[tColCount], cA)
 					local nameLen = cA:len()
-					if nameLen > tColWidths[tLineCount] then tColWidths[tLineCount] = nameLen end
+					if nameLen > tColWidths[tColCount] then tColWidths[tColCount] = nameLen end
 				end
 				local colSum = 0
-				local margin = planetC+2
-				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end
-				for i=1,#stretched do for j=1,colSum do table.insert(stretched[i], {0, 0, 0}) end end
-				for i=1,tLineCount do
+				local margin = planetC+2 -- Our legend has two pixels of horiz. padding from the map.
+				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (20 total pixels of padding + the max character length * 6 pixels per character) per column.
+				for i=1,#stretched do for j=1,colSum do table.insert(stretched[i], {0, 0, 0}) end end -- Define a black rectangle on the right end of the map that is colSum pixels wide.
+				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
-					for j=1,#tCol do
-						local colMargin = margin
+					for j=1,#tCol do -- For every country name in this column...
+						local colMargin = margin -- Save the value of the current spacing from the left border of the legend.
 						local name = tCol[j]
 						if name then
 							local nameLen = name:len()
-							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = colors[name] end end
-							margin = margin+10
-							local oldMargin = margin
-							for k=1,nameLen do
-								local letter = name:sub(k, k):lower()
+							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = colors[name] end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
+							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
+							for k=1,nameLen do -- For each character...
+								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
 								local glyph = parent.glyphs[letter]
-								if not glyph then glyph = parent.glyphs[" "] end
+								if not glyph then glyph = parent.glyphs[" "] end -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
 								local letterRow = 1
 								local letterColumn = 1
-								for l=top+1,bottom-1 do
+								-- The glyph is itself a 2D matrix of monochrome pixel values - 0 for black, 1 for white.
+								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
+								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 0 then stretched[l][m] = {0, 0, 0}
-										else stretched[l][m] = {255, 255, 255} end
-										letterColumn = letterColumn+1
+										if glyph[letterRow][letterColumn] == 0 then stretched[l][m] = {0, 0, 0} -- Black.
+										else stretched[l][m] = {255, 255, 255} end -- White.
+										letterColumn = letterColumn+1 -- Move to the right!
 									end
-									letterColumn = 1
-									letterRow = letterRow+1
+									letterColumn = 1 -- Move back to the far left.
+									letterRow = letterRow+1 -- Move down. Quite like a CR+LF.
 								end
-								margin = margin+6
+								margin = margin+6 -- Move to the last pixel of the last character. With our one pixel of padding on all sides, this will leave the appropriate space between letters.
 							end
-							margin = colMargin
+							margin = colMargin -- Just like when writing a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
 							top = top+10
-							bottom = bottom+10
+							bottom = bottom+10 -- And move one line down, leaving two pixels of space.
 						end
 					end
-					margin = margin+20+(tColWidths[i]*6)
+					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire column...
 					top = 2
-					bottom = 9
+					bottom = 9 -- And begin at the top left anew.
 				end
 				
-				planetC = planetC+colSum
-				local planetD = 0
+				planetC = planetC+colSum -- Account for the addition of the legend in our bitmap dimensions.
+				local planetD = 0 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
 				local yi = 1
 				local adjusted = {}
-				for i=1,columnCount do
+				for i=1,columnCount do -- Here, expand the pixel array to make each map point 2x2 pixels.
 					planetD = planetD+1
 					adjusted[yi*2] = {}
 					adjusted[(yi*2)-1] = {}
