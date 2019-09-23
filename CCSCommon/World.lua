@@ -811,6 +811,13 @@ return
 				f:close()
 				f = nil
 				
+				parent:deepnil(ccs)
+				parent:deepnil(css)
+				parent:deepnil(cst)
+				parent:deepnil(csx)
+				parent:deepnil(csy)
+				parent:deepnil(csz)
+				]]
 				parent:deepnil(unwrapped)
 				parent:deepnil(colors)
 				parent:deepnil(stretched)
@@ -819,13 +826,6 @@ return
 				parent:deepnil(adjusted)
 				parent:deepnil(bmpString)
 				parent:deepnil(bmpDataString)
-				parent:deepnil(ccs)
-				parent:deepnil(css)
-				parent:deepnil(cst)
-				parent:deepnil(csx)
-				parent:deepnil(csy)
-				parent:deepnil(csz)
-				]]
 			end,
 
 			update = function(self, parent)
