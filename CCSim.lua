@@ -362,15 +362,21 @@ function simReview()
 		UI:clear()
 		local sCount = 0
 		local sims = {}
+		
+		local dirDotCmd = "dir . /b /ad"
+		if UI.clrcmd == "clear" then dirDotCmd = "dir -1 ." end
+		
 		UI:printf("\nAvailable simulations:\n")
 
-		for x in lfs.dir(".") do if lfs.attributes(x, "mode") == "directory" then
+		for x in io.popen(dirDotCmd):lines() do
 			local xn = tonumber(x)
 			if xn then
 				local tsstatus, ts = pcall(os.date, "%Y-%m-%d %H:%M:%S", xn)
 				if tsstatus then
 					local eventFile = false
-					for y in lfs.dir(x) do if y:match("events.txt") then eventFile = true end end
+					local dirSimCmd = "dir "..x.." /b /a-d"
+					if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..x end
+					for y in io.popen(dirSimCmd):lines() do if y:match("events.txt") then eventFile = true end end
 					if eventFile then
 						sCount = sCount+1
 						table.insert(sims, x)
@@ -378,7 +384,7 @@ function simReview()
 					end
 				end
 			end
-		end end
+		end
 
 		if sCount == 0 then UI:printf("None") end
 
@@ -389,9 +395,11 @@ function simReview()
 		if datin:lower() == "b" then _REVIEWING = false return end
 		if tonumber(datin) and sims[tonumber(datin)] then
 			local dirStamp = sims[tonumber(datin)]
+			local dirSimCmd = "dir "..dirStamp.." /b /a-d"
+			if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..dirStamp end
 			local eventFile = false
 			local gedFile = false
-			for x in lfs.dir(dirStamp) do
+			for x in io.popen(dirSimCmd):lines() do
 				if x:match("events.txt") then eventFile = true
 				elseif x:match("royals.ged") then gedFile = true end
 			end
@@ -437,17 +445,15 @@ function main()
 		UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
 
 		UI:printf("MAIN MENU\n\n1\t-\tBegin a new simulation.")
-		if lfsstatus then
-			UI:printf("2\t-\tReview the output of a previous simulation.")
-			-- UI:printf("3\t-\tRemove previous simulations.\n")
-		end
+		UI:printf("2\t-\tReview the output of a previous simulation.")
+		-- UI:printf("3\t-\tRemove previous simulations.\n")
 		UI:printf("Q\t-\tExit the program.")
 		UI:printp("\n > ")
 
 		local datin = UI:readl()
 		if datin == "1" then simNew() _RUNNING = false
-		elseif datin == "2" and lfsstatus then simReview()
-		--[[ elseif datin == "3" and lfsstatus then simRemove() ]]
+		elseif datin == "2" then simReview()
+		--[[ elseif datin == "3" then simRemove() ]]
 		elseif datin:lower() == "q" then _RUNNING = false end
 	end
 

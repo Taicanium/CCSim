@@ -278,35 +278,22 @@ return
 						self.cColors[cp.name] = nil
 						self.cTriplets[cp.name] = nil
 						
-						local r = math.random(0, 255)
-						local g = math.random(0, 255)
-						local b = math.random(0, 255)
+						local r = 0
+						local g = 0
+						local b = 0
 
 						local unique = false
 						while not unique do
 							unique = true
 							for k, j in pairs(self.cTriplets) do
 								local unq = (math.abs(r-j[1]))+(math.abs(g-j[2]))+(math.abs(b-j[3]))
-								if unq < 55 then
-									r = math.random(0, 255)
-									g = math.random(0, 255)
-									b = math.random(0, 255)
-
-									unique = false
-								end
+								if unq < 55 then unique = false end
 							end
 
-							if r > 230 and g > 230 and b > 230 then
-								unique = false
-
-								r = math.random(0, 255)
-								g = math.random(0, 255)
-								b = math.random(0, 255)
-							end
-
-							if r < 25 and g < 25 and b < 25 then
-								unique = false
-
+							if r > 230 and g > 230 and b > 230 then unique = false end
+							if r < 25 and g < 25 and b < 25 then unique = false end
+							
+							if not unique then
 								r = math.random(0, 255)
 								g = math.random(0, 255)
 								b = math.random(0, 255)
@@ -411,14 +398,22 @@ return
 					local deviation = ((planetC/#column)-pixelsPerUnit)*pixelsPerUnit
 					local deviated = 0
 					for j=1,#column do
-						for k=1,pixelsPerUnit do if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country]) else table.insert(stretched[i], {22, 22, 170}) end end
+						local countryStr = column[j].country
+						local cTriplet = self.cTriplets[countryStr]
+						for k=1,pixelsPerUnit do if column[j].land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end end
 						deviated = deviated+deviation
 						while deviated >= 1 do
-							if column[j].land and self.cTriplets[column[j].country] then table.insert(stretched[i], self.cTriplets[column[j].country])
+							if column[j].land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]})
 							else table.insert(stretched[i], {22, 22, 170}) end
 							deviated = deviated-1
 						end
-						if self.cTriplets[column[j].country] and not colors[column[j].country] then colors[column[j].country] = self.cTriplets[column[j].country] end
+						local country = self.countries[countryStr]
+						if country then
+							local sysName = parent.systems[country.system].name
+							local sntVal = country.snt[sysName]
+							local legendStr = string.lower(countryStr.." ("..parent:ordinal(sntVal).." "..sysName..")")
+							if cTriplet and not colors[legendStr] then colors[legendStr] = {cTriplet[1], cTriplet[2], cTriplet[3]} end
+						elseif cTriplet and not colors[countryStr] then colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]} end
 					end
 				end
 				
@@ -450,7 +445,7 @@ return
 
 				local tColCount = 1
 				local tCols = {{}}
-				local tColWidths = {}
+				local tColWidths = {0}
 				local top = 2
 				local bottom = 9
 				local lineLen = 2
@@ -461,9 +456,9 @@ return
 					if lineLen >= columnCount then
 						lineLen = 12
 						tColCount = tColCount+1
+						table.insert(tCols, {})
+						table.insert(tColWidths, 0)
 					end
-					if not tCols[tColCount] then tCols[tColCount] = {} end
-					if not tColWidths[tColCount] then tColWidths[tColCount] = 0 end
 					table.insert(tCols[tColCount], cA)
 					local nameLen = cA:len()
 					if nameLen > tColWidths[tColCount] then tColWidths[tColCount] = nameLen end
@@ -478,8 +473,9 @@ return
 						local colMargin = margin -- Save the value of the current spacing from the left border of the legend.
 						local name = tCol[j]
 						if name then
+							local tColor = colors[name]
 							local nameLen = name:len()
-							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = colors[name] end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
+							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = {tColor[1], tColor[2], tColor[3]} end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
 								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
@@ -491,8 +487,8 @@ return
 								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 0 then stretched[l][m] = {0, 0, 0} -- Black.
-										else stretched[l][m] = {255, 255, 255} end -- White.
+										if glyph[letterRow][letterColumn] == 1 then stretched[l][m] = {255, 255, 255} -- White.
+										else stretched[l][m] = {0, 0, 0} end -- Black.
 										letterColumn = letterColumn+1 -- Move to the right!
 									end
 									letterColumn = 1 -- Move back to the far left.
@@ -530,8 +526,8 @@ return
 				
 				local bf = io.open(label..".bmp", "w+")
 				local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
-				local hStringLE = string.format("%08x", planetD*2)
-				local wStringLE = string.format("%08x", planetC*2)
+				local hStringLE = string.format("%.8x", planetD*2)
+				local wStringLE = string.format("%.8x", planetC*2)
 				local rStringLE = ""
 				local sStringLE = ""
 				local hStringBE = ""
@@ -556,8 +552,8 @@ return
 					end
 				end
 				
-				rStringLE = string.format("%08x", byteCount)
-				sStringLE = string.format("%08x", byteCount+54)
+				rStringLE = string.format("%.8x", byteCount)
+				sStringLE = string.format("%.8x", byteCount+54)
 				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
 				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
 				bmpString = bmpString:gsub("s", sStringBE)

@@ -8,7 +8,6 @@ if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setup
 
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
-lfsstatus, lfs = pcall(require, "lfs")
 
 _time = os.time
 if _time() < 30 then _time = os.clock end
@@ -296,9 +295,9 @@ return
 
 							if parent.systems[c.system].dynastic then
 								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
-
 								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
 							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." of "..c.name) end
+							parent.writeMap = true
 						end
 
 						return -1
@@ -627,6 +626,7 @@ return
 
 						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
 
+						parent.writeMap = true
 						return -1
 					end
 				},
@@ -986,6 +986,66 @@ return
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0}},
+				["0"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 1, 1, 0}},
+				["1"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 1, 1, 1, 0}},
+				["2"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0}},
+				["3"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 1, 1, 0, 0}},
+				["4"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 0, 0, 1, 0}},
+				["5"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 1, 1, 0, 0}},
+				["6"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 1, 1, 0}},
+				["7"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 0, 0, 1, 0}},
+				["8"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 0, 1, 0, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 0, 1, 0, 0}},
+				["9"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 1, 0, 1, 0},
+					{0, 0, 1, 1, 1, 0},
+					{0, 0, 0, 0, 1, 0},
+					{0, 0, 1, 1, 1, 0}},
 				["-"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
@@ -1011,11 +1071,11 @@ return
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0}},
 				["("]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 0, 1, 1, 0},
 					{0, 0, 1, 1, 0, 0},
-					{0, 1, 1, 0, 0, 0},
-					{0, 1, 0, 0, 0, 0},
-					{0, 1, 1, 0, 0, 0},
-					{0, 0, 1, 1, 0, 0}},
+					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 0, 0, 1, 1, 0}},
 				[")"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 1, 1, 0, 0},
 					{0, 0, 0, 1, 1, 0},
@@ -1499,7 +1559,7 @@ return
 
 			getAlphabetical = function(self, t)
 				local data = t
-				if not data then data = self.thisWorld.countries end
+				if not t then data = self.thisWorld.countries end
 				local cKeys = {}
 				for i, cp in pairs(data) do
 					if #cKeys ~= 0 then
@@ -1554,19 +1614,14 @@ return
 			loop = function(self)
 				local _running = true
 				local msg = ""
-				local cLimit = 14
-				local eLimit = 4
+				local cLimit = 16
+				local eLimit = 6
 				
 				if UI.clrcmd == "cls" then self.dirSeparator = "\\" end
 				local mapDir = self:directory({self.stamp, "maps"})
 
-				if lfsstatus then
-					lfs.mkdir(self:directory({self.stamp}))
-					if self.doMaps then lfs.mkdir(mapDir) end
-				else
-					os.execute("mkdir "..self:directory({self.stamp}))
-					if self.doMaps then os.execute("mkdir "..mapDir) end
-				end
+				os.execute("mkdir "..self:directory({self.stamp}))
+				if self.doMaps then os.execute("mkdir "..mapDir) end
 				
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 

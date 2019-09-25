@@ -8,7 +8,7 @@ The program leaks intense amounts of memory over longer simulations, much more t
 
 Add current system and ruler to the legend of the BMP maps?
 
-Package Curses, LFS and LuaSocket with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
+Package Curses and LuaSocket with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
 
 Per the above, perhaps create an install script for CCSim that would handle determining the resident OS and downloading the dependencies accordingly.
 
