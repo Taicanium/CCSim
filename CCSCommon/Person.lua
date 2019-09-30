@@ -54,9 +54,24 @@ return
 			end,
 
 			destroy = function(self, parent, nl)
+				self.age = nil
+				self.cbelief = nil
+				self.city = nil
 				self.death = parent.years
 				self.deathplace = nl.name
 				self.def = nil -- See above.
+				self.ebelief = nil
+				self.isruler = nil
+				self.level = nil
+				self.military = nil
+				self.militaryTraining = nil
+				self.nationality = nil
+				self.parentRuler = nil
+				self.party = nil
+				self.pbelief = nil
+				self.prevtitle = nil
+				self.recentbirth = nil
+				self.region = nil
 				self.spouse = nil
 				if self.royalGenerations == 0 then table.insert(parent.royals, self) end
 			end,
@@ -167,7 +182,7 @@ return
 
 				nn.birthplace = nl.name
 				nn.age = 0
-				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace.." "..tostring(nn.number)
+				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
 
 				nl:add(parent, nn)
