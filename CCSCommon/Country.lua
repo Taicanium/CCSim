@@ -682,7 +682,7 @@ return
 
 				for i=#self.people,1,-1 do
 					local chn = false
-					if self.people[i] then self.people[i]:update(parent, self) else chn = true end
+					if self.people[i] and self.people[i].def then self.people[i]:update(parent, self) else chn = true end
 					if parent.thisWorld.initialState then UI:printl(string.format("%.2f%%", ((#self.people-i+1)/#self.people)*100)) end
 
 					if not chn then
@@ -710,6 +710,8 @@ return
 							self.rulerParty = self.parties[self.people[i].party]
 						end
 					end
+					
+					if chn then local p = table.remove(self.people, i) end
 				end
 
 				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
