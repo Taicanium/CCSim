@@ -13,7 +13,7 @@ return
 				o.city = nil
 				o.death = 0
 				o.deathplace = ""
-				o.def = {} -- A utility variable used to set whether this person has been destroyed.
+				o.def = true -- A utility variable used to set whether this person has been destroyed.
 				o.ebelief = 0
 				o.ethnicity = {}
 				o.famc = ""
@@ -213,6 +213,8 @@ return
 			end,
 
 			update = function(self, parent, nl)
+				if not self.def then return end
+				
 				local f0 = _time()
 
 				self.age = parent.years-self.birth
