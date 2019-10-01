@@ -162,7 +162,7 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[i] and self.people[i].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
+										if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
 									else self:setRuler(parent, closest.pIndex, enthrone) end
 									
 									possibles = nil
@@ -172,7 +172,7 @@ return
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[i] and self.people[i].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then self:setRuler(parent, p, enthrone) end
+								if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then self:setRuler(parent, p, enthrone) end
 							end
 						end
 					end
