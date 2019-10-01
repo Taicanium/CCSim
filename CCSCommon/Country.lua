@@ -188,7 +188,7 @@ return
 			end,
 
 			destroy = function(self, parent)
-				if self.people then for i=1,#self.people do self:delete(parent, i) end end
+				if self.people then for i=#self.people,1,-1 do self:delete(parent, i) end end
 				self.people = nil
 
 				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
@@ -708,10 +708,7 @@ return
 						end
 					end
 					
-					if chn then 
-						local p = table.remove(self.people, i)
-						p:destroy(parent, self)
-					end
+					if chn then self:delete(parent, i) end
 				end
 
 				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
