@@ -256,7 +256,7 @@ return
 							end
 						else -- Opposition victory
 							if math.random(1, 100) < 51 then -- Executed
-								for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
+								for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -373,7 +373,7 @@ return
 
 						parent:rseed()
 						if math.random(1, 100) < 26 then -- Executed
-							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
+							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
@@ -603,7 +603,7 @@ return
 
 						parent:rseed()
 						if math.random(1, 100) < 51 then -- Executed
-							for q=1,#c.people do if c.people[q] and c.people[q].isruler then c:delete(parent, q) end end
+							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
