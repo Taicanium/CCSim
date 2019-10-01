@@ -126,7 +126,7 @@ return
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
-						for i=1,#self.people do self.people[i].pIndex = i end
+						for i=1,#self.people do if self.people[i] and self.people[i].def then self.people[i].pIndex = i end end
 
 						while self.hasruler == -1 do
 							local sys = parent.systems[self.system]
@@ -142,7 +142,7 @@ return
 									local closestAge = -1
 
 									for i=1,#self.people do
-										if self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "Male" then
+										if self.people[i] and self.people[i].def and self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "Male" then
 											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
 											elseif self.people[i].age <= self.averageAge+25 and self.people[i].age >= self.averageAge-25 then table.insert(possibles, self.people[i]) end
 										end end
@@ -162,7 +162,7 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
+										if self.people[i] and self.people[i].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
 									else self:setRuler(parent, closest.pIndex, enthrone) end
 									
 									possibles = nil
@@ -172,7 +172,7 @@ return
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then self:setRuler(parent, p, enthrone) end
+								if self.people[i] and self.people[i].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then self:setRuler(parent, p, enthrone) end
 							end
 						end
 					end
@@ -687,10 +687,7 @@ return
 
 					if not chn then
 						local age = self.people[i].age
-						if 35000-math.pow(age, 2) <= 1 or math.random(1, 35000-math.pow(age, 2)) < math.pow(age, 2) then
-							self:delete(parent, i)
-							chn = true
-						end
+						if 35000-math.pow(age, 2) <= 1 or math.random(1, 35000-math.pow(age, 2)) < math.pow(age, 2) then chn = true end
 					end
 
 					if not chn and not self.people[i].isruler and math.random(1, 20000) == 3799 then
@@ -711,7 +708,10 @@ return
 						end
 					end
 					
-					if chn then local p = table.remove(self.people, i) end
+					if chn then 
+						local p = table.remove(self.people, i)
+						p:destroy(parent, self)
+					end
 				end
 
 				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
