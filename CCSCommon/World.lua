@@ -332,10 +332,10 @@ return
 						local node = self.planet[entry[1]][entry[2]][entry[3]]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
-						for k=1,pixelsPerUnit do if column[j].land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end end
+						for k=1,pixelsPerUnit do if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end end
 						deviated = deviated+deviation
 						while deviated >= 1 do
-							if column[j].land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]})
+							if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]})
 							else table.insert(stretched[i], {22, 22, 170}) end
 							deviated = deviated-1
 						end
