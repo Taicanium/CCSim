@@ -1714,7 +1714,7 @@ return
 
 						if _DEBUG then
 							self.debugTimes["PRINT"] = _time()-f0
-							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %d\n"):format(i, j) end
+							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %f\n"):format(i, j) end
 						end
 					end
 					
