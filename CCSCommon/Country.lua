@@ -36,7 +36,7 @@ return
 				o.ruler = nil
 				o.rulernames = {}
 				o.rulerParty = nil
-				o.rulerPopularity = nil
+				o.rulerPopularity = 0
 				o.rulers = {}
 				o.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
 				o.stability = 50
