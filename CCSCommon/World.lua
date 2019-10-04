@@ -269,7 +269,7 @@ return
 			end,
 
 			mapOutput = function(self, parent, label)
-				if _DEBUG or not parent.doMaps then return end
+				if not parent.doMaps then return end
 				UI:printf("Writing map data...")
 				
 				local planetSize = #self.planetdefined
@@ -865,7 +865,7 @@ return
 				local f1 = _time()-f0
 
 				if parent.years > parent.startyear+1 then
-					if _DEBUG then parent.popLimit = 500
+					if _DEBUG then parent.popLimit = 300
 					else
 						if f1 > 0.7 then
 							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
