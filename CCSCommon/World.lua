@@ -865,14 +865,17 @@ return
 				local f1 = _time()-f0
 
 				if parent.years > parent.startyear+1 then
-					if f1 > 0.7 then
-						if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
-
-						if parent.popLimit < 1500 then parent.popLimit = 1500 end
-						if f1 > 1.5 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+					if _DEBUG then parent.popLimit = 500
 					else
-						if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(f1*2))) end
-						if parent.popLimit > 3500 then parent.popLimit = 3500 end
+						if f1 > 0.7 then
+							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
+
+							if parent.popLimit < 1500 then parent.popLimit = 1500 end
+							if f1 > 1.5 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+						else
+							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(f1*2))) end
+							if parent.popLimit > 3500 then parent.popLimit = 3500 end
+						end
 					end
 				end
 
