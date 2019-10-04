@@ -10,7 +10,6 @@ return
 				o.cTriplets = {}
 				o.fromFile = false
 				o.gPop = 0
-				o.initialPop = -1
 				o.initialState = true
 				o.mtname = "World"
 				o.planet = {}
@@ -831,17 +830,16 @@ return
 				local f0 = _time()
 
 				self.gPop = 0
-				self.initialPop = 1
 
-				if self.initialState then UI:printf("Constructing initial populations...") end
+				if self.initialState then
+					parent.iSCount = parent.numCountries
+					parent.iSIndex = 1
+					UI:printf("Constructing initial populations...")
+				end
 
 				for i, cp in pairs(self.countries) do if cp then
-					if self.initialState then
-						UI:printf(string.format("Country %d/%d", self.initialPop, parent.numCountries))
-						self.initialPop = self.initialPop+1
-					end
-					
 					cp:update(parent)
+					parent.iSIndex = parent.iSIndex+1
 					
 					if cp.population < 20 then
 						cp:event(parent, "Disappeared")
