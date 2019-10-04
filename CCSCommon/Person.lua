@@ -309,7 +309,10 @@ return
 					self.party = pmatch.name
 				end
 				
-				if self.isruler then nl.rulers[#nl.rulers].party = self.party end
+				if self.isruler then
+					nl.rulers[#nl.rulers].party = self.party
+					nl.rulerParty = nl.parties[self.party]
+				end
 
 				if nl.rulerParty then
 					local belieftotal = self.pbelief+self.ebelief+self.cbelief
