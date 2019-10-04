@@ -311,11 +311,11 @@ return
 				
 				if self.isruler then nl.rulers[#nl.rulers].party = self.party end
 
-				for i, j in pairs(nl.parties) do
+				if nl.rulerParty then
 					local belieftotal = self.pbelief+self.ebelief+self.cbelief
-					local partytotal = j.pfreedom+j.efreedom+j.cfreedom
+					local partytotal = nl.rulerParty.pfreedom+nl.rulerParty.efreedom+nl.rulerParty.cfreedom
 					local diff = math.abs(belieftotal-partytotal)
-					if diff < 175 then j.popularity = j.popularity+((100-(diff/3))/#nl.people) end
+					if diff < 175 then nl.rulerPopularity = nl.rulerPopularity+(100-(diff/3)) end
 				end
 
 				if math.random(1, 150) == 12 then self.region = nil end

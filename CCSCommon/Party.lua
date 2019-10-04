@@ -10,7 +10,6 @@ return
 				o.mtname = "Party"
 				o.name = ""
 				o.pfreedom = 0
-				o.popularity = 50
 				o.radical = false
 				
 				return o

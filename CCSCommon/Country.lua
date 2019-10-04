@@ -35,7 +35,8 @@ return
 				o.relations = {}
 				o.ruler = nil
 				o.rulernames = {}
-				o.rulerParty = nil -- Party the current ruler belongs to; NOT necessarily the most popular one
+				o.rulerParty = nil
+				o.rulerPopularity = nil
 				o.rulers = {}
 				o.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
 				o.stability = 50
@@ -407,6 +408,7 @@ return
 				self.people[newRuler].prevtitle = self.people[newRuler].title
 				self.people[newRuler].level = #parent.systems[self.system].ranks
 				self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
+				self.rulerParty = self.parties[self.people[newRuler].party]
 
 				parent:rseed()
 
@@ -423,7 +425,6 @@ return
 				self.people[newRuler].isruler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
-				self.rulerParty = self.parties[self.people[newRuler].party]
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
@@ -628,12 +629,12 @@ return
 				self.strength = 0
 				self.military = 0
 				self.hasruler = -1
+				self.rulerPopularity = 0
 				self.age = parent.years-self.founded
 				if self.founded < 1 then self.age = self.age-1 end
 				if self.population < parent.popLimit then self.birthrate = 3
 				else self.birthrate = 40 end
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
-				for i, j in pairs(self.parties) do j.popularity = 0 end
 
 				for i=#self.alliances,1,-1 do
 					local found = false
@@ -711,8 +712,8 @@ return
 					if chn then self:delete(parent, i) end
 				end
 
-				for i, j in pairs(self.parties) do j.popularity = math.floor(j.popularity) end
 				self.averageAge = self.averageAge/#self.people
+				self.rulerPopularity = self.rulerPopularity/#nl.people
 				self:checkRuler(parent, false)
 				local largest = ""
 				local largestN = 0
