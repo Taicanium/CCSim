@@ -16,6 +16,7 @@ return
 				o.planet = {}
 				o.planetdefined = {}
 				o.planetR = 0
+				o.unwrapped = {}
 
 				return o
 			end,
@@ -309,79 +310,8 @@ return
 					end
 				end
 				
-				local unwrapped = {}
-				local columnCount = 0
-
-				local p = 1
-				local q = -self.planetR
-				local r = -self.planetR
-				local quad = 1
-				local vox = false
-				local iColumn = 1
-				while r <= self.planetR do
-					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
-						while not unwrapped[iColumn] do table.insert(unwrapped, {}) end
-						table.insert(unwrapped[iColumn], self.planet[p][q][r])
-						self.planet[p][q][r].mapWritten = true
-						vox = true
-					end
-					if not vox then
-						if quad == 1 then
-							q = q+1
-							if q > 0 then
-								q = -self.planetR
-								p = p+1
-							end
-						elseif quad == 2 then
-							p = p-1
-							if p < 0 then
-								p = self.planetR
-								q = q+1
-							end
-						elseif quad == 3 then
-							q = q-1
-							if q < 0 then
-								q = self.planetR
-								p = p-1
-							end
-						elseif quad == 4 then
-							p = p+1
-							if p > 0 then
-								p = -self.planetR
-								q = q-1
-							end
-						end
-					else
-						if quad == 1 then p = p+1
-						elseif quad == 2 then q = q+1
-						elseif quad == 3 then p = p-1
-						elseif quad == 4 then q = q-1 end
-					end
-					if quad == 1 and p > self.planetR then
-						quad = 2
-						p = self.planetR
-						q = 1
-					elseif quad == 2 and q > self.planetR then
-						quad = 3
-						p = -1
-						q = self.planetR
-					elseif quad == 3 and p < -self.planetR then
-						quad = 4
-						p = -self.planetR
-						q = -1
-					elseif quad == 4 and q < -self.planetR then
-						quad = 1
-						p = 1
-						q = -self.planetR
-						r = r+1
-						iColumn = iColumn+1
-					end
-					vox = false
-				end
-				
-				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
-				
-				local columnCount = #unwrapped
+				if #self.unwrapped == 0 then self:unwrap() end
+				local columnCount = #self.unwrapped
 				local colors = {}
 				
 				iColumn = 1
@@ -389,16 +319,18 @@ return
 				local stretched = {}
 				for i=1,columnCount do
 					stretched[i] = {} 
-					local col = unwrapped[i]
+					local col = self.unwrapped[i]
 					if #col > planetC then planetC = #col end
 				end
 				for i=1,columnCount do
-					local column = unwrapped[i]
+					local column = self.unwrapped[i]
 					local pixelsPerUnit = math.floor(planetC/#column)
 					local deviation = ((planetC/#column)-pixelsPerUnit)*pixelsPerUnit
 					local deviated = 0
 					for j=1,#column do
-						local countryStr = column[j].country
+						local entry = column[j]
+						local node = self.planet[entry[1]][entry[2]][entry[3]]
+						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
 						for k=1,pixelsPerUnit do if column[j].land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end end
 						deviated = deviated+deviation
@@ -811,7 +743,6 @@ return
 				parent:deepnil(csy)
 				parent:deepnil(csz)
 				]]
-				parent:deepnil(unwrapped)
 				parent:deepnil(colors)
 				parent:deepnil(stretched)
 				parent:deepnil(tCols)
@@ -819,6 +750,77 @@ return
 				parent:deepnil(adjusted)
 				parent:deepnil(bmpString)
 				parent:deepnil(bmpDataString)
+			end,
+			
+			unwrap = function(self)
+				local p = 1
+				local q = -self.planetR
+				local r = -self.planetR
+				local quad = 1
+				local vox = false
+				local iColumn = 1
+				while r <= self.planetR do
+					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
+						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
+						table.insert(self.unwrapped[iColumn], {p, q, r})
+						self.planet[p][q][r].mapWritten = true
+						vox = true
+					end
+					if not vox then
+						if quad == 1 then
+							q = q+1
+							if q > 0 then
+								q = -self.planetR
+								p = p+1
+							end
+						elseif quad == 2 then
+							p = p-1
+							if p < 0 then
+								p = self.planetR
+								q = q+1
+							end
+						elseif quad == 3 then
+							q = q-1
+							if q < 0 then
+								q = self.planetR
+								p = p-1
+							end
+						elseif quad == 4 then
+							p = p+1
+							if p > 0 then
+								p = -self.planetR
+								q = q-1
+							end
+						end
+					else
+						if quad == 1 then p = p+1
+						elseif quad == 2 then q = q+1
+						elseif quad == 3 then p = p-1
+						elseif quad == 4 then q = q-1 end
+					end
+					if quad == 1 and p > self.planetR then
+						quad = 2
+						p = self.planetR
+						q = 1
+					elseif quad == 2 and q > self.planetR then
+						quad = 3
+						p = -1
+						q = self.planetR
+					elseif quad == 3 and p < -self.planetR then
+						quad = 4
+						p = -self.planetR
+						q = -1
+					elseif quad == 4 and q < -self.planetR then
+						quad = 1
+						p = 1
+						q = -self.planetR
+						r = r+1
+						iColumn = iColumn+1
+					end
+					vox = false
+				end
+				
+				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
 			end,
 
 			update = function(self, parent)
