@@ -72,11 +72,14 @@ return
 				self.prevtitle = nil
 				self.recentbirth = nil
 				self.region = nil
+				if self.spouse then self.spouse.spouse = nil end
 				self.spouse = nil
 				if self.royalGenerations == 0 then table.insert(parent.royals, self) end
 			end,
 
 			dobirth = function(self, parent, nl)
+				if not self.spouse or not self.spouse.def then return nil end
+			
 				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
 				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
 
@@ -253,9 +256,9 @@ return
 
 				self.title = ranks[self.level]
 
-				if not self.spouse and self.age > 15 and math.random(1, 8) == 4 then
+				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 8) == 4 then
 					local m = parent:randomChoice(nl.people)
-					if not m.spouse and self.gender ~= m.gender then
+					if m.def and not m.spouse and self.gender ~= m.gender then
 						local found = false
 						if self.surname == m.surname then found = true end
 						if not found then for i, j in pairs(self.children) do
@@ -271,7 +274,7 @@ return
 							m.spouse = self
 						end
 					end
-				end
+				end end
 
 				if not self.recentbirth and self.spouse and math.random(1, nl.birthrate) == 2 then
 					self:dobirth(parent, nl)
