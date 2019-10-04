@@ -315,7 +315,7 @@ return
 					local belieftotal = self.pbelief+self.ebelief+self.cbelief
 					local partytotal = nl.rulerParty.pfreedom+nl.rulerParty.efreedom+nl.rulerParty.cfreedom
 					local diff = math.abs(belieftotal-partytotal)
-					if diff < 175 then nl.rulerPopularity = nl.rulerPopularity+(100-(diff/3)) end
+					if diff < 175 then nl.rulerPopularity = nl.rulerPopularity+diff end
 				end
 
 				if math.random(1, 150) == 12 then self.region = nil end
