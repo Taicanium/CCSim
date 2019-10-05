@@ -397,7 +397,7 @@ return
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
 					n.birthplace = self.name
-					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
+					n.gString = n.gender:sub(1, 1).." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					self:add(parent, n)
 				end
 			end,
@@ -440,7 +440,7 @@ return
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
-					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
+					self.people[newRuler].gString = self.people[newRuler].gender:sub(1, 1).." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
 
 					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				else
