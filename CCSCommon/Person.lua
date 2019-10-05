@@ -185,7 +185,7 @@ return
 
 				nn.birthplace = nl.name
 				nn.age = 0
-				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
+				nn.gString = nn.gender:sub(1, 1).." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
 
 				nl:add(parent, nn)
