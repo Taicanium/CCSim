@@ -713,7 +713,7 @@ return
 				end
 
 				self.averageAge = self.averageAge/#self.people
-				self.rulerPopularity = 100-(self.rulerPopularity/(3*#self.people))
+				self.rulerPopularity = self.rulerPopularity/(3*#self.people)
 				self:checkRuler(parent, false)
 				local largest = ""
 				local largestN = 0
