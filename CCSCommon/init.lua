@@ -1326,23 +1326,6 @@ return
 						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
 						for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
 						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
-						local nOne = false
-						for k, l in pairs(j.ethnicity) do
-							local perF = 2
-							local perS = ("%.2f"):format(l)
-							local pStatus = true
-							while pStatus and perS:sub(perS:len(), perS:len()) == "0" and perS:sub(1, 1) == "0" do
-								perF = perF+1
-								pStatus, perS = pcall(string.format, "%."..tostring(perF).."f", l)
-							end
-							if pStatus then
-								if nOne then of:write("\n2 CONT "..perS.."% "..k)
-								else
-									of:write("\n1 NOTE "..perS.."% "..k)
-									nOne = true
-								end
-							end
-						end
 						of:flush()
 						UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
 					end
