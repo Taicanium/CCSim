@@ -101,7 +101,7 @@ function gedReview(f)
 			end
 		end
 		if split[1] and split[1] == "0" and split[3] and split[3] == "FAM" then
-			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, ic)) end
+			if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, fc)) end
 			local ifs = split[2]:gsub("@", ""):gsub("F", "")
 			local index = tonumber(ifs)
 			if index then
