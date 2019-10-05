@@ -392,7 +392,7 @@ function simReview()
 		UI:printp(" > ")
 		local datin = UI:readl()
 
-		if datin:lower() == "b" then _REVIEWING = false return end
+		if datin:lower() == "b" then _REVIEWING = false end
 		if tonumber(datin) and sims[tonumber(datin)] then
 			local dirStamp = sims[tonumber(datin)]
 			local dirSimCmd = "dir "..dirStamp.." /b /a-d"
