@@ -335,7 +335,7 @@ return
 									table.insert(newr.subregions, j)
 									for k, l in pairs(j.cities) do newr.cities[k] = l end
 								end
-								
+
 								for i=1,#parent.thisWorld.planetdefined do
 									local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
 									if parent.thisWorld.planet[x][y][z].country == c2.name then
@@ -345,7 +345,7 @@ return
 										table.insert(c1.nodes, {x, y, z})
 									end
 								end
-								
+
 								c2.nodes = nil
 
 								c1.stability = c1.stability-5
@@ -1182,7 +1182,7 @@ return
 
 				return res
 			end,
-			
+
 			deepnil = function(self, obj)
 				if type(obj) == "table" then for i, j in pairs(obj) do
 					if type(j) == "table" then self:deepnil(j) end
@@ -1601,13 +1601,13 @@ return
 				local msg = ""
 				local cLimit = 16
 				local eLimit = 6
-				
+
 				if UI.clrcmd == "cls" then self.dirSeparator = "\\" end
 				local mapDir = self:directory({self.stamp, "maps"})
 
 				os.execute("mkdir "..self:directory({self.stamp}))
 				if self.doMaps then os.execute("mkdir "..mapDir) end
-				
+
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				while _running do
@@ -1702,7 +1702,7 @@ return
 							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %f\n"):format(i, j) end
 						end
 					end
-					
+
 					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
 					self.writeMap = false
 					self.years = self.years+1
@@ -1743,7 +1743,7 @@ return
 					groups = groups+1
 					table.insert(taken, mid:lower())
 				end
-				
+
 				nom = self:namecheck(nom)
 
 				if not personal then
@@ -1777,7 +1777,7 @@ return
 					end
 					nom = nom..ending:lower()
 				end
-				
+
 				for i, j in pairs(self.repGroups) do nom = nom:gsub(j[1], j[2]) end
 				return nom
 			end,
@@ -2052,7 +2052,7 @@ return
 
 							c1:event(self, gainMsg)
 							c2:event(self, lossMsg)
-							
+
 							self.writeMap = true
 						end
 					end

@@ -11,7 +11,7 @@ return
 				o.name = ""
 				o.pfreedom = 0
 				o.radical = false
-				
+
 				return o
 			end,
 

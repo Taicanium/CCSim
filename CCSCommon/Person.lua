@@ -79,7 +79,7 @@ return
 
 			dobirth = function(self, parent, nl)
 				if not self.spouse or not self.spouse.def then return nil end
-			
+
 				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
 				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
 
@@ -138,7 +138,7 @@ return
 					for x=1,#segments-1 do nn.surname = nn.surname..segments[x].."-" end
 					nn.surname = nn.surname..segments[#segments]
 				end
-				
+
 				if self.royalGenerations < math.huge or self.spouse.royalGenerations < math.huge then
 					if self.spouse.royalGenerations < self.royalGenerations then
 						nn.royalGenerations = self.spouse.royalGenerations+1
@@ -217,7 +217,7 @@ return
 
 			update = function(self, parent, nl)
 				if not self.def then return end
-				
+
 				local f0 = _time()
 
 				self.age = parent.years-self.birth
@@ -308,7 +308,7 @@ return
 
 					self.party = pmatch.name
 				end
-				
+
 				if self.isruler then
 					nl.rulers[#nl.rulers].party = self.party
 					nl.rulerParty = nl.parties[self.party]

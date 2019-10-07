@@ -160,7 +160,7 @@ return
 
 					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
 				end
-				
+
 				parent:deepnil(freeNodes)
 
 				for i=1,planetSize do
@@ -216,7 +216,7 @@ return
 							self.planet[x][y][z].countryDone = true
 						end
 					end
-					
+
 					for i=1,planetSize do
 						local x, y, z = table.unpack(self.planetdefined[i])
 						self.planet[x][y][z].countrySet = false
@@ -270,14 +270,14 @@ return
 			mapOutput = function(self, parent, label)
 				if not parent.doMaps then return end
 				UI:printf("Writing map data...")
-				
+
 				local planetSize = #self.planetdefined
 
 				for i, cp in pairs(self.countries) do
 					if not self.cColors[cp.name] or not self.cTriplets[cp.name] then
 						self.cColors[cp.name] = nil
 						self.cTriplets[cp.name] = nil
-						
+
 						local r = 0
 						local g = 0
 						local b = 0
@@ -292,7 +292,7 @@ return
 
 							if r > 230 and g > 230 and b > 230 then unique = false end
 							if r < 25 and g < 25 and b < 25 then unique = false end
-							
+
 							if not unique then
 								r = math.random(0, 255)
 								g = math.random(0, 255)
@@ -308,11 +308,11 @@ return
 						self.cTriplets[cp.name] = {r, g, b}
 					end
 				end
-				
+
 				if #self.unwrapped == 0 then self:unwrap() end
 				local columnCount = #self.unwrapped
 				local colors = {}
-				
+
 				iColumn = 1
 				local planetC = 0
 				local stretched = {}
@@ -347,7 +347,7 @@ return
 						elseif cTriplet and not colors[countryStr] then colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]} end
 					end
 				end
-				
+
 				planetC = math.huge
 				for i=1,columnCount do
 					local col = stretched[i]
@@ -436,7 +436,7 @@ return
 					top = 2
 					bottom = 9 -- And begin at the top left anew.
 				end
-				
+
 				planetC = planetC+colSum -- Account for the addition of the legend in our bitmap dimensions.
 				local planetD = 0 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
 				local yi = 1
@@ -454,7 +454,7 @@ return
 					end
 					yi = yi+1
 				end
-				
+
 				local bf = io.open(label..".bmp", "w+")
 				local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
 				local hStringLE = string.format("%.8x", planetD*2)
@@ -469,7 +469,7 @@ return
 				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
 				bmpString = bmpString:gsub("w", wStringBE)
 				bmpString = bmpString:gsub("h", hStringBE)
-				
+
 				local byteCount = 0
 				for y=planetD*2,1,-1 do
 					local btWritten = 0
@@ -482,7 +482,7 @@ return
 						byteCount = byteCount+1
 					end
 				end
-				
+
 				rStringLE = string.format("%.8x", byteCount)
 				sStringLE = string.format("%.8x", byteCount+54)
 				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
@@ -493,7 +493,7 @@ return
 				local byteString = ""
 				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
 				bf:write(byteString)
-				
+
 				for y=planetD*2,1,-1 do
 					local btWritten = 0
 					for x=1,planetC*2 do
@@ -513,11 +513,11 @@ return
 						btWritten = btWritten+1
 					end
 				end
-				
+
 				bf:flush()
 				bf:close()
 				bf = nil
-				
+
 				--[[
 				local f = io.open(label..".r", "w+")
 				if not f then return end
@@ -734,7 +734,7 @@ return
 				f:flush()
 				f:close()
 				f = nil
-				
+
 				parent:deepnil(ccs)
 				parent:deepnil(css)
 				parent:deepnil(cst)
@@ -750,7 +750,7 @@ return
 				parent:deepnil(bmpString)
 				parent:deepnil(bmpDataString)
 			end,
-			
+
 			unwrap = function(self)
 				local p = 1
 				local q = -self.planetR
@@ -818,7 +818,7 @@ return
 					end
 					vox = false
 				end
-				
+
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
 			end,
 
@@ -843,7 +843,7 @@ return
 						parent.iSIndex = parent.iSIndex+1
 					end
 					cp:update(parent)
-					
+
 					if cp.population < 20 then
 						cp:event(parent, "Disappeared")
 						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true) end end

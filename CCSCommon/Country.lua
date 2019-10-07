@@ -117,7 +117,7 @@ return
 						end
 					end
 				end
-				
+
 				return 0
 			end,
 
@@ -165,7 +165,7 @@ return
 										local p = math.random(1, #self.people)
 										if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].age >= self.averageAge-25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim then self:setRuler(parent, p, enthrone) end end
 									else self:setRuler(parent, closest.pIndex, enthrone) end
-									
+
 									possibles = nil
 								else
 									if child.nationality ~= self.name then self:add(parent, child) end
@@ -517,7 +517,7 @@ return
 							parent.thisWorld.planet[x][y][z].regionDone = true
 						end
 					end
-					
+
 					for i=1,#self.nodes do
 						local x, y, z = table.unpack(self.nodes[i])
 						parent.thisWorld.planet[x][y][z].regionSet = false
@@ -707,7 +707,7 @@ return
 							self.rulerParty = self.parties[self.people[i].party]
 						end
 					end
-					
+
 					if chn then self:delete(parent, i) end
 				end
 

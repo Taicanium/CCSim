@@ -111,7 +111,7 @@ return
 					self.y = curses:lines()
 				end
 			end,
-			
+
 			write = function(self, fmt)
 				if not self.ready then self:init() end
 				if self.stdscr then
