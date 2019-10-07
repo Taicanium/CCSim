@@ -684,7 +684,6 @@ return
 				for i=#self.people,1,-1 do
 					local chn = false
 					if self.people[i] and self.people[i].def then self.people[i]:update(parent, self) else chn = true end
-					if parent.thisWorld.initialState then UI:printl(string.format("Country %d/%d - %.2f%%", parent.iSIndex, parent.iSCount, ((#self.people-i+1)/#self.people)*100)) end
 
 					if not chn then
 						local age = self.people[i].age

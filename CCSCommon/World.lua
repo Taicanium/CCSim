@@ -838,8 +838,11 @@ return
 				end
 
 				for i, cp in pairs(self.countries) do if cp then
+					if self.initialState then
+						UI:printl("Country %d/%d", parent.iSIndex, parent.iSCount)
+						parent.iSIndex = parent.iSIndex+1
+					end
 					cp:update(parent)
-					parent.iSIndex = parent.iSIndex+1
 					
 					if cp.population < 20 then
 						cp:event(parent, "Disappeared")
