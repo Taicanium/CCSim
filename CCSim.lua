@@ -76,7 +76,7 @@ function gedReview(f)
 		local split = {}
 		for x in l:gmatch("%S+") do table.insert(split, x) end
 		if split[1] and split[1] == "0" and split[3] then
-			if split[3] == "INDI" then ic = ic+1 fi = ic end
+			if split[3] == "INDI" then ic = ic+1 fi = ic
 			elseif split[3] == "FAM" then fc = fc+1 fi = fc end
 		end
 		if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People, %d Families", ic, fc)) end
@@ -383,7 +383,7 @@ function simReview()
 		UI:printp(" > ")
 		local datin = UI:readl()
 
-		if datin:lower() == "b" then _REVIEWING = false end
+		if datin:lower() == "b" then _REVIEWING = false
 		elseif tonumber(datin) and sims[tonumber(datin)] then
 			local dirStamp = sims[tonumber(datin)]
 			local dirSimCmd = "dir "..dirStamp.." /b /a-d"
