@@ -74,7 +74,8 @@ return
 							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
 								if not self.planet[x] then self.planet[x] = {} end
 								if not self.planet[x][y] then self.planet[x][y] = {} end
-								self.planet[x][y][z] = {x=x,
+								self.planet[x][y][z] = {
+									x=x,
 									y=y,
 									z=z,
 									country="",
@@ -106,7 +107,7 @@ return
 
 				UI:printf("Defining land masses...")
 
-				local maxLand = math.random(math.floor(planetSize/2.85), math.ceil(planetSize/2))
+				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
 				local freeNodes = {}
 				for i=1,continents do
