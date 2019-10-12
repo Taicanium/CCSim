@@ -6,6 +6,7 @@ return
 				setmetatable(o, self)
 
 				o.age = 0
+				o.ancName = ""
 				o.birth = 0
 				o.birthplace = ""
 				o.cbelief = 0
@@ -89,8 +90,13 @@ return
 				local nn = Person:new()
 				nn:makename(parent, nl)
 
-				if self.gender == "Male" then nn.surname = self.surname
-				else nn.surname = self.spouse.surname end
+				if self.gender == "Male" then
+					nn.surname = self.surname
+					nn.ancName = self.ancName
+				else
+					nn.surname = self.spouse.surname
+					nn.ancName = self.spouse.ancName
+				end
 
 				if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
 					if self.surname ~= self.spouse.surname then
@@ -103,23 +109,7 @@ return
 							else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 						end
 
-						if surnames[1] == surnames[2] then nn.surname = surnames[1] else
-							local lastAnc = self
-							local thisAnc = self.father
-							while thisAnc do
-								lastAnc = thisAnc
-								thisAnc = lastAnc.father
-							end
-							local anc1 = lastAnc
-							lastAnc = self.spouse
-							thisAnc = self.spouse.father
-							while thisAnc do
-								lastAnc = thisAnc
-								thisAnc = lastAnc.father
-							end
-							local anc2 = lastAnc
-							if anc1.surname ~= anc2.surname then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
-						end
+						if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
 					end
 				end
 
@@ -225,6 +215,7 @@ return
 
 				if not self.birthplace or self.birthplace == "" then self.birthplace = nl.name end
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
+				if not self.ancName or self.ancName == "" then if self.father then self.ancName = self.father.ancName else self.ancName = self.surname end end
 
 				local sys = parent.systems[nl.system]
 
