@@ -818,7 +818,7 @@ return
 			disabled = {},
 			doGed = false,
 			doMaps = false,
-			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium", "en", "ic", "is", "im"},
+			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium"},
 			fam = {},
 			famCount = 0,
 			final = {},
