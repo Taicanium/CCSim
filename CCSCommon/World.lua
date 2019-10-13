@@ -797,6 +797,7 @@ return
 						elseif quad == 2 then q = q+1
 						elseif quad == 3 then p = p-1
 						elseif quad == 4 then q = q-1 end
+						vox = false
 					end
 					if quad == 1 and p > self.planetR then
 						quad = 2
@@ -817,7 +818,6 @@ return
 						r = r+1
 						iColumn = iColumn+1
 					end
-					vox = false
 				end
 
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
