@@ -6,6 +6,120 @@ if not CCSMStatus or not CCSModule then error(tostring(CCSModule)) os.exit(1) en
 CCSFStatus, CCSCommon = pcall(CCSModule)
 if not CCSFStatus or not CCSCommon then error(tostring(CCSCommon)) os.exit(1) end
 
+function testGlyphs()
+	local bmp = {}
+	local top = 2
+	local bottom = 7
+	local pad = 8
+	local width = 2
+	for j=1,pad do table.insert(bmp, {}) end
+	for j, k in pairs(CCSCommon.glyphs) do
+		for l=1,pad do for m=1,pad do table.insert(bmp[l], {0, 0, 0}) end end
+		width = width+(pad-2)
+	end
+	local margin = 1
+	local glyphArr = {}
+	for j, k in pairs(CCSCommon.glyphs) do
+		local xi = -1
+		for l=1,#glyphArr do if xi == -1 and string.byte(j) < string.byte(glyphArr[l]) then xi = l end end
+		if xi == -1 then table.insert(glyphArr, j) else table.insert(glyphArr, xi, j) end
+	end
+	for j=1,#glyphArr do
+		local glyphIndex = glyphArr[j]
+		local k = CCSCommon.glyphs[glyphIndex]
+		local letterRow = 1
+		local letterColumn = 1
+		for l=margin,margin+5 do
+			for m=top,bottom do
+				if k[letterColumn][letterRow] == 1 then bmp[m][l] = {255, 255, 255}
+				else bmp[m][l] = {0, 0, 0} end
+				letterColumn = letterColumn+1
+			end
+			letterColumn = 1
+			letterRow = letterRow+1
+		end
+		margin = margin+6
+	end
+	local adjusted = {}
+	local yi = 1
+	for i=1,pad do
+		adjusted[yi*2] = {}
+		adjusted[(yi*2)-1] = {}
+		local col = bmp[i]
+		for j=1,width do
+			adjusted[yi*2][j*2] = col[j]
+			adjusted[(yi*2)-1][j*2] = col[j]
+			adjusted[yi*2][(j*2)-1] = col[j]
+			adjusted[(yi*2)-1][(j*2)-1] = col[j]
+		end
+		yi = yi+1
+	end
+	pad = pad*2
+	width = width*2
+	local bf = io.open("glyphs.bmp", "w+")
+	local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
+	local hStringLE = string.format("%.8x", pad)
+	local wStringLE = string.format("%.8x", width)
+	local rStringLE = ""
+	local sStringLE = ""
+	local hStringBE = ""
+	local wStringBE = ""
+	local rStringBE = ""
+	local sStringBE = ""
+	for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
+	for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
+	bmpString = bmpString:gsub("w", wStringBE)
+	bmpString = bmpString:gsub("h", hStringBE)
+
+	local byteCount = 0
+	for y=pad,1,-1 do
+		local btWritten = 0
+		for x=1,width do
+			btWritten = btWritten+3
+			byteCount = byteCount+3
+		end
+		while math.fmod(btWritten, 4) ~= 0 do
+			btWritten = btWritten+1
+			byteCount = byteCount+1
+		end
+	end
+
+	rStringLE = string.format("%.8x", byteCount)
+	sStringLE = string.format("%.8x", byteCount+54)
+	for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
+	for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
+	bmpString = bmpString:gsub("s", sStringBE)
+	bmpString = bmpString:gsub("r", rStringBE)
+
+	local byteString = ""
+	for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
+	bf:write(byteString)
+
+	for y=pad,1,-1 do
+		local btWritten = 0
+		for x=1,width do
+			if adjusted[y] and adjusted[y][x] then
+				bf:write(string.char(adjusted[y][x][3]))
+				bf:write(string.char(adjusted[y][x][2]))
+				bf:write(string.char(adjusted[y][x][1]))
+			else
+				bf:write(string.char(0))
+				bf:write(string.char(0))
+				bf:write(string.char(0))
+			end
+			btWritten = btWritten+3
+		end
+		while math.fmod(btWritten, 4) ~= 0 do
+			bf:write(string.char(0))
+			btWritten = btWritten+1
+		end
+	end
+
+	bf:flush()
+	bf:close()
+	bf = nil
+end
+
 function printIndi(i, f)
 	if not i then return end
 	local sOut = tostring(i.gIndex)..". ("..i.gender..") "
@@ -431,6 +545,7 @@ end
 end ]]
 
 function main()
+	if _DEBUG then testGlyphs() end
 	while _RUNNING do
 		UI:clear()
 		UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
