@@ -7,7 +7,6 @@ return
 
 				o.cfreedom = 0
 				o.efreedom = 0
-				o.mtname = "Party"
 				o.name = ""
 				o.pfreedom = 0
 				o.radical = false

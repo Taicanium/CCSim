@@ -5,7 +5,6 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.mtname = "City"
 				o.name = ""
 				o.population = 0
 				o.x = nil

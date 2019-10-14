@@ -24,7 +24,6 @@ return
 				o.hasruler = -1
 				o.majority = ""
 				o.military = 0
-				o.mtname = "Country"
 				o.name = ""
 				o.nodes = {}
 				o.ongoing = {}
@@ -189,10 +188,29 @@ return
 			end,
 
 			destroy = function(self, parent)
-				if self.people then for i=#self.people,1,-1 do self:delete(parent, i) end end
+				if self.people then for i, j in pairs(self.people) do self:delete(parent, i) end end
 				self.people = nil
-
-				for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
+				
+				if self.parties then for i, j in pairs(self.parties) do j = nil end end
+				self.parties = nil
+				
+				if self.ongoing then for i=#self.ongoing,1,-1 do self.ongoing[i] = nil end end
+				self.ongoing = nil
+				
+				if self.regions then for i, j in pairs(self.regions) do
+					j:destroy(parent)
+					j = nil
+				end end
+				self.regions = nil
+				
+				parent:deepnil(self.alliances)
+				parent:deepnil(self.allyOngoing)
+				parent:deepnil(self.ethnicities)
+				parent:deepnil(self.relations)
+				self.alliances = nil
+				self.allyOngoing = nil
+				self.ethnicities = nil
+				self.relations = nil
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
 				table.insert(parent.final, self)
@@ -355,7 +373,7 @@ return
 				self:makename(parent, 3)
 				self.agPrim = parent:randomChoice({true, false})
 
-				if self.population <= 1 then if _DEBUG then self:setPop(parent, math.random(150, 250)) else self:setPop(parent, math.random(1000, 2000)) end end
+				if self.population <= 1 then if _DEBUG then self:setPop(parent, 150) else self:setPop(parent, math.random(1000, 1500)) end end
 
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end
@@ -449,6 +467,7 @@ return
 			end,
 
 			setTerritory = function(self, parent, patron, patronRegion)
+				parent:deepnil(self.nodes)
 				self.nodes = {}
 
 				for i=1,#parent.thisWorld.planetdefined do
@@ -540,7 +559,8 @@ return
 							table.insert(patron.nodes, {x, y, z})
 							table.insert(patronRegion.nodes, {x, y, z})
 						end
-						table.remove(self.nodes, i)
+						local rn = table.remove(self.nodes, i)
+						parent:deepnil(rn)
 					else table.insert(self.regions[parent.thisWorld.planet[x][y][z].region].nodes, {x, y, z}) end
 				end
 

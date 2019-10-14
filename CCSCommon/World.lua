@@ -11,7 +11,6 @@ return
 				o.fromFile = false
 				o.gPop = 0
 				o.initialState = true
-				o.mtname = "World"
 				o.planet = {}
 				o.planetdefined = {}
 				o.planetR = 0
@@ -242,7 +241,7 @@ return
 					cp:setTerritory(parent)
 				end
 
-				parent.stamp = tostring(math.floor(_time()))
+				parent.stamp = tostring(math.floor(_stamp()))
 
 				for i, j in pairs(parent.c_events) do
 					parent.disabled[j.name:lower()] = false
@@ -744,6 +743,7 @@ return
 				parent:deepnil(csz)
 				]]
 				parent:deepnil(colors)
+				parent:deepnil(colorKeys)
 				parent:deepnil(stretched)
 				parent:deepnil(tCols)
 				parent:deepnil(tColWidths)
@@ -840,7 +840,7 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then
 					if self.initialState then
-						UI:printl("Country %d/%d", parent.iSIndex, parent.iSCount)
+						UI:printl(string.format("Country %d/%d", parent.iSIndex, parent.iSCount))
 						parent.iSIndex = parent.iSIndex+1
 					end
 					cp:update(parent)
@@ -863,11 +863,11 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
-
-				local f1 = _time()-f0
+				
+				local f1 = _time()
 
 				if parent.years > parent.startyear+1 then
-					if _DEBUG then parent.popLimit = 300
+					if _DEBUG then parent.popLimit = 150
 					else
 						if f1 > 0.7 then
 							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1*2))) end
@@ -880,8 +880,12 @@ return
 						end
 					end
 				end
-
-				parent.debugTimes["TOTAL"] = f1
+				
+				local f2 = _time()
+				if math.fmod(parent.years, 35) == 0 then collectgarbage() end
+				local f3 = _time()
+				parent.debugTimes["GARBAGE"] = f3-f2
+				parent.debugTimes["TOTAL"] = f3-f0
 			end
 		}
 

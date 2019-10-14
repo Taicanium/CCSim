@@ -30,7 +30,6 @@ return
 				o.military = false
 				o.militaryTraining = 0
 				o.mother = nil
-				o.mtname = "Person"
 				o.name = ""
 				o.nationality = ""
 				o.number = 0
@@ -62,6 +61,7 @@ return
 				self.deathplace = nl.name
 				self.def = nil -- See above.
 				self.ebelief = nil
+				parent:deepnil(self.ethnicity)
 				self.isruler = nil
 				self.level = nil
 				self.military = nil
@@ -73,8 +73,11 @@ return
 				self.prevtitle = nil
 				self.recentbirth = nil
 				self.region = nil
+				self.royalSystem = nil
+				self.ruledCountry = nil
 				if self.spouse then self.spouse.spouse = nil end
 				self.spouse = nil
+				self.title = nil
 				if self.royalGenerations == 0 then table.insert(parent.royals, self) end
 			end,
 

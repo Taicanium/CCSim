@@ -9,9 +9,12 @@ if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setup
 socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
-_time = os.time
-if _time() < 30 then _time = os.clock end
+_time = os.clock
+if _time() > 30 then _time = os.time end
 if socketstatus then _time = socket.gettime end
+_stamp = os.time
+if _stamp() < 30 then _stamp = os.clock end
+if socketstatus then _stamp = socket.gettime end
 
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
@@ -1604,11 +1607,11 @@ return
 
 				if UI.clrcmd == "cls" then self.dirSeparator = "\\" end
 				local mapDir = self:directory({self.stamp, "maps"})
-
 				os.execute("mkdir "..self:directory({self.stamp}))
 				if self.doMaps then os.execute("mkdir "..mapDir) end
-
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
+				
+				collectgarbage()
 
 				while _running do
 					self.thisWorld:update(self)
@@ -1696,6 +1699,11 @@ return
 						elseif eCount < #currentEvents then msg = msg..("\n[+%d more]"):format(#currentEvents-eCount) end
 
 						msg = msg.."\n"
+						
+						self:deepnil(currentEvents)
+						self:deepnil(names)
+						self:deepnil(stats)
+						self:deepnil(rulers)
 
 						if _DEBUG then
 							self.debugTimes["PRINT"] = _time()-f0
@@ -1966,7 +1974,10 @@ return
 
 							for i=#c2.nodes,1,-1 do
 								local x, y, z = table.unpack(c2.nodes[i])
-								if self.thisWorld.planet[x][y][z].country == c1.name then table.remove(c2.nodes, i) end
+								if self.thisWorld.planet[x][y][z].country == c1.name then
+									local rn = table.remove(c2.nodes, i)
+									rn = nil
+								end
 							end
 
 							if not conq then

@@ -6,7 +6,6 @@ return
 				setmetatable(o, self)
 
 				o.cities = {}
-				o.mtname = "Region"
 				o.name = ""
 				o.nodes = {}
 				o.population = 0
@@ -54,6 +53,11 @@ return
 				end
 
 				return 0
+			end,
+			
+			destroy = function(self, parent)
+				parent:deepnil(self.nodes)
+				self.population = 0
 			end,
 
 			makename = function(self, country, parent)

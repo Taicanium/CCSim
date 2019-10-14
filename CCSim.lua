@@ -435,7 +435,7 @@ function simNew()
 			CCSCommon:rseed()
 
 			CCSCommon.thisWorld = World:new()
-			CCSCommon.numCountries = math.random(7, 12)
+			CCSCommon.numCountries = math.random(7, 10)
 
 			for j=1,CCSCommon.numCountries do
 				UI:printl(string.format("Country %d/%d", j, CCSCommon.numCountries))
