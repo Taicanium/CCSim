@@ -32,7 +32,7 @@ return
 			c_events = {
 				{
 					name="Alliance",
-					chance=18,
+					chance=22,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -171,7 +171,7 @@ return
 				},
 				{
 					name="Civil War",
-					chance=2,
+					chance=3,
 					target=nil,
 					args=1,
 					eString="",
@@ -394,7 +394,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=3,
+					chance=4,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -562,7 +562,7 @@ return
 				},
 				{
 					name="Invade",
-					chance=6,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -635,7 +635,7 @@ return
 				},
 				{
 					name="War",
-					chance=14,
+					chance=10,
 					target=nil,
 					args=2,
 					status=0,
