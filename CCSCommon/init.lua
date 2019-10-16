@@ -118,7 +118,7 @@ return
 										end
 									end
 
-									c1.stability = c1.stability-5
+									c1.stability = c1.stability-3
 									if c1.stability < 1 then c1.stability = 1 end
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
@@ -351,7 +351,7 @@ return
 
 								c2.nodes = nil
 
-								c1.stability = c1.stability-5
+								c1.stability = c1.stability-3
 								if c1.stability < 1 then c1.stability = 1 end
 								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
@@ -386,7 +386,7 @@ return
 						c.hasruler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-10
+						c.stability = c.stability-3
 						if c.stability < 1 then c.stability = 1 end
 
 						return -1
@@ -530,7 +530,7 @@ return
 							parent.thisWorld:add(newl)
 							parent:getAlphabetical()
 
-							c.stability = c.stability-math.random(3, 10)
+							c.stability = c.stability-math.random(3, 6)
 							if c.stability < 1 then c.stability = 1 end
 
 							if not c.regions[c.capitalregion] or not c.regions[c.capitalregion].cities[c.capitalcity] then
@@ -573,8 +573,7 @@ return
 						if c1.relations[c2.name] and c1.relations[c2.name] < 21 then
 							c1:event(parent, "Invaded "..c2.name)
 							c2:event(parent, "Invaded by "..c1.name)
-							c1.stability = c1.stability-5
-							c2.stability = c2.stability-10
+							c2.stability = c2.stability-3
 							if c1.stability < 1 then c1.stability = 1 end
 							if c2.stability < 1 then c2.stability = 1 end
 							c1:setPop(parent, math.ceil(c1.population/1.25))
@@ -624,7 +623,7 @@ return
 						c.hasruler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-15
+						c.stability = c.stability-5
 						if c.stability < 1 then c.stability = 1 end
 
 						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
@@ -729,8 +728,8 @@ return
 							c1:event(parent, "Victory in war with "..self.target.name)
 							self.target:event(parent, "Defeat in war with "..c1.name)
 
-							c1.stability = c1.stability+10
-							self.target.stability = self.target.stability-10
+							c1.stability = c1.stability+5
+							self.target.stability = self.target.stability-3
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
@@ -765,8 +764,8 @@ return
 							c1:event(parent, "Defeat in war with "..self.target.name)
 							self.target:event(parent, "Victory in war with "..c1.name)
 
-							c1.stability = c1.stability-25
-							self.target.stability = self.target.stability+25
+							c1.stability = c1.stability-20
+							self.target.stability = self.target.stability+20
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
