@@ -324,19 +324,20 @@ return
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
 					local pixelsPerUnit = math.floor(planetC/#column)
-					local deviation = ((planetC/#column)-pixelsPerUnit)*pixelsPerUnit
+					local deviation = math.fmod(planetC/#column, 1)
 					local deviated = 0
 					for j=1,#column do
 						local entry = column[j]
 						local node = self.planet[entry[1]][entry[2]][entry[3]]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
-						for k=1,pixelsPerUnit do if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end end
-						deviated = deviated+deviation
-						while deviated >= 1 do
-							if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]})
-							else table.insert(stretched[i], {22, 22, 170}) end
-							deviated = deviated-1
+						for k=1,pixelsPerUnit do
+							if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end
+							deviated = deviated+deviation
+							while deviated >= 1 do
+								if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end
+								deviated = deviated-1
+							end
 						end
 						local country = self.countries[countryStr]
 						if country then
@@ -766,39 +767,32 @@ return
 						self.planet[p][q][r].mapWritten = true
 						vox = true
 					end
-					if not vox then
-						if quad == 1 then
-							q = q+1
-							if q > 0 then
-								q = -self.planetR
-								p = p+1
-							end
-						elseif quad == 2 then
-							p = p-1
-							if p < 0 then
-								p = self.planetR
-								q = q+1
-							end
-						elseif quad == 3 then
-							q = q-1
-							if q < 0 then
-								q = self.planetR
-								p = p-1
-							end
-						elseif quad == 4 then
+					if quad == 1 then
+						q = q+1
+						if q > 0 or vox then
+							q = -self.planetR
 							p = p+1
-							if p > 0 then
-								p = -self.planetR
-								q = q-1
-							end
 						end
-					else
-						if quad == 1 then p = p+1
-						elseif quad == 2 then q = q+1
-						elseif quad == 3 then p = p-1
-						elseif quad == 4 then q = q-1 end
-						vox = false
+					elseif quad == 2 then
+						p = p-1
+						if p < 0 or vox then
+							p = self.planetR
+							q = q+1
+						end
+					elseif quad == 3 then
+						q = q-1
+						if q < 0 or vox then
+							q = self.planetR
+							p = p-1
+						end
+					elseif quad == 4 then
+						p = p+1
+						if p > 0 or vox then
+							p = -self.planetR
+							q = q-1
+						end
 					end
+					vox = false
 					if quad == 1 and p > self.planetR then
 						quad = 2
 						p = self.planetR
