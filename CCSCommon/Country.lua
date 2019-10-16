@@ -638,7 +638,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
-				self.stability = self.stability+((math.random()-0.2)/2)+math.random(-2, 2)
+				self.stability = self.stability+((math.random()-0.4)/2)+math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
@@ -676,7 +676,7 @@ return
 
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
-					self.relations[cp.name] = self.relations[cp.name]+math.random(-3, 3)
+					self.relations[cp.name] = self.relations[cp.name]+((math.random()-0.4)/2)+math.random(-3, 3)
 					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
 					if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 				end end
