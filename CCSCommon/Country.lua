@@ -616,8 +616,8 @@ return
 			end,
 
 			triggerEvent = function(self, parent, i, r)
-				table.insert(self.ongoing, parent:deepcopy(parent.c_events[i]))
-				local newE = self.ongoing[#self.ongoing]
+				local newE = parent:deepcopy(parent.c_events[i])
+				table.insert(self.ongoing, newE)
 
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self, r) == -1 then table.remove(self.ongoing, #self.ongoing)
