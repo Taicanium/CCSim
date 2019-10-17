@@ -313,7 +313,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=3,
+					chance=2,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -394,7 +394,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=4,
+					chance=3,
 					target=nil,
 					args=1,
 					inverse=false,
