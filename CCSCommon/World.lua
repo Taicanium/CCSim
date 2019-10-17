@@ -858,19 +858,18 @@ return
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
 				
-				local f1 = _time()
-				local fd = f1-f0
+				local f1 = _time()-f0
 
 				if parent.years > parent.startyear+1 then
 					if _DEBUG then parent.popLimit = 150
 					else
-						if fd > 0.7 then
-							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(fd*2))) end
+						if f1 > 0.5 then
+							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1-0.5))) end
 
 							if parent.popLimit < 1500 then parent.popLimit = 1500 end
-							if fd > 1.5 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+							if f1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 						else
-							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(fd*2))) end
+							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-f1))) end
 							if parent.popLimit > 3500 then parent.popLimit = 3500 end
 						end
 					end
