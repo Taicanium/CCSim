@@ -54,7 +54,7 @@ return
 
 				return 0
 			end,
-			
+
 			destroy = function(self, parent)
 				parent:deepnil(self.nodes)
 				self.population = 0

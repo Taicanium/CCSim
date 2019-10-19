@@ -190,19 +190,19 @@ return
 			destroy = function(self, parent)
 				if self.people then for i, j in pairs(self.people) do self:delete(parent, i) end end
 				self.people = nil
-				
+
 				if self.parties then for i, j in pairs(self.parties) do j = nil end end
 				self.parties = nil
-				
+
 				if self.ongoing then for i=#self.ongoing,1,-1 do self.ongoing[i] = nil end end
 				self.ongoing = nil
-				
+
 				if self.regions then for i, j in pairs(self.regions) do
 					j:destroy(parent)
 					j = nil
 				end end
 				self.regions = nil
-				
+
 				parent:deepnil(self.alliances)
 				parent:deepnil(self.allyOngoing)
 				parent:deepnil(self.ethnicities)
@@ -464,6 +464,8 @@ return
 				else
 					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
+
+				parent.writeMap = true
 			end,
 
 			setTerritory = function(self, parent, patron, patronRegion)

@@ -5,15 +5,20 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.countries = {}
 				o.cColors = {}
+				o.colors = {}
+				o.countries = {}
 				o.cTriplets = {}
 				o.fromFile = false
 				o.gPop = 0
 				o.initialState = true
+				o.mapChanged = true
 				o.planet = {}
 				o.planetdefined = {}
+				o.planetC = 0
+				o.planetD = 0
 				o.planetR = 0
+				o.stretched = {}
 				o.unwrapped = {}
 
 				return o
@@ -54,10 +59,6 @@ return
 
 				local rMin = 130
 				local rMax = 175
-				if _DEBUG then
-					rMin = 105
-					rMax = 125
-				end
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				local gridVol = math.pow((self.planetR*2)+1, 3)/100
 				parent:deepnil(bench)
@@ -258,6 +259,8 @@ return
 
 				nz:destroy(parent)
 				parent.numCountries = parent.numCountries-1
+				parent.writeMap = true
+				self.mapChanged = true
 			end,
 
 			destroy = function(self)
@@ -311,32 +314,36 @@ return
 
 				if #self.unwrapped == 0 then self:unwrap() end
 				local columnCount = #self.unwrapped
-				local colors = {}
+				local leaders = {}
 
 				iColumn = 1
-				local planetC = 0
-				local stretched = {}
-				for i=1,columnCount do
-					stretched[i] = {} 
-					local col = self.unwrapped[i]
-					if #col > planetC then planetC = #col end
+				if self.mapChanged then
+					self.planetC = 0
+					self.stretched = {}
+					for i=1,columnCount do
+						self.stretched[i] = {} 
+						local col = self.unwrapped[i]
+						if #col > self.planetC then self.planetC = #col end
+					end
 				end
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
-					local pixelsPerUnit = math.floor(planetC/#column)
-					local deviation = math.fmod(planetC/#column, 1)
-					local deviated = 0
 					for j=1,#column do
 						local entry = column[j]
 						local node = self.planet[entry[1]][entry[2]][entry[3]]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
-						for k=1,pixelsPerUnit do
-							if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end
-							deviated = deviated+deviation
-							while deviated >= 1 do
-								if node.land and cTriplet then table.insert(stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(stretched[i], {22, 22, 170}) end
-								deviated = deviated-1
+						if self.mapChanged then
+							local pixelsPerUnit = math.floor(self.planetC/#column)
+							local deviation = math.fmod(self.planetC/#column, 1)
+							local deviated = 0
+							for k=1,pixelsPerUnit do
+								if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(self.stretched[i], {22, 22, 170}) end
+								deviated = deviated+deviation
+								while deviated >= 1 do
+									if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(self.stretched[i], {22, 22, 170}) end
+									deviated = deviated-1
+								end
 							end
 						end
 						local country = self.countries[countryStr]
@@ -344,35 +351,44 @@ return
 							local sysName = parent.systems[country.system].name
 							local sntVal = country.snt[sysName]
 							local legendStr = string.lower(countryStr.." ("..parent:ordinal(sntVal).." "..sysName..")")
-							if cTriplet and not colors[legendStr] then colors[legendStr] = {cTriplet[1], cTriplet[2], cTriplet[3]} end
-						elseif cTriplet and not colors[countryStr] then colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]} end
+							if cTriplet and not self.colors[legendStr] then
+								self.colors[legendStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
+								local ruler = country.rulers[#country.rulers]
+								if ruler then leaders[legendStr] = parent:getRulerStringShort(ruler) else leaders[legendStr] = "no ruler" end
+							end
+						elseif cTriplet and not self.colors[countryStr] then
+							self.colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
+							leaders[countryStr] = "no ruler"
+						end
 					end
 				end
 
-				planetC = math.huge
-				for i=1,columnCount do
-					local col = stretched[i]
-					if #col < planetC then planetC = #col end
-				end
-				for i=1,columnCount do
-					local col = stretched[i]
-					local sCol = #col
-					local diff = sCol-planetC
-					while diff > 1 do
-						local ratio = sCol/diff
-						local rate = 0
-						for j=#col,1,-1 do
-							if rate >= ratio then
-								table.remove(col, j)
-								diff = diff-1
-								rate = rate-ratio
-							end
-							rate = rate+1
-						end
-						sCol = #col
-						diff = sCol-planetC
+				if self.mapChanged then
+					self.planetC = math.huge
+					for i=1,columnCount do
+						local col = self.stretched[i]
+						if #col < self.planetC then self.planetC = #col end
 					end
-					if diff == 1 then table.remove(col, #col) end
+					for i=1,columnCount do
+						local col = self.stretched[i]
+						local sCol = #col
+						local diff = sCol-self.planetC
+						while diff > 1 do
+							local ratio = sCol/diff
+							local rate = 0
+							for j=#col,1,-1 do
+								if rate >= ratio then
+									table.remove(col, j)
+									diff = diff-1
+									rate = rate-ratio
+								end
+								rate = rate+1
+							end
+							sCol = #col
+							diff = sCol-self.planetC
+						end
+						if diff == 1 then table.remove(col, #col) end
+					end
 				end
 
 				local tColCount = 1
@@ -381,33 +397,47 @@ return
 				local top = 2
 				local bottom = 9
 				local lineLen = 2
-				local colorKeys = parent:getAlphabetical(colors)
+				local colorKeys = parent:getAlphabetical(self.colors)
 				for i=1,#colorKeys do
 					local cA = colorKeys[i]
-					lineLen = lineLen+10
+					local cR = leaders[cA]
+					lineLen = lineLen+20
 					if lineLen >= columnCount then
-						lineLen = 12
+						lineLen = 22
 						tColCount = tColCount+1
 						table.insert(tCols, {})
 						table.insert(tColWidths, 0)
 					end
 					table.insert(tCols[tColCount], cA)
 					local nameLen = cA:len()
+					local rulerLen = cR:len()
 					if nameLen > tColWidths[tColCount] then tColWidths[tColCount] = nameLen end
+					if rulerLen > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen end
 				end
 				local colSum = 0
-				local margin = planetC+2 -- Our legend has two pixels of horiz. padding from the map.
-				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (20 total pixels of padding + the max character length * 6 pixels per character) per column.
-				for i=1,#stretched do for j=1,colSum do table.insert(stretched[i], {0, 0, 0}) end end -- Define a black rectangle on the right end of the map that is colSum pixels wide.
+				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
+				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (20 total pixels of padding+the max character length*6 pixels per character) per column.
+				local extended = {}
+				for i=1,#self.stretched do
+					extended[i] = {}
+					for j=1,#self.stretched[i] do extended[i][j] = self.stretched[i][j] end
+				end
+				for i=1,#extended do for j=1,colSum do table.insert(extended[i], {0, 0, 0}) end end -- Define a black rectangle on the right end of the map that is colSum pixels wide.
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
 					for j=1,#tCol do -- For every country name in this column...
 						local colMargin = margin -- Save the value of the current spacing from the left border of the legend.
 						local name = tCol[j]
 						if name then
-							local tColor = colors[name]
+							local tColor = self.colors[name]
+							local tRuler = leaders[name]
 							local nameLen = name:len()
-							for k=margin,margin+7 do for l=top,bottom do stretched[l][k] = {tColor[1], tColor[2], tColor[3]} end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
+							local rulerLen = tRuler:len()
+							for k=margin,margin+7 do for l=top,bottom do
+								local el = extended[l]
+								UI:printf(string.format("%d %d %d %d %d", tColor[1], tColor[2], tColor[3], #extended, #el))
+								el[k] = {tColor[1], tColor[2], tColor[3]}
+							end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
 								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
@@ -415,12 +445,12 @@ return
 								if not glyph then glyph = parent.glyphs[" "] end -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
 								local letterRow = 1
 								local letterColumn = 1
-								-- The glyph is itself a 2D matrix of monochrome pixel values - 0 for black, 1 for white.
+								-- The glyph is itself a 2D matrix of monochrome pixel values-0 for black, 1 for white.
 								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 1 then stretched[l][m] = {255, 255, 255} -- White.
-										else stretched[l][m] = {0, 0, 0} end -- Black.
+										if glyph[letterRow][letterColumn] == 1 then extended[l][m] = {255, 255, 255} -- White.
+										else extended[l][m] = {0, 0, 0} end -- Black.
 										letterColumn = letterColumn+1 -- Move to the right!
 									end
 									letterColumn = 1 -- Move back to the far left.
@@ -431,6 +461,29 @@ return
 							margin = colMargin -- Just like when writing a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
 							top = top+10
 							bottom = bottom+10 -- And move one line down, leaving two pixels of space.
+							for k=margin,margin+7 do for l=top-2,bottom do extended[l][k] = {tColor[1], tColor[2], tColor[3]} end end -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
+							margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
+							for k=1,rulerLen do
+								local letter = tRuler:sub(k, k):lower()
+								local glyph = parent.glyphs[letter]
+								if not glyph then glyph = parent.glyphs[" "] end
+								local letterRow = 1
+								local letterColumn = 1
+								-- Write out the ruler string the same way we wrote out the country's name.
+								for l=top+1,bottom-1 do
+									for m=margin,margin+5 do
+										if glyph[letterRow][letterColumn] == 1 then extended[l][m] = {255, 255, 255}
+										else extended[l][m] = {0, 0, 0} end
+										letterColumn = letterColumn+1
+									end
+									letterColumn = 1
+									letterRow = letterRow+1
+								end
+								margin = margin+6
+							end
+							margin = colMargin
+							top = top+10
+							bottom = bottom+10
 						end
 					end
 					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire column...
@@ -438,16 +491,16 @@ return
 					bottom = 9 -- And begin at the top left anew.
 				end
 
-				planetC = planetC+colSum -- Account for the addition of the legend in our bitmap dimensions.
-				local planetD = 0 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
+				local totalC = self.planetC+colSum -- Account for the addition of the legend in our bitmap dimensions.
+				self.planetD = 0 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
 				local yi = 1
 				local adjusted = {}
 				for i=1,columnCount do -- Here, expand the pixel array to make each map point 2x2 pixels.
-					planetD = planetD+1
+					self.planetD = self.planetD+1
 					adjusted[yi*2] = {}
 					adjusted[(yi*2)-1] = {}
-					local col = stretched[i]
-					for j=1,planetC do
+					local col = extended[i]
+					for j=1,totalC do
 						adjusted[yi*2][j*2] = col[j]
 						adjusted[(yi*2)-1][j*2] = col[j]
 						adjusted[yi*2][(j*2)-1] = col[j]
@@ -456,10 +509,13 @@ return
 					yi = yi+1
 				end
 
+				totalC = totalC*2
+				local totalD = self.planetD*2
+
 				local bf = io.open(label..".bmp", "w+")
 				local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
-				local hStringLE = string.format("%.8x", planetD*2)
-				local wStringLE = string.format("%.8x", planetC*2)
+				local hStringLE = string.format("%.8x", totalD)
+				local wStringLE = string.format("%.8x", totalC)
 				local rStringLE = ""
 				local sStringLE = ""
 				local hStringBE = ""
@@ -472,9 +528,9 @@ return
 				bmpString = bmpString:gsub("h", hStringBE)
 
 				local byteCount = 0
-				for y=planetD*2,1,-1 do
+				for y=totalD,1,-1 do
 					local btWritten = 0
-					for x=1,planetC*2 do
+					for x=1,totalC do
 						btWritten = btWritten+3
 						byteCount = byteCount+3
 					end
@@ -493,9 +549,9 @@ return
 
 				for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
 
-				for y=planetD*2,1,-1 do
+				for y=totalD,1,-1 do
 					local btWritten = 0
-					for x=1,planetC*2 do
+					for x=1,totalC do
 						if adjusted[y] and adjusted[y][x] then
 							bf:write(string.char(adjusted[y][x][3]))
 							bf:write(string.char(adjusted[y][x][2]))
@@ -517,13 +573,12 @@ return
 				bf:close()
 				bf = nil
 
-				--[[
-				local f = io.open(label..".r", "w+")
+				--[[ local f = io.open(label..".r", "w+")
 				if not f then return end
 				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
 
 				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[i])
+					local x, y, z = table.unpack(self.planetDefined[i])
 					f:write("\""..self.planet[x][y][z].country.."\"")
 					if i < planetSize then f:write(", ") end
 				end
@@ -751,6 +806,7 @@ return
 				parent:deepnil(bmpDataString)
 			end,
 
+			
 			unwrap = function(self)
 				local p = 1
 				local q = -self.planetR
@@ -855,7 +911,7 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
-				
+
 				local f1 = _time()-f0
 
 				if parent.years > parent.startyear+1 then
@@ -872,7 +928,7 @@ return
 						end
 					end
 				end
-				
+
 				local f2 = _time()
 				if math.fmod(parent.years, 35) == 0 then collectgarbage() end
 				local f3 = _time()

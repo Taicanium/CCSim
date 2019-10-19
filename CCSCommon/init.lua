@@ -124,7 +124,6 @@ return
 
 									c1.regions[newr.name] = newr
 									parent.thisWorld:delete(parent, c2)
-									parent.writeMap = true
 								end
 							end
 						end
@@ -300,7 +299,6 @@ return
 								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
 								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
 							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." of "..c.name) end
-							parent.writeMap = true
 						end
 
 						return -1
@@ -357,7 +355,6 @@ return
 
 								c1.regions[c2.name] = newr
 								parent.thisWorld:delete(parent, c2)
-								parent.writeMap = true
 							end
 						end
 
@@ -554,7 +551,7 @@ return
 							end
 
 							newl:checkRuler(parent, true)
-							parent.writeMap = true
+							parent.thisWorld.mapChanged = true
 						end
 
 						return -1
@@ -628,7 +625,6 @@ return
 
 						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
 
-						parent.writeMap = true
 						return -1
 					end
 				},
@@ -1627,7 +1623,7 @@ return
 				os.execute("mkdir "..self:directory({self.stamp}))
 				if self.doMaps then os.execute("mkdir "..mapDir) end
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
-				
+
 				collectgarbage()
 
 				while _running do
@@ -1716,7 +1712,7 @@ return
 						elseif eCount < #currentEvents then msg = msg..("\n[+%d more]"):format(#currentEvents-eCount) end
 
 						msg = msg.."\n"
-						
+
 						self:deepnil(currentEvents)
 						self:deepnil(names)
 						self:deepnil(stats)
@@ -1730,6 +1726,7 @@ return
 
 					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
 					self.writeMap = false
+					self.thisWorld.mapChanged = false
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
 
@@ -2082,6 +2079,7 @@ return
 							c2:event(self, lossMsg)
 
 							self.writeMap = true
+							parent.thisWorld.mapChanged = true
 						end
 					end
 				end
