@@ -491,9 +491,7 @@ return
 				bmpString = bmpString:gsub("s", sStringBE)
 				bmpString = bmpString:gsub("r", rStringBE)
 
-				local byteString = ""
-				for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
-				bf:write(byteString)
+				for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
 
 				for y=planetD*2,1,-1 do
 					local btWritten = 0
