@@ -319,6 +319,7 @@ return
 				iColumn = 1
 				if self.mapChanged then
 					self.planetC = 0
+					self.colors = {}
 					self.stretched = {}
 					for i=1,columnCount do
 						self.stretched[i] = {} 
@@ -431,6 +432,8 @@ return
 						if name then
 							local tColor = self.colors[name]
 							local tRuler = leaders[name]
+							name = name:gsub("[^%w %-%&%+%'%(%)%[%]%.]", "")
+							tRuler = tRuler:gsub("[^%w %-%&%+%'%(%)%[%]%.]", "")
 							local nameLen = name:len()
 							local rulerLen = tRuler:len()
 							for k=margin,margin+7 do for l=top,bottom do
