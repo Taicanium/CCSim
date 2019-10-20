@@ -328,15 +328,15 @@ return
 				end
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
+					local pixelsPerUnit = math.floor(self.planetC/#column)
+					local deviation = math.fmod(self.planetC/#column, 1)
+					local deviated = 0
 					for j=1,#column do
 						local entry = column[j]
 						local node = self.planet[entry[1]][entry[2]][entry[3]]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
-							local pixelsPerUnit = math.floor(self.planetC/#column)
-							local deviation = math.fmod(self.planetC/#column, 1)
-							local deviated = 0
 							for k=1,pixelsPerUnit do
 								if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(self.stretched[i], {22, 22, 170}) end
 								deviated = deviated+deviation
@@ -796,7 +796,7 @@ return
 				]]
 				parent:deepnil(colors)
 				parent:deepnil(colorKeys)
-				parent:deepnil(stretched)
+				parent:deepnil(extended)
 				parent:deepnil(tCols)
 				parent:deepnil(tColWidths)
 				parent:deepnil(adjusted)
