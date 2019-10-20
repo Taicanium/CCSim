@@ -5,7 +5,6 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.cColors = {}
 				o.colors = {}
 				o.countries = {}
 				o.cTriplets = {}
@@ -253,7 +252,6 @@ return
 			delete = function(self, parent, nz)
 				if not nz then return end
 
-				self.cColors[nz.name] = nil
 				self.cTriplets[nz.name] = nil
 				self.countries[nz.name] = nil
 
@@ -277,8 +275,7 @@ return
 				local planetSize = #self.planetdefined
 
 				for i, cp in pairs(self.countries) do
-					if not self.cColors[cp.name] or not self.cTriplets[cp.name] then
-						self.cColors[cp.name] = nil
+					if not self.cTriplets[cp.name] then
 						self.cTriplets[cp.name] = nil
 
 						local r = 0
@@ -303,11 +300,6 @@ return
 							end
 						end
 
-						local rh = ("%.2x"):format(r)
-						local gh = ("%.2x"):format(g)
-						local bh = ("%.2x"):format(b)
-
-						self.cColors[cp.name] = "#"..rh..gh..bh
 						self.cTriplets[cp.name] = {r, g, b}
 					end
 				end
@@ -420,13 +412,19 @@ return
 				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (10 total pixels of padding+the max character length*8 pixels per character) per column.
 				local extended = {}
 				for i=1,columnCount do
-					extended[i] = {}
-					local tbl = nil
-					for j=1,self.planetC+colSum do
-						tbl = self.stretched[i][j]
-						if not tbl then tbl = {0, 0, 0} end
-						extended[i][j] = {tbl[1], tbl[2], tbl[3]}
-					end
+					extended[(i*2)-1] = {}
+					extended[i*2] = {}
+					for j=1,self.planetC+colSum do if self.stretched[i][j] then
+						extended[(i*2)-1][(j*2)-1] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
+						extended[(i*2)-1][j*2] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
+						extended[i*2][(j*2)-1] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
+						extended[i*2][j*2] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
+					else
+						extended[(i*2)-1][(j*2)-1] = {0, 0, 0}
+						extended[(i*2)-1][j*2] = {0, 0, 0}
+						extended[i*2][(j*2)-1] = {0, 0, 0}
+						extended[i*2][j*2] = {0, 0, 0}
+					end end
 				end
 				local cAdded = 2
 				for i=1,tColCount do -- For every column of text in the legend...
@@ -442,8 +440,12 @@ return
 							local nameLen = name:len()
 							local rulerLen = tRuler:len()
 							for k=margin,margin+7 do for l=top,bottom do
-								if not extended[l] then extended[l] = {} end
-								extended[l][k] = {tColor[1], tColor[2], tColor[3]}
+								if not extended[(l*2)-1] then extended[(l*2)-1] = {} end
+								if not extended[l*2] then extended[l*2] = {} end
+								extended[(l*2)-1][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
+								extended[(l*2)-1][k*2] = {tColor[1], tColor[2], tColor[3]}
+								extended[l*2][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
+								extended[l*2][k*2] = {tColor[1], tColor[2], tColor[3]}
 							end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
@@ -456,8 +458,17 @@ return
 								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 1 then extended[l][m] = {255, 255, 255} -- White.
-										else extended[l][m] = {0, 0, 0} end -- Black.
+										if glyph[letterRow][letterColumn] == 1 then
+											extended[(l*2)-1][(m*2)-1] = {255, 255, 255} -- White.
+											extended[(l*2)-1][m*2] = {255, 255, 255}
+											extended[l*2][(m*2)-1] = {255, 255, 255}
+											extended[l*2][m*2] = {255, 255, 255}
+										else
+											extended[(l*2)-1][(m*2)-1] = {0, 0, 0} -- Black.
+											extended[(l*2)-1][m*2] = {0, 0, 0}
+											extended[l*2][(m*2)-1] = {0, 0, 0}
+											extended[l*2][m*2] = {0, 0, 0}
+										end
 										letterColumn = letterColumn+1 -- Move to the right!
 									end
 									letterColumn = 1 -- Move back to the far left.
@@ -469,8 +480,12 @@ return
 							top = top+10
 							bottom = bottom+10 -- And move one line down, leaving two pixels of space.
 							for k=margin,margin+7 do for l=top-2,bottom do
-								if not extended[l] then extended[l] = {} end
-								extended[l][k] = {tColor[1], tColor[2], tColor[3]}
+								if not extended[(l*2)-1] then extended[(l*2)-1] = {} end
+								if not extended[l*2] then extended[l*2] = {} end
+								extended[(l*2)-1][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
+								extended[(l*2)-1][k*2] = {tColor[1], tColor[2], tColor[3]}
+								extended[l*2][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
+								extended[l*2][k*2] = {tColor[1], tColor[2], tColor[3]}
 							end end -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
 							margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
 							for k=1,rulerLen do
@@ -482,8 +497,17 @@ return
 								-- Write out the ruler string the same way we wrote out the country's name.
 								for l=top+1,bottom-1 do
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 1 then extended[l][m] = {255, 255, 255}
-										else extended[l][m] = {0, 0, 0} end
+										if glyph[letterRow][letterColumn] == 1 then
+											extended[(l*2)-1][(m*2)-1] = {255, 255, 255}
+											extended[(l*2)-1][m*2] = {255, 255, 255}
+											extended[l*2][(m*2)-1] = {255, 255, 255}
+											extended[l*2][m*2] = {255, 255, 255}
+										else
+											extended[(l*2)-1][(m*2)-1] = {0, 0, 0}
+											extended[(l*2)-1][m*2] = {0, 0, 0}
+											extended[l*2][(m*2)-1] = {0, 0, 0}
+											extended[l*2][m*2] = {0, 0, 0}
+										end
 										letterColumn = letterColumn+1
 									end
 									letterColumn = 1
@@ -502,30 +526,12 @@ return
 					bottom = 9 -- And begin at the top left anew.
 				end
 
-				local totalC = self.planetC+cAdded -- Account for the addition of the legend in our bitmap dimensions.
-				self.planetD = columnCount-- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
-				local yi = 1
-				local adjusted = {}
-				for i=1,columnCount do -- Here, expand the pixel array to make each map point 2x2 pixels.
-					adjusted[yi*2] = {}
-					adjusted[(yi*2)-1] = {}
-					local col = extended[i]
-					for j=1,totalC do
-						if not col[j] or #col[j] ~= 3 then col[j] = {0, 0, 0} end
-						adjusted[yi*2][j*2] = col[j]
-						adjusted[(yi*2)-1][j*2] = col[j]
-						adjusted[yi*2][(j*2)-1] = col[j]
-						adjusted[(yi*2)-1][(j*2)-1] = col[j]
-					end
-					yi = yi+1
-				end
-
-				totalC = totalC*2
-				local totalD = self.planetD*2
+				local totalC = (self.planetC+cAdded)*2 -- Account for the addition of the legend in our bitmap dimensions.
+				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
 
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-				local hStringLE = string.format("%.8x", totalD)
+				local hStringLE = string.format("%.8x", self.planetD)
 				local wStringLE = string.format("%.8x", totalC)
 				local rStringLE = ""
 				local sStringLE = ""
@@ -537,7 +543,7 @@ return
 				for x in wStringLE:gmatch("%w%w") do table.insert(wArr, tonumber(x, 16)) end
 
 				local byteCount = 0
-				for y=totalD,1,-1 do
+				for y=self.planetD,1,-1 do
 					local btWritten = 0
 					for x=1,totalC do
 						btWritten = btWritten+3
@@ -560,13 +566,13 @@ return
 				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
 				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
 
-				for y=totalD,1,-1 do
+				for y=self.planetD,1,-1 do
 					local btWritten = 0
 					for x=1,totalC do
-						if adjusted[y] and adjusted[y][x] then
-							if adjusted[y][x][3] then bf:write(string.char(adjusted[y][x][3])) else bf:write(string.char(0)) end
-							if adjusted[y][x][2] then bf:write(string.char(adjusted[y][x][2])) else bf:write(string.char(0)) end
-							if adjusted[y][x][1] then bf:write(string.char(adjusted[y][x][1])) else bf:write(string.char(0)) end
+						if extended[y] and extended[y][x] then
+							if extended[y][x][3] then bf:write(string.char(extended[y][x][3])) else bf:write(string.char(0)) end
+							if extended[y][x][2] then bf:write(string.char(extended[y][x][2])) else bf:write(string.char(0)) end
+							if extended[y][x][1] then bf:write(string.char(extended[y][x][1])) else bf:write(string.char(0)) end
 						else
 							bf:write(string.char(0))
 							bf:write(string.char(0))
@@ -594,7 +600,6 @@ return
 				parent:deepnil(extended)
 				parent:deepnil(tCols)
 				parent:deepnil(tColWidths)
-				parent:deepnil(adjusted)
 				parent:deepnil(bmpString)
 				parent:deepnil(bmpDataString)
 			end,
