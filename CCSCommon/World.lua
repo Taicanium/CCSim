@@ -351,12 +351,12 @@ return
 							local sysName = parent.systems[country.system].name
 							local sntVal = country.snt[sysName]
 							local legendStr = string.lower(countryStr.." ("..parent:ordinal(sntVal).." "..sysName..")")
-							if cTriplet and not self.colors[legendStr] then
+							if cTriplet then
 								self.colors[legendStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
 								local ruler = country.rulers[#country.rulers]
 								if ruler then leaders[legendStr] = parent:getRulerStringShort(ruler) else leaders[legendStr] = "no ruler" end
 							end
-						elseif cTriplet and not self.colors[countryStr] then
+						elseif cTriplet then
 							self.colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
 							leaders[countryStr] = "no ruler"
 						end
@@ -434,9 +434,7 @@ return
 							local nameLen = name:len()
 							local rulerLen = tRuler:len()
 							for k=margin,margin+7 do for l=top,bottom do
-								local el = extended[l]
-								UI:printf(string.format("%d %d %d %d %d", tColor[1], tColor[2], tColor[3], #extended, #el))
-								el[k] = {tColor[1], tColor[2], tColor[3]}
+								extended[l][k] = {tColor[1], tColor[2], tColor[3]}
 							end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
