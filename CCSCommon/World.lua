@@ -314,12 +314,12 @@ return
 
 				if #self.unwrapped == 0 then self:unwrap() end
 				local columnCount = #self.unwrapped
+				self.colors = {}
 				local leaders = {}
 
 				iColumn = 1
 				if self.mapChanged then
 					self.planetC = 0
-					self.colors = {}
 					self.stretched = {}
 					for i=1,columnCount do
 						self.stretched[i] = {} 
@@ -412,18 +412,23 @@ return
 					table.insert(tCols[tColCount], cA)
 					local nameLen = cA:len()
 					local rulerLen = cR:len()
-					if nameLen > tColWidths[tColCount] then tColWidths[tColCount] = nameLen end
-					if rulerLen > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen end
+					if nameLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = nameLen+1 end
+					if rulerLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen+1 end
 				end
-				local colSum = 0
+				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
-				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (20 total pixels of padding+the max character length*6 pixels per character) per column.
+				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (10 total pixels of padding+the max character length*8 pixels per character) per column.
 				local extended = {}
-				for i=1,#self.stretched do
+				for i=1,columnCount do
 					extended[i] = {}
-					for j=1,#self.stretched[i] do extended[i][j] = self.stretched[i][j] end
+					local tbl = nil
+					for j=1,self.planetC+colSum do
+						tbl = self.stretched[i][j]
+						if not tbl then tbl = {0, 0, 0} end
+						extended[i][j] = {tbl[1], tbl[2], tbl[3]}
+					end
 				end
-				for i=1,#extended do for j=1,colSum do table.insert(extended[i], {0, 0, 0}) end end -- Define a black rectangle on the right end of the map that is colSum pixels wide.
+				local cAdded = 2
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
 					for j=1,#tCol do -- For every country name in this column...
@@ -437,6 +442,7 @@ return
 							local nameLen = name:len()
 							local rulerLen = tRuler:len()
 							for k=margin,margin+7 do for l=top,bottom do
+								if not extended[l] then extended[l] = {} end
 								extended[l][k] = {tColor[1], tColor[2], tColor[3]}
 							end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
@@ -462,7 +468,10 @@ return
 							margin = colMargin -- Just like when writing a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
 							top = top+10
 							bottom = bottom+10 -- And move one line down, leaving two pixels of space.
-							for k=margin,margin+7 do for l=top-2,bottom do extended[l][k] = {tColor[1], tColor[2], tColor[3]} end end -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
+							for k=margin,margin+7 do for l=top-2,bottom do
+								if not extended[l] then extended[l] = {} end
+								extended[l][k] = {tColor[1], tColor[2], tColor[3]}
+							end end -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
 							margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
 							for k=1,rulerLen do
 								local letter = tRuler:sub(k, k):lower()
@@ -488,20 +497,21 @@ return
 						end
 					end
 					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire column...
+					cAdded = cAdded+20+(tColWidths[i]*6)
 					top = 2
 					bottom = 9 -- And begin at the top left anew.
 				end
 
-				local totalC = self.planetC+colSum -- Account for the addition of the legend in our bitmap dimensions.
-				self.planetD = 0 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
+				local totalC = self.planetC+cAdded -- Account for the addition of the legend in our bitmap dimensions.
+				self.planetD = columnCount-- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
 				local yi = 1
 				local adjusted = {}
 				for i=1,columnCount do -- Here, expand the pixel array to make each map point 2x2 pixels.
-					self.planetD = self.planetD+1
 					adjusted[yi*2] = {}
 					adjusted[(yi*2)-1] = {}
 					local col = extended[i]
 					for j=1,totalC do
+						if not col[j] or #col[j] ~= 3 then col[j] = {0, 0, 0} end
 						adjusted[yi*2][j*2] = col[j]
 						adjusted[(yi*2)-1][j*2] = col[j]
 						adjusted[yi*2][(j*2)-1] = col[j]
@@ -513,20 +523,18 @@ return
 				totalC = totalC*2
 				local totalD = self.planetD*2
 
-				local bf = io.open(label..".bmp", "w+")
-				local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
+				local bf = io.open(label..".bmp", "w+b")
+				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 				local hStringLE = string.format("%.8x", totalD)
 				local wStringLE = string.format("%.8x", totalC)
 				local rStringLE = ""
 				local sStringLE = ""
-				local hStringBE = ""
-				local wStringBE = ""
-				local rStringBE = ""
-				local sStringBE = ""
-				for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
-				for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
-				bmpString = bmpString:gsub("w", wStringBE)
-				bmpString = bmpString:gsub("h", hStringBE)
+				local hArr = {}
+				local wArr = {}
+				local rArr = {}
+				local sArr = {}
+				for x in hStringLE:gmatch("%w%w") do table.insert(hArr, tonumber(x, 16)) end
+				for x in wStringLE:gmatch("%w%w") do table.insert(wArr, tonumber(x, 16)) end
 
 				local byteCount = 0
 				for y=totalD,1,-1 do
@@ -543,20 +551,22 @@ return
 
 				rStringLE = string.format("%.8x", byteCount)
 				sStringLE = string.format("%.8x", byteCount+54)
-				for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
-				for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
-				bmpString = bmpString:gsub("s", sStringBE)
-				bmpString = bmpString:gsub("r", rStringBE)
-
-				for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
+				for x in rStringLE:gmatch("%w%w") do table.insert(rArr, tonumber(x, 16)) end
+				for x in sStringLE:gmatch("%w%w") do table.insert(sArr, tonumber(x, 16)) end
+				
+				for i=1,4 do bmpArr[i+2] = sArr[5-i] end
+				for i=1,4 do bmpArr[i+18] = wArr[5-i] end
+				for i=1,4 do bmpArr[i+22] = hArr[5-i] end
+				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
+				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
 
 				for y=totalD,1,-1 do
 					local btWritten = 0
 					for x=1,totalC do
 						if adjusted[y] and adjusted[y][x] then
-							bf:write(string.char(adjusted[y][x][3]))
-							bf:write(string.char(adjusted[y][x][2]))
-							bf:write(string.char(adjusted[y][x][1]))
+							if adjusted[y][x][3] then bf:write(string.char(adjusted[y][x][3])) else bf:write(string.char(0)) end
+							if adjusted[y][x][2] then bf:write(string.char(adjusted[y][x][2])) else bf:write(string.char(0)) end
+							if adjusted[y][x][1] then bf:write(string.char(adjusted[y][x][1])) else bf:write(string.char(0)) end
 						else
 							bf:write(string.char(0))
 							bf:write(string.char(0))
@@ -568,235 +578,17 @@ return
 						bf:write(string.char(0))
 						btWritten = btWritten+1
 					end
+					bf:flush()
 				end
 
-				bf:flush()
 				bf:close()
 				bf = nil
-
-				--[[ local f = io.open(label..".r", "w+")
-				if not f then return end
-				f:write("library(\"rgl\")\nlibrary(\"car\")\ncs <- c(")
-
-				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetDefined[i])
-					f:write("\""..self.planet[x][y][z].country.."\"")
-					if i < planetSize then f:write(", ") end
-				end
-
-				local cCoords = {}
-				local cTexts = {}
-
-				for i, cp in pairs(self.countries) do
-					for j, k in pairs(cp.regions) do
-						for l, m in pairs(k.cities) do if m.name == cp.capitalcity and m.x and m.y and m.z then
-							table.insert(cCoords, {m.x, m.y, m.z})
-							table.insert(cTexts, m.name)
-						end end
-					end
-				end
-
-				f:write(")\nx <- c(")
-
-				for j=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
-					if not self.planet[x][y][z].land then x = x-(math.sin(math.rad((self.planetdefined[j][1]/self.planetR)*90))*1.4) end
-					f:write(x)
-					if j < planetSize then f:write(", ") end
-				end
-
-				f:write(")\ny <- c(")
-
-				for j=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
-					if not self.planet[x][y][z].land then y = y-(math.sin(math.rad((self.planetdefined[j][2]/self.planetR)*90))*1.4) end
-					f:write(y)
-					if j < planetSize then f:write(", ") end
-				end
-
-				f:write(")\nz <- c(")
-
-				for j=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
-					if not self.planet[x][y][z].land then z = z-(math.sin(math.rad((self.planetdefined[j][3]/self.planetR)*90))*1.4) end
-					f:write(z)
-					if j < planetSize then f:write(", ") end
-				end
-
-				f:write(")\ncsc <- c(")
-
-				for j=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[j])
-					local isCity = false
-					for j=1,#cCoords do if x == cCoords[j][1] and y == cCoords[j][2] and z == cCoords[j][3] then isCity = true end end
-					if isCity then f:write("\"#888888\"") else
-						if self.planet[x][y][z].land then
-							if self.planet[x][y][z].country ~= "" and self.cColors[self.planet[x][y][z].country] then f:write("\""..self.cColors[self.planet[x][y][z].country].."\"") else f:write("\"#1616AA\"") end
-						else f:write("\"#1616AA\"") end
-					end
-					if j < planetSize then f:write(", ") end
-				end
-
-				f:write(")\nspheres3d(x=x, y=y, z=z, col=csc, size=0.4, xlab=\"\", ylab=\"\", zlab=\"\", box=FALSE, axes=FALSE, top=TRUE, add=TRUE, plot=FALSE)\ncityx <- c(")
-
-				for i=1,#cCoords do
-					local x, y, z = table.unpack(cCoords[i])
-
-					local xChange = x
-					local yChange = y
-					local zChange = z
-
-					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
-
-					while ratio < self.planetR+12 do
-						xChange = xChange+(x*0.001)
-						yChange = yChange+(y*0.001)
-						zChange = zChange+(z*0.001)
-
-						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
-					end
-
-					cCoords[i][1] = xChange-math.fmod(xChange, 0.001)
-					cCoords[i][2] = yChange-math.fmod(yChange, 0.001)
-					cCoords[i][3] = zChange-math.fmod(zChange, 0.001)
-
-					f:write(x)
-					if i < #cCoords then f:write(", ") end
-				end
-
-				f:write(")\ncityy <- c(")
-
-				for i=1,#cCoords do
-					local y = cCoords[i][2]
-					f:write(y)
-					if i < #cCoords then f:write(", ") end
-				end
-
-				f:write(")\ncityz <- c(")
-
-				for i=1,#cCoords do
-					local z = cCoords[i][3]
-					f:write(z)
-					if i < #cCoords then f:write(", ") end
-				end
-
-				f:write(")\ncitytexts <- c(")
-
-				for i=1,#cTexts do
-					local txt = cTexts[i]
-					f:write("\""..txt.."\"")
-					if i < #cTexts then f:write(", ") end
-				end
-
-				f:write(")\ntexts3d(x=cityx, y=cityy, z=cityz, texts=citytexts, color=\"#FFFFFF\", cex=0.75, font=1)\n")
-
-				local ccs = {}
-				local css = {}
-				local cst = {}
-				local csx = {}
-				local csy = {}
-				local csz = {}
-
-				for i, cp in pairs(self.countries) do
-					local avgX = 0
-					local avgY = 0
-					local avgZ = 0
-
-					for j=1,#cp.nodes do
-						avgX = avgX+cp.nodes[j][1]
-						avgY = avgY+cp.nodes[j][2]
-						avgZ = avgZ+cp.nodes[j][3]
-					end
-
-					avgX = avgX/#cp.nodes
-					avgY = avgY/#cp.nodes
-					avgZ = avgZ/#cp.nodes
-
-					local xChange = avgX
-					local yChange = avgY
-					local zChange = avgZ
-
-					local ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
-
-					while ratio < self.planetR+24 do
-						xChange = xChange+(avgX*0.001)
-						yChange = yChange+(avgY*0.001)
-						zChange = zChange+(avgZ*0.001)
-
-						ratio = math.sqrt(math.pow(xChange, 2)+math.pow(yChange, 2)+math.pow(zChange, 2))
-					end
-
-					local rh = 255-self.cTriplets[cp.name][1]
-					local gh = 255-self.cTriplets[cp.name][2]
-					local bh = 255-self.cTriplets[cp.name][3]
-					local invTrip = ("#%.2x%.2x%.2x"):format(rh, gh, bh)
-
-					local cex = 0.5+(#cp.nodes/8000)
-					cex = cex-math.fmod(cex, 0.1)
-
-					table.insert(cst, cp.name)
-					table.insert(ccs, invTrip)
-					table.insert(css, cex)
-					table.insert(csx, xChange-math.fmod(xChange, 0.001))
-					table.insert(csy, yChange-math.fmod(yChange, 0.001))
-					table.insert(csz, zChange-math.fmod(zChange, 0.001))
-				end
-
-				f:write("cst <- c(")
-
-				for i=1,#cst do
-					f:write("\""..cst[i].."\"")
-					if i < #cst then f:write(", ") end
-				end
-
-				f:write(")\nccs <- c(")
-
-				for i=1,#ccs do
-					f:write("\""..ccs[i].."\"")
-					if i < #ccs then f:write(", ") end
-				end
-
-				f:write(")\ncss <- c(")
-
-				for i=1,#css do
-					f:write(css[i])
-					if i < #css then f:write(", ") end
-				end
-
-				f:write(")\ncsx <- c(")
-
-				for i=1,#csx do
-					f:write(csx[i])
-					if i < #csx then f:write(", ") end
-				end
-
-				f:write(")\ncsy <- c(")
-
-				for i=1,#csy do
-					f:write(csy[i])
-					if i < #csy then f:write(", ") end
-				end
-
-				f:write(")\ncsz <- c(")
-
-				for i=1,#csz do
-					f:write(csz[i])
-					if i < #csz then f:write(", ") end
-				end
-
-				f:write(")\ntexts3d(x=csx, y=csy, z=csz, texts=cst, color=ccs, cex=css, font=2)\nif (interactive() == FALSE) { Sys.sleep(10000) }")
-
-				f:flush()
-				f:close()
-				f = nil
-
-				parent:deepnil(ccs)
-				parent:deepnil(css)
-				parent:deepnil(cst)
-				parent:deepnil(csx)
-				parent:deepnil(csy)
-				parent:deepnil(csz)
-				]]
+				
+				parent:deepnil(sArr)
+				parent:deepnil(wArr)
+				parent:deepnil(hArr)
+				parent:deepnil(rArr)
+				parent:deepnil(bmpArr)
 				parent:deepnil(colors)
 				parent:deepnil(colorKeys)
 				parent:deepnil(extended)
@@ -824,25 +616,25 @@ return
 					end
 					if quad == 1 then
 						q = q+1
-						if q > 0 or vox then
+						if q > 0 then
 							q = -self.planetR
 							p = p+1
 						end
 					elseif quad == 2 then
 						p = p-1
-						if p < 0 or vox then
+						if p < 0 then
 							p = self.planetR
 							q = q+1
 						end
 					elseif quad == 3 then
 						q = q-1
-						if q < 0 or vox then
+						if q < 0 then
 							q = self.planetR
 							p = p-1
 						end
 					elseif quad == 4 then
 						p = p+1
-						if p > 0 or vox then
+						if p > 0 then
 							p = -self.planetR
 							q = q-1
 						end
