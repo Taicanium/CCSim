@@ -2079,7 +2079,7 @@ return
 							c2:event(self, lossMsg)
 
 							self.writeMap = true
-							parent.thisWorld.mapChanged = true
+							self.thisWorld.mapChanged = true
 						end
 					end
 				end
