@@ -150,14 +150,12 @@ return
 
 									for i=1,#possibles do
 										local psp = possibles[i]
-										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then
-											if psp.gender == "Male" or not self.agPrim then
-												closest = psp
-												closestGens = psp.royalGenerations
-												closestMats = psp.maternalLineTimes
-												closestAge = psp.age
-											end
-										end
+										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then if psp.gender == "Male" or not self.agPrim then
+											closest = psp
+											closestGens = psp.royalGenerations
+											closestMats = psp.maternalLineTimes
+											closestAge = psp.age
+										end end
 									end
 
 									if not closest then
@@ -446,8 +444,11 @@ return
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
+					local unisex = 0
+					for i=1,#self.rulernames do if self.rulernames[i] == self.people[newRuler].rulerName then unisex = 1 end end
+					for i=1,#self.frulernames do if self.frulernames[i] == self.people[newRuler].rulerName then unisex = unisex == 1 and 2 or 0 end end
 
-					for i=1,#self.rulers do if self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName and self.rulers[i].title == self.people[newRuler].rulerTitle then namenum = namenum+1 end end
+					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then if self.rulers[i].title == self.people[newRuler].title or unisex then namenum = namenum+1 end end end
 
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name) end
 
@@ -460,9 +461,9 @@ return
 					self.people[newRuler].LastRoyalAncestor = ""
 					self.people[newRuler].gString = self.people[newRuler].gender:sub(1, 1).." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
 
-					table.insert(self.rulers, {name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				else
-					table.insert(self.rulers, {name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(self.rulers, {dynastic=false, name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
 
 				parent.writeMap = true

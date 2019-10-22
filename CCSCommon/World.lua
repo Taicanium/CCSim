@@ -101,7 +101,7 @@ return
 
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
-					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
+					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then if dx ~= 0 or dy ~= 0 or dz ~= 0 then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
 				end
 
 				UI:printf("Defining land masses...")
@@ -166,7 +166,7 @@ return
 				for i=1,planetSize do
 					local x, y, z = table.unpack(self.planetdefined[i])
 					self.planet[x][y][z].neighbors = {}
-					for dx=-1,1 do if self.planet[x-dx] then for dy=-1,1 do if self.planet[x-dx][y-dy] then for dz=-1,1 do if dx ~= 0 or dy ~= 0 or dz ~= 0 then if self.planet[x-dx][y-dy][z-dz] then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end end end
+					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then if dx ~= 0 or dy ~= 0 or dz ~= 0 then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
 				end
 
 				UI:printf("Rooting countries...")

@@ -296,7 +296,10 @@ return
 							if prevtitle == "Mayor " then prevtitle = "" end
 
 							if parent.systems[c.system].dynastic then
-								for i=1,#c.rulers do if c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName and c.rulers[i].title == newRuler.title then namenum = namenum+1 end end
+								local unisex = 0
+								for i=1,#c.rulernames do if c.rulernames[i] == newRuler.rulerName then unisex = 1 end end
+								for i=1,#c.frulernames do if c.frulernames[i] == newRuler.rulerName then unisex = unisex == 1 and 2 or 0 end end
+								for i=1,#c.rulers do if c.rulers[i].dynastic and c.rulers[i].Country == c.name and tonumber(c.rulers[i].From) >= c.founded and c.rulers[i].name == newRuler.rulerName then if c.rulers[i].title == newRuler.title or unisex then namenum = namenum+1 end end end
 								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
 							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." of "..c.name) end
 						end
@@ -1051,7 +1054,7 @@ return
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0}},
 				["&"]={{0, 0, 0, 0, 0, 0},
-					{0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 0, 1, 0, 0},
 					{0, 1, 1, 0, 0, 0},
 					{0, 1, 0, 1, 1, 0},
@@ -1254,14 +1257,12 @@ return
 							of:write(self:getRulerString(cp.rulers[1]).."\n")
 							local nextFound = false
 							for k=1,#cp.rulers do
-								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name and not nextFound then
-									if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
-										nextFound = true
-										of:write("...\n")
-										of:write(self:getRulerString(cp.rulers[k]).."\n")
-										k = #cp.rulers+1
-									end
-								end
+								if tonumber(cp.rulers[k].From) < pr and cp.rulers[k].Country ~= cp.name and not nextFound then if tostring(cp.rulers[k].To) == "Current" or tonumber(cp.rulers[k].To) and tonumber(cp.rulers[k].To) >= pr then
+									nextFound = true
+									of:write("...\n")
+									of:write(self:getRulerString(cp.rulers[k]).."\n")
+									k = #cp.rulers+1
+								end end
 							end
 						end
 
@@ -1414,18 +1415,21 @@ return
 							local number = 1
 							local gend = "Male"
 							local to = self.years
-							if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].name == mat[2] and fc.rulers[i].title == mat[1] then number = number+1 end end end
 							if mat[1] == "Prime" and mat[2] == "Minister" then
 								mat[1] = "Prime Minister"
 								for i=2,#mat-1 do mat[i] = mat[i+1] end
 								mat[#mat] = nil
 							end
-							if mat[1] == "King" then dynastic = true end
-							if mat[1] == "Emperor" then dynastic = true end
-							if mat[1] == "Queen" then dynastic = true end
-							if mat[1] == "Empress" then dynastic = true end
-							if dynastic then table.insert(fc.rulers, {title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
-							else table.insert(fc.rulers, {title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
+							if mat[1] == "King" or mat[1] == "Emperor" or mat[1] == "Queen" or mat[1] == "Empress" then dynastic = true end
+							if dynastic then
+								local counter = ""
+								if mat[1] == "King" then counter = "Queen"
+								elseif mat[1] == "Queen" then counter = "King"
+								elseif mat[1] == "Emperor" then counter = "Empress"
+								elseif mat[1] == "Empress" then counter = "Emperor" end
+								if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].dynastic and fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] or fc.rulers[i].title == counter then number = number+1 end end end end
+								table.insert(fc.rulers, {dynastic=true, title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
+							else table.insert(fc.rulers, {dynastic=false, title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
 							if mat[1] == "King" then
 								local oldsystem = fc.system
 								fc.system = 3
@@ -1463,12 +1467,14 @@ return
 								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 								gend = "Female"
 							end
-							local found = false
-							for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
-							for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end
-							if not found then
-								if gend == "Female" then table.insert(fc.frulernames, mat[2])
-								else table.insert(fc.rulernames, mat[2]) end
+							if dynastic then
+								local found = false
+								if gend == "Male" then for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
+								elseif gend == "Female" then for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end end
+								if not found then
+									if gend == "Female" then table.insert(fc.frulernames, mat[2])
+									else table.insert(fc.rulernames, mat[2]) end
+								end
 							end
 						end
 					end

@@ -206,10 +206,18 @@ function gedReview(f)
 		local datin = UI:readl()
 		local oldFI = fi
 		if datin:lower() == "b" then matches = {} _REVIEWING = false
-		elseif datin:lower() == "f" then if i.famc then fi = fam[i.famc].husb or oldFI end
-		elseif datin:lower() == "n" then mi = mi+1 if mi > #matches then mi = #matches end if mi == 0 then mi = 1 end fi = matches[mi]
-		elseif datin:lower() == "p" then mi = mi-1 if mi < 1 then mi = 1 end fi = matches[mi]
-		elseif datin:lower() == "m" then if i.famc then fi = fam[i.famc].wife or oldFI end elseif datin ~= "" then
+		elseif datin:lower() == "f" and i.famc then fi = fam[i.famc].husb or oldFI
+		elseif datin:lower() == "m" and i.famc then fi = fam[i.famc].wife or oldFI
+		elseif datin:lower() == "n" then
+			mi = mi+1
+			if mi > #matches then mi = #matches end
+			if mi == 0 then mi = 1 end
+			fi = matches[mi]
+		elseif datin:lower() == "p" then
+			mi = mi-1
+			if mi < 1 then mi = 1 end
+			fi = matches[mi]
+		elseif datin ~= "" then
 			matches = {}
 			fi = tonumber(datin)
 			if not fi or not indi[fi] then
@@ -549,7 +557,7 @@ function main()
 	while _RUNNING do
 		UI:clear()
 		UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
-
+		if _DEBUG then UI:printf("\t-- DEBUG MODE ENABLED --\n\n") end
 		UI:printf("MAIN MENU\n\n1\t-\tBegin a new simulation.")
 		UI:printf("2\t-\tReview the output of a previous simulation.")
 		-- UI:printf("3\t-\tClean up previous simulations.\n")

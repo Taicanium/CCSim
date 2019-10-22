@@ -977,8 +977,19 @@ C Togo
 R Lome
 P Lome
 C Tonga
-R Nuku'alofa
+R Tongatapu
 P Nuku'alofa
+R Vava'u
+S Neiafu
+R Ha'apai
+S Livuka
+S Uoleva
+King Tupou 1845 1893
+King Tupou 1893 1918
+Queen Tupou 1918 1965
+King Tupou 1965 2006
+King Tupou 2006 2012
+King Tupou 2012 2019
 C Trinidad
 R Port of Spain
 P Port of Spain
