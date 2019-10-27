@@ -610,14 +610,12 @@ return
 				local q = -self.planetR
 				local r = -self.planetR
 				local quad = 1
-				local vox = false
 				local iColumn = 1
 				while r <= self.planetR do
 					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
 						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
 						table.insert(self.unwrapped[iColumn], {p, q, r})
 						self.planet[p][q][r].mapWritten = true
-						vox = true
 					end
 					if quad == 1 then
 						q = q+1
@@ -644,7 +642,6 @@ return
 							q = q-1
 						end
 					end
-					vox = false
 					if quad == 1 and p > self.planetR then
 						quad = 2
 						p = self.planetR
