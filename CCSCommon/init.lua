@@ -1398,76 +1398,49 @@ return
 							for q=3,#mat do r.name = r.name.." "..mat[q] end
 							fc.regions[r.name] = r
 							fr = r
-						elseif mat[1] == "S" then
+						elseif mat[1] == "S" or mat[1] == "P" then
 							local s = City:new()
 							s.name = mat[2]
 							for q=3,#mat do s.name = s.name.." "..mat[q] end
 							fr.cities[s.name] = s
-						elseif mat[1] == "P" then
-							local s = City:new()
-							s.name = mat[2]
-							for q=3,#mat do s.name = s.name.." "..mat[q] end
-							fc.capitalregion = fr.name
-							fc.capitalcity = s.name
-							fr.cities[s.name] = s
+							if mat[1] == "P" then
+								fc.capitalregion = fr.name
+								fc.capitalcity = s.name
+							end
 						else
-							local dynastic = false
+							local counter = ""
 							local number = 1
 							local gend = "Male"
 							local to = self.years
+							local oldsystem = fc.system
 							if mat[1] == "Prime" and mat[2] == "Minister" then
 								mat[1] = "Prime Minister"
 								for i=2,#mat-1 do mat[i] = mat[i+1] end
 								mat[#mat] = nil
 							end
-							if mat[1] == "King" or mat[1] == "Emperor" or mat[1] == "Queen" or mat[1] == "Empress" then dynastic = true end
-							if dynastic then
-								local counter = ""
-								if mat[1] == "King" then counter = "Queen"
-								elseif mat[1] == "Queen" then counter = "King"
-								elseif mat[1] == "Emperor" then counter = "Empress"
-								elseif mat[1] == "Empress" then counter = "Emperor" end
-								if #fc.rulers > 0 then for i=1,#fc.rulers do if fc.rulers[i].dynastic and fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] or fc.rulers[i].title == counter then number = number+1 end end end end
+							if mat[1] == "President" then fc.system = 5
+							elseif mat[1] == "Prime Minister" then fc.system = 1
+							elseif mat[1] == "Premier" then fc.system = 4
+							elseif mat[1] == "King" then
+								counter = "Queen"
+								fc.system = 3
+							elseif mat[1] == "Emperor" then
+								counter = "Empress"
+								fc.system = 2
+							elseif mat[1] == "Queen" then
+								counter = "King"
+								fc.system = 3
+								gend = "Female"
+							elseif mat[1] == "Empress" then
+								counter = "Emperor"
+								fc.system = 2
+								gend = "Female"
+							end
+							if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
+							if self.systems[fc.system].dynastic then
+								for i=1,#fc.rulers do if fc.rulers[i].dynastic and fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] or fc.rulers[i].title == counter then number = number+1 end end end
 								table.insert(fc.rulers, {dynastic=true, title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
-							else table.insert(fc.rulers, {dynastic=false, title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
-							if mat[1] == "King" then
-								local oldsystem = fc.system
-								fc.system = 3
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-							end
-							if mat[1] == "President" then
-								local oldsystem = fc.system
-								fc.system = 5
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-							end
-							if mat[1] == "Prime Minister" then
-								local oldsystem = fc.system
-								fc.system = 1
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-							end
-							if mat[1] == "Premier" then
-								local oldsystem = fc.system
-								fc.system = 4
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-							end
-							if mat[1] == "Emperor" then
-								local oldsystem = fc.system
-								fc.system = 2
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-							end
-							if mat[1] == "Queen" then
-								local oldsystem = fc.system
-								fc.system = 3
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-								gend = "Female"
-							end
-							if mat[1] == "Empress" then
-								local oldsystem = fc.system
-								fc.system = 2
-								if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
-								gend = "Female"
-							end
-							if dynastic then
+								
 								local found = false
 								if gend == "Male" then for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
 								elseif gend == "Female" then for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end end
@@ -1475,7 +1448,7 @@ return
 									if gend == "Female" then table.insert(fc.frulernames, mat[2])
 									else table.insert(fc.rulernames, mat[2]) end
 								end
-							end
+							else table.insert(fc.rulers, {dynastic=false, title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
 						end
 					end
 				end

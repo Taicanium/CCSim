@@ -1,146 +1,4 @@
 Year 2094
-C United Kingdom
-R Scotland
-S Glasgow
-S Edinburgh
-S Aberdeen
-S Dundee
-R Wales
-S Cardiff
-S Swansea
-S Newport
-S Wrexham
-R Ireland
-S Dublin
-S Cork
-S Limerick
-S Belfast
-R England
-P London
-S Manchester
-S Birmingham
-S Cornwall
-King William 1066 1087
-King William 1087 1100
-King Henry 1100 1135
-King Stephen 1135 1144
-Queen Matilda 1144 1154
-King Henry 1154 1189
-King Richard 1189 1199
-King John 1199 1216
-King Henry 1216 1272
-King Edward 1272 1307
-King Edward 1307 1327
-King Edward 1327 1377
-King Richard 1377 1399
-King Henry 1399 1413
-King Henry 1413 1422
-King Henry 1422 1471
-King Edward 1471 1483
-King Edward 1483 1484
-King Richard 1484 1485
-King Henry 1485 1509
-King Henry 1509 1547
-King Edward 1547 1553
-Queen Mary 1553 1558
-Queen Elizabeth 1558 1603
-King James 1603 1625
-King Charles 1625 1649
-President Oliver Cromwell 1649 1658
-President Richard Cromwell 1658 1660
-King Charles 1660 1685
-King James 1685 1688
-Queen Mary 1689 1694
-King William 1694 1702
-Queen Anne 1702 1714
-King George 1714 1727
-King George 1727 1760
-King George 1760 1820
-King George 1820 1830
-King William 1830 1837
-Queen Victoria 1837 1901
-King Edward 1901 1910
-King George 1910 1936
-King Edward 1936 1937
-King George 1937 1952
-Queen Elizabeth 1952 2019
-King Charles 2019 2034
-King William 2034 2057
-King George 2057 2094
-C France
-R Ile-de-France
-P Paris
-S Versailles
-S Saint-Denis
-R Brittany
-S Rennes
-S Saint-Malo
-R Auvergne
-S Lyon
-S Aurillac
-King Pepin 751 768
-King Carloman 768 771
-King Charles 771 814
-King Louis 814 840
-King Charles 843 877
-King Louis 877 879
-King Louis 879 882
-King Carloman 882 884
-King Charles 881 888
-King Odo 888 898
-King Charles 898 922
-King Robert 922 923
-King Rudolph 923 936
-King Louis 936 954
-King Lothair 954 986
-King Louis 986 987
-King Hugh 987 996
-King Robert 996 1031
-King Henry 1031 1060
-King Philip 1060 1108
-King Louis 1108 1137
-King Louis 1137 1180
-King Philip 1180 1223
-King Louis 1223 1226
-King Louis 1226 1270
-King Philip 1270 1285
-King Philip 1285 1314
-King Louis 1314 1316
-King John 1316 1316
-King Philip 1316 1322
-King Charles 1322 1328
-King Philip 1328 1350
-King John 1350 1364
-King Charles 1364 1380
-King Charles 1380 1422
-King Charles 1422 1461
-King Louis 1461 1483
-King Charles 1483 1498
-King Louis 1498 1515
-King Francis 1515 1547
-King Henry 1547 1559
-King Francis 1559 1560
-King Charles 1560 1574
-King Henry 1574 1589
-King Henry 1589 1610
-King Louis 1610 1643
-King Louis 1643 1715
-King Louis 1715 1774
-King Louis 1774 1793
-King Louis 1793 1795
-King Louis 1795 1824
-King Charles 1824 1830
-King Louis 1836 1844
-King Henry 1844 1883
-King John 1883 1887
-King Charles 1887 1909
-King James 1909 1931
-King Charles 1931 1936
-King Alphonse 1936 1941
-King Henry 1941 1975
-King Alphonse 1975 1989
-King Louis 1989 2045
-King Louis 2045 2094
 C Belgium
 R Flanders
 P Brussels
@@ -222,51 +80,148 @@ King Frederick 1947 1972
 Queen Margrethe 1972 2023
 King Frederick 2024 2039
 King Christian 2039 2094
-C Russia
-R Ural
-P Moscow
-S Saint Petersburg
-R Siberia
-S Omsk
-S Barnaul
-Emperor Daniel 1283 1303
-Emperor Yury 1303 1325
-Emperor Ivan 1325 1340
-Emperor Simeon 1340 1353
-Emperor Ivan 1353 1359
-Emperor Vasily 1389 1425
-Emperor Vasily 1425 1462
-Emperor Ivan 1462 1505
-Emperor Vasily 1505 1533
-Emperor Ivan 1533 1584
-Emperor Feodor 1584 1605
-Emperor Feodor 1605 1605
-Emperor Vasily 1606 1610
-Emperor Vladislav 1610 1613
-Emperor Michael 1613 1645
-Emperor Alexis 1625 1676
-Emperor Feodor 1676 1682
-Emperor Ivan 1682 1696
-Emperor Peter 1682 1725
-Empress Catherine 1725 1727
-Emperor Peter 1727 1730
-Empress Anna 1730 1740
-Emperor Ivan 1740 1741
-Empress Elizabeth 1741 1762
-Emperor Peter 1762 1762
-Empress Catherine 1762 1796
-Emperor Paul 1796 1801
-Emperor Alexander 1801 1825
-Emperor Nicholas 1825 1855
-Emperor Alexander 1855 1881
-Emperor Alexander 1881 1894
-Emperor Nicholas 1894 1940
-Emperor Alexis 1940 1991
-Emperor Nicholas 1991 2018
-Emperor Paul 2018 2041
-Emperor Alexander 2041 2050
-Emperor Ivan 2050 2078
-Emperor Nicholas 2078 2094
+C France
+R Ile-de-France
+P Paris
+S Versailles
+S Saint-Denis
+R Brittany
+S Rennes
+S Saint-Malo
+R Auvergne
+S Lyon
+S Aurillac
+King Pepin 751 768
+King Carloman 768 771
+King Charles 771 814
+King Louis 814 840
+King Charles 843 877
+King Louis 877 879
+King Louis 879 882
+King Carloman 882 884
+King Charles 881 888
+King Odo 888 898
+King Charles 898 922
+King Robert 922 923
+King Rudolph 923 936
+King Louis 936 954
+King Lothair 954 986
+King Louis 986 987
+King Hugh 987 996
+King Robert 996 1031
+King Henry 1031 1060
+King Philip 1060 1108
+King Louis 1108 1137
+King Louis 1137 1180
+King Philip 1180 1223
+King Louis 1223 1226
+King Louis 1226 1270
+King Philip 1270 1285
+King Philip 1285 1314
+King Louis 1314 1316
+King John 1316 1316
+King Philip 1316 1322
+King Charles 1322 1328
+King Philip 1328 1350
+King John 1350 1364
+King Charles 1364 1380
+King Charles 1380 1422
+King Charles 1422 1461
+King Louis 1461 1483
+King Charles 1483 1498
+King Louis 1498 1515
+King Francis 1515 1547
+King Henry 1547 1559
+King Francis 1559 1560
+King Charles 1560 1574
+King Henry 1574 1589
+King Henry 1589 1610
+King Louis 1610 1643
+King Louis 1643 1715
+King Louis 1715 1774
+King Louis 1774 1793
+King Louis 1793 1795
+King Louis 1795 1824
+King Charles 1824 1830
+King Louis 1836 1844
+King Henry 1844 1883
+King John 1883 1887
+King Charles 1887 1909
+King James 1909 1931
+King Charles 1931 1936
+King Alphonse 1936 1941
+King Henry 1941 1975
+King Alphonse 1975 1989
+King Louis 1989 2045
+King Louis 2045 2094
+C Britain
+R Scotland
+S Glasgow
+S Edinburgh
+S Aberdeen
+S Dundee
+R Wales
+S Cardiff
+S Swansea
+S Newport
+S Wrexham
+R Ireland
+S Dublin
+S Cork
+S Limerick
+S Belfast
+R England
+P London
+S Manchester
+S Birmingham
+S Cornwall
+King William 1066 1087
+King William 1087 1100
+King Henry 1100 1135
+King Stephen 1135 1144
+Queen Matilda 1144 1154
+King Henry 1154 1189
+King Richard 1189 1199
+King John 1199 1216
+King Henry 1216 1272
+King Edward 1272 1307
+King Edward 1307 1327
+King Edward 1327 1377
+King Richard 1377 1399
+King Henry 1399 1413
+King Henry 1413 1422
+King Henry 1422 1471
+King Edward 1471 1483
+King Edward 1483 1484
+King Richard 1484 1485
+King Henry 1485 1509
+King Henry 1509 1547
+King Edward 1547 1553
+Queen Mary 1553 1558
+Queen Elizabeth 1558 1603
+King James 1603 1625
+King Charles 1625 1649
+President Oliver Cromwell 1649 1658
+President Richard Cromwell 1658 1660
+King Charles 1660 1685
+King James 1685 1688
+Queen Mary 1689 1694
+King William 1694 1702
+Queen Anne 1702 1714
+King George 1714 1727
+King George 1727 1760
+King George 1760 1820
+King George 1820 1830
+King William 1830 1837
+Queen Victoria 1837 1901
+King Edward 1901 1910
+King George 1910 1936
+King Edward 1936 1937
+King George 1937 1952
+Queen Elizabeth 1952 2019
+King Charles 2019 2034
+King William 2034 2057
+King George 2057 2094
 C Japan
 R Honshu
 P Tokyo
@@ -373,5 +328,50 @@ Emperor Taishou 1912 1926
 Emperor Shouwa 1926 1989
 Emperor Heisei 1989 2019
 Emperor Reiwa 2019 2034
-Emperor Seiko 2034 2061
+Emperor Seikou 2034 2061
 Emperor Shison 2061 2094
+C Russia
+R Ural
+P Moscow
+S Saint Petersburg
+R Siberia
+S Omsk
+S Barnaul
+Emperor Daniel 1283 1303
+Emperor Yury 1303 1325
+Emperor Ivan 1325 1340
+Emperor Simeon 1340 1353
+Emperor Ivan 1353 1359
+Emperor Vasily 1389 1425
+Emperor Vasily 1425 1462
+Emperor Ivan 1462 1505
+Emperor Vasily 1505 1533
+Emperor Ivan 1533 1584
+Emperor Feodor 1584 1605
+Emperor Feodor 1605 1605
+Emperor Vasily 1606 1610
+Emperor Vladislav 1610 1613
+Emperor Michael 1613 1645
+Emperor Alexis 1625 1676
+Emperor Feodor 1676 1682
+Emperor Ivan 1682 1696
+Emperor Peter 1682 1725
+Empress Catherine 1725 1727
+Emperor Peter 1727 1730
+Empress Anna 1730 1740
+Emperor Ivan 1740 1741
+Empress Elizabeth 1741 1762
+Emperor Peter 1762 1762
+Empress Catherine 1762 1796
+Emperor Paul 1796 1801
+Emperor Alexander 1801 1825
+Emperor Nicholas 1825 1855
+Emperor Alexander 1855 1881
+Emperor Alexander 1881 1894
+Emperor Nicholas 1894 1940
+Emperor Alexis 1940 1991
+Emperor Nicholas 1991 2018
+Emperor Paul 2018 2041
+Emperor Alexander 2041 2050
+Emperor Ivan 2050 2078
+Emperor Nicholas 2078 2094

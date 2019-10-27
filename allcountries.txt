@@ -399,6 +399,71 @@ S Munich
 C Ghana
 R Accra
 P Accra
+C Great Britain
+R Scotland
+S Glasgow
+S Edinburgh
+S Aberdeen
+S Dundee
+R Wales
+S Cardiff
+S Swansea
+S Newport
+S Wrexham
+R Ireland
+S Dublin
+S Cork
+S Limerick
+S Belfast
+R England
+P London
+S Manchester
+S Birmingham
+S Cornwall
+King William 1066 1087
+King William 1087 1100
+King Henry 1100 1135
+King Stephen 1135 1144
+Queen Matilda 1144 1154
+King Henry 1154 1189
+King Richard 1189 1199
+King John 1199 1216
+King Henry 1216 1272
+King Edward 1272 1307
+King Edward 1307 1327
+King Edward 1327 1377
+King Richard 1377 1399
+King Henry 1399 1413
+King Henry 1413 1422
+King Henry 1422 1471
+King Edward 1471 1483
+King Edward 1483 1484
+King Richard 1484 1485
+King Henry 1485 1509
+King Henry 1509 1547
+King Edward 1547 1553
+Queen Mary 1553 1558
+Queen Elizabeth 1558 1603
+King James 1603 1625
+King Charles 1625 1649
+President Oliver Cromwell 1649 1658
+President Richard Cromwell 1658 1660
+King Charles 1660 1685
+King James 1685 1688
+Queen Mary 1689 1694
+King William 1694 1702
+Queen Anne 1702 1714
+King George 1714 1727
+King George 1727 1760
+King George 1760 1820
+King George 1820 1830
+King William 1830 1837
+Queen Victoria 1837 1901
+King Edward 1901 1910
+King George 1910 1936
+King Edward 1936 1937
+King George 1937 1952
+Queen Elizabeth 1952 2019
 C Greece
 R Athens
 P Athens
@@ -1017,71 +1082,6 @@ C United Arab Emirates
 R Abu Dhabi
 S Dubai
 P Abu Dhabi
-C United Kingdom
-R Scotland
-S Glasgow
-S Edinburgh
-S Aberdeen
-S Dundee
-R Wales
-S Cardiff
-S Swansea
-S Newport
-S Wrexham
-R Ireland
-S Dublin
-S Cork
-S Limerick
-S Belfast
-R England
-P London
-S Manchester
-S Birmingham
-S Cornwall
-King William 1066 1087
-King William 1087 1100
-King Henry 1100 1135
-King Stephen 1135 1144
-Queen Matilda 1144 1154
-King Henry 1154 1189
-King Richard 1189 1199
-King John 1199 1216
-King Henry 1216 1272
-King Edward 1272 1307
-King Edward 1307 1327
-King Edward 1327 1377
-King Richard 1377 1399
-King Henry 1399 1413
-King Henry 1413 1422
-King Henry 1422 1471
-King Edward 1471 1483
-King Edward 1483 1484
-King Richard 1484 1485
-King Henry 1485 1509
-King Henry 1509 1547
-King Edward 1547 1553
-Queen Mary 1553 1558
-Queen Elizabeth 1558 1603
-King James 1603 1625
-King Charles 1625 1649
-President Oliver Cromwell 1649 1658
-President Richard Cromwell 1658 1660
-King Charles 1660 1685
-King James 1685 1688
-Queen Mary 1689 1694
-King William 1694 1702
-Queen Anne 1702 1714
-King George 1714 1727
-King George 1727 1760
-King George 1760 1820
-King George 1820 1830
-King William 1830 1837
-Queen Victoria 1837 1901
-King Edward 1901 1910
-King George 1910 1936
-King Edward 1936 1937
-King George 1937 1952
-Queen Elizabeth 1952 2019
 C United States
 R Alabama
 S Montgomery
