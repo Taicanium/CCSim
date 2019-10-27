@@ -399,7 +399,7 @@ S Munich
 C Ghana
 R Accra
 P Accra
-C Great Britain
+C Britain
 R Scotland
 S Glasgow
 S Edinburgh
