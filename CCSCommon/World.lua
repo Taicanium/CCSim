@@ -544,22 +544,16 @@ return
 
 				local byteCount = 0
 				for y=self.planetD,1,-1 do
-					local btWritten = 0
-					for x=1,totalC do
-						btWritten = btWritten+3
-						byteCount = byteCount+3
-					end
-					while math.fmod(btWritten, 4) ~= 0 do
-						btWritten = btWritten+1
-						byteCount = byteCount+1
-					end
+					local btWritten = totalC*3
+					while math.fmod(btWritten, 4) ~= 0 do btWritten = btWritten+1 end
+					byteCount = byteCount+btWritten
 				end
 
 				rStringLE = string.format("%.8x", byteCount)
 				sStringLE = string.format("%.8x", byteCount+54)
 				for x in rStringLE:gmatch("%w%w") do table.insert(rArr, tonumber(x, 16)) end
 				for x in sStringLE:gmatch("%w%w") do table.insert(sArr, tonumber(x, 16)) end
-				
+
 				for i=1,4 do bmpArr[i+2] = sArr[5-i] end
 				for i=1,4 do bmpArr[i+18] = wArr[5-i] end
 				for i=1,4 do bmpArr[i+22] = hArr[5-i] end
@@ -584,63 +578,66 @@ return
 						bf:write(string.char(0))
 						btWritten = btWritten+1
 					end
-					bf:flush()
 				end
 
+				bf:flush()
 				bf:close()
 				bf = nil
-				
-				parent:deepnil(sArr)
-				parent:deepnil(wArr)
-				parent:deepnil(hArr)
-				parent:deepnil(rArr)
-				parent:deepnil(bmpArr)
-				parent:deepnil(colors)
-				parent:deepnil(colorKeys)
-				parent:deepnil(extended)
-				parent:deepnil(tCols)
-				parent:deepnil(tColWidths)
-				parent:deepnil(bmpString)
-				parent:deepnil(bmpDataString)
+
+				parent:deepnil({sArr, wArr, hArr, rArr, extended, tCol, colorKeys, bmpArr, tColWidths, leaders})
 			end,
 
-			
 			unwrap = function(self)
 				local p = 1
 				local q = -self.planetR
 				local r = -self.planetR
 				local quad = 1
 				local iColumn = 1
+				local vox = false
+				local nextVox = false
 				while r <= self.planetR do
 					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
 						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
 						table.insert(self.unwrapped[iColumn], {p, q, r})
 						self.planet[p][q][r].mapWritten = true
+						vox = true
 					end
 					if quad == 1 then
-						q = q+1
-						if q > 0 then
-							q = -self.planetR
-							p = p+1
-						end
-					elseif quad == 2 then
-						p = p-1
-						if p < 0 then
-							p = self.planetR
+						if vox and self.planet[p] and self.planet[p][q+1] and self.planet[p][q+1][r] and not self.planet[p][q+1][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q+1] or not self.planet[p+1][q+1][r] then nextVox = true end end
+						if nextVox or not vox then
 							q = q+1
-						end
-					elseif quad == 3 then
-						q = q-1
-						if q < 0 then
-							q = self.planetR
+							if q > 0 then
+								q = -self.planetR
+								p = p+1
+							end
+						else p = p+1 end
+					elseif quad == 2 then
+						if vox and self.planet[p-1] and self.planet[p-1][q] and self.planet[p-1][q][r] and not self.planet[p-1][q][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q+1] or not self.planet[p-1][q+1][r] then nextVox = true end end
+						if nextVox or not vox then
 							p = p-1
-						end
-					elseif quad == 4 then
-						p = p+1
-						if p > 0 then
-							p = -self.planetR
+							if p < 0 then
+								p = self.planetR
+								q = q+1
+							end
+						else q = q+1 end
+					elseif quad == 3 then
+						if vox and self.planet[p] and self.planet[p][q-1] and self.planet[p][q-1][r] and not self.planet[p][q-1][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q-1] or not self.planet[p-1][q-1][r] then nextVox = true end end
+						if nextVox or not vox then
 							q = q-1
-						end
+							if q < 0 then
+								q = self.planetR
+								p = p-1
+							end
+						else p = p-1 end
+					elseif quad == 4 then
+						if vox and self.planet[p+1] and self.planet[p+1][q] and self.planet[p+1][q][r] and not self.planet[p+1][q][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q-1] or not self.planet[p+1][q-1][r] then nextVox = true end end
+						if nextVox or not vox then
+							p = p+1
+							if p > 0 then
+								p = -self.planetR
+								q = q-1
+							end
+						else q = q-1 end
 					end
 					if quad == 1 and p > self.planetR then
 						quad = 2
@@ -661,6 +658,8 @@ return
 						r = r+1
 						iColumn = iColumn+1
 					end
+					vox = false
+					nextVox = false
 				end
 
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
