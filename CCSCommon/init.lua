@@ -1185,7 +1185,10 @@ return
 			end,
 
 			deepnil = function(self, obj)
-				if type(obj) == "table" then for i, j in pairs(obj) do self:deepnil(j) end end
+				if type(obj) == "table" then for i, j in pairs(obj) do
+					self:deepnil(j)
+					j = nil
+				end end
 				obj = nil
 			end,
 
