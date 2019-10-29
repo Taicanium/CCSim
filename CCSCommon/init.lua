@@ -32,7 +32,7 @@ return
 			c_events = {
 				{
 					name="Alliance",
-					chance=22,
+					chance=28,
 					target=nil,
 					args=2,
 					inverse=true,
