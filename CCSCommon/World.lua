@@ -583,7 +583,16 @@ return
 				bf:close()
 				bf = nil
 
-				parent:deepnil({sArr, wArr, hArr, rArr, extended, tCols, colorKeys, bmpArr, tColWidths, leaders})
+				sArr = nil
+				wArr = nil
+				hArr = nil
+				rArr = nil
+				extended = nil
+				tCols = nil
+				colorKeys = nil
+				bmpArr = nil
+				tColWidths = nil
+				leaders = nil
 			end,
 
 			unwrap = function(self)
