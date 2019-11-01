@@ -1856,7 +1856,7 @@ return
 					nom = nom..ending:lower()
 				end
 
-				for i, j in pairs(self.repGroups) do nom = nom:gsub(j[1], j[2]) end
+				for i=1,3 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.name"] then debugTimes["CCSCommon.name"] = 0 end
@@ -1936,7 +1936,7 @@ return
 						end
 					end
 
-					for i, j in pairs(self.repGroups) do nomlower = nomlower:gsub(j[1], j[2]) end
+					for i=1,3 do for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
