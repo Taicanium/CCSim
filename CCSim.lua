@@ -385,7 +385,7 @@ function simReview()
 					if eventFile then
 						sCount = sCount+1
 						table.insert(sims, x)
-						UI:printf(string.format("%d\t-\t%s", sCount, os.date('%Y-%m-%d %H:%M:%S', xn)))
+						UI:printf(string.format("%d\t-\t%s", sCount, os.date("%Y-%m-%d %H:%M:%S", xn)))
 					end
 				end
 			end

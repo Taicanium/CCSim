@@ -101,19 +101,17 @@ return
 					nn.ancName = self.spouse.ancName
 				end
 
-				if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 then
-					if self.surname ~= self.spouse.surname then
-						local surnames = {}
+				if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 and self.surname ~= self.spouse.surname then
+					local surnames = {}
 
-						if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
-						elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
-						else
-							if self.gender == "Male" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
-							else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
-						end
-
-						if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
+					if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+					elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
+					else
+						if self.gender == "Male" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+						else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 					end
+
+					if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
 				end
 
 				local modChance = math.random(1, 50000)
@@ -211,7 +209,7 @@ return
 			update = function(self, parent, nl)
 				if not self.def then return end
 
-				local f0 = _time()
+				local t0 = _time()
 
 				self.age = parent.years-self.birth
 				if self.birth <= -1 then self.age = self.age-1 end
@@ -220,12 +218,28 @@ return
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
 				if not self.ancName or self.ancName == "" then if self.father then self.ancName = self.father.ancName else self.ancName = self.surname end end
 
+				if math.random(1, 150) == 12 then self.region = nil end
+
+				if not self.region then
+					self.region = parent:randomChoice(nl.regions)
+					self.city = nil
+				end
+
+				if self.region and not self.city then
+					self.city = parent:randomChoice(self.region.cities)
+					if self.spouse then
+						self.spouse.region = self.region
+						self.spouse.city = self.city
+					end
+				end
+
+				if self.region then self.region.population = self.region.population+1 end
+				if self.city then self.city.population = self.city.population+1 end
+
 				local sys = parent.systems[nl.system]
 
 				local rankLim = 2
 				if not sys.dynastic then rankLim = 1 end
-
-				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
 				local ranks = sys.ranks
 				if sys.dynastic and self.gender == "Female" then ranks = sys.franks end
@@ -249,6 +263,8 @@ return
 				else self.level = 2 end
 
 				self.title = ranks[self.level]
+
+				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
 				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 8) == 4 then
 					local m = parent:randomChoice(nl.people)
@@ -315,24 +331,6 @@ return
 					if diff < 175 then nl.rulerPopularity = nl.rulerPopularity+diff end
 				end
 
-				if math.random(1, 150) == 12 then self.region = nil end
-
-				if not self.region then
-					self.region = parent:randomChoice(nl.regions)
-					self.city = nil
-				end
-
-				if self.region and not self.city then
-					self.city = parent:randomChoice(self.region.cities)
-					if self.spouse then
-						self.spouse.region = self.region
-						self.spouse.city = self.city
-					end
-				end
-
-				if self.region then self.region.population = self.region.population+1 end
-				if self.city then self.city.population = self.city.population+1 end
-
 				if self.military then
 					self.militaryTraining = self.militaryTraining+1
 					nl.strength = nl.strength+self.militaryTraining
@@ -361,8 +359,8 @@ return
 				nl.ethnicities[lEth] = nl.ethnicities[lEth]+1
 
 				if _DEBUG then
-					if not parent.debugTimes["Person:update"] then parent.debugTimes["Person:update"] = 0 end
-					parent.debugTimes["Person:update"] = parent.debugTimes["Person:update"]+_time()-f0
+					if not debugTimes["Person.update"] then debugTimes["Person.update"] = 0 end
+					debugTimes["Person.update"] = debugTimes["Person.update"]+_time()-t0
 				end
 			end
 		}

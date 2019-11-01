@@ -270,7 +270,7 @@ return
 
 			mapOutput = function(self, parent, label)
 				if not parent.doMaps then return end
-				
+
 				local planetSize = #self.planetdefined
 
 				for i, cp in pairs(self.countries) do
@@ -313,7 +313,7 @@ return
 					self.planetC = 0
 					self.stretched = {}
 					for i=1,columnCount do
-						self.stretched[i] = {} 
+						self.stretched[i] = {}
 						local col = self.unwrapped[i]
 						if #col > self.planetC then self.planetC = #col end
 					end
@@ -676,9 +676,9 @@ return
 			update = function(self, parent)
 				parent.numCountries = 0
 				for i, j in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
-				for i, j in pairs(parent.debugTimes) do parent.debugTimes[i] = 0 end
+				for i, j in pairs(debugTimes) do debugTimes[i] = 0 end
 
-				local f0 = _time()
+				local t0 = _time()
 
 				self.gPop = 0
 
@@ -714,28 +714,28 @@ return
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
 
-				local f1 = _time()-f0
+				local t1 = _time()-t0
 
 				if parent.years > parent.startyear+1 then
 					if _DEBUG then parent.popLimit = 150
 					else
-						if f1 > 0.5 then
-							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(f1-0.5))) end
+						if t1 > 0.5 then
+							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(t1-0.5))) end
 
 							if parent.popLimit < 1500 then parent.popLimit = 1500 end
-							if f1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+							if t1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 						else
-							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-f1))) end
+							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-t1))) end
 							if parent.popLimit > 3500 then parent.popLimit = 3500 end
 						end
 					end
 				end
 
-				local f2 = _time()
+				local t2 = _time()
 				if math.fmod(parent.years, 35) == 0 then collectgarbage() end
-				local f3 = _time()
-				parent.debugTimes["GARBAGE"] = f3-f2
-				parent.debugTimes["TOTAL"] = f3-f0
+				local t3 = _time()
+				debugTimes["GARBAGE"] = t3-t2
+				debugTimes["TOTAL"] = t3-t0
 			end
 		}
 

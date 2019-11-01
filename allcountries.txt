@@ -86,7 +86,7 @@ P Brasilia
 R Sao Paolo
 S Sao Paolo
 R Rio de Janeiro
-S Rio de Janeiro 
+S Rio de Janeiro
 C Brunei
 R Bandar Seri Begawan
 P Bandar Seri Begawan
@@ -211,7 +211,7 @@ King Niels 1104 1134
 King Eric 1134 1137
 King Eric 1137 1146
 King Sweyn 1146 1157
-King Cnut 1157 1157 
+King Cnut 1157 1157
 King Valdemar 1157 1182
 King Cnut 1182 1202
 King Valdemar 1202 1215
@@ -606,7 +606,7 @@ Emperor Hanazono 1428 1464
 Emperor Tsuchimikado 1464 1500
 Emperor Kashiwabara 1500 1526
 Emperor Nara 1526 1557
-Emperor Ougimachi 1557 1586 
+Emperor Ougimachi 1557 1586
 Emperor Yozei 1586 1611
 Emperor Mizunoo 1611 1629
 Empress Meishou 1629 1643

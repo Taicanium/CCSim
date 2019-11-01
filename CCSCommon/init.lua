@@ -16,6 +16,8 @@ _stamp = os.time
 if _stamp() < 30 then _stamp = os.clock end
 if socketstatus then _stamp = socket.gettime end
 
+debugTimes = {}
+
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
 Party = require("CCSCommon.Party")()
@@ -426,7 +428,7 @@ return
 							local retrieved = false
 
 							for i, j in pairs(parent.final) do
-								if j.name == newl.name and not retrieved then									
+								if j.name == newl.name and not retrieved then
 									retrieved = true
 
 									newl.events = {}
@@ -814,7 +816,6 @@ return
 			},
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
-			debugTimes = {},
 			dirSeparator = "/",
 			disabled = {},
 			doGed = false,
@@ -1192,6 +1193,67 @@ return
 				obj = nil
 			end,
 
+			demonym = function(self, nom)
+				local dem = ""
+
+				if nom:sub(nom:len(), nom:len()) == "a" then dem = nom.."n"
+				elseif nom:sub(nom:len(), nom:len()) == "y" then
+					local split = nom:sub(1, nom:len()-1)
+					if split:sub(split:len(), split:len()) == "y" then dem = split:sub(1, split:len()-1)
+					elseif split:sub(split:len(), split:len()) == "s" then dem = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "b" then dem = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "d" then dem = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "f" then dem = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "g" then dem = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "h" then dem = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "a" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "e" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "i" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "o" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "u" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "l" then dem = split.."ish"
+					elseif split:sub(split:len(), split:len()) == "w" then dem = split.."ian"
+					elseif split:sub(split:len(), split:len()) == "k" then dem = split:sub(1, split:len()-1).."cian"
+					else dem = split end
+				elseif nom:sub(nom:len(), nom:len()) == "e" then dem = nom:sub(1, nom:len()-1).."ish"
+				elseif nom:sub(nom:len(), nom:len()) == "c" then dem = nom:sub(1, nom:len()-2).."ian"
+				elseif nom:sub(nom:len(), nom:len()) == "s" then
+					if nom:sub(nom:len()-2, nom:len()) == "ius" then dem = nom:sub(1, nom:len()-2).."an"
+					else dem = nom:sub(1, nom:len()-2).."ian" end
+				elseif nom:sub(nom:len(), nom:len()) == "i" then dem = nom.."an"
+				elseif nom:sub(nom:len(), nom:len()) == "o" then dem = nom:sub(1, nom:len()-1).."ian"
+				elseif nom:sub(nom:len(), nom:len()) == "k" then
+					if nom:sub(nom:len()-1, nom:len()-1) == "c" then dem = nom:sub(1, nom:len()-1).."ian"
+					else dem = nom:sub(1, nom:len()-1).."cian" end
+				elseif nom:sub(nom:len()-3, nom:len()) == "land" then
+					local split = nom:sub(1, nom:len()-4)
+					if split:sub(split:len(), split:len()) == "a" then dem = split.."n"
+					elseif split:sub(split:len(), split:len()) == "y" then dem = split:sub(1, split:len()-1)
+					elseif split:sub(split:len(), split:len()) == "c" then dem = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "s" then dem = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "i" then dem = split.."an"
+					elseif split:sub(split:len(), split:len()) == "o" then dem = split:sub(1, split:len()-1).."ian"
+					elseif split:sub(split:len(), split:len()) == "g" then dem = split.."lish"
+					elseif split:sub(split:len(), split:len()) == "k" then dem = split:sub(1, split:len()-1).."cian"
+					else dem = split.."ish" end
+				else
+					if nom:sub(nom:len()-1, nom:len()) == "ia" then dem = nom.."n"
+					elseif nom:sub(nom:len()-2, nom:len()) == "ian" then dem = nom
+					elseif nom:sub(nom:len()-1, nom:len()) == "an" then dem = nom.."ese"
+					elseif nom:sub(nom:len()-2, nom:len()) == "iar" then dem = nom:sub(1, nom:len()-1).."n"
+					elseif nom:sub(nom:len()-1, nom:len()) == "ar" then dem = nom:sub(1, nom:len()-2).."ian"
+					elseif nom:sub(nom:len()-2, nom:len()) == "ium" then dem = nom:sub(1, nom:len()-2).."an"
+					elseif nom:sub(nom:len()-1, nom:len()) == "um" then dem = nom:sub(1, nom:len()-2).."ian"
+					elseif nom:sub(nom:len()-1, nom:len()) == "en" then dem = nom:sub(1, nom:len()-2).."ian"
+					elseif nom:sub(nom:len()-1, nom:len()) == "un" then dem = nom:sub(1, nom:len()-2).."ian"
+					else dem = nom.."ian" end
+				end
+
+				for i=1,3 do for j, k in pairs(self.repGroups) do dem = dem:gsub(k[1], k[2]) end end
+
+				return dem
+			end,
+
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end
 				local strOut = ""
@@ -1246,11 +1308,9 @@ return
 						local rWritten = 1
 						local rDone = {}
 
-						for k=1,#cp.events do if pr == 1 then
-							if cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded+1 then
-								newc = true
-								pr = tonumber(cp.events[k].Year)
-							end
+						for k=1,#cp.events do if pr == 1 and cp.events[k].Event:sub(1, 12) == "Independence" and cp.events[k].Year <= cp.founded+1 then
+							newc = true
+							pr = tonumber(cp.events[k].Year)
 						end end
 
 						if newc then
@@ -1325,9 +1385,23 @@ return
 						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
 						for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
 						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
-						of:flush()
+						local nOne = true
+						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+							local fStr = ""
+							local dStr = tostring(math.fmod(l, 1))
+							if not nOne then fStr = "\n2 CONT %"
+							else
+								fStr = "\n1 NOTE %"
+								nOne = false
+							end
+							if dStr == "0" then fStr = fStr.."d%% %s"
+							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
+							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
+							of:write(string.format(fStr, l, k))
+						end end
 						UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
 					end
+					of:flush()
 					UI:printf("Writing family data...")
 					for i=1,#famSorted do
 						local j = famSorted[i]
@@ -1440,7 +1514,7 @@ return
 							if self.systems[fc.system].dynastic then
 								for i=1,#fc.rulers do if fc.rulers[i].dynastic and fc.rulers[i].name == mat[2] then if fc.rulers[i].title == mat[1] or fc.rulers[i].title == counter then number = number+1 end end end
 								table.insert(fc.rulers, {dynastic=true, title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
-								
+
 								local found = false
 								if gend == "Male" then for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
 								elseif gend == "Female" then for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end end
@@ -1616,7 +1690,7 @@ return
 					msg = ("Year %d: %d countries - Global Population %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop)
 
 					if self.showinfo == 1 then
-						local f0 = _time()
+						local t0 = _time()
 						local currentEvents = {}
 						local cCount = 0
 						local eCount = 0
@@ -1698,8 +1772,9 @@ return
 						self:deepnil(rulers)
 
 						if _DEBUG then
-							self.debugTimes["PRINT"] = _time()-f0
-							for i, j in pairs(self.debugTimes) do msg = msg..("%s: %f\n"):format(i, j) end
+							msg = msg.."\n"
+							debugTimes["PRINT"] = _time()-t0
+							for i, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %f\n"):format(i, j) end
 						end
 					end
 
@@ -1721,6 +1796,8 @@ return
 			end,
 
 			name = function(self, personal, l)
+				local t0 = _time()
+
 				local nom = ""
 				local length = 0
 				if not l or l < 2 then length = math.random(2, 3) else length = math.random(2, l) end
@@ -1780,6 +1857,12 @@ return
 				end
 
 				for i, j in pairs(self.repGroups) do nom = nom:gsub(j[1], j[2]) end
+
+				if _DEBUG then
+					if not debugTimes["CCSCommon.name"] then debugTimes["CCSCommon.name"] = 0 end
+					debugTimes["CCSCommon.name"] = debugTimes["CCSCommon.name"]+_time()-t0
+				end
+
 				return nom
 			end,
 
@@ -1838,13 +1921,9 @@ return
 						for j=i,i+2 do
 							for k=1,#self.vowels do if string.lower(nomlower:sub(j, j)) == self.vowels[k] then hasvowel = true end end
 
-							if j > 1 then -- Make an exception for the 'th' group, but only if there's a vowel close by.
-								if string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' then
-									if j > 2 then
-										local prev = nomlower:sub(j-2, j-2)
-										for k=1,#self.vowels do if prev:lower() == self.vowels[k] then hasvowel = true end end
-									end
-								end
+							if j > 1 and string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' and j > 2 then -- Make an exception for the 'th' group, but only if there's a vowel close by.
+								local prev = nomlower:sub(j-2, j-2)
+								for k=1,#self.vowels do if prev:lower() == self.vowels[k] then hasvowel = true end end
 							end
 						end
 
@@ -1947,119 +2026,115 @@ return
 					local lim = 1
 					if conq then lim = 0 end
 
-					if rCount > lim then
-						if c2.regions[r] then
-							local rn = c2.regions[r]
+					if rCount > lim and c2.regions[r] then
+						local rn = c2.regions[r]
 
-							for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
+						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
 
-							c1.regions[rn.name] = rn
-							c2.regions[rn.name] = nil
+						c1.regions[rn.name] = rn
+						c2.regions[rn.name] = nil
 
-							for i=1,#self.thisWorld.planetdefined do
-								local x, y, z = table.unpack(self.thisWorld.planetdefined[i])
+						for i=1,#self.thisWorld.planetdefined do
+							local x, y, z = table.unpack(self.thisWorld.planetdefined[i])
 
-								if self.thisWorld.planet[x][y][z].country == c2.name and self.thisWorld.planet[x][y][z].region == rn.name then
-									self.thisWorld.planet[x][y][z].country = c1.name
-									self.thisWorld.planet[x][y][z].region = rn.name
-								end
+							if self.thisWorld.planet[x][y][z].country == c2.name and self.thisWorld.planet[x][y][z].region == rn.name then
+								self.thisWorld.planet[x][y][z].country = c1.name
+								self.thisWorld.planet[x][y][z].region = rn.name
 							end
-
-							for i=#c2.nodes,1,-1 do
-								local x, y, z = table.unpack(c2.nodes[i])
-								if self.thisWorld.planet[x][y][z].country == c1.name then
-									local rn = table.remove(c2.nodes, i)
-									rn = nil
-								end
-							end
-
-							if not conq then
-								if c2.capitalregion == rn.name then
-									local msg = "Capital moved from "..c2.capitalcity.." to "
-
-									c2.capitalregion = self:randomChoice(c2.regions).name
-									c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities, true)
-
-									msg = msg..c2.capitalcity
-									c2:event(self, msg)
-								end
-							end
-
-							local gainMsg = "Gained the "..rn.name.." region "
-							local lossMsg = "Loss of the "..rn.name.." region "
-
-							local cCount = 0
-							for i, j in pairs(rn.cities) do cCount = cCount+1 end
-							if cCount > 0 then
-								gainMsg = gainMsg.."(including the "
-								lossMsg = lossMsg.."(including the "
-
-								if cCount > 1 then
-									if cCount == 2 then
-										gainMsg = gainMsg.."cities of "
-										lossMsg = lossMsg.."cities of "
-										local index = 1
-										for i, j in pairs(rn.cities) do
-											if index ~= cCount then
-												gainMsg = gainMsg..j.name.." "
-												lossMsg = lossMsg..j.name.." "
-											end
-											index = index+1
-										end
-										index = 1
-										for i, j in pairs(rn.cities) do
-											if index == cCount then
-												gainMsg = gainMsg.."and "..j.name
-												lossMsg = lossMsg.."and "..j.name
-											end
-											index = index+1
-										end
-									else
-										gainMsg = gainMsg.."cities of "
-										lossMsg = lossMsg.."cities of "
-										local index = 1
-										for i, j in pairs(rn.cities) do
-											if index < cCount-1 then
-												gainMsg = gainMsg..j.name..", "
-												lossMsg = lossMsg..j.name..", "
-											end
-											index = index+1
-										end
-										index = 1
-										for i, j in pairs(rn.cities) do
-											if index == cCount-1 then
-												gainMsg = gainMsg..j.name.." "
-												lossMsg = lossMsg..j.name.." "
-											end
-											index = index+1
-										end
-										index = 1
-										for i, j in pairs(rn.cities) do
-											if index == cCount then
-												gainMsg = gainMsg.."and "..j.name
-												lossMsg = lossMsg.."and "..j.name
-											end
-											index = index+1
-										end
-									end
-								else for i, j in pairs(rn.cities) do
-									gainMsg = gainMsg.."city of "..j.name
-									lossMsg = lossMsg.."city of "..j.name
-								end end
-
-								gainMsg = gainMsg..") "
-								lossMsg = lossMsg..") "
-							end
-
-							gainMsg = gainMsg.."from "..c2.name
-							lossMsg = lossMsg.."to "..c1.name
-
-							c1:event(self, gainMsg)
-							c2:event(self, lossMsg)
-
-							self.writeMap = true
-							self.thisWorld.mapChanged = true
 						end
+
+						for i=#c2.nodes,1,-1 do
+							local x, y, z = table.unpack(c2.nodes[i])
+							if self.thisWorld.planet[x][y][z].country == c1.name then
+								local rn = table.remove(c2.nodes, i)
+								rn = nil
+							end
+						end
+
+						if not conq and c2.capitalregion == rn.name then
+							local msg = "Capital moved from "..c2.capitalcity.." to "
+
+							c2.capitalregion = self:randomChoice(c2.regions).name
+							c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities, true)
+
+							msg = msg..c2.capitalcity
+							c2:event(self, msg)
+						end
+
+						local gainMsg = "Gained the "..rn.name.." region "
+						local lossMsg = "Loss of the "..rn.name.." region "
+
+						local cCount = 0
+						for i, j in pairs(rn.cities) do cCount = cCount+1 end
+						if cCount > 0 then
+							gainMsg = gainMsg.."(including the "
+							lossMsg = lossMsg.."(including the "
+
+							if cCount > 1 then
+								if cCount == 2 then
+									gainMsg = gainMsg.."cities of "
+									lossMsg = lossMsg.."cities of "
+									local index = 1
+									for i, j in pairs(rn.cities) do
+										if index ~= cCount then
+											gainMsg = gainMsg..j.name.." "
+											lossMsg = lossMsg..j.name.." "
+										end
+										index = index+1
+									end
+									index = 1
+									for i, j in pairs(rn.cities) do
+										if index == cCount then
+											gainMsg = gainMsg.."and "..j.name
+											lossMsg = lossMsg.."and "..j.name
+										end
+										index = index+1
+									end
+								else
+									gainMsg = gainMsg.."cities of "
+									lossMsg = lossMsg.."cities of "
+									local index = 1
+									for i, j in pairs(rn.cities) do
+										if index < cCount-1 then
+											gainMsg = gainMsg..j.name..", "
+											lossMsg = lossMsg..j.name..", "
+										end
+										index = index+1
+									end
+									index = 1
+									for i, j in pairs(rn.cities) do
+										if index == cCount-1 then
+											gainMsg = gainMsg..j.name.." "
+											lossMsg = lossMsg..j.name.." "
+										end
+										index = index+1
+									end
+									index = 1
+									for i, j in pairs(rn.cities) do
+										if index == cCount then
+											gainMsg = gainMsg.."and "..j.name
+											lossMsg = lossMsg.."and "..j.name
+										end
+										index = index+1
+									end
+								end
+							else for i, j in pairs(rn.cities) do
+								gainMsg = gainMsg.."city of "..j.name
+								lossMsg = lossMsg.."city of "..j.name
+							end end
+
+							gainMsg = gainMsg..") "
+							lossMsg = lossMsg..") "
+						end
+
+						gainMsg = gainMsg.."from "..c2.name
+						lossMsg = lossMsg.."to "..c1.name
+
+						c1:event(self, gainMsg)
+						c2:event(self, lossMsg)
+
+						self.writeMap = true
+						self.thisWorld.mapChanged = true
 					end
 				end
 			end,
@@ -2155,6 +2230,11 @@ return
 				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(12, 177000))) end
 				math.randomseed(math.ceil(n))
 				for i=1,3 do math.random(1, 100) end
+
+				if _DEBUG then
+					if not debugTimes["CCSCommon.rseed"] then debugTimes["CCSCommon.rseed"] = 0 end
+					debugTimes["CCSCommon.rseed"] = debugTimes["CCSCommon.rseed"]+_time()-tc
+				end
 			end,
 
 			setGed = function(self, t, p)

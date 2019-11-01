@@ -6,7 +6,7 @@ return
 				setmetatable(o, self)
 
 				o.age = 0
-				o.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system. 
+				o.agPrim = false -- Agnatic primogeniture; if true, only a male person may rule this country while under a dynastic system.
 				o.alliances = {}
 				o.allyOngoing = {}
 				o.averageAge = 0
@@ -219,7 +219,7 @@ return
 			end,
 
 			eventloop = function(self, parent)
-				local f0 = _time()
+				local t0 = _time()
 
 				local v = math.floor(math.random(110, 170)*self.stability)
 				local vi = math.floor(math.random(110, 170)*(100-self.stability))
@@ -237,7 +237,7 @@ return
 					end
 				end
 
-				for i=#self.ongoing,1,-1 do if self.ongoing[i] then if not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) end end end
+				for i=#self.ongoing,1,-1 do if not self.ongoing[i] or not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) end end
 
 				for i=1,#parent.c_events do
 					if not parent.disabled[parent.c_events[i].name:lower()] and not parent.disabled["!"..parent.c_events[i].name:lower()] then
@@ -248,8 +248,8 @@ return
 				end
 
 				if _DEBUG then
-					if not parent.debugTimes["Country:eventloop"] then parent.debugTimes["Country:eventloop"] = 0 end
-					parent.debugTimes["Country:eventloop"] = parent.debugTimes["Country:eventloop"]+_time()-f0
+					if not debugTimes["Country.eventloop"] then debugTimes["Country.eventloop"] = 0 end
+					debugTimes["Country.eventloop"] = debugTimes["Country.eventloop"]+_time()-t0
 				end
 			end,
 
@@ -278,58 +278,7 @@ return
 					self.dfif[parent.systems[i].name] = parent:randomChoice({true, false})
 				end
 
-				if self.name:sub(self.name:len(), self.name:len()) == "a" then self.demonym = self.name.."n"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "y" then
-					local split = self.name:sub(1, self.name:len()-1)
-					if split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
-					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
-					elseif split:sub(split:len(), split:len()) == "b" then self.demonym = split.."ian"
-					elseif split:sub(split:len(), split:len()) == "d" then self.demonym = split.."ish"
-					elseif split:sub(split:len(), split:len()) == "f" then self.demonym = split.."ish"
-					elseif split:sub(split:len(), split:len()) == "g" then self.demonym = split.."ian"
-					elseif split:sub(split:len(), split:len()) == "h" then self.demonym = split.."ian"
-					elseif split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "e" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "i" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "o" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "u" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "l" then self.demonym = split.."ish"
-					elseif split:sub(split:len(), split:len()) == "w" then self.demonym = split.."ian"
-					elseif split:sub(split:len(), split:len()) == "k" then self.demonym = split:sub(1, split:len()-1).."cian"
-					else self.demonym = split end
-				elseif self.name:sub(self.name:len(), self.name:len()) == "e" then self.demonym = self.name:sub(1, self.name:len()-1).."ish"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "c" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "s" then
-					if self.name:sub(self.name:len()-2, self.name:len()) == "ius" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
-					else self.demonym = self.name:sub(1, self.name:len()-2).."ian" end
-				elseif self.name:sub(self.name:len(), self.name:len()) == "i" then self.demonym = self.name.."an"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "o" then self.demonym = self.name:sub(1, self.name:len()-1).."ian"
-				elseif self.name:sub(self.name:len(), self.name:len()) == "k" then if self.name:sub(self.name:len()-1, self.name:len()-1) == "c" then self.demonym = self.name:sub(1, self.name:len()-1).."ian" else self.demonym = self.name:sub(1, self.name:len()-1).."cian" end
-				elseif self.name:sub(self.name:len()-3, self.name:len()) == "land" then
-					local split = self.name:sub(1, self.name:len()-4)
-					if split:sub(split:len(), split:len()) == "a" then self.demonym = split.."n"
-					elseif split:sub(split:len(), split:len()) == "y" then self.demonym = split:sub(1, split:len()-1)
-					elseif split:sub(split:len(), split:len()) == "c" then self.demonym = split:sub(1, split:len()-1).."ian"
-					elseif split:sub(split:len(), split:len()) == "s" then self.demonym = split:sub(1, split:len()-1).."ian"
-					elseif split:sub(split:len(), split:len()) == "i" then self.demonym = split.."an"
-					elseif split:sub(split:len(), split:len()) == "o" then self.demonym = split:sub(1, split:len()-1).."ian"
-					elseif split:sub(split:len(), split:len()) == "g" then self.demonym = split.."lish"
-					elseif split:sub(split:len(), split:len()) == "k" then self.demonym = split:sub(1, split:len()-1).."cian"
-					else self.demonym = split.."ish" end
-				else
-					if self.name:sub(self.name:len()-1, self.name:len()) == "ia" then self.demonym = self.name.."n"
-					elseif self.name:sub(self.name:len()-2, self.name:len()) == "ian" then self.demonym = self.name
-					elseif self.name:sub(self.name:len()-1, self.name:len()) == "an" then self.demonym = self.name.."ese"
-					elseif self.name:sub(self.name:len()-2, self.name:len()) == "iar" then self.demonym = self.name:sub(1, self.name:len()-1).."n"
-					elseif self.name:sub(self.name:len()-1, self.name:len()) == "ar" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
-					elseif self.name:sub(self.name:len()-2, self.name:len()) == "ium" then self.demonym = self.name:sub(1, self.name:len()-2).."an"
-					elseif self.name:sub(self.name:len()-1, self.name:len()) == "um" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
-					elseif self.name:sub(self.name:len()-1, self.name:len()) == "en" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
-					elseif self.name:sub(self.name:len()-1, self.name:len()) == "un" then self.demonym = self.name:sub(1, self.name:len()-2).."ian"
-					else self.demonym = self.name.."ian" end
-				end
-
-				for i=1,3 do for j, k in pairs(parent.repGroups) do self.demonym = self.demonym:gsub(k[1], k[2]) end end
+				self.demonym = parent:demonym(self.name)
 			end,
 
 			recurseRoyalChildren = function(self, t)
@@ -343,11 +292,9 @@ return
 				table.insert(childrenByAge, t.children[1])
 				for i=2,#t.children do
 					local found = false
-					for j=1,#childrenByAge do if not found then
-						if t.children[i].birth <= childrenByAge[j].birth then
-							table.insert(childrenByAge, j, t.children[i])
-							found = true
-						end
+					for j=1,#childrenByAge do if not found and t.children[i].birth <= childrenByAge[j].birth then
+						table.insert(childrenByAge, j, t.children[i])
+						found = true
 					end end
 					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
@@ -625,19 +572,17 @@ return
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self, r) == -1 then table.remove(self.ongoing, #self.ongoing)
 					else newE:beginEvent(parent, self) end
-				elseif parent.c_events[i].args == 2 then
-					if parent.numCountries > 1 then
-						local other = parent:randomChoice(parent.thisWorld.countries)
-						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
+				elseif parent.c_events[i].args == 2 and parent.numCountries > 1 then
+					local other = parent:randomChoice(parent.thisWorld.countries)
+					while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 
-						if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
-						else newE:beginEvent(parent, self, other) end
-					end
+					if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
+					else newE:beginEvent(parent, self, other) end
 				end
 			end,
 
 			update = function(self, parent)
-				local f0 = _time()
+				local t0 = _time()
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
@@ -680,8 +625,8 @@ return
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 					self.relations[cp.name] = self.relations[cp.name]+((math.random()-0.4)/2)+math.random(-3, 3)
-					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1 end
-					if self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
+					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1
+					elseif self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 				end end
 
 				local oldcap = nil
@@ -749,8 +694,8 @@ return
 				self.majority = largest
 
 				if _DEBUG then
-					if not parent.debugTimes["Country:update"] then parent.debugTimes["Country:update"] = 0 end
-					parent.debugTimes["Country:update"] = parent.debugTimes["Country:update"]+_time()-f0
+					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end
+					debugTimes["Country.update"] = debugTimes["Country.update"]+_time()-t0
 				end
 			end
 		}
