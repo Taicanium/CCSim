@@ -1176,11 +1176,8 @@ return
 						if not isexception then res[self:deepcopy(i)] = self:deepcopy(j) end
 					end
 					if getmetatable(obj) then setmetatable(res, self:deepcopy(getmetatable(obj))) end
-				elseif t == "function" then
-					res = self:fncopy(obj)
-				else
-					res = obj
-				end
+				elseif t == "function" then res = self:fncopy(obj)
+				else res = obj end
 
 				return res
 			end,
@@ -1856,7 +1853,7 @@ return
 					nom = nom..ending:lower()
 				end
 
-				for i=1,3 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end
+				for i=1,3 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end end
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.name"] then debugTimes["CCSCommon.name"] = 0 end
@@ -1936,7 +1933,7 @@ return
 						end
 					end
 
-					for i=1,3 do for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
+					for i=1,3 do for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end end
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
