@@ -270,6 +270,7 @@ return
 
 			mapOutput = function(self, parent, label)
 				if not parent.doMaps then return end
+				local t0 = _time()
 
 				local planetSize = #self.planetdefined
 
@@ -425,7 +426,6 @@ return
 						extended[i*2][j*2] = {0, 0, 0}
 					end end
 				end
-				local cAdded = 2
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
 					for j=1,#tCol do -- For every country name in this column...
@@ -453,7 +453,7 @@ return
 								if not glyph then glyph = parent.glyphs[" "] end -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
 								local letterRow = 1
 								local letterColumn = 1
-								-- The glyph is itself a 2D matrix of monochrome pixel values-0 for black, 1 for white.
+								-- The glyph is itself a 2D matrix of monochrome pixel values -- 0 for black, 1 for white.
 								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
@@ -520,13 +520,12 @@ return
 						end
 					end
 					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire column...
-					cAdded = cAdded+20+(tColWidths[i]*6)
 					top = 2
 					bottom = 9 -- And begin at the top left anew.
 				end
 
-				local totalC = (self.planetC+cAdded)*2 -- Account for the addition of the legend in our bitmap dimensions.
-				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we don't need to distort the height when unwrapping).
+				local totalC = margin*2 -- Account for the addition of the legend in our bitmap dimensions.
+				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
 
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
@@ -593,9 +592,16 @@ return
 				bmpArr = nil
 				tColWidths = nil
 				leaders = nil
+
+				if _DEBUG then
+					if not debugTimes["World.mapOutput"] then debugTimes["World.mapOutput"] = 0 end
+					debugTimes["World.mapOutput"] = debugTimes["World.mapOutput"]+_time()-t0
+				end
 			end,
 
 			unwrap = function(self)
+				local t0 = _time()
+
 				local p = 1
 				local q = -self.planetR
 				local r = -self.planetR
@@ -671,14 +677,19 @@ return
 				end
 
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
+
+				if _DEBUG then
+					if not debugTimes["World.unwrap"] then debugTimes["World.unwrap"] = 0 end
+					debugTimes["World.unwrap"] = debugTimes["World.unwrap"]+_time()-t0
+				end
 			end,
 
 			update = function(self, parent)
+				for i, j in pairs(debugTimes) do debugTimes[i] = 0 end
+				local t0 = _time()
+
 				parent.numCountries = 0
 				for i, j in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
-				for i, j in pairs(debugTimes) do debugTimes[i] = 0 end
-
-				local t0 = _time()
 
 				self.gPop = 0
 
@@ -717,16 +728,16 @@ return
 				local t1 = _time()-t0
 
 				if parent.years > parent.startyear+1 then
-					if _DEBUG then parent.popLimit = 150
+					if _DEBUG then parent.popLimit = 100
 					else
 						if t1 > 0.5 then
-							if parent.popLimit > 1500 then parent.popLimit = math.floor(parent.popLimit-(50*(t1-0.5))) end
+							if parent.popLimit > 1000 then parent.popLimit = math.floor(parent.popLimit-(50*(t1-0.5))) end
 
-							if parent.popLimit < 1500 then parent.popLimit = 1500 end
+							if parent.popLimit < 1000 then parent.popLimit = 1000 end
 							if t1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 						else
-							if parent.popLimit < 3500 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-t1))) end
-							if parent.popLimit > 3500 then parent.popLimit = 3500 end
+							if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-t1))) end
+							if parent.popLimit > 3000 then parent.popLimit = 3000 end
 						end
 					end
 				end
@@ -735,7 +746,6 @@ return
 				if math.fmod(parent.years, 35) == 0 then collectgarbage() end
 				local t3 = _time()
 				debugTimes["GARBAGE"] = t3-t2
-				debugTimes["TOTAL"] = t3-t0
 			end
 		}
 

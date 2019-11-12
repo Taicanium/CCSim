@@ -82,6 +82,8 @@ return
 			end,
 
 			dobirth = function(self, parent, nl)
+				local t0 = _time()
+
 				if not self.spouse or not self.spouse.def then return nil end
 
 				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
@@ -180,9 +182,16 @@ return
 				nn.nationality = nl.name
 
 				nl:add(parent, nn)
+
+				if _DEBUG then
+					if not debugTimes["Person.dobirth"] then debugTimes["Person.dobirth"] = 0 end
+					debugTimes["Person.dobirth"] = debugTimes["Person.dobirth"]+_time()-t0
+				end
 			end,
 
 			makename = function(self, parent, nl)
+				local t0 = _time()
+
 				self.name = parent:name(true)
 				self.surname = parent:name(true)
 
@@ -197,6 +206,12 @@ return
 					self.level = 2
 					self.title = "Citizen"
 				end
+
+				if _DEBUG then
+					if not debugTimes["Person.makename"] then debugTimes["Person.makename"] = 0 end
+					debugTimes["Person.makename"] = debugTimes["Person.makename"]+_time()-t0
+				end
+
 			end,
 
 			SetFamily = function(self, father, mother, parent)

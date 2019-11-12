@@ -318,7 +318,7 @@ return
 				self:makename(parent, 3)
 				self.agPrim = parent:randomChoice({true, false})
 
-				if self.population <= 1 then if _DEBUG then self:setPop(parent, 150) else self:setPop(parent, math.random(1000, 1500)) end end
+				if self.population <= 1 then if _DEBUG then self:setPop(parent, 150) else self:setPop(parent, math.random(750, 1500)) end end
 
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end

@@ -10,10 +10,10 @@ socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
 _time = os.clock
-if _time() > 30 then _time = os.time end
+if _time() > 15 then _time = os.time end
 if socketstatus then _time = socket.gettime end
 _stamp = os.time
-if _stamp() < 30 then _stamp = os.clock end
+if _stamp() < 15 then _stamp = os.clock end
 if socketstatus then _stamp = socket.gettime end
 
 debugTimes = {}
@@ -579,7 +579,7 @@ return
 							if c1.stability < 1 then c1.stability = 1 end
 							if c2.stability < 1 then c2.stability = 1 end
 							c1:setPop(parent, math.ceil(c1.population/1.25))
-							c2:setPop(parent, math.ceil(c2.population/1.75))
+							c2:setPop(parent, math.ceil(c2.population/1.4))
 
 							local rcount = 0
 							for q, b in pairs(c2.regions) do if b:borders(parent, c1) > 0 then rcount = rcount+1 end end
@@ -1164,6 +1164,8 @@ return
 			yearstorun = 0,
 
 			deepcopy = function(self, obj)
+				local t0 = _time()
+
 				local res = nil
 				local t = type(obj)
 				local exceptions = {"spouse", "target", "__index"}
@@ -1179,14 +1181,27 @@ return
 				elseif t == "function" then res = self:fncopy(obj)
 				else res = obj end
 
+				if _DEBUG then
+					if not debugTimes["CCSCommon.deepcopy"] then debugTimes["CCSCommon.deepcopy"] = 0 end
+					debugTimes["CCSCommon.deepcopy"] = debugTimes["CCSCommon.deepcopy"]+_time()-t0
+				end
+
 				return res
 			end,
 
 			deepnil = function(self, obj)
+				local t0 = _time()
+
 				if type(obj) == "table" then for i, j in pairs(obj) do
 					self:deepnil(j)
 					j = nil
 				end end
+
+				if _DEBUG then
+					if not debugTimes["CCSCommon.deepnil"] then debugTimes["CCSCommon.deepnil"] = 0 end
+					debugTimes["CCSCommon.deepnil"] = debugTimes["CCSCommon.deepnil"]+_time()-t0
+				end
+
 				obj = nil
 			end,
 
@@ -1548,7 +1563,7 @@ return
 						end
 
 						cp:makename(self, 3)
-						if _DEBUG then cp:setPop(self, 200) else cp:setPop(self, 1000) end
+						if _DEBUG then cp:setPop(self, 100) else cp:setPop(self, 300) end
 
 						table.insert(self.final, cp)
 					end
@@ -1677,6 +1692,7 @@ return
 				collectgarbage()
 
 				while _running do
+					local t0 = _time()
 					self.thisWorld:update(self)
 
 					for i, cp in pairs(self.thisWorld.countries) do
@@ -1687,7 +1703,6 @@ return
 					msg = ("Year %d: %d countries - Global Population %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop)
 
 					if self.showinfo == 1 then
-						local t0 = _time()
 						local currentEvents = {}
 						local cCount = 0
 						local eCount = 0
@@ -1767,23 +1782,28 @@ return
 						self:deepnil(names)
 						self:deepnil(stats)
 						self:deepnil(rulers)
-
-						if _DEBUG then
-							msg = msg.."\n"
-							debugTimes["PRINT"] = _time()-t0
-							for i, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %f\n"):format(i, j) end
-						end
 					end
+					
+					local t1 = _time()
 
 					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
 					self.writeMap = false
 					self.thisWorld.mapChanged = false
-					self.years = self.years+1
-					if self.years > self.maxyears then _running = false end
 
 					UI:clear(true)
+
+					if _DEBUG then
+						msg = msg.."\n"
+						debugTimes["PRINT"] = t1-t0
+						debugTimes["TOTAL"] = _time()-t0
+						for ln, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end
+					end
+
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do UI:printc(sx) end
 					UI:refresh()
+					
+					self.years = self.years+1
+					if self.years > self.maxyears then _running = false end
 				end
 
 				self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"}))
@@ -1864,6 +1884,8 @@ return
 			end,
 
 			namecheck = function(self, nom)
+				local t0 = _time()
+
 				local nomin = nom
 				local check = true
 				while check do
@@ -1982,6 +2004,11 @@ return
 					nomin = nomin:gsub("%-%w", string.upper)
 				end
 
+				if _DEBUG then
+					if not debugTimes["CCSCommon.namecheck"] then debugTimes["CCSCommon.namecheck"] = 0 end
+					debugTimes["CCSCommon.namecheck"] = debugTimes["CCSCommon.namecheck"]+_time()-t0
+				end
+
 				return nomin
 			end,
 
@@ -2006,6 +2033,8 @@ return
 			end,
 
 			randomChoice = function(self, t, doKeys)
+				local t0 = _time()
+
 				local keys = {}
 				if t and t[1] then if doKeys then return math.random(1, #t) else return t[math.random(1, #t)] end end
 				for key, value in pairs(t) do table.insert(keys, key) end
@@ -2013,6 +2042,11 @@ return
 				elseif #keys == 1 then if doKeys then return keys[1] else return t[keys[1]] end end
 				local index = keys[math.random(1, #keys)]
 				if doKeys then return index else return t[index] end
+
+				if _DEBUG then
+					if not debugTimes["CCSCommon.randomChoice"] then debugTimes["CCSCommon.randomChoice"] = 0 end
+					debugTimes["CCSCommon.randomChoice"] = debugTimes["CCSCommon.randomChoice"]+_time()-t0
+				end
 			end,
 
 			regionTransfer = function(self, c1, c2, r, conq)
