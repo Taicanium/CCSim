@@ -195,12 +195,6 @@ return
 				if self.ongoing then for i=#self.ongoing,1,-1 do self.ongoing[i] = nil end end
 				self.ongoing = nil
 
-				if self.regions then for i, j in pairs(self.regions) do
-					j:destroy(parent)
-					j = nil
-				end end
-				self.regions = nil
-
 				parent:deepnil(self.alliances)
 				parent:deepnil(self.allyOngoing)
 				parent:deepnil(self.ethnicities)
@@ -221,8 +215,8 @@ return
 			eventloop = function(self, parent)
 				local t0 = _time()
 
-				local v = math.floor(math.random(110, 170)*self.stability)
-				local vi = math.floor(math.random(110, 170)*(100-self.stability))
+				local v = math.floor(math.random(100, 160)*self.stability)
+				local vi = math.floor(math.random(100, 160)*(100-self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
