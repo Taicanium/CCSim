@@ -34,7 +34,7 @@ return
 			c_events = {
 				{
 					name="Alliance",
-					chance=28,
+					chance=32,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -528,10 +528,10 @@ return
 									j.cities[nC.name] = nC
 								end
 							end
-							
+
 							local nCities = {}
 							for i, j in pairs(newl.regions) do for k, l in pairs(j.cities) do table.insert(nCities, k) end end
-							
+
 							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then
 								local added = false
 								for j=1,#nCities do if not added and c.people[i].city == nCities then
@@ -568,7 +568,7 @@ return
 
 							newl:checkRuler(parent, true)
 							parent.thisWorld.mapChanged = true
-							
+
 							nc.subregions = nil
 							nc.cities = nil
 							parent:deepnil(nc)
@@ -650,7 +650,7 @@ return
 				},
 				{
 					name="War",
-					chance=10,
+					chance=12,
 					target=nil,
 					args=2,
 					status=0,
@@ -1134,7 +1134,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
 			popLimit = 2000,
-			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},
+			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"iusy", "ia"}},
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
@@ -1798,7 +1798,7 @@ return
 						self:deepnil(stats)
 						self:deepnil(rulers)
 					end
-					
+
 					local t1 = _time()
 
 					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
@@ -1816,7 +1816,7 @@ return
 
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do UI:printc(sx) end
 					UI:refresh()
-					
+
 					self.years = self.years+1
 					if self.years > self.maxyears then _running = false end
 				end
@@ -2272,8 +2272,8 @@ return
 				local ts = tostring(tc)
 				local n = tonumber(ts:reverse())
 				if not n then n = _time() end
-				while n < 100000 do n = n*math.floor(math.random(5, math.random(12, 177000))) end
-				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(12, 177000))) end
+				while n < 100000 do n = n*math.floor(math.random(5, math.random(177, 177000))) end
+				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(177, 177000))) end
 				math.randomseed(math.ceil(n))
 				for i=1,3 do math.random(1, 100) end
 

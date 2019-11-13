@@ -8,7 +8,7 @@ if not CCSFStatus or not CCSCommon then error(tostring(CCSCommon)) os.exit(1) en
 
 --[[ function eventReview(f)
 	local countries = {}
-	
+
 	local l = f:read("*l")
 	while l do
 		local split = {}

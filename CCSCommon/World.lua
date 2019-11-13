@@ -712,11 +712,11 @@ return
 					end
 
 					local defCount = 0
-					for j=#cp.events,1,-1 do if cp.events[j].Year >= parent.years-20 and cp.events[j].Event:match("Defeat in war") then defCount = defCount+1 end end
+					for j=#cp.events,1,-1 do if cp.events[j].Year >= parent.years-30 and cp.events[j].Event:match("Defeat in war") then defCount = defCount+1 end end
 					if defCount > 3 then
 						local lastDef = ""
-						for j=1,#cp.events do if cp.events[j].Event:match("Defeat in war") then lastDef = cp.events[j].Event:gsub("Defeat in war with ", "") end end
-						for j, k in pairs(self.countries) do if k.name == lastDef then for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j) end end end end
+						for j=#cp.events,1,-1 do if lastDef == "" and cp.events[j].Event:match("Defeat in war") then lastDef = cp.events[j].Event:gsub("Defeat in war with ", "") end end
+						for j, k in pairs(self.countries) do if k.name == lastDef then for l, m in pairs(parent.c_events) do if m.name == "Conquer" then cp:triggerEvent(parent, l, true, k) end end end end
 					end
 				end end
 
