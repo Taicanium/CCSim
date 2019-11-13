@@ -7,9 +7,13 @@ CCSFStatus, CCSCommon = pcall(CCSModule)
 if not CCSFStatus or not CCSCommon then error(tostring(CCSCommon)) os.exit(1) end
 
 --[[ function eventReview(f)
-
-
-	UI:printp("")
+	local countries = {}
+	
+	local l = f:read("*l")
+	while l do
+		local split = {}
+		for x in l:gmatch("%S+") do table.insert(split, x) end
+	end
 end ]]
 
 function gedReview(f)
