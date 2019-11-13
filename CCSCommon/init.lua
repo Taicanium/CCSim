@@ -316,7 +316,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=2,
+					chance=3,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -325,7 +325,7 @@ return
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name or r then return -1 end end
 
 						if c1.relations[c2.name] or r then
-							if c1.relations[c2.name] < 11 or r then
+							if c1.relations[c2.name] < 21 or r then
 								if not r then
 									c1:event(parent, "Conquered "..c2.name)
 									c2:event(parent, "Conquered by "..c1.name)
@@ -396,7 +396,7 @@ return
 				},
 				{
 					name="Independence",
-					chance=3,
+					chance=4,
 					target=nil,
 					args=1,
 					inverse=false,
@@ -409,10 +409,21 @@ return
 						if values > 1 then
 							local newl = Country:new()
 							local nc = parent:randomChoice(c.regions)
+							local doSub = math.random(1, 500)
+							if doSub < 251 then
+								local np = c.regions
+								local ni = nc.name
+								while nc.subregions and #nc.subregions > 0 do
+									np = nc.subregions
+									ni = parent:randomChoice(nc.subregions, true)
+									nc = np[ni]
+								end
+								if type(ni) == "number" then table.remove(np, ni) else np[ni] = nil end
+							end
 							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
 
 							newl.name = nc.name
-							c.regions[nc.name] = nil
+							if doSub > 250 then c.regions[nc.name] = nil end
 
 							newl.rulers = {}
 							newl.rulernames = {}
@@ -424,6 +435,11 @@ return
 							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i]) end
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
+							for i=1,#nc.nodes do
+								local x, y, z = table.unpack(nc.nodes[i])
+								parent.thisWorld.planet[x][y][z].country = newl.name
+								parent.thisWorld.planet[x][y][z].region = ""
+							end
 
 							local retrieved = false
 
@@ -457,16 +473,6 @@ return
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
-							for i=1,#parent.thisWorld.planetdefined do
-								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-								if parent.thisWorld.planet[x][y][z].region == newl.name or parent.thisWorld.planet[x][y][z].country == newl.name then
-									parent.thisWorld.planet[x][y][z].country = newl.name
-									parent.thisWorld.planet[x][y][z].region = ""
-								end
-							end
-
-							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then newl:add(parent, c.people[i]) end end
-
 							for i=1,math.floor(#c.people/5) do
 								local p = parent:randomChoice(c.people)
 								while p.isruler do p = parent:randomChoice(c.people) end
@@ -499,7 +505,6 @@ return
 									for m=1,#l.nodes do
 										local x, y, z = table.unpack(l.nodes[m])
 										if parent.thisWorld.planet[x][y][z].city == j.name then
-											parent.thisWorld.planet[x][y][z].city = j.name
 											l.cities[j.name] = j
 											nc.cities[j.name] = nil
 										elseif x == j.x and y == j.y and z == j.z then
@@ -517,17 +522,23 @@ return
 								local cCount = 0
 								for k, l in pairs(j.cities) do cCount = cCount+1 end
 								if cCount == 0 then
-									if nrCount > 1 then
-										newl.regions[i] = nil
-										nrCount = nrCount-1
-									else
-										local nC = City:new()
-										nC:makename(country, parent)
+									local nC = City:new()
+									nC:makename(country, parent)
 
-										j.cities[nC.name] = nC
-									end
+									j.cities[nC.name] = nC
 								end
 							end
+							
+							local nCities = {}
+							for i, j in pairs(newl.regions) do for k, l in pairs(j.cities) do table.insert(nCities, k) end end
+							
+							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then
+								local added = false
+								for j=1,#nCities do if not added and c.people[i].city == nCities then
+									newl:add(parent, c.people[i])
+									added = true
+								end end
+							end end
 
 							parent.thisWorld:add(newl)
 							parent:getAlphabetical()
@@ -557,6 +568,10 @@ return
 
 							newl:checkRuler(parent, true)
 							parent.thisWorld.mapChanged = true
+							
+							nc.subregions = nil
+							nc.cities = nil
+							parent:deepnil(nc)
 						end
 
 						return -1
@@ -1119,7 +1134,7 @@ return
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
 			popLimit = 2000,
-			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},
+			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
