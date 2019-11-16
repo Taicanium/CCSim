@@ -139,7 +139,7 @@ return
 					if math.random(1, 10) == math.random(1, 10) then
 						for neighbor=1,#self.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
-							if not self.planet[nx][ny][nz].land and math.random(1, 10) == math.random(1, 10) then
+							if not self.planet[nx][ny][nz].land and math.random(1, 8) == math.random(1, 8) then
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
