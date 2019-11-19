@@ -5,6 +5,7 @@ return
 				local o = {}
 				setmetatable(o, self)
 
+				o.addedToPop = false
 				o.age = 0
 				o.ancName = ""
 				o.birth = 0
@@ -222,9 +223,14 @@ return
 			end,
 
 			update = function(self, parent, nl)
+				local t0 = _time()
+				
 				if not self.def then return end
 
-				local t0 = _time()
+				if not self.addedToPop then
+					parent.popCount = parent.popCount+1
+					self.addedToPop = true
+				end
 
 				self.age = parent.years-self.birth
 				if self.birth <= -1 then self.age = self.age-1 end
