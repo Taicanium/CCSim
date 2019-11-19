@@ -1133,6 +1133,7 @@ return
 				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty"},
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum"},
 			},
+			popCount = 0,
 			popLimit = 2000,
 			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"jb", "b"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"iusy", "ia"}},
 			royals = {},
@@ -1715,7 +1716,7 @@ return
 						table.insert(self.final, cp)
 					end
 
-					msg = ("Year %d: %d countries - Global Population %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop)
+					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (kB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count"))
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
@@ -2289,6 +2290,7 @@ return
 						t.writeGed = -1
 						if p then t.writeGed = 1 end
 						if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
+						if not t.father and not t.mother then if not t.children or #t.children == 0 then t.writeGed = -1 end end
 						if t.writeGed == 1 then
 							if t.father and t.mother then
 								local fKey = t.father.gString..":"..t.mother.gString
