@@ -30,7 +30,6 @@ return
 	function()
 		local CCSCommon = {
 			alpha = {},
-			alphaOrder = {a=1, b=2, c=3, d=4, e=5, f=6, g=7, h=8, i=9, j=10, k=11, l=12, m=13, n=14, o=15, p=16, q=17, r=18, s=19, t=20, u=21, v=22, w=23, x=24, y=25, z=26},
 			c_events = {
 				{
 					name="Alliance",
@@ -1135,7 +1134,7 @@ return
 			},
 			popCount = 0,
 			popLimit = 2000,
-			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"jb", "b"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"iusy", "ia"}},
+			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"jb", "b"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"tyan", "tan"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"iusy", "ia"}},
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
@@ -1297,34 +1296,7 @@ return
 				UI:printf("Printing result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
 
-				local cKeys = {}
-				for i, j in pairs(self.final) do
-					if #cKeys ~= 0 then
-						local found = false
-						for k=1,#cKeys do if cKeys[k] and not found then
-							local ind = 1
-							local chr1 = self.alphaOrder[cKeys[k]:sub(ind, ind):lower()]
-							local chr2 = self.alphaOrder[j.name:sub(ind, ind):lower()]
-							while chr2 == chr1 do
-								ind = ind+1
-								chr1 = self.alphaOrder[cKeys[k]:sub(ind, ind):lower()]
-								chr2 = self.alphaOrder[j.name:sub(ind, ind):lower()]
-							end
-							if not chr1 then
-								table.insert(cKeys, k+1, j.name)
-								found = true
-							elseif not chr2 then
-								table.insert(cKeys, k, j.name)
-								found = true
-							elseif chr2 < chr1 then
-								table.insert(cKeys, k, j.name)
-								found = true
-							end
-						end end
-						if not found then table.insert(cKeys, j.name) end
-					else table.insert(cKeys, j.name) end
-				end
-
+				local cKeys = self:getAlphabetical(self.final)
 				for i=1,#cKeys do
 					local cp = nil
 					for j, k in pairs(self.final) do if k.name == cKeys[i] then cp = k end end
@@ -1565,7 +1537,6 @@ return
 				local cDone = 0
 
 				for i, cp in pairs(self.thisWorld.countries) do if cp then self.numCountries = self.numCountries+1 end end
-
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
 						if #cp.rulers > 0 then
@@ -1630,12 +1601,12 @@ return
 						local found = false
 						for j=1,#cKeys do if not found then
 							local ind = 1
-							local chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-							local chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
+							local chr1 = string.byte(cKeys[j]:sub(ind, ind):lower())
+							local chr2 = string.byte(i:sub(ind, ind):lower())
 							while chr1 and chr2 and chr2 == chr1 do
 								ind = ind+1
-								chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
-								chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
+								chr1 = string.byte(cKeys[j]:sub(ind, ind):lower())
+								chr2 = string.byte(i:sub(ind, ind):lower())
 							end
 							if not chr1 then
 								table.insert(cKeys, j+1, i)

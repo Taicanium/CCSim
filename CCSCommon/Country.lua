@@ -89,33 +89,45 @@ return
 			--    2: This country borders the specified other country directly.
 			borders = function(self, parent, other)
 				if not other then return 0 end
-				local border = 0
-				for i=1,#parent.thisWorld.planetdefined do
-					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-					local node1 = parent.thisWorld.planet[x][y][z]
-					if node1.country == self.name and border < 2 then
-						for j=1,#node1.neighbors do
-							local x2, y2, z2 = table.unpack(node1.neighbors[j])
-							local node2 = parent.thisWorld.planet[x2][y2][z2]
-							if node2.country == other.name then return 2 end
-							if node2.land == false and border < 1 then border = 1 end
-						end
-					end
-				end
-				if border == 1 then
-					border = 0
-					for i=1,#parent.thisWorld.planetdefined do
-						local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-						local node1 = parent.thisWorld.planet[x][y][z]
-						if node1.country == other.name then
-							for j=1,#node1.neighbors do
-								local x2, y2, z2 = table.unpack(node1.neighbors[j])
-								local node2 = parent.thisWorld.planet[x2][y2][z2]
-								if node2.land == false then return 1 end
+				local selfWater = -1
+				local otherWater = -1
+				local otherLand = -1
+				
+				selfWater = 0
+				for i=1,#self.nodes do
+					local x, y, z = table.unpack(self.nodes[i])
+					if parent.thisWorld.planet[x][y][z].country == self.name then
+						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+							local nx, ny, nz = table.unpack(self.nodes[i])
+							if parent.thisWorld.planet[nx][ny][nz].land == false then
+								selfWater = 1
+							elseif parent.thisWorld.planet[nx][ny][nz].country == other.name then
+								otherLand = 1
+								i = #self.nodes
 							end
 						end
 					end
 				end
+				
+				if otherLand == 1 then return 2 end
+				
+				otherWater = 0
+				for i=1,#other.nodes do
+					local x, y, z = table.unpack(other.nodes[i])
+					if parent.thisWorld.planet[x][y][z][identifier] == other.name then
+						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+							local nx, ny, nz = table.unpack(other.nodes[i])
+							if parent.thisWorld.planet[nx][ny][nz].land == false then otherWater = 1
+							elseif parent.thisWorld.planet[nx][ny][nz].country == self.name then
+								otherLand = 1
+								i = #other.nodes
+							end
+						end
+					end
+				end
+				
+				if otherLand == 1 then return 2
+				elseif selfWater == 1 and otherWater == 1 then return 1 end
 
 				return 0
 			end,

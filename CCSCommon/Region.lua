@@ -5,6 +5,7 @@ return
 				local o = {}
 				setmetatable(o, self)
 
+				o.waterBorder = -1
 				o.cities = {}
 				o.name = ""
 				o.nodes = {}
@@ -20,44 +21,58 @@ return
 			--    3: This region borders the specified country directly.
 			--    4: This region borders the specified region directly.
 			borders = function(self, parent, other)
-				if not other then return 0 end
-				local border = 0
-				for i=1,#parent.thisWorld.planetdefined do
-					local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-					local node1 = parent.thisWorld.planet[x][y][z]
-					if node1.region == self.name then
-						for j=1,#node1.neighbors do
-							local x2, y2, z2 = table.unpack(node1.neighbors[j])
-							local node2 = parent.thisWorld.planet[x2][y2][z2]
-							if node2.region == other.name then return 4 end
-							if node2.country == other.name then return 3 end
-							if node2.land == false and border < 2 then border = 2 end
-						end
-					end
-				end
-				if border == 2 then
-					for i=1,#parent.thisWorld.planetdefined do
-						local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-						local node1 = parent.thisWorld.planet[x][y][z]
-						if node1.region == other.name or node1.country == other.name then
-							for j=1,#node1.neighbors do
-								local x2, y2, z2 = table.unpack(node1.neighbors[j])
-								local node2 = parent.thisWorld.planet[x2][y2][z2]
-								if node2.land == false then
-									if node1.region == other.name then return 2 end
-									if node1.country == other.name then return 1 end
+				if not other or not other.nodes or type(other.nodes) ~= "table" or #other.nodes == 0 then return 0 end
+				local otherWater = -1
+				local otherLand = -1
+				local identifier = "region"
+				if other.events then identifier = "country" end
+				
+				if self.waterBorder == -1 then
+					self.waterBorder = 0
+					for i=1,#self.nodes do
+						local x, y, z = table.unpack(self.nodes[i])
+						if parent.thisWorld.planet[x][y][z].region == self.name then
+							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+								local nx, ny, nz = table.unpack(self.nodes[i])
+								if parent.thisWorld.planet[nx][ny][nz].land == false then self.waterBorder = 1
+								elseif parent.thisWorld.planet[nx][ny][nz][identifier] == other.name then
+									otherLand = 1
+									i = #self.nodes
 								end
 							end
 						end
 					end
 				end
+				
+				if otherLand == 1 then
+					if identifier == "region" then return 4
+					elseif identifier == "country" then return 3 end
+				end
+				
+				otherWater = 0
+				for i=1,#other.nodes do
+					local x, y, z = table.unpack(other.nodes[i])
+					if parent.thisWorld.planet[x][y][z][identifier] == other.name then
+						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+							local nx, ny, nz = table.unpack(other.nodes[i])
+							if parent.thisWorld.planet[nx][ny][nz].land == false then otherWater = 1
+							elseif parent.thisWorld.planet[nx][ny][nz].region == self.name then
+								otherLand = 1
+								i = #other.nodes
+							end
+						end
+					end
+				end
+				
+				if otherLand == 1 then
+					if identifier == "region" then return 4
+					elseif identifier == "country" then return 3 end
+				elseif otherWater == 1 and self.waterBorder == 1 then
+					if identifier == "region" then return 2
+					elseif identifier == "country" then return 1 end
+				end
 
 				return 0
-			end,
-
-			destroy = function(self, parent)
-				parent:deepnil(self.nodes)
-				self.population = 0
 			end,
 
 			makename = function(self, country, parent)
