@@ -1632,7 +1632,7 @@ return
 							local ind = 1
 							local chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
 							local chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
-							while chr2 == chr1 do
+							while chr1 and chr2 and chr2 == chr1 do
 								ind = ind+1
 								chr1 = self.alphaOrder[cKeys[j]:sub(ind, ind):lower()]
 								chr2 = self.alphaOrder[i:sub(ind, ind):lower()]
