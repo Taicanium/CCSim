@@ -217,7 +217,7 @@ return
 				self.relations = nil
 
 				for i, j in pairs(parent.final) do if j.name == self.name then parent.final[i] = nil end end
-				table.insert(parent.final, self)
+				parent.final[self.name] = self
 			end,
 
 			event = function(self, parent, e)
