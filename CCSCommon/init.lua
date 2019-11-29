@@ -1601,12 +1601,12 @@ return
 						local found = false
 						for j=1,#cKeys do if not found then
 							local ind = 1
-							local chr1 = string.byte(cKeys[j]:sub(ind, ind):lower())
-							local chr2 = string.byte(i:sub(ind, ind):lower())
+							local chr1 = string.byte(tostring(cKeys[j]):sub(ind, ind):lower())
+							local chr2 = string.byte(tostring(i):sub(ind, ind):lower())
 							while chr1 and chr2 and chr2 == chr1 do
 								ind = ind+1
-								chr1 = string.byte(cKeys[j]:sub(ind, ind):lower())
-								chr2 = string.byte(i:sub(ind, ind):lower())
+								chr1 = string.byte(tostring(cKeys[j]):sub(ind, ind):lower())
+								chr2 = string.byte(tostring(i):sub(ind, ind):lower())
 							end
 							if not chr1 then
 								table.insert(cKeys, j+1, i)
