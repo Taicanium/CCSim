@@ -1552,7 +1552,7 @@ return
 						cp:makename(self, 3)
 						if _DEBUG then cp:setPop(self, 100) else cp:setPop(self, 300) end
 
-						table.insert(self.final, cp)
+						self.final[cp.name] = cp
 					end
 
 					cDone = cDone+1
@@ -1684,7 +1684,7 @@ return
 
 					for i, cp in pairs(self.thisWorld.countries) do
 						for j, k in pairs(self.final) do if k.name == cp.name then self.final[j] = nil end end
-						table.insert(self.final, cp)
+						self.final[cp.name] = cp
 					end
 
 					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (kB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count"))
