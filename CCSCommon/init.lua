@@ -1946,41 +1946,45 @@ return
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
-							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, nomlower:len()) end
-							if nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
+							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
 						end
 
 						if nomlower:sub(nomlower:len(), nomlower:len()) == self.consonants[j] then
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "b" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "c" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "d" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "f" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "g" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "h" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "k" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "m" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "n" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "p" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "s" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "t" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "b" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "c" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "d" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "f" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "g" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "k" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "m" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "n" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "p" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "s" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "t" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
+					
+					if nomlower:sub(nomlower:len(), nomlower:len()) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1)
+					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
+					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 
 					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
 
