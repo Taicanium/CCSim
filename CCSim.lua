@@ -43,6 +43,7 @@ function gedReview(f)
 		split = nil
 	end
 
+	UI:printl(string.format("%d People, %d Families", ic, fc))
 	fi = 1
 	f:seek("set")
 	UI:printf("\nLoading GEDCOM data...")
