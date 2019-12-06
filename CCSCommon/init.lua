@@ -1804,7 +1804,7 @@ return
 
 				local nom = ""
 				local length = 0
-				length = math.random(m or 1, l or 2)
+				length = math.random(m or 1, l or personal and 3 or 2)
 
 				local taken = {}
 				nom = self:randomChoice(self.initialgroups)
