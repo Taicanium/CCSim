@@ -214,8 +214,8 @@ return
 			eventloop = function(self, parent)
 				local t0 = _time()
 
-				local v = math.floor(math.random(40, 100)*self.stability)
-				local vi = math.floor(math.random(40, 100)*(100-self.stability))
+				local v = math.floor(math.random(10, 25)*self.stability)
+				local vi = math.floor(math.random(10, 25)*(101-self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
