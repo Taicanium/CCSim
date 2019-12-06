@@ -625,12 +625,6 @@ return
 					if not found then table.remove(self.alliances, i) end
 				end
 
-				for i, j in pairs(self.relations) do
-					local found = false
-					for k, cp in pairs(parent.thisWorld.countries) do if cp.name == self.name then found = true end end
-					if not found then self.relations[i] = nil end
-				end
-
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 					self.relations[cp.name] = self.relations[cp.name]+((math.random()-0.4)/2)+math.random(-3, 3)
