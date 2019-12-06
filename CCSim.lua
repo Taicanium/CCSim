@@ -557,8 +557,27 @@ function testGlyphs()
 	bf = nil
 end
 
+function testNames()
+	local f = io.open("names.txt", "w+")
+	if not f then return end
+	for i=1,10 do
+		f:write(string.format(" -- LENGTH %d, PERSONAL --", i))
+		for j=1,10 do f:write(string.format("\n%s", CCSCommon:name(true, i, i))) end
+		f:write(string.format("\n\n -- LENGTH %d, IMPERSONAL --", i))
+		for j=1,10 do f:write(string.format("\n%s", CCSCommon:name(false, i, i))) end
+		f:write("\n\n")
+	end
+	f:flush()
+	f:close()
+	f = nil
+end
+
 function main()
-	if _DEBUG then testGlyphs() end
+	if _DEBUG then
+		CCSCommon:rseed()
+		testGlyphs()
+		testNames()
+	end
 	while _RUNNING do
 		UI:clear()
 		UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
