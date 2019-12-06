@@ -1676,7 +1676,7 @@ return
 				if self.doMaps then os.execute("mkdir "..mapDir) end
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
-				collectgarbage()
+				collectgarbage("collect")
 
 				while _running do
 					local t0 = _time()
