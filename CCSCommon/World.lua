@@ -613,14 +613,21 @@ return
 				rArr = nil
 				extended = nil
 				tCols = nil
+				extCols = nil
 				colorKeys = nil
 				bmpArr = nil
 				tColWidths = nil
 				leaders = nil
+				
+				local t1 = _time()
+				collectgarbage("collect")
+				local t2 = _time()
 
 				if _DEBUG then
 					if not debugTimes["World.mapOutput"] then debugTimes["World.mapOutput"] = 0 end
+					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
 					debugTimes["World.mapOutput"] = debugTimes["World.mapOutput"]+_time()-t0
+					debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t2-t1
 				end
 			end,
 
@@ -768,9 +775,12 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 35) == 0 then collectgarbage() end
+				if math.fmod(parent.years, 35) == 0 then collectgarbage("collect") end
 				local t3 = _time()
-				debugTimes["GARBAGE"] = t3-t2
+				if _DEBUG then
+					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
+					debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t3-t2
+				end
 			end
 		}
 
