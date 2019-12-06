@@ -410,26 +410,13 @@ return
 				
 				local borderCol = -1
 				local extCols = {}
-				local oriented = {}
 				
 				-- Here, we determine the column of the map with the most amount of water; we will start writing the map to file at this point, so that there is minimal 'splitting' of any land masses.
 				for i=1,self.planetC do
 					extCols[i] = 0
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
 				end
-				
 				for i=1,self.planetC do if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end end
-				for i=1,#self.stretched do
-					oriented[i] = {}
-					local cCol = 1
-					local accCol = borderCol
-					while cCol < self.planetC do
-						oriented[i][cCol] = self.stretched[i][accCol]
-						cCol = cCol+1
-						accCol = accCol+1
-						if accCol > self.planetC then accCol = 1 end
-					end
-				end
 				
 				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
@@ -438,17 +425,30 @@ return
 				for i=1,columnCount do
 					extended[(i*2)-1] = {}
 					extended[i*2] = {}
-					for j=1,self.planetC+colSum do if oriented[i][j] then
-						extended[(i*2)-1][(j*2)-1] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
-						extended[(i*2)-1][j*2] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
-						extended[i*2][(j*2)-1] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
-						extended[i*2][j*2] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
-					else
+					local cCol = 1
+					local accCol = borderCol
+					while cCol <= self.planetC do
+						if self.stretched[i][accCol] then
+							extended[(i*2)-1][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
+							extended[(i*2)-1][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
+							extended[i*2][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
+							extended[i*2][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
+						else
+							extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+							extended[(i*2)-1][cCol*2] = {0, 0, 0}
+							extended[i*2][(cCol*2)-1] = {0, 0, 0}
+							extended[i*2][cCol*2] = {0, 0, 0}
+						end
+						cCol = cCol+1
+						accCol = accCol+1
+						if accCol > self.planetC then accCol = 1 end
+					end
+					for j=self.planetC+1,self.planetC+colSum do
 						extended[(i*2)-1][(j*2)-1] = {0, 0, 0}
 						extended[(i*2)-1][j*2] = {0, 0, 0}
 						extended[i*2][(j*2)-1] = {0, 0, 0}
 						extended[i*2][j*2] = {0, 0, 0}
-					end end
+					end
 				end
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
@@ -612,7 +612,6 @@ return
 				hArr = nil
 				rArr = nil
 				extended = nil
-				oriented = nil
 				tCols = nil
 				colorKeys = nil
 				bmpArr = nil
