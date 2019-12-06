@@ -91,43 +91,30 @@ return
 				if not other then return 0 end
 				local selfWater = -1
 				local otherWater = -1
-				local otherLand = -1
 				
-				selfWater = 0
 				for i=1,#self.nodes do
 					local x, y, z = table.unpack(self.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == self.name then
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].land == false then
-								selfWater = 1
-							elseif parent.thisWorld.planet[nx][ny][nz].country == other.name then
-								otherLand = 1
-								i = #self.nodes
-							end
+							if parent.thisWorld.planet[nx][ny][nz].land == false then selfWater = 1
+							elseif parent.thisWorld.planet[nx][ny][nz].country == other.name then return 2 end
 						end
 					end
 				end
 				
-				if otherLand == 1 then return 2 end
-				
-				otherWater = 0
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
-					if parent.thisWorld.planet[x][y][z][identifier] == other.name then
+					if parent.thisWorld.planet[x][y][z].country == other.name then
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(other.nodes[i])
 							if parent.thisWorld.planet[nx][ny][nz].land == false then otherWater = 1
-							elseif parent.thisWorld.planet[nx][ny][nz].country == self.name then
-								otherLand = 1
-								i = #other.nodes
-							end
+							elseif parent.thisWorld.planet[nx][ny][nz].country == self.name then return 2 end
 						end
 					end
 				end
 				
-				if otherLand == 1 then return 2
-				elseif selfWater == 1 and otherWater == 1 then return 1 end
+				if selfWater == 1 and otherWater == 1 then return 1 end
 
 				return 0
 			end,
@@ -227,8 +214,8 @@ return
 			eventloop = function(self, parent)
 				local t0 = _time()
 
-				local v = math.floor(math.random(50, 110)*self.stability)
-				local vi = math.floor(math.random(50, 110)*(100-self.stability))
+				local v = math.floor(math.random(40, 100)*self.stability)
+				local vi = math.floor(math.random(40, 100)*(100-self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
