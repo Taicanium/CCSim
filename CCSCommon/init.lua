@@ -1687,7 +1687,7 @@ return
 						self.final[cp.name] = cp
 					end
 
-					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (kB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count"))
+					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
