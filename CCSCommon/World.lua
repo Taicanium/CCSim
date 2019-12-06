@@ -407,6 +407,30 @@ return
 					if nameLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = nameLen+1 end
 					if rulerLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen+1 end
 				end
+				
+				local borderCol = -1
+				local extCols = {}
+				local oriented = {}
+				
+				-- Here, we determine the column of the map with the most amount of water; we will start writing the map to file at this point, so that there is minimal 'splitting' of any land masses.
+				for i=1,self.planetC do
+					extCols[i] = 0
+					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
+				end
+				
+				for i=1,self.planetC do if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end end
+				for i=1,#self.stretched do
+					oriented[i] = {}
+					local cCol = 1
+					local accCol = borderCol
+					while cCol < self.planetC do
+						oriented[i][cCol] = self.stretched[i][accCol]
+						cCol = cCol+1
+						accCol = accCol+1
+						if accCol > self.planetC then accCol = 1 end
+					end
+				end
+				
 				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
 				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (10 total pixels of padding+the max character length*8 pixels per character) per column.
@@ -414,11 +438,11 @@ return
 				for i=1,columnCount do
 					extended[(i*2)-1] = {}
 					extended[i*2] = {}
-					for j=1,self.planetC+colSum do if self.stretched[i][j] then
-						extended[(i*2)-1][(j*2)-1] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
-						extended[(i*2)-1][j*2] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
-						extended[i*2][(j*2)-1] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
-						extended[i*2][j*2] = {self.stretched[i][j][1], self.stretched[i][j][2], self.stretched[i][j][3]}
+					for j=1,self.planetC+colSum do if oriented[i][j] then
+						extended[(i*2)-1][(j*2)-1] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
+						extended[(i*2)-1][j*2] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
+						extended[i*2][(j*2)-1] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
+						extended[i*2][j*2] = {oriented[i][j][1], oriented[i][j][2], oriented[i][j][3]}
 					else
 						extended[(i*2)-1][(j*2)-1] = {0, 0, 0}
 						extended[(i*2)-1][j*2] = {0, 0, 0}
@@ -558,7 +582,7 @@ return
 				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
 				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
 
-				for y=self.planetD,1,-1 do
+				for y=self.planetD,1,-1 do -- Bottom-to-top, as required by BMP.
 					local btWritten = 0
 					for x=1,totalC do
 						if extended[y] and extended[y][x] then
@@ -571,6 +595,7 @@ return
 							bf:write(string.char(0))
 						end
 						btWritten = btWritten+3
+						
 					end
 					while math.fmod(btWritten, 4) ~= 0 do
 						bf:write(string.char(0))
@@ -587,6 +612,7 @@ return
 				hArr = nil
 				rArr = nil
 				extended = nil
+				oriented = nil
 				tCols = nil
 				colorKeys = nil
 				bmpArr = nil
