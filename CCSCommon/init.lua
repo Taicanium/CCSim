@@ -1804,7 +1804,7 @@ return
 
 				local nom = ""
 				local length = 0
-				if not l or l < 2 then length = math.random(2, 3) else length = math.random(2, l) end
+				if not l or l < 2 then length = math.random(1, 3) else length = math.random(1, l) end
 
 				local taken = {}
 				nom = self:randomChoice(self.initialgroups)
