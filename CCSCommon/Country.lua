@@ -263,7 +263,7 @@ return
 				if not self.name or self.name == "" then
 					local found = true
 					while found do
-						self.name = parent:name(false)
+						self.name = parent:name(false, 2)
 						found = false
 						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") then found = true end end
 					end
@@ -321,7 +321,7 @@ return
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
-				self:makename(parent, 3)
+				self:makename(parent)
 				self.agPrim = parent:randomChoice({true, false})
 
 				if self.population <= 1 then if _DEBUG then self:setPop(parent, 150) else self:setPop(parent, math.random(750, 1500)) end end
