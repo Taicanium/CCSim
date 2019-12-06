@@ -233,7 +233,10 @@ return
 				if vi < 1 then vi = 1 end
 
 				if not self.ongoing then self.ongoing = {} end
-				if not self.relations then self.relations = {} end
+				if not self.relations then
+					self.relations = {}
+					for i, j in pairs(parent.thisWorld.countries) do if j.name ~= self.name then self.relations[j.name] = 50 end end
+				end
 
 				for i=#self.ongoing,1,-1 do
 					if self.ongoing[i] and self.ongoing[i].args > 1 then
