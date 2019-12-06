@@ -1799,12 +1799,12 @@ return
 				UI:printf("\nEnd Simulation!")
 			end,
 
-			name = function(self, personal, l)
+			name = function(self, personal, l, m)
 				local t0 = _time()
 
 				local nom = ""
 				local length = 0
-				if not l or l < 2 then length = math.random(1, 3) else length = math.random(1, l) end
+				length = math.random(m or 1, l or 2)
 
 				local taken = {}
 				nom = self:randomChoice(self.initialgroups)
@@ -2244,18 +2244,16 @@ return
 			end,
 
 			rseed = function(self)
-				local tc = _time()
+				local t0 = _time()
+				local tc = _stamp()
 				local ts = tostring(tc)
 				local n = tonumber(ts:reverse())
-				if not n then n = _time() end
-				while n < 100000 do n = n*math.floor(math.random(5, math.random(177, 177000))) end
-				while n > 1000000000 do n = n/math.floor(math.random(5, math.random(177, 177000))) end
-				math.randomseed(math.ceil(n))
-				for i=1,3 do math.random(1, 100) end
+				if not n then n = _stamp() end
+				math.randomseed(n)
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.rseed"] then debugTimes["CCSCommon.rseed"] = 0 end
-					debugTimes["CCSCommon.rseed"] = debugTimes["CCSCommon.rseed"]+_time()-tc
+					debugTimes["CCSCommon.rseed"] = debugTimes["CCSCommon.rseed"]+_time()-t0
 				end
 			end,
 
