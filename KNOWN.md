@@ -8,9 +8,7 @@ https://i.imgur.com/Wrp2WMD.png - In this graph, red lines represent memory usag
 
 # Possible Features
 
-Add current system and ruler to the legend of the BMP maps?
-
-Package Curses and LuaSocket with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
+Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
 
 Per the above, perhaps create an install script for CCSim that would handle determining the resident OS and downloading the dependencies accordingly.
 

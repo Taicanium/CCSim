@@ -19,7 +19,7 @@ return
 					self.stdscr:clear()
 					self.stdscr:move(0, 0)
 					if not holdRef then self:refresh() end
-				else for i=1,3 do os.execute(self.clrcmd) end end
+				else for i=1,2 do os.execute(self.clrcmd) end end
 			end,
 
 			init = function(self)

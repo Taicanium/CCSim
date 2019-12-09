@@ -6,15 +6,12 @@ if not table.unpack then table.unpack = function(t, n)
 end end
 if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
 
-socketstatus, socket = pcall(require, "socket")
 cursesstatus, curses = pcall(require, "curses")
 
 _time = os.clock
-if _time() > 15 then _time = os.time end
-if socketstatus then _time = socket.gettime end
 _stamp = os.time
+if _time() > 15 then _time = os.time end
 if _stamp() < 15 then _stamp = os.clock end
-if socketstatus then _stamp = socket.gettime end
 
 debugTimes = {}
 
@@ -1777,8 +1774,6 @@ return
 					self.writeMap = false
 					self.thisWorld.mapChanged = false
 
-					UI:clear(true)
-
 					if _DEBUG then
 						msg = msg.."\n"
 						debugTimes["PRINT"] = t1-t0
@@ -1786,6 +1781,7 @@ return
 						for ln, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end
 					end
 
+					UI:clear(true)
 					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do UI:printc(sx) end
 					UI:refresh()
 
