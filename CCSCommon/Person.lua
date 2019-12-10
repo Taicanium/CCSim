@@ -94,7 +94,13 @@ return
 				elseif self.spouse.gender == "Female" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
 
 				local nn = Person:new()
-				nn:makename(parent, nl)
+				local nFound = true
+				while nFound do
+					nn:makename(parent, nl)
+					nFound = false
+					for i, j in pairs(self.children) do if j.name == nn.name then nFound = true end end
+					for i, j in pairs(self.spouse.children) do if j.name == nn.name then nFound = true end end
+				end
 
 				if self.gender == "Male" then
 					nn.surname = self.surname

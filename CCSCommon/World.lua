@@ -740,7 +740,7 @@ return
 
 					if cp.population < 20 then
 						cp:event(parent, "Disappeared")
-						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true) end end
+						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true, parent:randomChoice(self.countries)) end end
 					end
 
 					local defCount = 0

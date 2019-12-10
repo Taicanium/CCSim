@@ -214,8 +214,8 @@ return
 			eventloop = function(self, parent)
 				local t0 = _time()
 
-				local v = math.floor(math.random(20, 45)*self.stability)
-				local vi = math.floor(math.random(20, 45)*(101-self.stability))
+				local v = math.floor(math.random(50, 90)*self.stability)
+				local vi = math.floor(math.random(50, 90)*(101-self.stability))
 				if v < 1 then v = 1 end
 				if vi < 1 then vi = 1 end
 
@@ -575,8 +575,10 @@ return
 						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
 					end
 
-					if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
-					else newE:beginEvent(parent, self, other) end
+					if self.ongoing then
+						if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
+						else newE:beginEvent(parent, self, other) end
+					end
 				end
 			end,
 
@@ -585,7 +587,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
-				self.stability = self.stability+((math.random()-0.4)/2)+math.random(-2, 2)
+				self.stability = self.stability+((math.random()-0.35)/2)+math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 
