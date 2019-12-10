@@ -618,8 +618,9 @@ return
 				end
 
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
+					if not self.relations then self.relations = {} end
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
-					self.relations[cp.name] = self.relations[cp.name]+((math.random()-0.4)/2)+math.random(-3, 3)
+					self.relations[cp.name] = self.relations[cp.name]+((math.random()-0.45)/2)+math.random(-3, 3)
 					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1
 					elseif self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 				end end
