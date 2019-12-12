@@ -295,7 +295,7 @@ return
 
 				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 8) == 4 then
 					local m = parent:randomChoice(nl.people)
-					if m.def and not m.spouse and self.gender ~= m.gender then
+					if m.def and m.age > 15 and not m.spouse and self.gender ~= m.gender then
 						local found = false
 						if self.surname == m.surname then found = true end
 						if not found then for i, j in pairs(self.children) do
@@ -364,7 +364,7 @@ return
 				else
 					if self.age < 35 then
 						local threshold = 5
-						for j=1,#nl.ongoing do if nl.ongoing[j].name == "War" then threshold = 25 end end
+						for j=1,#nl.ongoing do if nl.ongoing[j].name:match("War") then threshold = 25 end end
 						if math.random(1, 250) < threshold then
 							self.military = true
 							self.militaryTraining = 0
