@@ -1890,10 +1890,10 @@ return
 				return strOut
 			end,
 
-			finish = function(self)
-				UI:clear()
+			finish = function(self, destroy)
+				if destroy then UI:clear() end
 
-				UI:printf("Printing result...")
+				UI:printf("\nPrinting result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
 
 				local cKeys = self:getAlphabetical(self.final)
@@ -1939,7 +1939,6 @@ return
 						end
 
 						of:write("\n\n\n")
-						of:flush()
 					end
 				end
 
@@ -2393,11 +2392,15 @@ return
 					remainingYears = remainingYears-1
 					
 					while remainingYears <= 0 do
-						UI:printf("\nEnter a number of years to continue, or Q to exit.")
+						UI:printf("\nEnter a number of years to continue, or:")
+						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
+						UI:printf("R to record the output at this point.")
+						UI:printf("Q to exit.")
 						UI:printp("\n > ")
 						local datin = UI:readl()
 						if tonumber(datin) then remainingYears = tonumber(datin)
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
+						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
 							_running = false
 							remainingYears = 1
@@ -2406,7 +2409,7 @@ return
 				end
 
 				self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"}))
-				self:finish()
+				self:finish(true)
 
 				UI:printf("\nEnd Simulation!")
 			end,

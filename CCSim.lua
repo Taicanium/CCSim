@@ -18,7 +18,7 @@ function main()
 		if _DEBUG then UI:printf("\t-- DEBUG MODE ENABLED --\n\n") end
 		UI:printf("MAIN MENU\n\n1\t-\tBegin a new simulation.")
 		UI:printf("2\t-\tReview the output of a previous simulation.")
-		if _DEBUG then UI:printf("3\t-\tExecute a line of lua code.\n") end
+		if _DEBUG then UI:printf("3\t-\tExecute a line of Lua code.\n") end
 		UI:printf("Q\t-\tExit the program.")
 		UI:printp("\n > ")
 

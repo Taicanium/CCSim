@@ -79,7 +79,6 @@ return
 				if self.spouse then self.spouse.spouse = nil end
 				self.spouse = nil
 				self.title = nil
-				if self.royalGenerations == 0 then table.insert(parent.royals, self) end
 			end,
 
 			dobirth = function(self, parent, nl)

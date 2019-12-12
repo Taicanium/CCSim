@@ -405,6 +405,7 @@ return
 					self.people[newRuler].gString = self.people[newRuler].gender:sub(1, 1).." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
 
 					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
+					table.insert(parent.royals, self.people[newRuler])
 				else
 					table.insert(self.rulers, {dynastic=false, name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
