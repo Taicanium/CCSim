@@ -115,9 +115,15 @@ return
 			write = function(self, fmt)
 				if not self.ready then self:init() end
 				if self.stdscr then
-					self.stdscr:addstr(fmt)
+					if type(fmt) == "string" then self.stdscr:addstr(fmt)
+					elseif type(fmt) == "table" then for i, j in pairs(fmt) do self:write(j) end
+					else self.stdscr:addstr(tostring(fmt)) end
 					self:refresh()
-				else io.write(fmt) end
+				else
+					if type(fmt) == "string" then io.write(fmt)
+					elseif type(fmt) == "table" then for i, j in pairs(fmt) do self:write(j) end
+					else io.write(tostring(fmt)) end
+				end
 			end
 		}
 
