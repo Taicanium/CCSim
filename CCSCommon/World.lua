@@ -775,7 +775,7 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 35) == 0 then collectgarbage("collect") end
+				if math.fmod(parent.years, 20) == 0 then collectgarbage("collect") end
 				local t3 = _time()
 				if _DEBUG then
 					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
