@@ -613,10 +613,15 @@ function testNames(n)
 end
 
 function debugLine()
-	UI:printp("\n Debug line > ")
-	local datin = UI:readl()
-	local tmpF = loadstring(datin)
-	if tmpF then print(pcall(tmpF)) end
+	local tmpF = true
+	while tmpF do
+		UI:printp("\n Debug line > ")
+		datin = UI:readl()
+		if datin == "" then tmpF = false else
+			tmpF = loadstring(datin)
+			UI:printf(pcall(tmpF))
+		end
+	end
 end
 
 City = require("CCSCommon.City")()
@@ -2427,14 +2432,7 @@ return
 
 				local groups = 1
 				while groups < length do
-					local mid = ""
-					local istaken = true
-
-					while istaken do
-						istaken = false
-						mid = self:randomChoice(self.middlegroups)
-						for i=1,#taken do if taken[i] == mid:lower() then istaken = true end end
-					end
+					local mid = self:randomChoice(self.middlegroups)
 
 					nom = nom..mid:lower()
 					groups = groups+1
