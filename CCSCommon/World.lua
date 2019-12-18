@@ -101,7 +101,7 @@ return
 
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
-				
+
 				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
 				local freeNodes = {}

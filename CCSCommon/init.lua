@@ -929,43 +929,41 @@ return
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name or r then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name or r then return -1 end end
 
-						if r or c1.relations[c2.name] then
-							if r or c1.relations[c2.name] < 21 then
-								if not r then
-									c1:event(parent, "Conquered "..c2.name)
-									c2:event(parent, "Conquered by "..c1.name)
-								end
-
-								local newr = Region:new()
-								newr.name = c2.name
-
-								for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
-								c2.people = nil
-
-								for i, j in pairs(c2.regions) do
-									table.insert(newr.subregions, j)
-									for k, l in pairs(j.cities) do newr.cities[k] = l end
-								end
-
-								for i=1,#parent.thisWorld.planetdefined do
-									local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-									if parent.thisWorld.planet[x][y][z].country == c2.name then
-										parent.thisWorld.planet[x][y][z].country = c1.name
-										parent.thisWorld.planet[x][y][z].region = c2.name
-										table.insert(newr.nodes, {x, y, z})
-										table.insert(c1.nodes, {x, y, z})
-									end
-								end
-
-								c2.nodes = nil
-
-								c1.stability = c1.stability-3
-								if c1.stability < 1 then c1.stability = 1 end
-								if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-
-								c1.regions[c2.name] = newr
-								parent.thisWorld:delete(parent, c2)
+						if r or c1.relations[c2.name] and c1.relations[c2.name] < 21 and c1.strength > c2.strength then
+							if not r then
+								c1:event(parent, "Conquered "..c2.name)
+								c2:event(parent, "Conquered by "..c1.name)
 							end
+
+							local newr = Region:new()
+							newr.name = c2.name
+
+							for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
+							c2.people = nil
+
+							for i, j in pairs(c2.regions) do
+								table.insert(newr.subregions, j)
+								for k, l in pairs(j.cities) do newr.cities[k] = l end
+							end
+
+							for i=1,#parent.thisWorld.planetdefined do
+								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
+								if parent.thisWorld.planet[x][y][z].country == c2.name then
+									parent.thisWorld.planet[x][y][z].country = c1.name
+									parent.thisWorld.planet[x][y][z].region = c2.name
+									table.insert(newr.nodes, {x, y, z})
+									table.insert(c1.nodes, {x, y, z})
+								end
+							end
+
+							c2.nodes = nil
+
+							c1.stability = c1.stability-3
+							if c1.stability < 1 then c1.stability = 1 end
+							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
+
+							c1.regions[c2.name] = newr
+							parent.thisWorld:delete(parent, c2)
 						end
 
 						return -1
@@ -1255,7 +1253,7 @@ return
 				},
 				{
 					name="War",
-					chance=10,
+					chance=12,
 					target=nil,
 					args=2,
 					status=0,
@@ -1425,6 +1423,7 @@ return
 						for i=1,#c2.ongoing do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
 						if c1:borders(parent, c2) == 0 then return -1 end
 
+						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
 						if c1.relations[c2.name] and c1.relations[c2.name] < 30 then
 							self.target = c2
 							return 0

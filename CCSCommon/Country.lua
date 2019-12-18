@@ -110,7 +110,7 @@ return
 						end
 					end
 				end
-				
+
 				if selfWater and otherWater then return 1 end
 				return 0
 			end,
