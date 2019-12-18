@@ -294,7 +294,6 @@ return
 					end
 				end
 
-				if #self.unwrapped == 0 then self:unwrap() end
 				local columnCount = #self.unwrapped
 				self.colors = {}
 				local leaders = {}
