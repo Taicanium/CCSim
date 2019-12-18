@@ -95,10 +95,10 @@ return
 				for i=1,#self.nodes do
 					local x, y, z = table.unpack(self.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == self.name then
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then selfWater = 1 end
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].land == false then selfWater = 1
-							elseif parent.thisWorld.planet[nx][ny][nz].country == other.name then return 2 end
+							if parent.thisWorld.planet[nx][ny][nz].country == other.name then return 2 end
 						end
 					end
 				end
@@ -106,10 +106,10 @@ return
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == other.name then
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then otherWater = 1 end
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(other.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].land == false then otherWater = 1
-							elseif parent.thisWorld.planet[nx][ny][nz].country == self.name then return 2 end
+							if parent.thisWorld.planet[nx][ny][nz].country == self.name then return 2 end
 						end
 					end
 				end
