@@ -2034,7 +2034,6 @@ return
 					local cFam = {}
 					local cFamCount = 0
 					local cFamSort = {}
-					self.culledCount = 0
 					for i=1,#self.royals do
 						self:setDescent(self.royals[i], 0)
 						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
