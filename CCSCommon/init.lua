@@ -355,7 +355,7 @@ function simNew()
 	CCSCommon.doMaps = false
 	if datin:lower() == "y" then CCSCommon.doMaps = true end
 
-	UI:printp("\nDo you want to produce a GEDCOM file for royal lines (y/n)? > ")
+	UI:printp("\nDo you want to produce GEDCOM data for royal lines (y/n)? > ")
 	datin = UI:readl()
 
 	CCSCommon.doGed = false
