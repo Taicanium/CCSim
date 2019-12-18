@@ -89,7 +89,6 @@ return
 									mapWritten=false,
 									neighbors={}
 								}
-								table.insert(self.planetdefined, {x, y, z})
 							end
 							rdone = rdone+1
 						end
@@ -97,15 +96,12 @@ return
 					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
 				end
 
-				local planetSize = #self.planetdefined
-
-				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[i])
-					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then if dx ~= 0 or dy ~= 0 or dz ~= 0 then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
-				end
+				UI:printf("Unwrapping planet to data matrix...")
+				self:unwrap()
 
 				UI:printf("Defining land masses...")
-
+				local planetSize = #self.planetdefined
+				
 				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
 				local continents = math.random(10, 15)
 				local freeNodes = {}
@@ -162,12 +158,6 @@ return
 				end
 
 				parent:deepnil(freeNodes)
-
-				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[i])
-					self.planet[x][y][z].neighbors = {}
-					for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do if self.planet[x-dx] and self.planet[x-dx][y-dy] and self.planet[x-dx][y-dy][z-dz] then if dx ~= 0 or dy ~= 0 or dz ~= 0 then table.insert(self.planet[x][y][z].neighbors, {x-dx, y-dy, z-dz}) end end end end end
-				end
 
 				UI:printf("Rooting countries...")
 				local ci = 1
@@ -708,7 +698,12 @@ return
 					nextVox = false
 				end
 
-				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then self.planet[i][j][k].mapWritten = false end end end end end end
+				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then if not self.planet[i][j][k].mapWritten then self.planet[i][j][k] = nil end end end end end end end
+				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] then
+					for di=-1,1 do for dj=-1,1 do for dk=-1,1 do if di ~= 0 or dj ~= 0 or dk ~= 0 then if self.planet[i-di] and self.planet[i-di][j-dj] and self.planet[i-di][j-dj][k-dk] then table.insert(self.planet[i][j][k].neighbors, {i-di, j-dj, k-dk}) end end end end end
+					self.planet[i][j][k].mapWritten = false
+					table.insert(self.planetdefined, {i, j, k})
+				end end end end end end
 
 				if _DEBUG then
 					if not debugTimes["World.unwrap"] then debugTimes["World.unwrap"] = 0 end

@@ -5,7 +5,6 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.waterBorder = -1
 				o.cities = {}
 				o.name = ""
 				o.nodes = {}
@@ -15,63 +14,34 @@ return
 				return o
 			end,
 
-			-- [[ 0: No border of any kind.
-			--    1: This region borders the specified country over water.
-			--    2: This region borders the specified region over water.
-			--    3: This region borders the specified country directly.
-			--    4: This region borders the specified region directly.
 			borders = function(self, parent, other)
-				if not other or not other.nodes or type(other.nodes) ~= "table" or #other.nodes == 0 then return 0 end
-				local otherWater = -1
-				local otherLand = -1
-				local identifier = "region"
-				if other.events then identifier = "country" end
+				if not other or not other.nodes or type(other.nodes) ~= "table" then return 0 end
+				local selfWater = false
+				local otherWater = false
 
-				if self.waterBorder == -1 then
-					self.waterBorder = 0
-					for i=1,#self.nodes do
-						local x, y, z = table.unpack(self.nodes[i])
-						if parent.thisWorld.planet[x][y][z].region == self.name then
-							for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-								local nx, ny, nz = table.unpack(self.nodes[i])
-								if parent.thisWorld.planet[nx][ny][nz].land == false then self.waterBorder = 1
-								elseif parent.thisWorld.planet[nx][ny][nz][identifier] == other.name then
-									otherLand = 1
-									i = #self.nodes
-								end
-							end
+				for i=1,#self.nodes do
+					local x, y, z = table.unpack(self.nodes[i])
+					if parent.thisWorld.planet[x][y][z].region == self.name then
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then selfWater = true end
+						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
+							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
+							if parent.thisWorld.planet[nx][ny][nz].country == other.name or parent.thisWorld.planet[nx][ny][nz].region == other.name then return 1 end
 						end
 					end
 				end
 
-				if otherLand == 1 then
-					if identifier == "region" then return 4
-					elseif identifier == "country" then return 3 end
-				end
-
-				otherWater = 0
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
-					if parent.thisWorld.planet[x][y][z][identifier] == other.name then
+					if parent.thisWorld.planet[x][y][z].country == other.name or parent.thisWorld.planet[x][y][z].region == other.name then
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then otherWater = true end
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(other.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].land == false then otherWater = 1
-							elseif parent.thisWorld.planet[nx][ny][nz].region == self.name then
-								otherLand = 1
-								i = #other.nodes
-							end
+							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
+							if parent.thisWorld.planet[nx][ny][nz].region == self.name then return 1 end
 						end
 					end
 				end
 
-				if otherLand == 1 then
-					if identifier == "region" then return 4
-					elseif identifier == "country" then return 3 end
-				elseif otherWater == 1 and self.waterBorder == 1 then
-					if identifier == "region" then return 2
-					elseif identifier == "country" then return 1 end
-				end
-
+				if selfWater and otherWater then return 1 end
 				return 0
 			end,
 

@@ -1255,7 +1255,7 @@ return
 				},
 				{
 					name="War",
-					chance=12,
+					chance=10,
 					target=nil,
 					args=2,
 					status=0,

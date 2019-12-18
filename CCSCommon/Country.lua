@@ -84,38 +84,34 @@ return
 				self.population = #self.people
 			end,
 
-			-- [[ 0: No border of any kind.
-			--    1: This country borders the specified other country over water.
-			--    2: This country borders the specified other country directly.
 			borders = function(self, parent, other)
-				if not other then return 0 end
-				local selfWater = -1
-				local otherWater = -1
+				if not other or not other.nodes or type(other.nodes) ~= "table" then return 0 end
+				local selfWater = false
+				local otherWater = false
 
 				for i=1,#self.nodes do
 					local x, y, z = table.unpack(self.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == self.name then
-						if parent.thisWorld.planet[x][y][z].waterNeighbors then selfWater = 1 end
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then selfWater = true end
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(self.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].country == other.name then return 2 end
+							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
+							if parent.thisWorld.planet[nx][ny][nz].country == other.name or parent.thisWorld.planet[nx][ny][nz].region == other.name then return 1 end
 						end
 					end
 				end
 
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
-					if parent.thisWorld.planet[x][y][z].country == other.name then
-						if parent.thisWorld.planet[x][y][z].waterNeighbors then otherWater = 1 end
+					if parent.thisWorld.planet[x][y][z].country == other.name or parent.thisWorld.planet[x][y][z].region == other.name then
+						if parent.thisWorld.planet[x][y][z].waterNeighbors then otherWater = true end
 						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(other.nodes[i])
-							if parent.thisWorld.planet[nx][ny][nz].country == self.name then return 2 end
+							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
+							if parent.thisWorld.planet[nx][ny][nz].country == self.name then return 1 end
 						end
 					end
 				end
-
-				if selfWater == 1 and otherWater == 1 then return 1 end
-
+				
+				if selfWater and otherWater then return 1 end
 				return 0
 			end,
 
