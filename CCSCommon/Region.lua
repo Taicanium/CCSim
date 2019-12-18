@@ -26,7 +26,7 @@ return
 				local otherLand = -1
 				local identifier = "region"
 				if other.events then identifier = "country" end
-				
+
 				if self.waterBorder == -1 then
 					self.waterBorder = 0
 					for i=1,#self.nodes do
@@ -43,12 +43,12 @@ return
 						end
 					end
 				end
-				
+
 				if otherLand == 1 then
 					if identifier == "region" then return 4
 					elseif identifier == "country" then return 3 end
 				end
-				
+
 				otherWater = 0
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
@@ -63,7 +63,7 @@ return
 						end
 					end
 				end
-				
+
 				if otherLand == 1 then
 					if identifier == "region" then return 4
 					elseif identifier == "country" then return 3 end

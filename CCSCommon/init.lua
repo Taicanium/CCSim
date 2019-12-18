@@ -35,7 +35,7 @@ function gedReview(f)
 	local mi = 1
 	local matches = {}
 	local _REVIEWING = true
-	
+
 	if f then
 		UI:printf("\nCounting GEDCOM objects...")
 
@@ -180,7 +180,7 @@ function gedReview(f)
 		fc = CCSCommon.famCount
 		fi = CCSCommon:randomChoice(indi, true)
 	end
-	
+
 	while _REVIEWING do
 		UI:clear()
 		local i = indi[fi]
@@ -1434,8 +1434,10 @@ return
 					end
 				}
 			},
+			cIndi = {},
 			clrcmd = "",
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
+			culledCount = 0,
 			dirSeparator = "/",
 			disabled = {},
 			doGed = false,
@@ -1443,6 +1445,7 @@ return
 			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium"},
 			fam = {},
 			famCount = 0,
+			famCulled = {},
 			final = {},
 			genLimit = 3,
 			glyphs = {
@@ -1952,7 +1955,7 @@ return
 				of = nil
 
 				if self.doGed then
-					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
+					of = io.open(self:directory({self.stamp, "families.ged"}), "w+")
 					if not of then return end
 
 					local indiSorted = {}
@@ -2005,6 +2008,7 @@ return
 						end end
 						UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
 					end
+
 					of:flush()
 					UI:printf("Writing family data...")
 					for i=1,#famSorted do
@@ -2020,7 +2024,127 @@ return
 					of:write("\n0 TRLR")
 					of:flush()
 					of:close()
+
+					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
+					if not of then return end
+
+					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
+
+					UI:printf("Isolating royal descent lines...")
+					local cFam = {}
+					local cFamCount = 0
+					local cFamSort = {}
+					self.culledCount = 0
+					for i=1,#self.royals do
+						self:setDescent(self.royals[i], 0)
+						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
+					end
+
+					UI:printf("Sorting isolated individuals...")
+					for i=1,#self.cIndi do
+						self.cIndi[i].cFams = {}
+						self.cIndi[i].cFamc = 0
+					end
+					for i=1,#self.cIndi do
+						for j, k in pairs(self.cIndi[i].children) do if k.royalGenerations == 0 or k.ancRoyal and k.descRoyal then
+							local fString = ":"
+							local fat = false
+							local mot = false
+
+							if k.father then if k.father.royalGenerations == 0 or k.surname:match(k.father.surname) or k.father.ancRoyal and k.father.descRoyal then
+								fString = k.father.gString..fString
+								fat = true
+							end end
+							if k.mother then if k.mother.royalGenerations == 0 or k.surname:match(k.mother.surname) or k.mother.ancRoyal and k.mother.descRoyal then
+								fString = fString..k.mother.gString
+								mot = true
+							end end
+
+							if not cFam[fString] then
+								cFamCount = cFamCount+1
+								cFam[fString] = {fIndex=cFamCount, husb=nil, wife=nil, chil={}}
+								if fat then
+									table.insert(k.father.cFams, cFam[fString].fIndex)
+									cFam[fString].husb = k.father.cIndex
+								end
+								if mot then
+									table.insert(k.mother.cFams, cFam[fString].fIndex)
+									cFam[fString].wife = k.mother.cIndex
+								end
+							end
+
+							k.cFamc = cFam[fString].fIndex
+							local found = false
+							for l=1,#cFam[fString].chil do if cFam[fString].chil[l] == k.cIndex then found = true end end
+							if not found then table.insert(cFam[fString].chil, k.cIndex) end
+						end end
+						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
+					end
+
+					UI:printf("Sorting isolated families...")
+					local cfFinished = 0
+					for i, j in pairs(cFam) do
+						cFamSort[j.fIndex] = j
+						cfFinished = cfFinished+1
+						UI:printl(string.format("%.2f%% done", (cfFinished/cFamCount*10000)/100))
+					end
+
+					UI:printf("Writing individual data...")
+					for i=1,#self.cIndi do
+						local j = self.cIndi[i]
+						of:write("\n0 @I"..tostring(j.cIndex).."@ INDI\n1 NAME ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						of:write(" /"..j.surname:upper().."/")
+						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
+						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
+						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
+						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						if j.birth < 1 then of:write(" B.C.") end
+						of:write("\n2 PLAC "..j.birthplace)
+						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
+						for k=1,#j.cFams do if cFamSort[j.cFams[k]] then of:write("\n1 FAMS @F"..cFamSort[j.cFams[k]].fIndex.."@") end end
+						if cFamSort[j.cFamc] then of:write("\n1 FAMC @F"..cFamSort[j.cFamc].fIndex.."@") end
+						local nOne = true
+						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+							local fStr = ""
+							local dStr = tostring(math.fmod(l, 1))
+							if not nOne then fStr = "\n2 CONT %"
+							else
+								fStr = "\n1 NOTE %"
+								nOne = false
+							end
+							if dStr == "0" then fStr = fStr.."d%% %s"
+							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
+							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
+							of:write(string.format(fStr, l, k))
+						end end
+						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
+					end
+
+					of:flush()
+					UI:printf("Writing family data...")
+					for i=1,#cFamSort do
+						local j = cFamSort[i]
+						if j then
+							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n")
+							if j.husb and self.cIndi[j.husb] then of:write("1 HUSB @I"..tostring(self.cIndi[j.husb].cIndex).."@\n") end
+							if j.wife and self.cIndi[j.wife] then of:write("1 WIFE @I"..tostring(self.cIndi[j.wife].cIndex).."@\n") end
+							for k=1,#j.chil do if self.cIndi[j.chil[k]] then of:write("1 CHIL @I"..tostring(self.cIndi[j.chil[k]].cIndex).."@\n") end end
+							of:flush()
+						end
+						UI:printl(string.format("%.2f%% done", (i/#cFamSort*10000)/100))
+					end
+
+					of:write("0 TRLR\n")
+					of:flush()
+					of:close()
 					of = nil
+
+					cFam = nil
+					cFamCount = nil
+					cFamSort = nil
 				end
 			end,
 
@@ -2280,7 +2404,7 @@ return
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				local remainingYears = 1
-				
+
 				collectgarbage("collect")
 
 				while _running do
@@ -2395,7 +2519,7 @@ return
 
 					self.years = self.years+1
 					remainingYears = remainingYears-1
-					
+
 					while remainingYears <= 0 do
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
@@ -2594,7 +2718,7 @@ return
 							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
-					
+
 					if nomlower:sub(nomlower:len(), nomlower:len()) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1)
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
@@ -2867,6 +2991,34 @@ return
 				if _DEBUG then
 					if not debugTimes["CCSCommon.rseed"] then debugTimes["CCSCommon.rseed"] = 0 end
 					debugTimes["CCSCommon.rseed"] = debugTimes["CCSCommon.rseed"]+_time()-t0
+				end
+			end,
+
+			setDescent = function(self, t, a)
+				if t then
+					if t.descWrite > -1 then
+						if t.descWrite == 0 then t.descWrite = -1 end
+						if a == 0 then
+							self:setDescent(t.father, 1)
+							self:setDescent(t.mother, 1)
+							for i, j in pairs(t.children) do self:setDescent(j, -1) end
+						elseif a == 1 and not t.descRoyal then
+							t.descRoyal = true
+							self:setDescent(t.father, 1)
+							self:setDescent(t.mother, 1)
+						elseif a == -1 and not t.ancRoyal then
+							t.ancRoyal = true
+							for i, j in pairs(t.children) do self:setDescent(j, -1) end
+						end
+						if a == 0 or t.ancRoyal and t.descRoyal then if t.descWrite ~= 1 then
+							self.culledCount = self.culledCount+1
+							t.cIndex = self.culledCount
+							self.cIndi[t.cIndex] = t
+							t.descWrite = 1
+						end end
+					end
+
+					if t.descWrite == -1 then t.descWrite = 0 end
 				end
 			end,
 

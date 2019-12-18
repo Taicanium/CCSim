@@ -91,7 +91,7 @@ return
 				if not other then return 0 end
 				local selfWater = -1
 				local otherWater = -1
-				
+
 				for i=1,#self.nodes do
 					local x, y, z = table.unpack(self.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == self.name then
@@ -102,7 +102,7 @@ return
 						end
 					end
 				end
-				
+
 				for i=1,#other.nodes do
 					local x, y, z = table.unpack(other.nodes[i])
 					if parent.thisWorld.planet[x][y][z].country == other.name then
@@ -113,7 +113,7 @@ return
 						end
 					end
 				end
-				
+
 				if selfWater == 1 and otherWater == 1 then return 1 end
 
 				return 0
@@ -577,7 +577,10 @@ return
 					end
 
 					if self.ongoing then
-						if not newE.performEvent or newE:performEvent(parent, self, other, r) == -1 then table.remove(self.ongoing, #self.ongoing)
+						local res = -1
+						if newE.performEvent then res = newE:performEvent(parent, self, other, r) end
+						if not self.ongoing then return end
+						if res == -1 then table.remove(self.ongoing, #self.ongoing)
 						else newE:beginEvent(parent, self, other) end
 					end
 				end
@@ -588,7 +591,7 @@ return
 				parent:rseed()
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
-				self.stability = self.stability+((math.random()-0.35)/2)+math.random(-2, 2)
+				self.stability = self.stability+(math.random()-0.3)+math.random(-2, 2)
 				if self.stability > 100 then self.stability = 100 end
 				if self.stability < 1 then self.stability = 1 end
 

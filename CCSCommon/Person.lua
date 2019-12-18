@@ -8,14 +8,20 @@ return
 				o.addedToPop = false
 				o.age = 0
 				o.ancName = ""
+				o.ancRoyal = false
 				o.birth = 0
 				o.birthplace = ""
 				o.cbelief = 0
+				o.cFamc = 0
+				o.cFams = {}
 				o.children = {}
+				o.cIndex = 0
 				o.city = nil
 				o.death = 0
 				o.deathplace = ""
 				o.def = true -- A utility variable used to set whether this person has been destroyed.
+				o.descRoyal = false
+				o.descWrite = 0
 				o.ebelief = 0
 				o.ethnicity = {}
 				o.famc = ""
@@ -229,7 +235,7 @@ return
 
 			update = function(self, parent, nl)
 				local t0 = _time()
-				
+
 				if not self.def then return end
 
 				if not self.addedToPop then

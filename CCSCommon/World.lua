@@ -407,17 +407,17 @@ return
 					if nameLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = nameLen+1 end
 					if rulerLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen+1 end
 				end
-				
+
 				local borderCol = -1
 				local extCols = {}
-				
+
 				-- Here, we determine the column of the map with the most amount of water; we will start writing the map to file at this point, so that there is minimal 'splitting' of any land masses.
 				for i=1,self.planetC do
 					extCols[i] = 0
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
 				end
 				for i=1,self.planetC do if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end end
-				
+
 				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
 				for i=1,#tCols do colSum = colSum+20+(tColWidths[i]*6) end -- The total width of all columns of text in the legend is (10 total pixels of padding+the max character length*8 pixels per character) per column.
@@ -595,7 +595,7 @@ return
 							bf:write(string.char(0))
 						end
 						btWritten = btWritten+3
-						
+
 					end
 					while math.fmod(btWritten, 4) ~= 0 do
 						bf:write(string.char(0))
@@ -618,7 +618,7 @@ return
 				bmpArr = nil
 				tColWidths = nil
 				leaders = nil
-				
+
 				local t1 = _time()
 				collectgarbage("collect")
 				local t2 = _time()
@@ -736,12 +736,8 @@ return
 						UI:printl(string.format("Country %d/%d", parent.iSIndex, parent.iSCount))
 						parent.iSIndex = parent.iSIndex+1
 					end
-					cp:update(parent)
 
-					if cp.population < 20 then
-						cp:event(parent, "Disappeared")
-						for j=1,#parent.c_events do if parent.c_events[j].name == "Conquer" then cp:triggerEvent(parent, j, true, parent:randomChoice(self.countries)) end end
-					end
+					cp:update(parent)
 
 					local defCount = 0
 					for j=#cp.events,1,-1 do if cp.events[j].Year >= parent.years-30 and cp.events[j].Event:match("Defeat in war") then defCount = defCount+1 end end
