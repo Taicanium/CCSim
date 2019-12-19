@@ -677,11 +677,18 @@ return
 
 				self.averageAge = self.averageAge/#self.people
 				self.rulerPopularity = self.rulerPopularity/(3*#self.people)
+				
+				if #self.people == 0 then
+					self.averageAge = 1
+					self.rulerPopularity = 1
+				end
+				
 				self:checkRuler(parent, false)
 				local largest = ""
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do
 					self.ethnicities[i] = (self.ethnicities[i]/#self.people)*100
+					if #self.people == 0 then self.ethnicities[i] = 1
 					if j >= largestN then
 						largest = i
 						largestN = j
