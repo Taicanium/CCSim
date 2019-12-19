@@ -1250,8 +1250,8 @@ return
 					performEvent=function(self, parent, c)
 						local popFactor = (50-c.rulerPopularity)
 						local recovery = math.random(1, 151-popFactor)
-						if recovery < 50 then c.stability = c.stability-10
-						else c.stability = c.stability+5 end
+						if recovery < 50 then c.stability = c.stability-math.random(15, 25)
+						else c.stability = c.stability+math.random(5, 10) end
 						
 						return -1
 					end
