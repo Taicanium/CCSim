@@ -750,7 +750,7 @@ return
 				local t1 = _time()-t0
 
 				if parent.years > parent.startyear+1 then
-					if _DEBUG then parent.popLimit = 100
+					if _DEBUG then parent.popLimit = 250
 					else
 						if t1 > 0.5 then
 							if parent.popLimit > 1000 then parent.popLimit = math.floor(parent.popLimit-(50*(t1-0.5))) end
