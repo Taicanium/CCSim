@@ -688,7 +688,7 @@ return
 				local largestN = 0
 				for i, j in pairs(self.ethnicities) do
 					self.ethnicities[i] = (self.ethnicities[i]/#self.people)*100
-					if #self.people == 0 then self.ethnicities[i] = 1
+					if #self.people == 0 then self.ethnicities[i] = 1 end
 					if j >= largestN then
 						largest = i
 						largestN = j
