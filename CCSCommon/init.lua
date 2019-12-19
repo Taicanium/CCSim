@@ -1189,7 +1189,7 @@ return
 					inverse=true,
 					performEvent=function(self, parent, c1, c2)
 						local popFactor = (50-c1.rulerPopularity)+(50-c2.rulerPopularity)
-						local recovery = math.random(1, 250-popFactor)
+						local recovery = math.random(1, 251-popFactor)
 						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
 						if not c2.relations[c1.name] then c2.relations[c1.name] = 50 end
 						if recovery < 50 then
@@ -1249,7 +1249,7 @@ return
 					inverse=true,
 					performEvent=function(self, parent, c)
 						local popFactor = (50-c.rulerPopularity)
-						local recovery = math.random(1, 150-popFactor)
+						local recovery = math.random(1, 151-popFactor)
 						if recovery < 50 then c.stability = c.stability-10
 						else c.stability = c.stability+5 end
 						
