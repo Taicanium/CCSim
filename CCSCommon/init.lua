@@ -1369,7 +1369,7 @@ return
 							if extFactor < 0 then varistab = varistab+(extFactor/10) end
 						end
 
-						self.status = self.status+math.random(math.floor(varistab-5), math.ceil(varistab+5))/2
+						self.status = self.status+math.random(math.floor(varistab)-5, math.ceil(varistab)+5)/2
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
 						elseif self.status >= 10 then statString = tostring(math.floor(math.abs(self.status))).."% "..c1.name
