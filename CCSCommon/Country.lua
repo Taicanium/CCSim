@@ -659,7 +659,7 @@ return
 						if 35000-math.pow(age, 2) <= 1 or math.random(1, 35000-math.pow(age, 2)) < math.pow(age, 2) then chn = true end
 					end
 
-					if not chn and not self.people[i].isruler and math.random(1, 20000) == 3799 then
+					if not chn and not self.people[i].isruler and math.random(1, 8000) == 3799 then
 						local cp = parent:randomChoice(parent.thisWorld.countries)
 						if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 						cp:add(parent, self.people[i])
