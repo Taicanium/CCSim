@@ -209,9 +209,9 @@ return
 
 				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
 
-				self.pbelief = math.random(-100, 100)
-				self.ebelief = math.random(-100, 100)
-				self.cbelief = math.random(-100, 100)
+				self.pbelief = math.random(1, 100)
+				self.ebelief = math.random(1, 100)
+				self.cbelief = math.random(1, 100)
 
 				self.birth = parent.years
 				if self.title == "" then
@@ -342,7 +342,7 @@ return
 						newp.efreedom = self.ebelief
 						newp.pfreedom = self.pbelief
 						local belieftotal = newp.cfreedom+newp.efreedom+newp.pfreedom
-						if math.abs(belieftotal) > 225 then newp.radical = true end
+						if belieftotal > 200 then newp.radical = true end
 
 						nl.parties[newp.name] = newp
 						pmatch = nl.parties[newp.name]
@@ -357,10 +357,11 @@ return
 				end
 
 				if nl.rulerParty then
-					local belieftotal = self.pbelief+self.ebelief+self.cbelief
-					local partytotal = nl.rulerParty.pfreedom+nl.rulerParty.efreedom+nl.rulerParty.cfreedom
-					local diff = math.abs(belieftotal-partytotal)
-					if diff < 175 then nl.rulerPopularity = nl.rulerPopularity+diff end
+					local pTotal = nl.rulerParty.pfreedom-self.pbelief
+					local eTotal = nl.rulerParty.efreedom-self.ebelief
+					local cTotal = nl.rulerParty.cfreedom-self.cbelief
+					local diffTotal = math.abs(pTotal)+math.abs(eTotal)+math.abs(cTotal)
+					nl.rulerPopularity = nl.rulerPopularity+(300-diffTotal)
 				end
 
 				if self.military then

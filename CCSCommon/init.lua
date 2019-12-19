@@ -725,7 +725,7 @@ return
 										end
 									end
 
-									c1.stability = c1.stability-3
+									c1.stability = c1.stability-8
 									if c1.stability < 1 then c1.stability = 1 end
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
@@ -958,7 +958,7 @@ return
 
 							c2.nodes = nil
 
-							c1.stability = c1.stability-3
+							c1.stability = c1.stability-10
 							if c1.stability < 1 then c1.stability = 1 end
 							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
@@ -991,7 +991,7 @@ return
 						c.hasruler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-3
+						c.stability = c.stability-5
 						if c.stability < 1 then c.stability = 1 end
 
 						return -1
@@ -1146,7 +1146,7 @@ return
 							parent.thisWorld:add(newl)
 							parent:getAlphabetical()
 
-							c.stability = c.stability-math.random(3, 6)
+							c.stability = c.stability-math.random(5, 10)
 							if c.stability < 1 then c.stability = 1 end
 
 							if not c.regions[c.capitalregion] or not c.regions[c.capitalregion].cities[c.capitalcity] then
@@ -1181,6 +1181,33 @@ return
 					end
 				},
 				{
+					name="International Scandal",
+					chance=10,
+					target=nil,
+					args=2,
+					eString="",
+					inverse=true,
+					performEvent=function(self, parent, c1, c2)
+						local popFactor = (50-c1.rulerPopularity)+(50-c2.rulerPopularity)
+						local recovery = math.random(1, 250-popFactor)
+						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
+						if not c2.relations[c1.name] then c2.relations[c1.name] = 50 end
+						if recovery < 50 then
+							c1.relations[c2.name] = c1.relations[c2.name]-math.random(10, 25) end
+							c2.relations[c1.name] = c2.relations[c1.name]-math.random(10, 25) end
+							if c1.relations[c2.name] < 1 then c1.relations[c2.name] = 1 end
+							if c2.relations[c1.name] < 1 then c2.relations[c1.name] = 1 end
+						else
+							c1.relations[c2.name] = c1.relations[c2.name]+math.random(10, 15) end
+							c2.relations[c1.name] = c2.relations[c1.name]+math.random(10, 15) end
+							if c1.relations[c2.name] > 100 then c1.relations[c2.name] = 100 end
+							if c2.relations[c1.name] > 100 then c2.relations[c1.name] = 100 end
+						end
+						
+						return -1
+					end
+				},
+				{
 					name="Invade",
 					chance=4,
 					target=nil,
@@ -1193,7 +1220,7 @@ return
 						if c1.relations[c2.name] and c1.relations[c2.name] < 21 then
 							c1:event(parent, "Invaded "..c2.name)
 							c2:event(parent, "Invaded by "..c1.name)
-							c2.stability = c2.stability-3
+							c2.stability = c2.stability-10
 							if c1.stability < 1 then c1.stability = 1 end
 							if c2.stability < 1 then c2.stability = 1 end
 							c1:setPop(parent, math.ceil(c1.population/1.25))
@@ -1210,6 +1237,22 @@ return
 							end
 						end
 
+						return -1
+					end
+				},
+				{
+					name="Political Scandal",
+					chance=10,
+					target=nil,
+					args=1,
+					eString="",
+					inverse=true,
+					performEvent=function(self, parent, c)
+						local popFactor = (50-c.rulerPopularity)
+						local recovery = math.random(1, 150-popFactor)
+						if recovery < 50 then c.stability = c.stability-10
+						else c.stability = c.stability+5 end
+						
 						return -1
 					end
 				},
@@ -1243,7 +1286,7 @@ return
 						c.hasruler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-5
+						c.stability = c.stability-10
 						if c.stability < 1 then c.stability = 1 end
 
 						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
@@ -1347,8 +1390,8 @@ return
 							c1:event(parent, "Victory in war with "..self.target.name)
 							self.target:event(parent, "Defeat in war with "..c1.name)
 
-							c1.stability = c1.stability+5
-							self.target.stability = self.target.stability-3
+							c1.stability = c1.stability+10
+							self.target.stability = self.target.stability-10
 
 							local ao = parent:getAllyOngoing(c1, self.target, self.name)
 
