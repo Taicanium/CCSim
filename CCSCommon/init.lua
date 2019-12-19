@@ -1182,7 +1182,7 @@ return
 				},
 				{
 					name="International Scandal",
-					chance=10,
+					chance=14,
 					target=nil,
 					args=2,
 					eString="",
@@ -1242,7 +1242,7 @@ return
 				},
 				{
 					name="Political Scandal",
-					chance=10,
+					chance=14,
 					target=nil,
 					args=1,
 					eString="",
