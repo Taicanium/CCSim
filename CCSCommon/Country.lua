@@ -210,6 +210,11 @@ return
 			eventloop = function(self, parent)
 				local t0 = _time()
 
+				if #self.people == 0 then
+					for i=#self.ongoing,1,-1 do table.remove(self.ongoing, i) end
+					return
+				end
+
 				local v = math.ceil(math.random(30, 90)*self.stability)
 				local vi = math.ceil(math.random(30, 90)*(101-self.stability))
 				if v < 1 then v = 1 end
