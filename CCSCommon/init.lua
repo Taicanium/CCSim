@@ -1193,13 +1193,13 @@ return
 						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
 						if not c2.relations[c1.name] then c2.relations[c1.name] = 50 end
 						if recovery < 50 then
-							c1.relations[c2.name] = c1.relations[c2.name]-math.random(10, 25) end
-							c2.relations[c1.name] = c2.relations[c1.name]-math.random(10, 25) end
+							c1.relations[c2.name] = c1.relations[c2.name]-math.random(10, 25)
+							c2.relations[c1.name] = c2.relations[c1.name]-math.random(10, 25)
 							if c1.relations[c2.name] < 1 then c1.relations[c2.name] = 1 end
 							if c2.relations[c1.name] < 1 then c2.relations[c1.name] = 1 end
 						else
-							c1.relations[c2.name] = c1.relations[c2.name]+math.random(10, 15) end
-							c2.relations[c1.name] = c2.relations[c1.name]+math.random(10, 15) end
+							c1.relations[c2.name] = c1.relations[c2.name]+math.random(10, 15)
+							c2.relations[c1.name] = c2.relations[c1.name]+math.random(10, 15)
 							if c1.relations[c2.name] > 100 then c1.relations[c2.name] = 100 end
 							if c2.relations[c1.name] > 100 then c2.relations[c1.name] = 100 end
 						end
