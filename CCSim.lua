@@ -7,8 +7,8 @@ CCSFStatus, CCSCommon = pcall(CCSModule)
 if not CCSFStatus or not CCSCommon then error(tostring(CCSCommon)) os.exit(1) end
 
 function main()
+	CCSCommon:rseed()
 	if _DEBUG then
-		CCSCommon:rseed()
 		testGlyphs()
 		testNames()
 	end
