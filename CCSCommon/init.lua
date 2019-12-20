@@ -1208,7 +1208,7 @@ return
 					end
 				},
 				{
-					name="Invade",
+					name="Invasion",
 					chance=4,
 					target=nil,
 					args=2,
