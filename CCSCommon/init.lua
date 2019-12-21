@@ -447,9 +447,11 @@ function simReview()
 			if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..dirStamp end
 			local eventFile = false
 			local gedFile = false
+			local lineFile = false
 			for x in io.popen(dirSimCmd):lines() do
 				if x:match("events.txt") then eventFile = true
-				elseif x:match("families.ged") then gedFile = true end
+				elseif x:match("families.ged") then gedFile = true
+				elseif x:match("royals.ged") then lineFile = true end
 			end
 			UI:clear()
 
@@ -461,6 +463,7 @@ function simReview()
 				local thisOp = 1
 				-- if eventFile then ops[thisOp] = "events.txt" UI:printf(string.format("%d\t-\t%s", thisOp, "Events and history")) thisOp = thisOp+1 end
 				if gedFile then ops[thisOp] = "families.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
+				if lineFile then ops[thisOp] = "royals.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal lines of descent")) thisOp = thisOp+1 end
 
 				UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
 				UI:printp(" > ")
@@ -470,7 +473,7 @@ function simReview()
 					local f = io.open(CCSCommon:directory({dirStamp, op}))
 					if f then
 						-- if op == "events.txt" then eventReview(f) end
-						if op == "families.ged" then gedReview(f) end
+						if op == "royals.ged" or op == "families.ged" then gedReview(f) end
 
 						f:close()
 						f = nil
@@ -677,8 +680,8 @@ return
 					end
 				},
 				{
-					name="Annex",
-					chance=10,
+					name="Annexation",
+					chance=6,
 					target=nil,
 					args=2,
 					inverse=true,
