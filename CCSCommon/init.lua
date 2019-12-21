@@ -2543,7 +2543,16 @@ return
 
 					local t1 = _time()
 
-					if self.writeMap then self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)})) end
+					if self.writeMap then
+						self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
+						local t2 = _time()
+						collectgarbage("collect")
+						local t3 = _time()
+						if _DEBUG then
+							if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
+							debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t3-t2
+						end
+					end
 					self.writeMap = false
 					self.thisWorld.mapChanged = false
 
@@ -2555,7 +2564,7 @@ return
 					end
 
 					UI:clear(true)
-					for sx in msg:gsub("\n\n", "\n \n"):gmatch("%C+\n") do UI:printc(sx) end
+					UI:printc(msg)
 					UI:refresh()
 
 					self.years = self.years+1

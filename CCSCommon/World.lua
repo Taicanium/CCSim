@@ -608,15 +608,9 @@ return
 				tColWidths = nil
 				leaders = nil
 
-				local t1 = _time()
-				collectgarbage("collect")
-				local t2 = _time()
-
 				if _DEBUG then
 					if not debugTimes["World.mapOutput"] then debugTimes["World.mapOutput"] = 0 end
-					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
 					debugTimes["World.mapOutput"] = debugTimes["World.mapOutput"]+_time()-t0
-					debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t2-t1
 				end
 			end,
 
