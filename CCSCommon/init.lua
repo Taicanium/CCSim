@@ -681,7 +681,7 @@ return
 				},
 				{
 					name="Annexation",
-					chance=6,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=true,
