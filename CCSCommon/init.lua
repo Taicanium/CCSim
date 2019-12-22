@@ -642,14 +642,11 @@ return
 			c_events = {
 				{
 					name="Alliance",
-					chance=32,
+					chance=24,
 					target=nil,
 					args=2,
 					inverse=true,
-					beginEvent=function(self, parent, c1)
-						c1:event(parent, "Entered military alliance with "..self.target.name)
-						self.target:event(parent, "Entered military alliance with "..c1.name)
-					end,
+					beginEvent=function(self, parent, c1) end,
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
 						if c1.relations[self.target.name] and c1.relations[self.target.name] < 35 and math.random(1, 50) < 5 then return self:endEvent(parent, c1) end
@@ -657,9 +654,6 @@ return
 						return 0
 					end,
 					endEvent=function(self, parent, c1)
-						c1:event(parent, "Military alliance severed with "..self.target.name)
-						self.target:event(parent, "Military alliance severed with "..c1.name)
-
 						for i=#self.target.alliances,1,-1 do if self.target.alliances[i] == c1.name then table.remove(self.target.alliances, i) end end
 						for i=#c1.alliances,1,-1 do if c1.alliances[i] == self.target.name then table.remove(c1.alliances, i) end end
 
