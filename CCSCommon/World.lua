@@ -320,10 +320,10 @@ return
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(self.stretched[i], {22, 22, 170}) end
+								if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[i], {22, 22, 170, node.region}) end
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3]}) else table.insert(self.stretched[i], {22, 22, 170}) end
+									if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[i], {22, 22, 170, node.region}) end
 									deviated = deviated-1
 								end
 							end
@@ -422,6 +422,24 @@ return
 							extended[(i*2)-1][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
+							if self.stretched[i][accCol][4] then
+								if self.stretched[i+1] and self.stretched[i+1][accCol] and self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
+									extended[i*2][(cCol*2)-1] = {0, 0, 0}
+									extended[i*2][cCol*2] = {0, 0, 0}
+								end
+								if self.stretched[i-1] and self.stretched[i-1][accCol] and self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+									extended[(i*2)-1][cCol*2] = {0, 0, 0}
+								end
+								if self.stretched[i][accCol+1] and self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][cCol*2] = {0, 0, 0}
+									extended[i*2][cCol*2] = {0, 0, 0}
+								end
+								if self.stretched[i][accCol-1] and self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+									extended[i*2][(cCol*2)-1] = {0, 0, 0}
+								end
+							end
 						else
 							extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
 							extended[(i*2)-1][cCol*2] = {0, 0, 0}
