@@ -369,9 +369,7 @@ return
 					nl.strength = nl.strength+self.militaryTraining
 				else
 					if not military and self.age < 35 then
-						local threshold = 5
-						for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then if j.name == nl.name or j.ongoing[k].target and j.ongoing[k].target.name == nl.name then threshold = 25 end end end end
-						if math.random(1, 250) < threshold then
+						if math.random(1, 250) < nl.milThreshold then
 							self.military = true
 							self.militaryTraining = 0
 						end

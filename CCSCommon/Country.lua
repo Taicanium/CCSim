@@ -24,6 +24,7 @@ return
 				o.hasruler = -1
 				o.majority = ""
 				o.military = 0
+				o.milThreshold = 5
 				o.name = ""
 				o.nodes = {}
 				o.ongoing = {}
@@ -649,6 +650,13 @@ return
 					j.population = 0
 					for k, l in pairs(j.cities) do l.population = 0 end
 				end
+				
+				self.milThreshold = 5
+				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
+					if j.name == self.name or j.ongoing[k].target and j.ongoing[k].target.name == self.name then self.milThreshold = 25 end
+					local ao = parent:getAllyOngoing(j, j.ongoing[k].target, j.ongoing[k].name)
+					for k=1,#ao do if ao[k].name == self.name then self.milThreshold = 25 end end
+				end end end
 
 				for i=#self.people,1,-1 do
 					local chn = false
