@@ -654,10 +654,12 @@ return
 						return -1
 					end,
 					performEvent=function(self, parent, c1, c2)
+						for i=1,#c1.ongoing-1 do if c1.ongoing[i].name == "War" and c1.ongoing[i].target.name == c2.name then return -1 end end
+						for i=1,#c2.ongoing do if c2.ongoing[i].name == "War" and c2.ongoing[i].target.name == c1.name then return -1 end end
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 
-						if c1.relations[c2.name] and c1.relations[c2.name] > 80 then
+						if c1.relations[c2.name] and c1.relations[c2.name] > 70 then
 							self.target = c2
 							table.insert(c2.alliances, c1.name)
 							table.insert(c1.alliances, c2.name)
@@ -1455,6 +1457,8 @@ return
 					performEvent=function(self, parent, c1, c2)
 						for i=1,#c1.ongoing-1 do if c1.ongoing[i].name == self.name and c1.ongoing[i].target.name == c2.name then return -1 end end
 						for i=1,#c2.ongoing do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
+						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
+						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
 						if c1:borders(parent, c2) == 0 then return -1 end
 
 						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
