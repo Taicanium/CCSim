@@ -623,6 +623,7 @@ end
 
 City = require("CCSCommon.City")()
 Country = require("CCSCommon.Country")()
+Language = require("CCSCommon.Language")()
 Party = require("CCSCommon.Party")()
 Person = require("CCSCommon.Person")()
 Region = require("CCSCommon.Region")()
@@ -1778,7 +1779,7 @@ return
 			},
 			popCount = 0,
 			popLimit = 2000,
-			repGroups = {{"aa", "a"}, {"ae", "a"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aium", "ium"}, {"aiu", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"ccc", "cc"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"dby", "dy"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eium", "ium"}, {"eiu", "e"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"jb", "b"}, {"iy", "y"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oium", "ium"}, {"oiu", "o"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"tyan", "tan"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uium", "ium"}, {"uiu", "u"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"iusy", "ia"}},
+			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},
 			royals = {},
 			showinfo = 0,
 			startyear = 1,
@@ -1920,7 +1921,7 @@ return
 					else dem = nom.."ian" end
 				end
 
-				for i=1,3 do for j, k in pairs(self.repGroups) do dem = dem:gsub(k[1], k[2]) end end
+				for i=1,2 do for j, k in pairs(self.repGroups) do dem = dem:gsub(k[1], k[2]) end end
 
 				return dem
 			end,
@@ -2405,17 +2406,13 @@ return
 				local length = 0
 				length = math.random(m or 1, l or personal and 3 or 2)
 
-				local taken = {}
 				nom = self:randomChoice(self.initialgroups)
-				table.insert(taken, nom:lower())
-
 				local groups = 1
 				while groups < length do
 					local mid = self:randomChoice(self.middlegroups)
 
 					nom = nom..mid:lower()
 					groups = groups+1
-					table.insert(taken, mid:lower())
 				end
 
 				nom = self:namecheck(nom)
@@ -2450,9 +2447,8 @@ return
 						end
 					end
 					nom = nom..ending:lower()
+					for i=1,2 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end end
 				end
-
-				for i=1,3 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end end
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.name"] then debugTimes["CCSCommon.name"] = 0 end
@@ -2465,14 +2461,14 @@ return
 			namecheck = function(self, nom)
 				local t0 = _time()
 
-				local nomin = nom
+				local nomin = nom:lower()
 				local check = true
 				while check do
 					check = false
-					local nomlower = nomin:lower()
+					local nomlower = nomin
 
 					for i=1,nomlower:len()-1 do
-						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+1, i+1)) then
+						if nomlower:sub(i, i) == nomlower:sub(i+1, i+1) then
 							local newnom = ""
 
 							for j=1,i do newnom = newnom..nomlower:sub(j, j) end
@@ -2480,97 +2476,79 @@ return
 
 							nomlower = newnom
 						end
-					end
+						
+						if i < nomlower:len()-1 then
+							local hasvowel = false
 
-					for i=1,nomlower:len()-2 do
-						if string.lower(nomlower:sub(i, i)) == string.lower(nomlower:sub(i+2, i+2)) then
-							local newnom = ""
+							for j=i,i+2 do
+								for k=1,#self.vowels do if nomlower:sub(j, j) == self.vowels[k] then hasvowel = true end end
 
-							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-							newnom = newnom..self:randomChoice(self.consonants)
-							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-							nomlower = newnom
-						end
-					end
+								if j > 1 and nomlower:sub(j-1, j-1) == 't' and nomlower:sub(j, j) == 'h' then -- Make an exception for the 'th' group, but only if there's a vowel close by.
+									local prev = ""
+									local fore = ""
+									if j > 2 then prev = nomlower:sub(j-2, j-2) end
+									if j < nomlower:len() then fore = nomlower:sub(j+1, j+1) end
+									for k=1,#self.vowels do if fore == self.vowels[k] or prev == self.vowels[k] then
+										hasvowel = true
+										k = #self.vowels
+									end end
+								end
+							end
 
-					for i=1,nomlower:len()-3 do
-						if string.lower(nomlower:sub(i, i+1)) == string.lower(nomlower:sub(i+2, i+3)) then
-							local newnom = ""
-
-							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-							for j=i+4,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-							nomlower = newnom
-						end
-					end
-
-					for i=1,nomlower:len()-5 do
-						if string.lower(nomlower:sub(i, i+2)) == string.lower(nomlower:sub(i+3, i+5)) then
-							local newnom = ""
-
-							for j=1,i+2 do newnom = newnom..nomlower:sub(j, j) end
-							for j=i+6,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
-							nomlower = newnom
-						end
-					end
-
-					for i=1,nomlower:len()-2 do
-						local hasvowel = false
-
-						for j=i,i+2 do
-							for k=1,#self.vowels do if string.lower(nomlower:sub(j, j)) == self.vowels[k] then hasvowel = true end end
-
-							if j > 1 and string.lower(nomlower:sub(j-1, j-1)) == 't' and string.lower(nomlower:sub(j, j)) == 'h' and j > 2 then -- Make an exception for the 'th' group, but only if there's a vowel close by.
-								local prev = nomlower:sub(j-2, j-2)
-								for k=1,#self.vowels do if prev:lower() == self.vowels[k] then hasvowel = true end end
+							if not hasvowel then
+								local newnom = nomlower:sub(1, i+1)..self:randomChoice(self.vowels)..nomlower:sub(i+3, nomlower:len())
+								nomlower = newnom
 							end
 						end
-
-						if not hasvowel then
-							local newnom = ""
-							for j=1,i+1 do newnom = newnom..nomlower:sub(j, j) end
-							newnom = newnom..self:randomChoice(self.vowels)
-							for j=i+3,nomlower:len() do newnom = newnom..nomlower:sub(j, j) end
+						
+						if i < nomlower:len()-2 and nomlower:sub(i, i+1) == nomlower:sub(i+2, i+3) then
+							local newnom = nomlower:sub(1, i+1)..nomlower:sub(i+4, nomlower:len())
+							nomlower = newnom
+						end
+						
+						if i < nomlower:len()-4 and nomlower:sub(i, i+2) == nomlower:sub(i+3, i+5) then
+							local newnom = nomlower:sub(1, i+2)..nomlower:sub(i+6, nomlower:len())
 							nomlower = newnom
 						end
 					end
-
-					for i=1,3 do for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end end
 
 					for j=1,#self.consonants do
 						if nomlower:sub(1, 1) == self.consonants[j] then
-							if nomlower:sub(2, 2) == "b" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "c" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "d" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "f" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "g" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "j" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "k" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "m" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "n" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "p" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "s" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "t" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "v" then nomlower = nomlower:sub(2, nomlower:len())
-							elseif nomlower:sub(2, 2) == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
+							local n2 = nomlower:sub(2, 2)
+							if n2 == "b" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "c" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "d" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "f" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "g" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "j" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "k" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "m" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "n" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "p" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "s" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "t" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "v" then nomlower = nomlower:sub(2, nomlower:len())
+							elseif n2 == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
 						end
 
 						if nomlower:sub(nomlower:len(), nomlower:len()) == self.consonants[j] then
-							if nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "b" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "c" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "d" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "f" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "g" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "j" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "k" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "m" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "n" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "p" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "s" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "t" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif nomlower:sub(nomlower:len()-1, nomlower:len()-1) == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							local n2 = nomlower:sub(nomlower:len(), nomlower:len())
+							if n2 == "b" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "c" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "d" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "f" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "g" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "j" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "k" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "m" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "n" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "p" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "s" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "t" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "w" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "z" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
 
@@ -2579,13 +2557,14 @@ return
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 
 					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
+					
+					for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
 
-					if nomlower ~= nomin:lower() then check = true end
-
-					nomin = string.upper(nomlower:sub(1, 1))
-					nomin = nomin..nomlower:sub(2, nomlower:len())
-					nomin = nomin:gsub("%-%w", string.upper)
+					if nomlower ~= nomin then check = true end
+					nomin = nomlower
 				end
+
+				nomin = nomin:gsub("^%w", string.upper):gsub("%-%w", string.upper)
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.namecheck"] then debugTimes["CCSCommon.namecheck"] = 0 end

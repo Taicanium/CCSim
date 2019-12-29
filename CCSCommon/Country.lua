@@ -22,6 +22,7 @@ return
 				o.founded = 0
 				o.frulernames = {}
 				o.hasruler = -1
+				o.language = nil
 				o.majority = ""
 				o.military = 0
 				o.milThreshold = 5
@@ -333,6 +334,9 @@ return
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 
 				if self.founded == 0 then self.founded = parent.years end
+				
+				self.language = Language:new()
+				self.language:define()
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
