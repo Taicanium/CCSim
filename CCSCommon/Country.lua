@@ -336,7 +336,7 @@ return
 				if self.founded == 0 then self.founded = parent.years end
 				
 				self.language = Language:new()
-				self.language:define()
+				self.language:define(parent)
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
