@@ -332,16 +332,6 @@ return
 				self.capitalregion = parent:randomChoice(self.regions, true)
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 				
-				local lang = Language:new()
-				lang:define(parent)
-				lang.name = self.demonym
-				
-				self.regions[self.capitalregion].language = lang
-				for i, j in pairs(self.regions) do if j.name ~= self.capitalregion then
-					j.language = lang:deviate(parent, 0.1)
-					j.language.name = parent:demonym(j.name).." "..lang.name
-				end end
-				
 				if self.founded == 0 then self.founded = parent.years end
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
@@ -621,6 +611,8 @@ return
 				else self.birthrate = 40 end
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
+				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
+
 				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
@@ -718,7 +710,7 @@ return
 					end
 				end
 				self.majority = largest
-
+				
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end
 					debugTimes["Country.update"] = debugTimes["Country.update"]+_time()-t0

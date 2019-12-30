@@ -155,6 +155,21 @@ function gedReview(f)
 				local ifs = split[3]:gsub("@", ""):gsub("F", "")
 				indi[fi].famc = tonumber(ifs)
 				fe = ""
+			elseif split[2] == "NOTE" and indi[fi] then
+				if not indi[fi].notes then indi[fi].notes = {} end
+				local note = ""
+				if split[3] then
+					note = split[3]
+					for s=4,#split do note = note.." "..split[s] end
+				end
+				table.insert(indi[fi].notes, note)
+			elseif split[2] == "CONT" and indi[fi] and indi[fi].notes then
+				local note = ""
+				if split[3] then
+					note = split[3]
+					for s=4,#split do note = note.." "..split[s] end
+				end
+				table.insert(indi[fi].notes, note)
 			elseif split[2] == "HUSB" then
 				local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
 				fam[fi].husb = tonumber(ifs)
@@ -232,6 +247,7 @@ function gedReview(f)
 			if mi < #matches then UI:printc("N to move to the next match.\n") end
 			if mi > 1 then UI:printc("P to move to the previous match.\n") end
 		end
+		UI:printc("S to view this person's notes.\n")
 		UI:printp("\n > ")
 		local datin = UI:readl()
 		local oldFI = fi
@@ -248,6 +264,12 @@ function gedReview(f)
 			if mi < 1 then mi = 1 end
 			fi = matches[mi]
 		elseif datin:lower() == "e" and _DEBUG then debugLine()
+		elseif datin:lower() == "s" then
+			UI:clear()
+			printIndi(i, 0)
+			UI:printc("\n\n")
+			if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end else UI:printf("This individual has no notes.") end
+			UI:readl()
 		elseif datin ~= "" then
 			matches = {}
 			fi = tonumber(datin)
@@ -1768,6 +1790,7 @@ return
 			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			iSCount = 0,
 			iSIndex = 0,
+			languages = {},
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
 			numCountries = 0,
 			partynames = {
@@ -2196,6 +2219,45 @@ return
 
 				if not t then self.alpha = cKeys end
 				return cKeys
+			end,
+			
+			getLanguage = function(self, id, nl)
+				for i=1,#self.languages do if self.languages[i].name == id then return self.languages[i] end end
+				
+				if nl then
+					for i=1,#self.languages do if self.languages[i].name == nl.demonym then
+						local lang = self.languages[i]:deviate(self, 0.1)
+						lang.name = id
+						for i, j in pairs(nl.regions) do if nl.demonym.." ("..self:demonym(j.name)..")" == id then j.language = lang end end
+						table.insert(self.languages, lang)
+						return lang
+					end end
+					
+					local lang = Language:new()
+					lang:define(self)
+					lang.name = nl.demonym
+					nl.language = lang
+					table.insert(self.languages, lang)
+					
+					nl.regions[nl.capitalregion].language = lang
+					for i, j in pairs(nl.regions) do if j.name ~= nl.capitalregion then
+						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
+						found = false
+						for i=1,#self.languages do if self.languages[i].name == langID then
+							found = true
+							j.language = self.languages[i]
+						end end
+						if not found then
+							j.language = lang:deviate(self, 0.1)
+							j.language.name = langID
+							table.insert(self.languages, j.language)
+						end
+					end end
+					
+					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
+				end
+				
+				return nil
 			end,
 
 			getRulerString = function(self, data)
@@ -2916,195 +2978,239 @@ return
 			end,
 			
 			writeGed = function(self)
-				of = io.open(self:directory({self.stamp, "families.ged"}), "w+")
-				if not of then return end
+				if #self.royals > 0 then
+					of = io.open(self:directory({self.stamp, "families.ged"}), "w+")
+					if not of then return end
 
-				local indiSorted = {}
-				local famSorted = {}
+					local indiSorted = {}
+					local famSorted = {}
 
-				UI:printf("Generating GEDCOM data...")
-				for i=1,#self.royals do
-					self:setGed(self.royals[i], false)
-					UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
-				end
+					UI:printf("Generating GEDCOM data...")
+					for i=1,#self.royals do
+						self:setGed(self.royals[i], false)
+						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
+					end
 
-				UI:printf("Sorting GEDCOM individual data...")
-				for i, j in pairs(self.indi) do indiSorted[j.gIndex] = j end
+					UI:printf("Sorting GEDCOM individual data...")
+					for i, j in pairs(self.indi) do indiSorted[j.gIndex] = j end
 
-				UI:printf("Sorting GEDCOM family data...")
-				for i, j in pairs(self.fam) do famSorted[j.fIndex] = j end
+					UI:printf("Sorting GEDCOM family data...")
+					for i, j in pairs(self.fam) do famSorted[j.fIndex] = j end
 
-				of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
+					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
 
-				UI:printf("Writing individual data...")
-				for i=1,#indiSorted do
-					local j = indiSorted[i]
-					of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					of:write(" /"..j.surname:upper().."/")
-					if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
-					of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
-					if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-					of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
-					if j.birth < 1 then of:write(" B.C.") end
-					of:write("\n2 PLAC "..j.birthplace)
-					if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
-					for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
-					if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
-					local nOne = true
-					for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+					UI:printf("Writing individual data...")
+					for i=1,#indiSorted do
+						local j = indiSorted[i]
+						of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						of:write(" /"..j.surname:upper().."/")
+						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
+						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
+						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
+						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						if j.birth < 1 then of:write(" B.C.") end
+						of:write("\n2 PLAC "..j.birthplace)
+						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
+						for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
+						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
+						local nOne = true
+						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+							local fStr = ""
+							local dStr = tostring(math.fmod(l, 1))
+							if not nOne then fStr = "\n2 CONT %"
+							else
+								fStr = "\n1 NOTE %"
+								nOne = false
+							end
+							if dStr == "0" then fStr = fStr.."d%% %s"
+							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
+							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
+							of:write(string.format(fStr, l, k))
+						end end
 						local fStr = ""
-						local dStr = tostring(math.fmod(l, 1))
-						if not nOne then fStr = "\n2 CONT %"
+						if not nOne then fStr = "\n2 CONT Native language"
 						else
-							fStr = "\n1 NOTE %"
+							fStr = "\n1 NOTE Native language"
 							nOne = false
 						end
-						if dStr == "0" then fStr = fStr.."d%% %s"
-						elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
-						elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
-						of:write(string.format(fStr, l, k))
-					end end
-					UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
-				end
-
-				of:flush()
-				UI:printf("Writing family data...")
-				for i=1,#famSorted do
-					local j = famSorted[i]
-					if j and j.husb and self.indi[j.husb] and j.wife and self.indi[j.wife] and #j.chil > 0 then
-						of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
-						for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
-						of:flush()
-					end
-					UI:printl(string.format("%.2f%% done", (i/#famSorted*10000)/100))
-				end
-
-				of:write("\n0 TRLR")
-				of:flush()
-				of:close()
-
-				of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
-				if not of then return end
-
-				of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
-
-				UI:printf("Isolating royal descent lines...")
-				local cFam = {}
-				local cFamCount = 0
-				local cFamSort = {}
-				for i=1,#self.royals do
-					self:setDescent(self.royals[i], 0)
-					UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
-				end
-
-				UI:printf("Sorting isolated individuals...")
-				for i=1,#self.cIndi do
-					self.cIndi[i].cFams = {}
-					self.cIndi[i].cFamc = 0
-				end
-				for i=1,#self.cIndi do
-					for j, k in pairs(self.cIndi[i].children) do if k.royalGenerations == 0 or k.ancRoyal and k.descRoyal then
-						local fString = ":"
-						local fat = false
-						local mot = false
-
-						if k.father then if k.father.royalGenerations == 0 or k.surname:match(k.father.surname) or k.father.ancRoyal and k.father.descRoyal then
-							fString = k.father.gString..fString
-							fat = true
-						end end
-						if k.mother then if k.mother.royalGenerations == 0 or k.surname:match(k.mother.surname) or k.mother.ancRoyal and k.mother.descRoyal then
-							fString = fString..k.mother.gString
-							mot = true
-						end end
-
-						if not cFam[fString] then
-							cFamCount = cFamCount+1
-							cFam[fString] = {fIndex=cFamCount, husb=nil, wife=nil, chil={}}
-							if fat then
-								table.insert(k.father.cFams, cFam[fString].fIndex)
-								cFam[fString].husb = k.father.cIndex
-							end
-							if mot then
-								table.insert(k.mother.cFams, cFam[fString].fIndex)
-								cFam[fString].wife = k.mother.cIndex
+						if #j.nativeLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
+						for k=1,#j.nativeLang do
+							fStr = fStr..j.nativeLang[k].name
+							if k < #j.nativeLang then fStr = fStr..", " end
+						end
+						of:write(fStr)
+						fStr = ""
+						if #j.spokenLang > 0 then
+							fStr = "\n2 CONT Spoken language"
+							if #j.spokenLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
+							for k=1,#j.spokenLang do
+								fStr = fStr..j.spokenLang[k].name
+								if k < #j.spokenLang then fStr = fStr..", " end
 							end
 						end
+						of:write(fStr)
+						UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
+					end
 
-						k.cFamc = cFam[fString].fIndex
-						local found = false
-						for l=1,#cFam[fString].chil do if cFam[fString].chil[l] == k.cIndex then found = true end end
-						if not found then table.insert(cFam[fString].chil, k.cIndex) end
-					end end
-					UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
-				end
+					of:flush()
+					UI:printf("Writing family data...")
+					for i=1,#famSorted do
+						local j = famSorted[i]
+						if j and j.husb and self.indi[j.husb] and j.wife and self.indi[j.wife] and #j.chil > 0 then
+							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
+							for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
+							of:flush()
+						end
+						UI:printl(string.format("%.2f%% done", (i/#famSorted*10000)/100))
+					end
 
-				UI:printf("Sorting isolated families...")
-				local cfFinished = 0
-				for i, j in pairs(cFam) do
-					cFamSort[j.fIndex] = j
-					cfFinished = cfFinished+1
-					UI:printl(string.format("%.2f%% done", (cfFinished/cFamCount*10000)/100))
-				end
+					of:write("\n0 TRLR")
+					of:flush()
+					of:close()
 
-				UI:printf("Writing individual data...")
-				for i=1,#self.cIndi do
-					local j = self.cIndi[i]
-					of:write("\n0 @I"..tostring(j.cIndex).."@ INDI\n1 NAME ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					of:write(" /"..j.surname:upper().."/")
-					if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
-					of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
-					if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-					if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
-					if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-					of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
-					if j.birth < 1 then of:write(" B.C.") end
-					of:write("\n2 PLAC "..j.birthplace)
-					if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
-					for k=1,#j.cFams do if cFamSort[j.cFams[k]] then of:write("\n1 FAMS @F"..cFamSort[j.cFams[k]].fIndex.."@") end end
-					if cFamSort[j.cFamc] then of:write("\n1 FAMC @F"..cFamSort[j.cFamc].fIndex.."@") end
-					local nOne = true
-					for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
+					if not of then return end
+
+					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
+
+					UI:printf("Isolating royal descent lines...")
+					local cFam = {}
+					local cFamCount = 0
+					local cFamSort = {}
+					for i=1,#self.royals do
+						self:setDescent(self.royals[i], 0)
+						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
+					end
+
+					UI:printf("Sorting isolated individuals...")
+					for i=1,#self.cIndi do
+						self.cIndi[i].cFams = {}
+						self.cIndi[i].cFamc = 0
+					end
+					for i=1,#self.cIndi do
+						for j, k in pairs(self.cIndi[i].children) do if k.royalGenerations == 0 or k.ancRoyal and k.descRoyal then
+							local fString = ":"
+							local fat = false
+							local mot = false
+
+							if k.father then if k.father.royalGenerations == 0 or k.surname:match(k.father.surname) or k.father.ancRoyal and k.father.descRoyal then
+								fString = k.father.gString..fString
+								fat = true
+							end end
+							if k.mother then if k.mother.royalGenerations == 0 or k.surname:match(k.mother.surname) or k.mother.ancRoyal and k.mother.descRoyal then
+								fString = fString..k.mother.gString
+								mot = true
+							end end
+
+							if not cFam[fString] then
+								cFamCount = cFamCount+1
+								cFam[fString] = {fIndex=cFamCount, husb=nil, wife=nil, chil={}}
+								if fat then
+									table.insert(k.father.cFams, cFam[fString].fIndex)
+									cFam[fString].husb = k.father.cIndex
+								end
+								if mot then
+									table.insert(k.mother.cFams, cFam[fString].fIndex)
+									cFam[fString].wife = k.mother.cIndex
+								end
+							end
+
+							k.cFamc = cFam[fString].fIndex
+							local found = false
+							for l=1,#cFam[fString].chil do if cFam[fString].chil[l] == k.cIndex then found = true end end
+							if not found then table.insert(cFam[fString].chil, k.cIndex) end
+						end end
+						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
+					end
+
+					UI:printf("Sorting isolated families...")
+					local cfFinished = 0
+					for i, j in pairs(cFam) do
+						cFamSort[j.fIndex] = j
+						cfFinished = cfFinished+1
+						UI:printl(string.format("%.2f%% done", (cfFinished/cFamCount*10000)/100))
+					end
+
+					UI:printf("Writing individual data...")
+					for i=1,#self.cIndi do
+						local j = self.cIndi[i]
+						of:write("\n0 @I"..tostring(j.cIndex).."@ INDI\n1 NAME ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						of:write(" /"..j.surname:upper().."/")
+						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
+						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
+						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
+						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
+						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
+						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						if j.birth < 1 then of:write(" B.C.") end
+						of:write("\n2 PLAC "..j.birthplace)
+						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
+						for k=1,#j.cFams do if cFamSort[j.cFams[k]] then of:write("\n1 FAMS @F"..cFamSort[j.cFams[k]].fIndex.."@") end end
+						if cFamSort[j.cFamc] then of:write("\n1 FAMC @F"..cFamSort[j.cFamc].fIndex.."@") end
+						local nOne = true
+						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
+							local fStr = ""
+							local dStr = tostring(math.fmod(l, 1))
+							if not nOne then fStr = "\n2 CONT %"
+							else
+								fStr = "\n1 NOTE %"
+								nOne = false
+							end
+							if dStr == "0" then fStr = fStr.."d%% %s"
+							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
+							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
+							of:write(string.format(fStr, l, k))
+						end end
 						local fStr = ""
-						local dStr = tostring(math.fmod(l, 1))
-						if not nOne then fStr = "\n2 CONT %"
+						if not nOne then fStr = "\n2 CONT Native language"
 						else
-							fStr = "\n1 NOTE %"
+							fStr = "\n1 NOTE Native language"
 							nOne = false
 						end
-						if dStr == "0" then fStr = fStr.."d%% %s"
-						elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
-						elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
-						of:write(string.format(fStr, l, k))
-					end end
-					UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
-				end
-
-				of:flush()
-				UI:printf("Writing family data...")
-				for i=1,#cFamSort do
-					local j = cFamSort[i]
-					if j then
-						of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n")
-						if j.husb and self.cIndi[j.husb] then of:write("1 HUSB @I"..tostring(self.cIndi[j.husb].cIndex).."@\n") end
-						if j.wife and self.cIndi[j.wife] then of:write("1 WIFE @I"..tostring(self.cIndi[j.wife].cIndex).."@\n") end
-						for k=1,#j.chil do if self.cIndi[j.chil[k]] then of:write("1 CHIL @I"..tostring(self.cIndi[j.chil[k]].cIndex).."@\n") end end
-						of:flush()
+						if #j.nativeLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
+						for k=1,#j.nativeLang do
+							fStr = fStr..j.nativeLang[k].name
+							if k < #j.nativeLang then fStr = fStr..", " end
+						end
+						of:write(fStr)
+						fStr = ""
+						if #j.spokenLang > 0 then fStr = "\n2 CONT Spoken language" end
+						if #j.spokenLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
+						for k=1,#j.spokenLang do
+							fStr = fStr..j.spokenLang[k].name
+							if k < #j.spokenLang then fStr = fStr..", " end
+						end
+						of:write(fStr)
+						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
 					end
-					UI:printl(string.format("%.2f%% done", (i/#cFamSort*10000)/100))
+
+					of:flush()
+					UI:printf("Writing family data...")
+					for i=1,#cFamSort do
+						local j = cFamSort[i]
+						if j then
+							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n")
+							if j.husb and self.cIndi[j.husb] then of:write("1 HUSB @I"..tostring(self.cIndi[j.husb].cIndex).."@\n") end
+							if j.wife and self.cIndi[j.wife] then of:write("1 WIFE @I"..tostring(self.cIndi[j.wife].cIndex).."@\n") end
+							for k=1,#j.chil do if self.cIndi[j.chil[k]] then of:write("1 CHIL @I"..tostring(self.cIndi[j.chil[k]].cIndex).."@\n") end end
+							of:flush()
+						end
+						UI:printl(string.format("%.2f%% done", (i/#cFamSort*10000)/100))
+					end
+
+					of:write("0 TRLR\n")
+					of:flush()
+					of:close()
+					of = nil
+
+					cFam = nil
+					cFamCount = nil
+					cFamSort = nil
 				end
-
-				of:write("0 TRLR\n")
-				of:flush()
-				of:close()
-				of = nil
-
-				cFam = nil
-				cFamCount = nil
-				cFamSort = nil
 			end
 		}
 

@@ -39,6 +39,7 @@ return
 				o.mother = nil
 				o.name = ""
 				o.nationality = ""
+				o.nativeLang = {}
 				o.number = 0
 				o.parentRuler = false
 				o.party = ""
@@ -52,6 +53,7 @@ return
 				o.ruledCountry = ""
 				o.rulerName = ""
 				o.rulerTitle = ""
+				o.spokenLang = {}
 				o.spouse = nil
 				o.surname = ""
 				o.title = "Citizen"
@@ -82,7 +84,7 @@ return
 				self.region = nil
 				self.royalSystem = nil
 				self.ruledCountry = nil
-				if self.spouse then self.spouse.spouse = nil end
+				if self.spouse and self.spouse.def then self.spouse.spouse = nil end
 				self.spouse = nil
 				self.title = nil
 			end,
@@ -184,6 +186,9 @@ return
 					nn.ethnicity[i] = nn.ethnicity[i]+j
 				end
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i]/2 end
+				
+				nn.region = self.region
+				nn.city = self.city
 
 				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
 				else nn:SetFamily(self, self.spouse, parent) end
@@ -231,6 +236,73 @@ return
 				table.insert(mother.children, self)
 				self.father = father
 				self.mother = mother
+				
+				local natLang = {}
+				local spokeLang = {}
+				
+				local natLangs = 0
+				local spokeLangs = 0
+				
+				if father.nativeLang then for i=1,#father.nativeLang do if father.nativeLang[i] and father.nativeLang[i].name ~= self.region.language.name and not natLang[father.nativeLang[i].name] then natLangs = natLangs+1 natLang[father.nativeLang[i].name] = father.nativeLang[i] end end end
+				if father.spokenLang then for i=1,#father.spokenLang do if father.spokenLang[i] and father.spokenLang[i].name ~= self.region.language.name and not spokeLang[father.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[father.spokenLang[i].name] = father.spokenLang[i] end end end
+				if mother.nativeLang then for i=1,#mother.nativeLang do if mother.nativeLang[i] and mother.nativeLang[i].name ~= self.region.language.name and not natLang[mother.nativeLang[i].name] then natLangs = natLangs+1 natLang[mother.nativeLang[i].name] = mother.nativeLang[i] end end end
+				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and mother.spokenLang[i].name ~= self.region.language.name and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
+				
+				table.insert(self.nativeLang, self.region.language)
+				local maxNatLangs = math.random(1, 2)
+				if maxNatLangs > natLangs then maxNatLangs = natLangs end
+				local maxSpokenLangs = math.random(0, 3-maxNatLangs)
+				if maxSpokenLangs > spokeLangs then maxSpokenLangs = spokeLangs end
+				local cycles = 0
+				while #self.nativeLang < maxNatLangs do
+					local choice = parent:randomChoice(natLang)
+					if choice then
+						local found = false
+						for i=1,#self.nativeLang do if self.nativeLang[i].name == choice.name then found = true end end
+						for i=1,#self.spokenLang do if self.spokenLang[i].name == choice.name then found = true end end
+						if not found then
+							local inherit = math.random(1, 100)
+							if inherit < 81 then
+								inherit = math.random(1, 100)
+								if inherit < 21 then
+									table.insert(self.spokenLang, choice)
+									maxNatLangs = maxNatLangs-1
+									natLang[choice.name] = nil
+								else
+									table.insert(self.nativeLang, choice)
+									natLang[choice.name] = nil
+								end
+							end
+						end
+					end
+					cycles = cycles+1
+					if cycles >= 20 then maxNatLangs = -1 end
+				end
+				cycles = 0
+				while #self.spokenLang < maxSpokenLangs do
+					local choice = parent:randomChoice(spokeLang)
+					if choice then
+						local found = false
+						for i=1,#self.nativeLang do if self.nativeLang[i].name == choice.name then found = true end end
+						for i=1,#self.spokenLang do if self.spokenLang[i].name == choice.name then found = true end end
+						if not found then
+							local inherit = math.random(1, 100)
+							if inherit < 21 then
+								inherit = math.random(1, 100)
+								if inherit < 51 then
+									table.insert(self.nativeLang, choice)
+									maxSpokenLangs = maxSpokenLangs-1
+									spokeLang[choice.name] = nil
+								else
+									table.insert(self.spokenLang, choice)
+									spokeLang[choice.name] = nil
+								end
+							end
+						end
+					end
+					cycles = cycles+1
+					if cycles >= 20 then maxSpokenLangs = -1 end
+				end
 			end,
 
 			update = function(self, parent, nl)
@@ -267,6 +339,17 @@ return
 
 				if self.region then self.region.population = self.region.population+1 end
 				if self.city then self.city.population = self.city.population+1 end
+				
+				if not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region)..")", nl) end
+				if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end
+				
+				local langFound = false
+				for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
+				if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
+				if not langFound then
+					local langChance = math.random(1, 10)
+					if langChance == 5 then table.insert(self.spokenLang, self.region.language) end
+				end
 
 				local sys = parent.systems[nl.system]
 
