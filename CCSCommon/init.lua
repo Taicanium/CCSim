@@ -1889,6 +1889,7 @@ return
 			end,
 
 			demonym = function(self, nom)
+				if not nom then return "" end
 				local dem = ""
 
 				if nom:sub(nom:len(), nom:len()) == "a" then dem = nom.."n"
