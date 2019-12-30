@@ -340,15 +340,17 @@ return
 				if self.region then self.region.population = self.region.population+1 end
 				if self.city then self.city.population = self.city.population+1 end
 				
-				if not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region)..")", nl) end
-				if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end
+				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region)..")", nl) end
+				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
 				
-				local langFound = false
-				for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
-				if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
-				if not langFound then
-					local langChance = math.random(1, 10)
-					if langChance == 5 then table.insert(self.spokenLang, self.region.language) end
+				if self.nativeLang and #self.nativeLang > 0 then
+					local langFound = false
+					for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
+					if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
+					if not langFound then
+						local langChance = math.random(1, 10)
+						if langChance == 5 then table.insert(self.spokenLang, self.region.language) end
+					end
 				end
 
 				local sys = parent.systems[nl.system]
