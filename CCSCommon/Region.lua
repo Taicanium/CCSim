@@ -6,6 +6,7 @@ return
 				setmetatable(o, self)
 
 				o.cities = {}
+				o.language = nil
 				o.name = ""
 				o.nodes = {}
 				o.population = 0

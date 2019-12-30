@@ -7,6 +7,7 @@ return
 				local o = {}
 				setmetatable(o, self)
 				
+				o.name = ""
 				o.wordTable = {}
 
 				return o
@@ -21,7 +22,7 @@ return
 			end,
 			
 			deviate = function(self, parent, factor)
-				local newList = {}
+				local newList = Language:new()
 				local ops = {"OMIT", "REPLACE", "INSERT"}
 				
 				local fct = 0
@@ -36,7 +37,7 @@ return
 					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
 					for i=1,#ENGLISH do
 						local eng = ENGLISH[i]
-						local thisWord = newList[eng] or self.wordTable[eng]
+						local thisWord = newList.wordTable[eng] or self.wordTable[eng]
 						local spaces = {}
 						local newWord = thisWord:gsub(doOp[1], doOp[2], 1)
 						for j=1,newWord:len() do local ind = newWord:find("%s", j) if spaces[#spaces] and spaces[#spaces] ~= ind then table.insert(spaces, ind) end end
@@ -51,7 +52,7 @@ return
 						while thisWord:len() < newWord:len() do thisWord = thisWord.." " end
 						local div = (1/newWord:len())
 						for j=1,newWord:len() do if newWord:sub(j, j) ~= thisWord:sub(j, j) then fct = fct+div end end
-						newList[eng] = newWord
+						newList.wordTable[eng] = newWord
 						if fct >= totalFct then i = #ENGLISH end
 					end
 				end

@@ -22,7 +22,6 @@ return
 				o.founded = 0
 				o.frulernames = {}
 				o.hasruler = -1
-				o.language = nil
 				o.majority = ""
 				o.military = 0
 				o.milThreshold = 5
@@ -332,11 +331,18 @@ return
 
 				self.capitalregion = parent:randomChoice(self.regions, true)
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
-
-				if self.founded == 0 then self.founded = parent.years end
 				
-				self.language = Language:new()
-				self.language:define(parent)
+				local lang = Language:new()
+				lang:define(parent)
+				lang.name = self.demonym
+				
+				self.regions[self.capitalregion].language = lang
+				for i, j in pairs(self.regions) do if j.name ~= self.capitalregion then
+					j.language = lang:deviate(parent, 0.1)
+					j.language.name = parent:demonym(j.name).." "..lang.name
+				end end
+				
+				if self.founded == 0 then self.founded = parent.years end
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
