@@ -340,7 +340,7 @@ return
 				if self.region then self.region.population = self.region.population+1 end
 				if self.city then self.city.population = self.city.population+1 end
 				
-				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region)..")", nl) end
+				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region.name)..")", nl) end
 				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
 				
 				if self.nativeLang and #self.nativeLang > 0 then
