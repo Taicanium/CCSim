@@ -84,18 +84,17 @@ function gedReview(f)
 			elseif split[2] == "NAME" and indi[fi] and not indi[fi].surn and not indi[fi].givn then
 				local name = ""
 				for i=3,#split do name = name.." "..split[i] end
-				for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end
-				for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end
-				name = name:gsub("/%C+/ %C+", "")
-				name = name:gsub("/%C+/", "")
-				name = name:gsub("//", "")
-				for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
-				if not indi[fi].givn then indi[fi].givn = "" end
-				if not indi[fi].surn then indi[fi].surn = "" end
-				if not indi[fi].number then indi[fi].number = "" end
-				if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
-				if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
-				if not indi[fi].number:match("%w") then indi[fi].number = nil end
+				if not indi[fi].surn then for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end end
+				if not indi[fi].number then for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end end
+				if not indi[fi].givn then
+					name = name:gsub("/%C+/ %C+", "")
+					name = name:gsub("/%C+/", "")
+					name = name:gsub("//", "")
+					for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
+				end
+				if indi[fi].givn and not indi[fi].givn:match("%w") then indi[fi].givn = nil end
+				if indi[fi].surn and not indi[fi].surn:match("%w") then indi[fi].surn = nil end
+				if indi[fi].number and not indi[fi].number:match("%w") then indi[fi].number = nil end
 				fe = ""
 			elseif split[2] == "SURN" then
 				indi[fi].surn = split[3]
