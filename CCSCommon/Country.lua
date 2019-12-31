@@ -611,8 +611,6 @@ return
 				else self.birthrate = 40 end
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
-				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
-
 				for i=#self.alliances,1,-1 do
 					local found = false
 					local ar = self.alliances[i]
@@ -652,6 +650,8 @@ return
 					j.population = 0
 					for k, l in pairs(j.cities) do l.population = 0 end
 				end
+				
+				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
 				
 				self.milThreshold = 5
 				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
