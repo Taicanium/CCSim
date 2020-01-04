@@ -6,13 +6,13 @@ return
 			new = function(self)
 				local o = {}
 				setmetatable(o, self)
-				
+
 				o.name = ""
 				o.wordTable = {}
 
 				return o
 			end,
-			
+
 			define = function(self, parent)
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
 					local ln = math.ceil(ENGLISH[i]:len()/3)
@@ -20,11 +20,11 @@ return
 					self.wordTable[ENGLISH[i]] = word:lower()
 				end end
 			end,
-			
+
 			deviate = function(self, parent, factor)
 				local newList = Language:new()
 				local ops = {"OMIT", "REPLACE", "INSERT"}
-				
+
 				local fct = 0
 				local totalFct = factor*#ENGLISH
 				local prevDone = {}
@@ -35,8 +35,9 @@ return
 					if op == "OMIT" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), " "}
 					elseif op == "REPLACE" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))}
 					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
-					for i=1,#ENGLISH do
-						local eng = ENGLISH[i]
+					local i = 1
+					while i <= #ENGLISH do
+						local eng = ENGLISH[math.random(1, #ENGLISH)]
 						local thisWord = newList.wordTable[eng] or self.wordTable[eng]
 						local spaces = {}
 						local newWord = thisWord:gsub(doOp[1], doOp[2], 1)
@@ -54,18 +55,21 @@ return
 						for j=1,newWord:len() do if newWord:sub(j, j) ~= thisWord:sub(j, j) then fct = fct+div end end
 						newList.wordTable[eng] = newWord
 						if fct >= totalFct then i = #ENGLISH end
+						i = i+1
 					end
 				end
 				
+				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] end end
+
 				return newList
 			end,
-			
+
 			diff = function(self, other)
 				local factor = 0
 				for i=1,#ENGLISH do
 					local wrd1 = self.wordTable[ENGLISH[i]]
 					local wrd2 = other.wordTable[ENGLISH[i]]
-					
+
 					while wrd1:len() < wrd2:len() do wrd1 = wrd1.." " end
 					while wrd2:len() < wrd1:len() do wrd2 = wrd2.." " end
 					local div = 1/wrd1:len()
@@ -75,9 +79,9 @@ return
 				return factor
 			end,
 		}
-		
+
 		Language.__index = Language
 		Language.__call = function() return Language:new() end
-		
+
 		return Language
 	end

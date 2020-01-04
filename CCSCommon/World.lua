@@ -45,7 +45,22 @@ return
 							if fsqrt < bRad+0.5 and fsqrt > bRad-0.5 then
 								if not bench[x] then bench[x] = {} end
 								if not bench[x][y] then bench[x][y] = {} end
-								bench[x][y][z] = {}
+								bench[x][y][z] = {
+									x=x,
+									y=y,
+									z=z,
+									country="",
+									countrySet=false,
+									countryDone=false,
+									region="",
+									regionSet=false,
+									regionDone=false,
+									city="",
+									land=false,
+									waterNeighbors=true,
+									mapWritten=false,
+									neighbors={}
+								}
 							end
 							bdone = bdone+1
 						end
@@ -54,7 +69,7 @@ return
 				end end
 
 				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 100 or _DEBUG then benchAdjust = 100 end
+				if benchAdjust > 75 or _DEBUG then benchAdjust = 75 end
 
 				local rMin = 130
 				local rMax = 175

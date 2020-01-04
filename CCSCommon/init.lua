@@ -376,10 +376,11 @@ function simNew()
 	CCSCommon.doMaps = false
 	if datin:lower() == "y" then CCSCommon.doMaps = true end
 
-	local done = nil
+	local done = false
 	while not done do
 		UI:printp("\nData > ")
 		datin = UI:readl()
+		done = true
 
 		if datin:lower() == "random" then
 			UI:printf("\nDefining countries...")
@@ -396,14 +397,11 @@ function simNew()
 				CCSCommon.thisWorld:add(nl)
 				CCSCommon:getAlphabetical()
 			end
-
-			done = true
 		else
-			done = true
 			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			if not i then
 				UI:printf("\nUnable to load data file! Please try again.")
-				done = nil
+				done = false
 			end
 		end
 	end
@@ -584,9 +582,7 @@ function testGlyphs()
 	bmpString = bmpString:gsub("s", sStringBE)
 	bmpString = bmpString:gsub("r", rStringBE)
 
-	local byteString = ""
-	for x in bmpString:gmatch("%w%w") do byteString = byteString..string.char(tonumber(x, 16)) end
-	bf:write(byteString)
+	for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
 
 	for y=pad,1,-1 do
 		local btWritten = 0
@@ -1218,7 +1214,7 @@ return
 							if c1.relations[c2.name] > 100 then c1.relations[c2.name] = 100 end
 							if c2.relations[c1.name] > 100 then c2.relations[c1.name] = 100 end
 						end
-						
+
 						return -1
 					end
 				},
@@ -1267,7 +1263,7 @@ return
 						local recovery = math.random(1, 151-popFactor)
 						if recovery < 50 then c.stability = c.stability-math.random(15, 25)
 						else c.stability = c.stability+math.random(5, 10) end
-						
+
 						return -1
 					end
 				},
@@ -2220,10 +2216,10 @@ return
 				if not t then self.alpha = cKeys end
 				return cKeys
 			end,
-			
+
 			getLanguage = function(self, id, nl)
 				for i=1,#self.languages do if self.languages[i].name == id then return self.languages[i] end end
-				
+
 				if nl then
 					for i=1,#self.languages do if self.languages[i].name == nl.demonym then
 						local lang = self.languages[i]:deviate(self, 0.1)
@@ -2232,13 +2228,13 @@ return
 						table.insert(self.languages, lang)
 						return lang
 					end end
-					
+
 					local lang = Language:new()
 					lang:define(self)
 					lang.name = nl.demonym
 					nl.language = lang
 					table.insert(self.languages, lang)
-					
+
 					nl.regions[nl.capitalregion].language = lang
 					for i, j in pairs(nl.regions) do if j.name ~= nl.capitalregion then
 						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
@@ -2253,10 +2249,10 @@ return
 							table.insert(self.languages, j.language)
 						end
 					end end
-					
+
 					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
 				end
-				
+
 				return nil
 			end,
 
@@ -2538,7 +2534,7 @@ return
 
 							nomlower = newnom
 						end
-						
+
 						if i < nomlower:len()-1 then
 							local hasvowel = false
 
@@ -2562,12 +2558,12 @@ return
 								nomlower = newnom
 							end
 						end
-						
+
 						if i < nomlower:len()-2 and nomlower:sub(i, i+1) == nomlower:sub(i+2, i+3) then
 							local newnom = nomlower:sub(1, i+1)..nomlower:sub(i+4, nomlower:len())
 							nomlower = newnom
 						end
-						
+
 						if i < nomlower:len()-4 and nomlower:sub(i, i+2) == nomlower:sub(i+3, i+5) then
 							local newnom = nomlower:sub(1, i+2)..nomlower:sub(i+6, nomlower:len())
 							nomlower = newnom
@@ -2619,7 +2615,7 @@ return
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 
 					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
-					
+
 					for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
 
 					if nomlower ~= nomin then check = true end
@@ -2976,7 +2972,7 @@ return
 				if c.rulerParty then pop = c.rulerPopularity-50 end
 				return (pop+(c.stability-50)+((c.military/#c.people)*100))
 			end,
-			
+
 			writeGed = function(self)
 				if #self.royals > 0 then
 					of = io.open(self:directory({self.stamp, "families.ged"}), "w+")

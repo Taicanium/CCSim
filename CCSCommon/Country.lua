@@ -331,7 +331,7 @@ return
 
 				self.capitalregion = parent:randomChoice(self.regions, true)
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
-				
+
 				if self.founded == 0 then self.founded = parent.years end
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
@@ -650,9 +650,9 @@ return
 					j.population = 0
 					for k, l in pairs(j.cities) do l.population = 0 end
 				end
-				
+
 				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
-				
+
 				self.milThreshold = 5
 				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
 					if j.name == self.name or j.ongoing[k].target and j.ongoing[k].target.name == self.name then self.milThreshold = 25 end
@@ -692,12 +692,12 @@ return
 
 				self.averageAge = self.averageAge/#self.people
 				self.rulerPopularity = self.rulerPopularity/(3*#self.people)
-				
+
 				if #self.people == 0 then
 					self.averageAge = 100
 					self.rulerPopularity = 100
 				end
-				
+
 				self:checkRuler(parent, false)
 				local largest = ""
 				local largestN = 0
@@ -711,6 +711,12 @@ return
 				end
 				self.majority = largest
 				
+				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do
+					local langName = j.language.name
+					j.language = j.language:deviate(parent, 0.035)
+					j.language.name = langName
+				end end
+
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end
 					debugTimes["Country.update"] = debugTimes["Country.update"]+_time()-t0

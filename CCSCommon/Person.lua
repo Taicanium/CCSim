@@ -186,7 +186,7 @@ return
 					nn.ethnicity[i] = nn.ethnicity[i]+j
 				end
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i]/2 end
-				
+
 				nn.region = self.region
 				nn.city = self.city
 
@@ -236,18 +236,18 @@ return
 				table.insert(mother.children, self)
 				self.father = father
 				self.mother = mother
-				
+
 				local natLang = {}
 				local spokeLang = {}
-				
+
 				local natLangs = 0
 				local spokeLangs = 0
-				
+
 				if father.nativeLang then for i=1,#father.nativeLang do if father.nativeLang[i] and father.nativeLang[i].name ~= self.region.language.name and not natLang[father.nativeLang[i].name] then natLangs = natLangs+1 natLang[father.nativeLang[i].name] = father.nativeLang[i] end end end
 				if father.spokenLang then for i=1,#father.spokenLang do if father.spokenLang[i] and father.spokenLang[i].name ~= self.region.language.name and not spokeLang[father.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[father.spokenLang[i].name] = father.spokenLang[i] end end end
 				if mother.nativeLang then for i=1,#mother.nativeLang do if mother.nativeLang[i] and mother.nativeLang[i].name ~= self.region.language.name and not natLang[mother.nativeLang[i].name] then natLangs = natLangs+1 natLang[mother.nativeLang[i].name] = mother.nativeLang[i] end end end
 				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and mother.spokenLang[i].name ~= self.region.language.name and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
-				
+
 				table.insert(self.nativeLang, self.region.language)
 				local maxNatLangs = math.random(1, 2)
 				if maxNatLangs > natLangs then maxNatLangs = natLangs end
@@ -339,10 +339,10 @@ return
 
 				if self.region then self.region.population = self.region.population+1 end
 				if self.city then self.city.population = self.city.population+1 end
-				
+
 				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region.name)..")", nl) end
 				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
-				
+
 				if self.nativeLang and #self.nativeLang > 0 then
 					local langFound = false
 					for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
