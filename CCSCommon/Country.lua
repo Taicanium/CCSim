@@ -389,11 +389,7 @@ return
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
-					local unisex = 0
-					for i=1,#self.rulernames do if self.rulernames[i] == self.people[newRuler].rulerName then unisex = 1 end end
-					for i=1,#self.frulernames do if self.frulernames[i] == self.people[newRuler].rulerName then unisex = unisex == 1 and 2 or 0 end end
-
-					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then if self.rulers[i].title == self.people[newRuler].title or unisex == 2 then namenum = namenum+1 end end end
+					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then namenum = namenum+1 end end
 
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name) end
 
