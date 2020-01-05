@@ -138,7 +138,7 @@ return
 									local closestAge = -1
 
 									for i=1,#self.people do
-										if self.people[i] and self.people[i].def and self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "Male" then
+										if self.people[i] and self.people[i].def and self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "M" then
 											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
 											elseif self.people[i].age <= self.averageAge+25 and self.people[i].rulerName == "" then table.insert(possibles, self.people[i]) end
 										end end
@@ -146,7 +146,7 @@ return
 
 									for i=1,#possibles do
 										local psp = possibles[i]
-										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then if psp.gender == "Male" or not self.agPrim or #self.people < 20 then
+										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then if psp.gender == "M" or not self.agPrim or #self.people < 20 then
 											closest = psp
 											closestGens = psp.royalGenerations
 											closestMats = psp.maternalLineTimes
@@ -156,7 +156,7 @@ return
 
 									if not closest then
 										local p = math.random(1, #self.people)
-										if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].rulerName == "" then if self.people[p].gender == "Male" or not self.agPrim or #self.people < 20 then self:setRuler(parent, p, enthrone) end end
+										if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].rulerName == "" then if self.people[p].gender == "M" or not self.agPrim or #self.people < 20 then self:setRuler(parent, p, enthrone) end end
 									else self:setRuler(parent, closest.pIndex, enthrone) end
 
 									possibles = nil
@@ -297,10 +297,10 @@ return
 					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
 
-				for i=1,#childrenByAge do if childrenByAge[i].gender == "Male" then hasMale = true end end
+				for i=1,#childrenByAge do if childrenByAge[i].gender == "M" then hasMale = true end end
 				for i=1,#childrenByAge do if not eldestLiving then
 					if hasMale then
-						if childrenByAge[i].gender == "Male" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
+						if childrenByAge[i].gender == "M" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
 					elseif not self.agPrim then
 						if not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
 					end
@@ -358,7 +358,7 @@ return
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
 					n.birthplace = self.name
-					n.gString = n.gender:sub(1, 1).." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
+					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					self:add(parent, n)
 				end
 			end,
@@ -373,7 +373,7 @@ return
 
 				parent:rseed()
 
-				if self.people[newRuler].gender == "Female" then
+				if self.people[newRuler].gender == "F" then
 					if parent.systems[self.system].dynastic then self.people[newRuler].rulerName = parent:randomChoice(self.frulernames) end
 					if parent.systems[self.system].franks then
 						self.people[newRuler].level = #parent.systems[self.system].franks
@@ -393,7 +393,7 @@ return
 					for i=1,#self.rulernames do if self.rulernames[i] == self.people[newRuler].rulerName then unisex = 1 end end
 					for i=1,#self.frulernames do if self.frulernames[i] == self.people[newRuler].rulerName then unisex = unisex == 1 and 2 or 0 end end
 
-					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then if self.rulers[i].title == self.people[newRuler].title or unisex then namenum = namenum+1 end end end
+					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then if self.rulers[i].title == self.people[newRuler].title or unisex == 2 then namenum = namenum+1 end end end
 
 					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name) end
 
@@ -404,7 +404,7 @@ return
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
-					self.people[newRuler].gString = self.people[newRuler].gender:sub(1, 1).." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
+					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
 
 					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					table.insert(parent.royals, self.people[newRuler])
@@ -713,7 +713,7 @@ return
 				
 				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do
 					local langName = j.language.name
-					j.language = j.language:deviate(parent, 0.035)
+					j.language = j.language:deviate(parent, 0.04)
 					j.language.name = langName
 				end end
 

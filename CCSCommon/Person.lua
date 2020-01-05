@@ -94,11 +94,11 @@ return
 
 				if not self.spouse or not self.spouse.def then return nil end
 
-				if self.gender == "Male" then if self.age < 14 or self.age > 65 then return nil end
-				elseif self.gender == "Female" then if self.age < 14 or self.age > 55 then return nil end end
+				if self.gender == "M" then if self.age < 14 or self.age > 65 then return nil end
+				elseif self.gender == "F" then if self.age < 14 or self.age > 55 then return nil end end
 
-				if self.spouse.gender == "Male" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end
-				elseif self.spouse.gender == "Female" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
+				if self.spouse.gender == "M" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end
+				elseif self.spouse.gender == "F" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
 
 				local nn = Person:new()
 				local nFound = true
@@ -109,7 +109,7 @@ return
 					for i, j in pairs(self.spouse.children) do if j.name == nn.name then nFound = true end end
 				end
 
-				if self.gender == "Male" then
+				if self.gender == "M" then
 					nn.surname = self.surname
 					nn.ancName = self.ancName
 				else
@@ -123,7 +123,7 @@ return
 					if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 					elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
 					else
-						if self.gender == "Male" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+						if self.gender == "M" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 						else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 					end
 
@@ -151,22 +151,22 @@ return
 						nn.royalGenerations = self.spouse.royalGenerations+1
 						nn.royalSystem = self.spouse.royalSystem
 						nn.LastRoyalAncestor = self.spouse.LastRoyalAncestor
-						if self.spouse.gender == "Female" then nn.maternalLineTimes = self.spouse.maternalLineTimes+1 end
+						if self.spouse.gender == "F" then nn.maternalLineTimes = self.spouse.maternalLineTimes+1 end
 					else
 						nn.royalGenerations = self.royalGenerations+1
 						nn.royalSystem = self.royalSystem
 						nn.LastRoyalAncestor = self.LastRoyalAncestor
-						if self.gender == "Female" then nn.maternalLineTimes = self.maternalLineTimes+1 end
+						if self.gender == "F" then nn.maternalLineTimes = self.maternalLineTimes+1 end
 					end
 				end
 
 				if self.royalGenerations == 0 then
-					if self.gender == "Male" then nn.maternalLineTimes = 0 end
+					if self.gender == "M" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.royalSystem
 					nn.LastRoyalAncestor = self.rulerTitle.." "..self.rulerName.." "..parent:roman(self.number).." of "..self.ruledCountry
 				elseif self.spouse.royalGenerations == 0 then
-					if self.gender == "Female" then nn.maternalLineTimes = 0 end
+					if self.gender == "F" then nn.maternalLineTimes = 0 end
 					nn.royalGenerations = 1
 					nn.royalSystem = self.spouse.royalSystem
 					nn.LastRoyalAncestor = self.spouse.rulerTitle.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..self.spouse.ruledCountry
@@ -178,7 +178,7 @@ return
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
 				local sys = parent.systems[nl.system]
-				if nn.gender == "Male" or not sys.dynastic then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
+				if nn.gender == "M" or not sys.dynastic then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
 
 				for i, j in pairs(self.ethnicity) do nn.ethnicity[i] = j end
 				for i, j in pairs(self.spouse.ethnicity) do
@@ -190,12 +190,12 @@ return
 				nn.region = self.region
 				nn.city = self.city
 
-				if self.gender == "Female" then nn:SetFamily(self.spouse, self, parent)
+				if self.gender == "F" then nn:SetFamily(self.spouse, self, parent)
 				else nn:SetFamily(self, self.spouse, parent) end
 
 				nn.birthplace = nl.name
 				nn.age = 0
-				nn.gString = nn.gender:sub(1, 1).." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
+				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
 
 				nl:add(parent, nn)
@@ -212,7 +212,7 @@ return
 				self.name = parent:name(true)
 				self.surname = parent:name(true)
 
-				if math.random(1, 1000) < 501 then self.gender = "Male" else self.gender = "Female" end
+				if math.random(1, 1000) < 501 then self.gender = "M" else self.gender = "F" end
 
 				self.pbelief = math.random(1, 100)
 				self.ebelief = math.random(1, 100)
@@ -359,7 +359,7 @@ return
 				if not sys.dynastic then rankLim = 1 end
 
 				local ranks = sys.ranks
-				if sys.dynastic and self.gender == "Female" then ranks = sys.franks end
+				if sys.dynastic and self.gender == "F" then ranks = sys.franks end
 
 				if self.title and self.level then
 					if self.level < #ranks-rankLim then

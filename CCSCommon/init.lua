@@ -199,7 +199,7 @@ function gedReview(f)
 		UI:clear()
 		local i = indi[fi]
 		local gIndex = i.gIndex
-		local gender = i.gender:sub(1, 1)
+		local gender = i.gender
 		local title = i.rulerTitle or i.title
 		local givn = i.givn or i.name
 		local surn = i.surn or i.surname
@@ -303,7 +303,7 @@ end
 function printIndi(i, f)
 	if not i then return end
 	local gIndex = i.gIndex
-	local gender = i.gender:sub(1, 1)
+	local gender = i.gender
 	local title = i.rulerTitle or i.title
 	local givn = i.givn or i.name
 	local surn = i.surn or i.surname
@@ -2074,7 +2074,7 @@ return
 						else
 							local counter = ""
 							local number = 1
-							local gend = "Male"
+							local gend = "M"
 							local to = self.years
 							local oldsystem = fc.system
 							if mat[1] == "Prime" and mat[2] == "Minister" then
@@ -2094,11 +2094,11 @@ return
 							elseif mat[1] == "Queen" then
 								counter = "King"
 								fc.system = 3
-								gend = "Female"
+								gend = "F"
 							elseif mat[1] == "Empress" then
 								counter = "Emperor"
 								fc.system = 2
-								gend = "Female"
+								gend = "F"
 							end
 							if oldsystem ~= fc.system then fc.snt[self.systems[fc.system].name] = fc.snt[self.systems[fc.system].name]+1 end
 							if self.systems[fc.system].dynastic then
@@ -2106,10 +2106,10 @@ return
 								table.insert(fc.rulers, {dynastic=true, title=mat[1], name=mat[2], number=tostring(number), From=mat[3], To=mat[4], Country=fc.name})
 
 								local found = false
-								if gend == "Male" then for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
-								elseif gend == "Female" then for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end end
+								if gend == "M" then for i, cp in pairs(fc.rulernames) do if cp == mat[2] then found = true end end
+								elseif gend == "F" then for i, cp in pairs(fc.frulernames) do if cp == mat[2] then found = true end end end
 								if not found then
-									if gend == "Female" then table.insert(fc.frulernames, mat[2])
+									if gend == "F" then table.insert(fc.frulernames, mat[2])
 									else table.insert(fc.rulernames, mat[2]) end
 								end
 							else table.insert(fc.rulers, {dynastic=false, title=mat[1], name=mat[2], surname=mat[3], number=mat[3], From=mat[4], To=mat[5], Country=fc.name}) end
@@ -2165,7 +2165,7 @@ return
 					else msgout = "grand" end
 				end
 
-				if gender == "Male" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+				if gender == "M" then msgout = msgout.."son" else msgout = msgout.."daughter" end
 				return msgout
 			end,
 
@@ -3006,7 +3006,7 @@ return
 						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
 						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						of:write("\n1 SEX "..j.gender.."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
 						if j.birth < 1 then of:write(" B.C.") end
 						of:write("\n2 PLAC "..j.birthplace)
 						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
@@ -3141,7 +3141,7 @@ return
 						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
 						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
 						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-						of:write("\n1 SEX "..j.gender:sub(1, 1).."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
+						of:write("\n1 SEX "..j.gender.."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
 						if j.birth < 1 then of:write(" B.C.") end
 						of:write("\n2 PLAC "..j.birthplace)
 						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
