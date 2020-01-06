@@ -22,6 +22,7 @@ return
 				o.founded = 0
 				o.frulernames = {}
 				o.hasruler = -1
+				o.language = nil
 				o.majority = ""
 				o.military = 0
 				o.milThreshold = 5
@@ -114,6 +115,21 @@ return
 
 				if selfWater and otherWater then return 1 end
 				return 0
+			end,
+			
+			checkCapital = function(self, parent)
+				local oldcap = self.capitalcity
+				local oldreg = self.capitalregion
+
+				if not self.capitalregion or not self.regions[self.capitalregion] or not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
+					self.capitalregion = parent:randomChoice(self.regions, true)
+					self.capitalcity = nil
+				end
+
+				if not self.capitalcity then
+					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
+					if oldcap and self.regions[oldreg] and self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
+				end
 			end,
 
 			checkRuler = function(self, parent, enthrone)
@@ -611,10 +627,10 @@ return
 					local found = false
 					local ar = self.alliances[i]
 
-					for j, cp in pairs(parent.thisWorld.countries) do
+					for j, cp in pairs(parent.thisWorld.countries) do if not found then
 						local nr = cp.name
 						if ar:len() >= nr:len() and ar:sub(1, #nr) == nr then found = true end
-					end
+					end end
 
 					if not found then table.remove(self.alliances, i) end
 				end
@@ -627,27 +643,14 @@ return
 					elseif self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
 				end end
 
-				local oldcap = nil
-				local oldreg = nil
-
-				if not self.regions[self.capitalregion] then
-					oldreg = self.capitalregion
-					oldcap = self.capitalcity
-					self.capitalregion = parent:randomChoice(self.regions, true)
-					self.capitalcity = nil
-				end
-
-				if self.regions[self.capitalregion] then if not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
-					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
-					if oldcap and self.regions[oldreg] and self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
-				end end
+				self:checkCapital(parent)
+				
+				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
 
 				for i, j in pairs(self.regions) do
 					j.population = 0
 					for k, l in pairs(j.cities) do l.population = 0 end
 				end
-
-				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
 
 				self.milThreshold = 5
 				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
@@ -707,11 +710,7 @@ return
 				end
 				self.majority = largest
 				
-				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do
-					local langName = j.language.name
-					j.language = j.language:deviate(parent, 0.04)
-					j.language.name = langName
-				end end
+				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do parent:setLanguage(self, j, j.language:deviate(parent, 0.04)) end end
 
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end

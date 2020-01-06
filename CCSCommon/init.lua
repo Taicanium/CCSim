@@ -15,6 +15,71 @@ if _stamp() < 15 then _stamp = os.clock end
 
 debugTimes = {}
 
+function compLangs(parent)
+	local cArr = {}
+	local regs = {}
+	local testString = "The quick brown vixen and its master the mouse"
+	local wCount = 0
+	local _REVIEWING = true
+	
+	for x in testString:gmatch("%w+") do wCount = wCount+1 end
+	for i, j in pairs(parent.thisWorld.countries) do for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end end
+	local rKeys = parent:getAlphabetical(regs)
+	
+	for i=1,#rKeys do
+		local key = regs[rKeys[i]]
+		local country = parent.thisWorld.countries[key:match("(%w+)!")]
+		local region = country.regions[key:match("!(%w+)")]
+		table.insert(cArr, {country.demonym:upper(), region.language})
+	end
+	
+	while _REVIEWING do
+		local lnCount = 0
+		UI:clear()
+		local lastCountry = ""
+		UI:printf(string.format("Translating the text \"%s.\"\n", testString))
+		for i=1,#cArr do if lnCount < getLineTolerance(2) then
+			local lang = cArr[i][2]
+			if cArr[i][1] ~= lastCountry then
+				UI:printf(cArr[i][1])
+				lnCount = lnCount+1
+				lastCountry = cArr[i][1]
+			end
+			local outString = ""
+			local wIndex = 1
+			for x in testString:gmatch("%w+") do
+				if wIndex == 1 then
+					local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
+					outString = outString..initWord:gsub(" ", "")
+				else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
+				if wIndex < wCount then outString = outString.." " end
+				wIndex = wIndex+1
+			end
+			UI:printf(string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString))
+			lnCount = lnCount+1
+		end end
+		UI:printf("\nEnter B to return to the previous menu.")
+		UI:printp(" > ")
+		local datin = UI:readl()
+		if datin:lower() == "b" then _REVIEWING = false end
+	end
+end
+
+function debugLine()
+	local tmpF = true
+	while tmpF do
+		UI:printp("\n Debug line > ")
+		datin = UI:readl()
+		if datin == "" then tmpF = false else
+			tmpF = loadstring(datin)
+			if tmpF then
+				local stat, err = pcall(tmpF)
+				if not stat then UI:printf(err) else UI:printf(stat) end
+			end
+		end
+	end
+end
+
 --[[ function eventReview(f)
 	local countries = {}
 
@@ -298,6 +363,12 @@ function gedReview(f)
 		if not indi[fi] then fi = oldFI end
 		if not indi[fi] then fi = CCSCommon:randomChoice(indi, true) end
 	end
+end
+
+function getLineTolerance(rl)
+	local remainingLines = rl
+	if not rl then remainingLines = 1 else remainingLines = remainingLines+1 end -- We wish to have a final line on which to blink the cursor.
+	if cursesstatus then return UI.y-rl else return 25-rl end
 end
 
 function printIndi(i, f)
@@ -624,18 +695,6 @@ function testNames(n)
 	f:flush()
 	f:close()
 	f = nil
-end
-
-function debugLine()
-	local tmpF = true
-	while tmpF do
-		UI:printp("\n Debug line > ")
-		datin = UI:readl()
-		if datin == "" then tmpF = false else
-			tmpF = loadstring(datin)
-			UI:printf(pcall(tmpF))
-		end
-	end
 end
 
 City = require("CCSCommon.City")()
@@ -1160,26 +1219,7 @@ return
 							c.stability = c.stability-math.random(5, 10)
 							if c.stability < 1 then c.stability = 1 end
 
-							if not c.regions[c.capitalregion] or not c.regions[c.capitalregion].cities[c.capitalcity] then
-								local oldcap = c.capitalcity
-								local oldreg = c.capitalregion
-
-								local nr = parent:randomChoice(c.regions)
-								if nr then
-									c.capitalregion = nr.name
-									c.capitalcity = parent:randomChoice(nr.cities, true)
-
-									if oldcap and oldcap ~= "" and c.capitalcity then
-										local msg = "Capital moved from "..oldcap.." to "..c.capitalcity
-
-										c:event(parent, msg)
-									else
-										c.capitalregion = ""
-										c.capitalcity = ""
-									end
-								end
-							end
-
+							newl:checkCapital(parent)
 							newl:checkRuler(parent, true)
 							parent.thisWorld.mapChanged = true
 
@@ -2221,33 +2261,21 @@ return
 				for i=1,#self.languages do if self.languages[i].name == id then return self.languages[i] end end
 
 				if nl then
-					for i=1,#self.languages do if self.languages[i].name == nl.demonym then
-						local lang = self.languages[i]:deviate(self, 0.1)
-						lang.name = id
-						for i, j in pairs(nl.regions) do if nl.demonym.." ("..self:demonym(j.name)..")" == id then j.language = lang end end
+					if not nl.language then
+						nl.language = Language:new()
+						nl.language:define(self)
+						nl.language.name = nl.demonym
 						table.insert(self.languages, lang)
-						return lang
-					end end
-
-					local lang = Language:new()
-					lang:define(self)
-					lang.name = nl.demonym
-					nl.language = lang
-					table.insert(self.languages, lang)
-
-					nl.regions[nl.capitalregion].language = lang
-					for i, j in pairs(nl.regions) do if j.name ~= nl.capitalregion then
+					end
+				
+					for i, j in pairs(nl.regions) do if not j.language then
 						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
 						found = false
-						for i=1,#self.languages do if self.languages[i].name == langID then
+						for i=1,#self.languages do if not found and self.languages[i].name == langID then
 							found = true
 							j.language = self.languages[i]
 						end end
-						if not found then
-							j.language = lang:deviate(self, 0.1)
-							j.language.name = langID
-							table.insert(self.languages, j.language)
-						end
+						if not found then self:setLanguage(nl, j, nl.language:deviate(self, 0.08)) end
 					end end
 
 					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
@@ -2435,6 +2463,7 @@ return
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
 						UI:printf("G to record the family and relationship data at this point.")
+						UI:printf("L to compare the languages of this world.")
 						UI:printf("R to record the event data at this point.")
 						UI:printf("Q to exit.")
 						UI:printp("\n > ")
@@ -2442,11 +2471,16 @@ return
 						if tonumber(datin) then remainingYears = tonumber(datin)
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
 						elseif datin:lower() == "g" then self:writeGed()
+						elseif datin:lower() == "l" then compLangs(self)
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
 							_running = false
 							remainingYears = 1
 						end
+						
+						UI:clear(true)
+						UI:printc(msg)
+						UI:refresh()
 					end
 				end
 
@@ -2964,6 +2998,15 @@ return
 					t.LastRoyalAncestor = a
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
+			end,
+			
+			setLanguage = function(self, nl, r, l)
+				if not r or not r.name then return end
+				local langName = nl.demonym.." ("..self:demonym(r.name)..")"
+				for i=#self.languages,1,-1 do if self.languages[i].name == langName then table.remove(self.languages, i) end end
+				l.name = langName
+				table.insert(self.languages, l)
+				r.language = self:getLanguage(langName, nl)
 			end,
 
 			strengthFactor = function(self, c)
