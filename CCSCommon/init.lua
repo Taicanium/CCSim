@@ -2338,7 +2338,6 @@ return
 				collectgarbage("collect")
 
 				while _running do
-					local t0 = _time()
 					self.thisWorld:update(self)
 
 					for i, cp in pairs(self.thisWorld.countries) do
@@ -2346,6 +2345,7 @@ return
 						self.final[cp.name] = cp
 					end
 
+					local t0 = _time()
 					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
