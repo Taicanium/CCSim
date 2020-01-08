@@ -3,10 +3,6 @@ Compact Country Simulator; A teensy tiny, highly experimental Lua script that si
 
 Long and short: Run the script, answer the prompts, and in response to "Data > " you may type "random" or give the name of a text file with country data in it. See 'File Format' for a description of the required format.
 
-If the player sets it as such, at the start of the simulation, the script will output a file called "initial.r" in the root directory, which is written in the R programming language. This script file can be executed to produce an interactive 3D model view of the world's initial state, including coloring to indicate the territory of each country. CCSim will also generate a "final.r" upon the simulation's completion.
-
-R is an interpreted language just like Lua, and an R interpreter is available for download at https://cloud.r-project.org/. More information on the language can be found at https://www.r-project.org.
-
 If you have a Linux system, I highly recommend using the custom interpreter (TREPL) bundled with the Torch project (https://github.com/torch/torch7). Simply installing the libraries bundled with Torch may reduce runtime of this script as dramatically as from several minutes to several seconds. Be sure, if you do this, to configure your Torch installation with Lua 5.2, and not LuaJIT! The JIT interpreter is incapable of addressing the amount of memory CCSim uses.
 
 # File Format
