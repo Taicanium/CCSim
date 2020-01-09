@@ -710,7 +710,7 @@ return
 				end
 				self.majority = largest
 				
-				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do parent:setLanguage(self, j, j.language:deviate(parent, 0.04)) end end
+				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do parent:setLanguage(self, j, j.language:deviate(parent, 0.06)) end end
 
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end
