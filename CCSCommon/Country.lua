@@ -116,7 +116,7 @@ return
 				if selfWater and otherWater then return 1 end
 				return 0
 			end,
-			
+
 			checkCapital = function(self, parent)
 				local oldcap = self.capitalcity
 				local oldreg = self.capitalregion
@@ -644,7 +644,7 @@ return
 				end end
 
 				self:checkCapital(parent)
-				
+
 				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
 
 				for i, j in pairs(self.regions) do
@@ -709,7 +709,7 @@ return
 					end
 				end
 				self.majority = largest
-				
+
 				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do parent:setLanguage(self, j, j.language:deviate(parent, 0.06)) end end
 
 				if _DEBUG then

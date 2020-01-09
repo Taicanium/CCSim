@@ -15,56 +15,6 @@ if _stamp() < 15 then _stamp = os.clock end
 
 debugTimes = {}
 
-function compLangs(parent)
-	local cArr = {}
-	local regs = {}
-	local testString = "The quick brown vixen and its master the mouse"
-	local wCount = 0
-	local _REVIEWING = true
-	
-	for x in testString:gmatch("%w+") do wCount = wCount+1 end
-	for i, j in pairs(parent.thisWorld.countries) do for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end end
-	local rKeys = parent:getAlphabetical(regs)
-	
-	for i=1,#rKeys do
-		local key = regs[rKeys[i]]
-		local country = parent.thisWorld.countries[key:match("(%w+)!")]
-		local region = country.regions[key:match("!(%w+)")]
-		table.insert(cArr, {country.demonym:upper(), region.language})
-	end
-	
-	while _REVIEWING do
-		local lnCount = 0
-		UI:clear()
-		local lastCountry = ""
-		UI:printf(string.format("Translating the text \"%s.\"\n", testString))
-		for i=1,#cArr do if lnCount < getLineTolerance(2) then
-			local lang = cArr[i][2]
-			if cArr[i][1] ~= lastCountry then
-				UI:printf(cArr[i][1])
-				lnCount = lnCount+1
-				lastCountry = cArr[i][1]
-			end
-			local outString = ""
-			local wIndex = 1
-			for x in testString:gmatch("%w+") do
-				if wIndex == 1 then
-					local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
-					outString = outString..initWord:gsub(" ", "")
-				else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
-				if wIndex < wCount then outString = outString.." " end
-				wIndex = wIndex+1
-			end
-			UI:printf(string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString))
-			lnCount = lnCount+1
-		end end
-		UI:printf("\nEnter B to return to the previous menu.")
-		UI:printp(" > ")
-		local datin = UI:readl()
-		if datin:lower() == "b" then _REVIEWING = false end
-	end
-end
-
 function debugLine()
 	local tmpF = true
 	while tmpF do
@@ -1881,6 +1831,58 @@ return
 			years = 1,
 			yearstorun = 0,
 
+			compLangs = function(self)
+				local cArr = {}
+				local regs = {}
+				local testString = "The quick brown vixen and its master the mouse"
+				local wCount = 0
+				local _REVIEWING = true
+
+				for x in testString:gmatch("%w+") do wCount = wCount+1 end
+				for i, j in pairs(self.thisWorld.countries) do for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end end
+				local rKeys = self:getAlphabetical(regs)
+
+				for i=1,#rKeys do
+					local key = regs[rKeys[i]]
+					local country = self.thisWorld.countries[key:match("(%w+)!")]
+					local region = country.regions[key:match("!(%w+)")]
+					if region.language then table.insert(cArr, {country.demonym:upper(), region.language}) end
+				end
+
+				while _REVIEWING do
+					local lnCount = 0
+					UI:clear()
+					local lastCountry = ""
+					UI:printf(string.format("Translating the text \"%s.\"\n", testString))
+					for i=1,#cArr do if lnCount < getLineTolerance(2) then
+						local lang = cArr[i][2]
+						if lang then
+							if cArr[i][1] ~= lastCountry then
+								UI:printf(cArr[i][1])
+								lnCount = lnCount+1
+								lastCountry = cArr[i][1]
+							end
+							local outString = ""
+							local wIndex = 1
+							for x in testString:gmatch("%w+") do if lang.wordTable[x:lower()] then
+								if wIndex == 1 then
+									local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
+									outString = outString..initWord:gsub(" ", "")
+								else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
+								if wIndex < wCount then outString = outString.." " end
+								wIndex = wIndex+1
+							end end
+							UI:printf(string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString))
+							lnCount = lnCount+1
+						end
+					end end
+					UI:printf("\nEnter B to return to the previous menu.")
+					UI:printp(" > ")
+					local datin = UI:readl()
+					if datin:lower() == "b" then _REVIEWING = false end
+				end
+			end,
+
 			deepcopy = function(self, obj)
 				local t0 = _time()
 
@@ -2262,12 +2264,11 @@ return
 
 				if nl then
 					if not nl.language then
-						nl.language = Language:new()
-						nl.language:define(self)
-						nl.language.name = nl.demonym
-						table.insert(self.languages, lang)
+						local newLang = Language:new()
+						newLang:define(self)
+						self:setLanguage(nl, nil, newLang)
 					end
-				
+
 					for i, j in pairs(nl.regions) do if not j.language then
 						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
 						found = false
@@ -2275,7 +2276,7 @@ return
 							found = true
 							j.language = self.languages[i]
 						end end
-						if not found then self:setLanguage(nl, j, nl.language:deviate(self, 0.08)) end
+						if not found then self:setLanguage(nl, j, nl.language:deviate(self, 0.06)) end
 					end end
 
 					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
@@ -2323,6 +2324,7 @@ return
 
 			loop = function(self)
 				local _running = true
+				local remainingYears = 1
 				local msg = ""
 				local cLimit = 16
 				local eLimit = 6
@@ -2332,8 +2334,6 @@ return
 				os.execute("mkdir "..self:directory({self.stamp}))
 				if self.doMaps then os.execute("mkdir "..mapDir) end
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
-
-				local remainingYears = 1
 
 				collectgarbage("collect")
 
@@ -2366,10 +2366,10 @@ return
 						end
 
 						if cursesstatus then
-							cLimit = UI.y-#currentEvents-6
+							cLimit = getLineTolerance(#currentEvents+5)
 							if #currentEvents == 0 then cLimit = cLimit-1 end
 							if cLimit < math.floor(UI.y/2) then cLimit = math.floor(UI.y/2) end
-							eLimit = UI.y-cLimit-6
+							eLimit = getLineTolerance(cLimit+5)
 						end
 
 						for i=1,#self.alpha do
@@ -2471,16 +2471,18 @@ return
 						if tonumber(datin) then remainingYears = tonumber(datin)
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
 						elseif datin:lower() == "g" then self:writeGed()
-						elseif datin:lower() == "l" then compLangs(self)
+						elseif datin:lower() == "l" then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
 							_running = false
 							remainingYears = 1
 						end
-						
-						UI:clear(true)
-						UI:printc(msg)
-						UI:refresh()
+
+						if datin:lower() ~= "q" then
+							UI:clear(true)
+							UI:printc(msg)
+							UI:refresh()
+						end
 					end
 				end
 
@@ -2999,14 +3001,14 @@ return
 				end
 				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
 			end,
-			
+
 			setLanguage = function(self, nl, r, l)
-				if not r or not r.name then return end
-				local langName = nl.demonym.." ("..self:demonym(r.name)..")"
+				local langName = nl.demonym
+				if r and r.name then langName = langName.." ("..self:demonym(r.name)..")" end
 				for i=#self.languages,1,-1 do if self.languages[i].name == langName then table.remove(self.languages, i) end end
 				l.name = langName
 				table.insert(self.languages, l)
-				r.language = self:getLanguage(langName, nl)
+				if r then r.language = self:getLanguage(langName, nl) else nl.language = self:getLanguage(langName, nl) end
 			end,
 
 			strengthFactor = function(self, c)

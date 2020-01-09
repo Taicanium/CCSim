@@ -58,7 +58,7 @@ return
 						i = i+1
 					end
 				end
-				
+
 				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] end end
 
 				return newList
