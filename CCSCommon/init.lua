@@ -2498,7 +2498,7 @@ return
 
 				local nom = ""
 				local length = 0
-				length = math.random(m or 1, l or personal and 4 or 3)
+				length = math.random(m or 1, l or 3)
 
 				nom = self:randomChoice(self.initialgroups)
 				local groups = 1
