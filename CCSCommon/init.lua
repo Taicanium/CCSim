@@ -409,15 +409,16 @@ function simNew()
 			CCSCommon:rseed()
 
 			CCSCommon.thisWorld = World:new()
-			CCSCommon.numCountries = math.random(7, 10)
+			local numCountries = math.random(6, 10)
 
-			for j=1,CCSCommon.numCountries do
-				UI:printl(string.format("Country %d/%d", j, CCSCommon.numCountries))
+			for j=1,numCountries do
+				UI:printl(string.format("Country %d/%d", j, numCountries))
 				local nl = Country:new()
 				nl:set(CCSCommon)
 				CCSCommon.thisWorld:add(nl)
-				CCSCommon:getAlphabetical()
 			end
+
+			CCSCommon:getAlphabetical()
 		else
 			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
 			if not i then
@@ -2452,6 +2453,8 @@ return
 						for ln, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end
 					end
 
+					UI:readl()
+
 					UI:clear(true)
 					UI:printc(msg)
 					UI:refresh()
@@ -2498,7 +2501,7 @@ return
 
 				local nom = ""
 				local length = 0
-				length = math.random(m or 1, l or personal and 3 or 2)
+				length = math.random(m or 1, l or personal and 4 or 3)
 
 				nom = self:randomChoice(self.initialgroups)
 				local groups = 1
@@ -2910,10 +2913,9 @@ return
 
 			rseed = function(self)
 				local t0 = _time()
-				local tc = _stamp()
-				local ts = tostring(tc)
+				local ts = tostring(_stamp()/t0)
 				local n = tonumber(ts:reverse())
-				if not n then n = _stamp() end
+				if not n then n = tonumber(tostring(t0):reverse()) end
 				math.randomseed(n)
 
 				if _DEBUG then

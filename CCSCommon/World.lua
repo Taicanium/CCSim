@@ -12,6 +12,7 @@ return
 				o.gPop = 0
 				o.initialState = true
 				o.mapChanged = true
+				o.numCountries = 0
 				o.planet = {}
 				o.planetdefined = {}
 				o.planetC = 0
@@ -24,6 +25,7 @@ return
 			end,
 
 			add = function(self, nd)
+				if not self.countries[nd.name] then self.numCountries = self.numCountries+1 end
 				self.countries[nd.name] = nd
 			end,
 
@@ -240,10 +242,10 @@ return
 
 				UI:printf("Defining regional boundaries...")
 
-				for i, cp in pairs(self.countries) do
+				for i, j in pairs(self.countries) do
 					UI:printl(string.format("Country %d/%d", ci, parent.numCountries))
 					ci = ci+1
-					cp:setTerritory(parent)
+					j:setTerritory(parent)
 				end
 
 				parent.stamp = tostring(math.floor(_stamp()))
