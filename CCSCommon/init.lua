@@ -2453,8 +2453,6 @@ return
 						for ln, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end
 					end
 
-					UI:readl()
-
 					UI:clear(true)
 					UI:printc(msg)
 					UI:refresh()
