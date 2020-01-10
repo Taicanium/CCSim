@@ -583,7 +583,7 @@ return
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 					else newE:beginEvent(parent, self) end
-				elseif parent.c_events[i].args == 2 and parent.numCountries > 1 then
+				elseif parent.c_events[i].args == 2 and parent.thisWorld.numCountries > 1 then
 					local other = nil
 					if r then other = o else
 						other = parent:randomChoice(parent.thisWorld.countries)
@@ -670,7 +670,7 @@ return
 
 					if not chn and not self.people[i].isruler and math.random(1, 8000) == 3799 then
 						local cp = parent:randomChoice(parent.thisWorld.countries)
-						if parent.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
+						if parent.thisWorld.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 						cp:add(parent, self.people[i])
 						chn = true
 					end

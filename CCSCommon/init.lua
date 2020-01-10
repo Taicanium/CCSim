@@ -889,7 +889,7 @@ return
 								for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
-								if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+								if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 								for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 							end
 
@@ -1005,7 +1005,7 @@ return
 							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 						end
 
@@ -1273,7 +1273,7 @@ return
 							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if parent.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
 							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
 						end
 
@@ -1778,7 +1778,6 @@ return
 			iSIndex = 0,
 			languages = {},
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
-			numCountries = 0,
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
@@ -2166,10 +2165,10 @@ return
 				self:getAlphabetical()
 
 				UI:printf("Constructing initial populations...\n")
-				self.numCountries = 0
+				self.thisWorld.numCountries = 0
 				local cDone = 0
 
-				for i, cp in pairs(self.thisWorld.countries) do if cp then self.numCountries = self.numCountries+1 end end
+				for i, cp in pairs(self.thisWorld.countries) do if cp then self.thisWorld.numCountries = self.thisWorld.numCountries+1 end end
 				for i, cp in pairs(self.thisWorld.countries) do
 					if cp then
 						if #cp.rulers > 0 then
@@ -2189,7 +2188,7 @@ return
 					end
 
 					cDone = cDone+1
-					UI:printl(string.format("Country %d/%d", cDone, self.numCountries))
+					UI:printl(string.format("Country %d/%d", cDone, self.thisWorld.numCountries))
 				end
 
 				self.thisWorld.initialState = false
@@ -2347,7 +2346,7 @@ return
 					end
 
 					local t0 = _time()
-					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count")/1024)
+					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.thisWorld.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
@@ -2375,7 +2374,7 @@ return
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cCount < cLimit or cCount == self.numCountries then
+							if cCount < cLimit or cCount == self.thisWorld.numCountries then
 								local name = ""
 								if cp.snt[self.systems[cp.system].name] > 1 then name = name..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
@@ -2409,7 +2408,7 @@ return
 							msg = msg..rulers[i]
 						end
 
-						if cCount < self.numCountries then msg = msg..("[+%d more]\n"):format(self.numCountries-cCount) end
+						if cCount < self.thisWorld.numCountries then msg = msg..("[+%d more]\n"):format(self.thisWorld.numCountries-cCount) end
 
 						msg = msg.."\nOngoing events:"
 

@@ -181,7 +181,7 @@ return
 				local defined = 0
 
 				for i, cp in pairs(self.countries) do
-					UI:printl(string.format("Country %d/%d", ci, parent.numCountries))
+					UI:printl(string.format("Country %d/%d", ci, self.numCountries))
 					ci = ci+1
 
 					local located = true
@@ -243,7 +243,7 @@ return
 				UI:printf("Defining regional boundaries...")
 
 				for i, j in pairs(self.countries) do
-					UI:printl(string.format("Country %d/%d", ci, parent.numCountries))
+					UI:printl(string.format("Country %d/%d", ci, self.numCountries))
 					ci = ci+1
 					j:setTerritory(parent)
 				end
@@ -263,7 +263,7 @@ return
 				self.countries[nz.name] = nil
 
 				nz:destroy(parent)
-				parent.numCountries = parent.numCountries-1
+				self.numCountries = self.numCountries-1
 				parent.writeMap = true
 				self.mapChanged = true
 			end,
@@ -743,13 +743,13 @@ return
 				for i, j in pairs(debugTimes) do debugTimes[i] = 0 end
 				local t0 = _time()
 
-				parent.numCountries = 0
-				for i, j in pairs(self.countries) do parent.numCountries = parent.numCountries+1 end
+				self.numCountries = 0
+				for i, j in pairs(self.countries) do self.numCountries = self.numCountries+1 end
 
 				self.gPop = 0
 
 				if self.initialState then
-					parent.iSCount = parent.numCountries
+					parent.iSCount = self.numCountries
 					parent.iSIndex = 1
 					UI:printf("Constructing initial populations...")
 				end
