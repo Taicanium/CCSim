@@ -860,7 +860,7 @@ return
 							end
 						end
 
-						self.status = self.status+math.random(math.floor(varistab)-5, math.ceil(varistab)+5)/2
+						self.status = self.status+math.random(math.floor(varistab)-5, math.ceil(varistab)+3)/2
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.abs(math.floor(self.status))).."% opposition"
 						elseif self.status >= 10 then statString = tostring(math.abs(math.floor(self.status))).."% government"
@@ -3014,7 +3014,7 @@ return
 				if not c then return 0 end
 				local pop = 0
 				if c.rulerParty then pop = c.rulerPopularity-50 end
-				return (pop+(c.stability-50)+((c.military/#c.people)*100))
+				return (pop+(c.stability-50)+(((c.military/#c.people)*100)-50))
 			end,
 
 			writeGed = function(self)
