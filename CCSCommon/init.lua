@@ -1845,8 +1845,10 @@ return
 				for i=1,#rKeys do
 					local key = regs[rKeys[i]]
 					local country = self.thisWorld.countries[key:match("(%w+)!")]
-					local region = country.regions[key:match("!(%w+)")]
-					if region.language then table.insert(cArr, {country.demonym:upper(), region.language}) end
+					if country then
+						local region = country.regions[key:match("!(%w+)")]
+						if region and region.language then table.insert(cArr, {country.demonym:upper(), region.language}) end
+					end
 				end
 
 				while _REVIEWING do
