@@ -337,10 +337,10 @@ return
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[i], {22, 22, 170, node.region}) end
+								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region}) end
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[i], {22, 22, 170, node.region}) end
+									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region}) end
 									deviated = deviated-1
 								end
 							end
