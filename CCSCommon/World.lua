@@ -486,14 +486,14 @@ return
 							tRuler = tRuler:gsub("[^%w %-%&%+%'%(%)%[%]%.]", "")
 							local nameLen = name:len()
 							local rulerLen = tRuler:len()
-							for k=margin,margin+7 do for l=top,bottom do
+							for k=margin,margin+7 do for l=top,bottom do -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 								if not extended[(l*2)-1] then extended[(l*2)-1] = {} end
 								if not extended[l*2] then extended[l*2] = {} end
 								extended[(l*2)-1][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
 								extended[(l*2)-1][k*2] = {tColor[1], tColor[2], tColor[3]}
 								extended[l*2][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
 								extended[l*2][k*2] = {tColor[1], tColor[2], tColor[3]}
-							end end -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
+							end end
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
 								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
@@ -502,7 +502,7 @@ return
 								local letterRow = 1
 								local letterColumn = 1
 								-- The glyph is itself a 2D matrix of monochrome pixel values -- 0 for black, 1 for white.
-								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels for a single pixel of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
+								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels with the first column always empty. With each character's first and last columns overlapping, this leaves two pixels of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
 										if glyph[letterRow][letterColumn] == 1 then
@@ -518,22 +518,22 @@ return
 										end
 										letterColumn = letterColumn+1 -- Move to the right!
 									end
-									letterColumn = 1 -- Move back to the far left.
+									letterColumn = 1 -- Move back to the far left, and then...
 									letterRow = letterRow+1 -- Move down. Quite like a CR+LF.
 								end
 								margin = margin+6 -- Move to the last pixel of the last character. With our one pixel of padding on all sides, this will leave the appropriate space between letters.
 							end
-							margin = colMargin -- Just like when writing a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
+							margin = colMargin -- Just like when drawing out a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
 							top = top+10
 							bottom = bottom+10 -- And move one line down, leaving two pixels of space.
-							for k=margin,margin+7 do for l=top-2,bottom do
+							for k=margin,margin+7 do for l=top-2,bottom do -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
 								if not extended[(l*2)-1] then extended[(l*2)-1] = {} end
 								if not extended[l*2] then extended[l*2] = {} end
 								extended[(l*2)-1][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
 								extended[(l*2)-1][k*2] = {tColor[1], tColor[2], tColor[3]}
 								extended[l*2][(k*2)-1] = {tColor[1], tColor[2], tColor[3]}
 								extended[l*2][k*2] = {tColor[1], tColor[2], tColor[3]}
-							end end -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
+							end end
 							margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
 							for k=1,rulerLen do
 								local letter = tRuler:sub(k, k):lower()
@@ -606,7 +606,7 @@ return
 				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
 				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
 
-				for y=self.planetD,1,-1 do -- Bottom-to-top, as required by BMP.
+				for y=self.planetD,1,-1 do -- Bottom-to-top, as required by the BMP format.
 					local btWritten = 0
 					for x=1,totalC do
 						if extended[y] and extended[y][x] then
@@ -629,8 +629,8 @@ return
 
 				bf:flush()
 				bf:close()
-				bf = nil
 
+				bf = nil
 				sArr = nil
 				wArr = nil
 				hArr = nil
