@@ -417,12 +417,12 @@ return
 				local borderCol = -1
 				local extCols = {}
 
-				-- Here, we determine the column of the map with the most amount of water; we will start writing the map to file at this point, so that there is minimal 'splitting' of any land masses.
+				-- Here, we determine the column of the map with the most water pixels; we will start writing the map to file at this point, so that there is minimal 'wrapping' of land masses across the edge.
 				for i=1,self.planetC do
 					extCols[i] = 0
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
+					if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end
 				end
-				for i=1,self.planetC do if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end end
 
 				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
