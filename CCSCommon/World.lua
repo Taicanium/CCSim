@@ -115,6 +115,25 @@ return
 
 				UI:printf("Unwrapping planet to data matrix...")
 				self:unwrap()
+				self:mapOutput(parent, "NIL")
+				
+				for i=1,#self.stretched do
+					for j=1,#self.stretched[i] do
+						local x, y, z = table.unpack(self.stretched[i][j][5])
+						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] and self.stretched[i-k][j-l] then
+							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l][5])
+							local found = false
+							for m=1,#self.planet[x][y][z].neighbors do if not found then
+								local mx, my, mz = table.unpack(self.planet[x][y][z].neighbors[m])
+								if mx == nx and my == ny and mz == nz then
+									found = true
+									m = math.huge
+								end
+							end end
+							if not found then table.insert(self.planet[x][y][z].neighbors, {nx, ny, nz}) end
+						end end end end
+					end
+				end
 
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
@@ -331,16 +350,16 @@ return
 					local deviation = math.fmod(self.planetC/#column, 1)
 					local deviated = 0
 					for j=1,#column do
-						local entry = column[j]
-						local node = self.planet[entry[1]][entry[2]][entry[3]]
+						local ex, ey, ez = table.unpack(column[j])
+						local node = self.planet[ex][ey][ez]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region}) end
+								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, {ex, ey, ez}}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, {ex, ey, ez}}) end
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region}) end
+									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, {ex, ey, ez}}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, {ex, ey, ez}}) end
 									deviated = deviated-1
 								end
 							end
@@ -575,6 +594,16 @@ return
 				local totalC = margin*2 -- Account for the addition of the legend in our bitmap dimensions.
 				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
 
+				if label == "NIL" then
+					extended = nil
+					tCols = nil
+					extCols = nil
+					colorKeys = nil
+					tColWidths = nil
+					leaders = nil
+					return
+				end
+
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 				local hStringLE = string.format("%.8x", self.planetD)
@@ -727,11 +756,6 @@ return
 				end
 
 				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] and self.planet[i][j][k].mapWritten then table.insert(self.planetdefined, {i, j, k}) else self.planet[i][j][k] = nil end end end end end end
-				for n=1,#self.planetdefined do
-					local i, j, k = table.unpack(self.planetdefined[n])
-					for di=-1,1 do for dj=-1,1 do for dk=-1,1 do if di ~= 0 or dj ~= 0 or dk ~= 0 then if self.planet[i-di] and self.planet[i-di][j-dj] and self.planet[i-di][j-dj][k-dk] then table.insert(self.planet[i][j][k].neighbors, {i-di, j-dj, k-dk}) end end end end end
-					self.planet[i][j][k].mapWritten = false
-				end
 
 				if _DEBUG then
 					if not debugTimes["World.unwrap"] then debugTimes["World.unwrap"] = 0 end

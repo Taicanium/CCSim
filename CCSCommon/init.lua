@@ -2465,7 +2465,7 @@ return
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
 						UI:printf("G to record the family and relationship data at this point.")
-						UI:printf("L to compare the languages of this world.")
+						if _DEBUG then UI:printf("L to compare the languages of this world.") end
 						UI:printf("R to record the event data at this point.")
 						UI:printf("Q to exit.")
 						UI:printp("\n > ")
@@ -2473,7 +2473,7 @@ return
 						if tonumber(datin) then remainingYears = tonumber(datin)
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
 						elseif datin:lower() == "g" then self:writeGed()
-						elseif datin:lower() == "l" then self:compLangs()
+						elseif datin:lower() == "l" and _DEBUG then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
 							_running = false
