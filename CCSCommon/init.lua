@@ -1,10 +1,17 @@
 if not loadstring then loadstring = load end
-if not table.unpack then table.unpack = function(t, n)
+if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
+
+table.unpack = function(t, n)
 	if not n then return table.unpack(t, 1)
 	elseif t[n] then return t[n], table.unpack(t, n+1) end
 	return t
-end end
-if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
+end
+
+table.contains = function(t, n)
+	if not t or not n then return false end
+	for i, j in pairs(t) do if tostring(n) == tostring(j) then return true end end
+	return false
+end
 
 cursesstatus, curses = pcall(require, "curses")
 

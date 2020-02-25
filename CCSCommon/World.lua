@@ -116,19 +116,16 @@ return
 				UI:printf("Unwrapping planet to data matrix...")
 				self:unwrap()
 				self:mapOutput(parent, "NIL")
-				
+
 				for i=1,#self.stretched do
 					for j=1,#self.stretched[i] do
-						local x, y, z = table.unpack(self.stretched[i][j][5])
+						local x, y, z = table.unpack(self.stretched[i][j], 5)
 						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] and self.stretched[i-k][j-l] then
-							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l][5])
+							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l], 5)
 							local found = false
 							for m=1,#self.planet[x][y][z].neighbors do if not found then
 								local mx, my, mz = table.unpack(self.planet[x][y][z].neighbors[m])
-								if mx == nx and my == ny and mz == nz then
-									found = true
-									m = math.huge
-								end
+								if mx == nx and my == ny and mz == nz then found = true end
 							end end
 							if not found then table.insert(self.planet[x][y][z].neighbors, {nx, ny, nz}) end
 						end end end end
@@ -268,6 +265,7 @@ return
 				end
 
 				parent.stamp = tostring(math.floor(_stamp()))
+				self.mapChanged = true
 
 				for i, j in pairs(parent.c_events) do
 					parent.disabled[j.name:lower()] = false
@@ -295,7 +293,7 @@ return
 			end,
 
 			mapOutput = function(self, parent, label)
-				if not parent.doMaps then return end
+				if label ~= "NIL" and not parent.doMaps then return end
 				local t0 = _time()
 
 				local planetSize = #self.planetdefined
@@ -312,7 +310,7 @@ return
 						while not unique do
 							unique = true
 							for k, j in pairs(self.cTriplets) do
-								local unq = (math.abs(r-j[1]))+(math.abs(g-j[2]))+(math.abs(b-j[3]))
+								local unq = math.abs(r-j[1])+math.abs(g-j[2])+math.abs(b-j[3])
 								if unq < 55 then unique = false end
 							end
 
@@ -356,10 +354,10 @@ return
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, {ex, ey, ez}}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, {ex, ey, ez}}) end
+								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, ex, ey, ez}) end
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, {ex, ey, ez}}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, {ex, ey, ez}}) end
+									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, ex, ey, ez}) end
 									deviated = deviated-1
 								end
 							end
@@ -383,31 +381,29 @@ return
 
 				if self.mapChanged then
 					self.planetC = math.huge
+					for i=1,columnCount do if #self.stretched[i] < self.planetC then self.planetC = #self.stretched[i] end end
 					for i=1,columnCount do
-						local col = self.stretched[i]
-						if #col < self.planetC then self.planetC = #col end
-					end
-					for i=1,columnCount do
-						local col = self.stretched[i]
-						local sCol = #col
+						local sCol = #self.stretched[i]
 						local diff = sCol-self.planetC
 						while diff > 1 do
 							local ratio = sCol/diff
 							local rate = 0
-							for j=#col,1,-1 do
+							for j=#self.stretched[i],1,-1 do
 								if rate >= ratio then
-									table.remove(col, j)
+									table.remove(self.stretched[i], j)
 									diff = diff-1
 									rate = rate-ratio
 								end
 								rate = rate+1
 							end
-							sCol = #col
+							sCol = #self.stretched[i]
 							diff = sCol-self.planetC
 						end
-						if diff == 1 then table.remove(col, #col) end
+						if diff == 1 then table.remove(self.stretched[i], #self.stretched[i]) end
 					end
 				end
+				
+				if label == "NIL" then return end
 
 				local tColCount = 1
 				local tCols = {{}}
@@ -458,23 +454,21 @@ return
 							extended[(i*2)-1][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
-							if self.stretched[i][accCol][4] then
-								if self.stretched[i+1] and self.stretched[i+1][accCol] and self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
-									extended[i*2][(cCol*2)-1] = {0, 0, 0}
-									extended[i*2][cCol*2] = {0, 0, 0}
-								end
-								if self.stretched[i-1] and self.stretched[i-1][accCol] and self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-									extended[(i*2)-1][cCol*2] = {0, 0, 0}
-								end
-								if self.stretched[i][accCol+1] and self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][cCol*2] = {0, 0, 0}
-									extended[i*2][cCol*2] = {0, 0, 0}
-								end
-								if self.stretched[i][accCol-1] and self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-									extended[i*2][(cCol*2)-1] = {0, 0, 0}
-								end
+							if self.stretched[i+1] and self.stretched[i+1][accCol] and self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
+								extended[i*2][(cCol*2)-1] = {0, 0, 0}
+								extended[i*2][cCol*2] = {0, 0, 0}
+							end
+							if self.stretched[i-1] and self.stretched[i-1][accCol] and self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
+								extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+								extended[(i*2)-1][cCol*2] = {0, 0, 0}
+							end
+							if self.stretched[i][accCol+1] and self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
+								extended[(i*2)-1][cCol*2] = {0, 0, 0}
+								extended[i*2][cCol*2] = {0, 0, 0}
+							end
+							if self.stretched[i][accCol-1] and self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
+								extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+								extended[i*2][(cCol*2)-1] = {0, 0, 0}
 							end
 						else
 							extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
@@ -593,16 +587,6 @@ return
 
 				local totalC = margin*2 -- Account for the addition of the legend in our bitmap dimensions.
 				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
-
-				if label == "NIL" then
-					extended = nil
-					tCols = nil
-					extCols = nil
-					colorKeys = nil
-					tColWidths = nil
-					leaders = nil
-					return
-				end
 
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }

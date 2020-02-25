@@ -243,14 +243,6 @@ return
 					for i, j in pairs(parent.thisWorld.countries) do if j.name ~= self.name then self.relations[j.name] = 50 end end
 				end
 
-				for i=#self.ongoing,1,-1 do
-					if self.ongoing[i] and self.ongoing[i].args > 1 then
-						local found = false
-						if self.ongoing[i].target and self.ongoing[i].target.name then for j, k in pairs(parent.thisWorld.countries) do if k.name == self.ongoing[i].target.name then found = true end end end
-						if not found then table.remove(self.ongoing, i) end
-					end
-				end
-
 				for i=#self.ongoing,1,-1 do if not self.ongoing[i] or not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) end end
 
 				for i=1,#parent.c_events do

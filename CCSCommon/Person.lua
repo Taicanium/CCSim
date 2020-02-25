@@ -256,22 +256,17 @@ return
 				local cycles = 0
 				while #self.nativeLang < maxNatLangs do
 					local choice = parent:randomChoice(natLang)
-					if choice then
-						local found = false
-						for i=1,#self.nativeLang do if self.nativeLang[i].name == choice.name then found = true end end
-						for i=1,#self.spokenLang do if self.spokenLang[i].name == choice.name then found = true end end
-						if not found then
-							local inherit = math.random(1, 100)
-							if inherit < 81 then
-								inherit = math.random(1, 100)
-								if inherit < 21 then
-									table.insert(self.spokenLang, choice)
-									maxNatLangs = maxNatLangs-1
-									natLang[choice.name] = nil
-								else
-									table.insert(self.nativeLang, choice)
-									natLang[choice.name] = nil
-								end
+					if choice and not table.contains(self.nativeLang, choice) and not table.contains(self.spokenLang, choice) then
+						local inherit = math.random(1, 100)
+						if inherit < 81 then
+							inherit = math.random(1, 100)
+							if inherit < 21 then
+								table.insert(self.spokenLang, choice)
+								maxNatLangs = maxNatLangs-1
+								natLang[choice.name] = nil
+							else
+								table.insert(self.nativeLang, choice)
+								natLang[choice.name] = nil
 							end
 						end
 					end
@@ -281,22 +276,17 @@ return
 				cycles = 0
 				while #self.spokenLang < maxSpokenLangs do
 					local choice = parent:randomChoice(spokeLang)
-					if choice then
-						local found = false
-						for i=1,#self.nativeLang do if self.nativeLang[i].name == choice.name then found = true end end
-						for i=1,#self.spokenLang do if self.spokenLang[i].name == choice.name then found = true end end
-						if not found then
-							local inherit = math.random(1, 100)
-							if inherit < 21 then
-								inherit = math.random(1, 100)
-								if inherit < 51 then
-									table.insert(self.nativeLang, choice)
-									maxSpokenLangs = maxSpokenLangs-1
-									spokeLang[choice.name] = nil
-								else
-									table.insert(self.spokenLang, choice)
-									spokeLang[choice.name] = nil
-								end
+					if choice and not table.contains(self.nativeLang, choice) and not table.contains(self.spokenLang, choice) then
+						local inherit = math.random(1, 100)
+						if inherit < 21 then
+							inherit = math.random(1, 100)
+							if inherit < 51 then
+								table.insert(self.nativeLang, choice)
+								maxSpokenLangs = maxSpokenLangs-1
+								spokeLang[choice.name] = nil
+							else
+								table.insert(self.spokenLang, choice)
+								spokeLang[choice.name] = nil
 							end
 						end
 					end
