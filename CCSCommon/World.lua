@@ -115,8 +115,11 @@ return
 
 				UI:printf("Unwrapping planet to data matrix...")
 				self:unwrap()
+				
+				UI:printf("Distorting data matrix into map projection...")
 				self:mapOutput(parent, "NIL")
 
+				UI:printf("Cross-referencing neighboring points on planet surface...")
 				for i=1,#self.stretched do
 					for j=1,#self.stretched[i] do
 						local x, y, z = table.unpack(self.stretched[i][j], 5)
@@ -402,7 +405,7 @@ return
 						if diff == 1 then table.remove(self.stretched[i], #self.stretched[i]) end
 					end
 				end
-				
+
 				if label == "NIL" then return end
 
 				local tColCount = 1
@@ -510,8 +513,7 @@ return
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
 								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
-								local glyph = parent.glyphs[letter]
-								if not glyph then glyph = parent.glyphs[" "] end -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
+								local glyph = parent.glyphs[letter] or parent.glyphs[" "] -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
 								local letterRow = 1
 								local letterColumn = 1
 								-- The glyph is itself a 2D matrix of monochrome pixel values -- 0 for black, 1 for white.
@@ -550,8 +552,7 @@ return
 							margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
 							for k=1,rulerLen do
 								local letter = tRuler:sub(k, k):lower()
-								local glyph = parent.glyphs[letter]
-								if not glyph then glyph = parent.glyphs[" "] end
+								local glyph = parent.glyphs[letter] or parent.glyphs[" "]
 								local letterRow = 1
 								local letterColumn = 1
 								-- Write out the ruler string the same way we wrote out the country's name.

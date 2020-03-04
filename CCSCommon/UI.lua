@@ -1,17 +1,11 @@
 return
 	function()
 		local UI = {
-			new = function(self)
-				local o = {}
-
-				o.clrcmd = nil
-				o.ready = false
-				o.stdscr = nil
-				o.x = -1
-				o.y = -1
-
-				return o
-			end,
+			clrcmd = nil,
+			ready = false,
+			stdscr = nil,
+			x = 80,
+			y = 25,
 
 			clear = function(self, holdRef)
 				if not self.ready then self:init() end

@@ -1,671 +1,665 @@
-if not loadstring then loadstring = load end
-if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
-
-table.unpack = function(t, n)
-	if not n then return table.unpack(t, 1)
-	elseif t[n] then return t[n], table.unpack(t, n+1) end
-	return t
-end
-
-table.contains = function(t, n)
-	if not t or not n then return false end
-	for i, j in pairs(t) do if tostring(n) == tostring(j) then return true end end
-	return false
-end
-
-cursesstatus, curses = pcall(require, "curses")
-
-_time = os.clock
-_stamp = os.time
-if _time() > 15 then _time = os.time end
-if _stamp() < 15 then _stamp = os.clock end
-
-debugTimes = {}
-
-function debugLine()
-	local tmpF = true
-	while tmpF do
-		UI:printp("\n Debug line > ")
-		datin = UI:readl()
-		if datin == "" then tmpF = false else
-			tmpF = loadstring(datin)
-			if tmpF then
-				local stat, err = pcall(tmpF)
-				if not stat then UI:printf(err) else UI:printf(stat) end
-			end
-		end
-	end
-end
-
---[[ function eventReview(f)
-	local countries = {}
-
-	local l = f:read("*l")
-	while l do
-		local split = {}
-		for x in l:gmatch("%S+") do table.insert(split, x) end
-	end
-end ]]
-
-function gedReview(f)
-	local indi = {}
-	local fam = {}
-	local fi = 1
-	local fe = ""
-	local ic = 0
-	local fc = 0
-	local mi = 1
-	local matches = {}
-	local _REVIEWING = true
-
-	if f then
-		UI:printf("\nCounting GEDCOM objects...")
-
-		local l = f:read("*l")
-		while l do
-			local split = {}
-			for x in l:gmatch("%S+") do table.insert(split, x) end
-			if split[1] and split[1] == "0" and split[3] then
-				if split[3] == "INDI" then ic = ic+1 fi = ic
-				elseif split[3] == "FAM" then fc = fc+1 fi = fc end
-			end
-			if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People, %d Families", ic, fc)) end
-			l = f:read("*l")
-			split = nil
-		end
-
-		UI:printl(string.format("%d People, %d Families", ic, fc))
-		fi = 1
-		f:seek("set")
-		UI:printf("\nLoading GEDCOM data...")
-
-		l = f:read("*l")
-		while l do
-			local split = {}
-			for x in l:gmatch("%S+") do table.insert(split, x) end
-			if split[1] and split[1] == "0" and split[3] then
-				if split[3] == "INDI" then
-					if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d People", fi, ic)) end
-					local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-					local index = tonumber(ifs)
-					if index then
-						indi[index] = {gIndex=index}
-						fi = index
-						fe = ""
-					end
-				elseif split[3] == "FAM" then
-					if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, fc)) end
-					local ifs = split[2]:gsub("@", ""):gsub("F", "")
-					local index = tonumber(ifs)
-					if index then
-						fam[index] = {fIndex=index}
-						fi = index
-						fe = ""
-					end
-				end
-			elseif split[2] == "NAME" and indi[fi] and not indi[fi].surn and not indi[fi].givn then
-				local name = ""
-				for i=3,#split do name = name.." "..split[i] end
-				if not indi[fi].surn then for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end end
-				if not indi[fi].number then for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end end
-				if not indi[fi].givn then
-					name = name:gsub("/%C+/ %C+", "")
-					name = name:gsub("/%C+/", "")
-					name = name:gsub("//", "")
-					for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
-				end
-				if indi[fi].givn and not indi[fi].givn:match("%w") then indi[fi].givn = nil end
-				if indi[fi].surn and not indi[fi].surn:match("%w") then indi[fi].surn = nil end
-				if indi[fi].number and not indi[fi].number:match("%w") then indi[fi].number = nil end
-				fe = ""
-			elseif split[2] == "SURN" then
-				indi[fi].surn = split[3]
-				for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
-				if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
-				fe = ""
-			elseif split[2] == "GIVN" then
-				indi[fi].givn = split[3]
-				for i=4,#split do indi[fi].givn = indi[fi].givn.." "..split[i] end
-				if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
-				fe = ""
-			elseif split[2] == "NPFX" then
-				indi[fi].title = split[3]
-				for i=4,#split do indi[fi].title = indi[fi].title.." "..split[i] end
-				if not indi[fi].title:match("%w") then indi[fi].title = nil end
-				fe = ""
-			elseif split[2] == "NSFX" then
-				indi[fi].number = split[3]
-				for i=4,#split do indi[fi].number = indi[fi].number.." "..split[i] end
-				if not indi[fi].number:match("%w") then indi[fi].number = nil end
-				fe = ""
-			elseif split[2] == "SEX" then indi[fi].gender = split[3] fe = ""
-			elseif split[2] == "BIRT" then fe = split[2]:lower() indi[fi][fe] = {}
-			elseif split[2] == "DEAT" then fe = split[2]:lower() indi[fi][fe] = {}
-			elseif split[2] == "BURI" then fe = split[2]:lower() indi[fi][fe] = {}
-			elseif split[2] == "MARR" then fe = split[2]:lower() fam[fi][fe] = {}
-			elseif split[2] == "DATE" and fe ~= "" then
-				local target = indi
-				if fe == "marr" then target = fam end
-				target[fi][fe].dat = split[3]
-				for i=4,#split do target[fi][fe].dat = target[fi][fe].dat.." "..split[i] end
-				if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." or split[#split] == "C." or split[#split] == "E." then
-					local sI = #split
-					while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
-					if split[sI] then target[fi][fe].dat = -(tonumber(split[sI])) else target[fi][fe].dat = nil end
-				elseif not tonumber(split[#split]) then
-					local sI = #split
-					while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
-					if split[sI] then target[fi][fe].dat = tonumber(split[sI]) else target[fi][fe].dat = nil end
-				else target[fi][fe].dat = tonumber(split[#split]) end
-				if target[fi][fe].dat then target[fi][fe].dat = tostring(target[fi][fe].dat) end
-				if target[fi][fe].dat then if target[fi][fe].dat == "" or target[fi][fe].dat == "0" or target[fi][fe].dat == "nil" then target[fi][fe].dat = nil end end
-			elseif split[2] == "PLAC" and fe ~= "" then
-				local target = indi
-				if fe == "marr" then target = fam end
-				target[fi][fe].plac = split[3]
-				for i=4,#split do target[fi][fe].plac = target[fi][fe].plac.." "..split[i] end
-				while target[fi][fe].plac:match(", ,") do target[fi][fe].plac = target[fi][fe].plac:gsub(", ,", ",") end
-				if not target[fi][fe].plac:match("%w") then target[fi][fe].plac = nil end
-				if target[fi][fe].plac then if target[fi][fe].plac == "" or target[fi][fe].plac == "0" or target[fi][fe].plac == "nil" then target[fi][fe].plac = nil end end
-			elseif split[2] == "FAMS" then
-				if not indi[fi].fams then indi[fi].fams = {} end
-				local ifs = split[3]:gsub("@", ""):gsub("F", "")
-				table.insert(indi[fi].fams, tonumber(ifs))
-				fe = ""
-			elseif split[2] == "FAMC" then
-				local ifs = split[3]:gsub("@", ""):gsub("F", "")
-				indi[fi].famc = tonumber(ifs)
-				fe = ""
-			elseif split[2] == "NOTE" and indi[fi] then
-				if not indi[fi].notes then indi[fi].notes = {} end
-				local note = ""
-				if split[3] then
-					note = split[3]
-					for s=4,#split do note = note.." "..split[s] end
-				end
-				table.insert(indi[fi].notes, note)
-			elseif split[2] == "CONT" and indi[fi] and indi[fi].notes then
-				local note = ""
-				if split[3] then
-					note = split[3]
-					for s=4,#split do note = note.." "..split[s] end
-				end
-				table.insert(indi[fi].notes, note)
-			elseif split[2] == "HUSB" then
-				local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-				fam[fi].husb = tonumber(ifs)
-				fe = ""
-			elseif split[2] == "WIFE" then
-				local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-				fam[fi].wife = tonumber(ifs)
-				fe = ""
-			elseif split[2] == "CHIL" then
-				if not fam[fi].chil then fam[fi].chil = {} end
-				local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-				table.insert(fam[fi].chil, tonumber(ifs))
-				fe = ""
-			end
-
-			split = nil
-			l = f:read("*l")
-		end
-	else
-		indi = CCSCommon.indi
-		fam = CCSCommon.fam
-		ic = CCSCommon.indiCount
-		fc = CCSCommon.famCount
-		fi = CCSCommon:randomChoice(indi, true)
-	end
-
-	while _REVIEWING do
-		UI:clear()
-		local i = indi[fi]
-		local gIndex = i.gIndex
-		local gender = i.gender
-		local title = i.rulerTitle or i.title
-		local givn = i.givn or i.name
-		local surn = i.surn or i.surname
-		local famc = i.famc
-		local fams = i.fams
-		if givn and title then givn = givn:gsub(title.." ", ""):gsub(title, "") end
-		if famc and fam[famc] then
-			local husb = indi[fam[famc].husb]
-			local wife = indi[fam[famc].wife]
-			if husb then
-				local p1fam = fam[husb.famc]
-				if p1fam then
-					printIndi(indi[p1fam.husb], 3)
-					printIndi(indi[p1fam.wife], 3)
-				end
-				printIndi(husb, 2)
-			end
-			if wife then
-				local p2fam = fam[wife.famc]
-				if p2fam then
-					printIndi(indi[p2fam.husb], 3)
-					printIndi(indi[p2fam.wife], 3)
-				end
-				printIndi(wife, 2)
-			end
-		end
-
-		printIndi(i, 0)
-
-		if fams then for j=1,#fams do
-			local fams = fam[fams[j]]
-			if fams then
-				local spouse = nil
-				if gender == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
-				if spouse then printIndi(spouse, 1) end
-				if fams.chil then for k=1,#fams.chil do if indi[fams.chil[k]] then printIndi(indi[fams.chil[k]], -1) end end end
-			end
-		end end
-
-		UI:printc("\n")
-		if #matches > 0 then UI:printc(string.format("\nViewing match %d/%d.", mi, #matches)) end
-		UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
-		if #matches > 0 then
-			if mi < #matches then UI:printc("N to move to the next match.\n") end
-			if mi > 1 then UI:printc("P to move to the previous match.\n") end
-		end
-		UI:printc("S to view this person's notes.\n")
-		UI:printp("\n > ")
-		local datin = UI:readl()
-		local oldFI = fi
-		if datin:lower() == "b" then matches = {} _REVIEWING = false
-		elseif datin:lower() == "f" and famc then fi = fam[famc].husb or oldFI
-		elseif datin:lower() == "m" and famc then fi = fam[famc].wife or oldFI
-		elseif datin:lower() == "n" then
-			mi = mi+1
-			if mi > #matches then mi = #matches end
-			if mi == 0 then mi = 1 end
-			fi = matches[mi]
-		elseif datin:lower() == "p" then
-			mi = mi-1
-			if mi < 1 then mi = 1 end
-			fi = matches[mi]
-		elseif datin:lower() == "e" and _DEBUG then debugLine()
-		elseif datin:lower() == "s" then
-			UI:clear()
-			printIndi(i, 0)
-			UI:printc("\n\n")
-			if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end else UI:printf("This individual has no notes.") end
-			UI:readl()
-		elseif datin ~= "" then
-			matches = {}
-			fi = tonumber(datin)
-			if not fi then fi = datin end
-			if not fi or not indi[fi] then
-				local scanned = 0
-				for j, k in pairs(indi) do
-					local allMatch = true
-					local fullName = ""
-					local ktitle = k.rulerTitle or k.title
-					local kgivn = k.givn or k.name
-					local ksurn = k.surn or k.surname
-					local knumber = CCSCommon:roman(k.number)
-					if ktitle and ktitle ~= "" then fullName = ktitle.." " end
-					if kgivn then fullName = fullName..kgivn.." " end
-					if ksurn then fullName = fullName..ksurn.." " end
-					if knumber and k.number ~= 0 then fullName = fullName..knumber end
-					fullName = fullName:lower()
-					for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
-					if allMatch then table.insert(matches, j) end
-					scanned = scanned + 1
-					if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, ic)) end
-				end
-				if #matches > 0 then fi = matches[1] mi = 1 end
-			end
-		end
-		if not indi[fi] then fi = oldFI end
-		if not indi[fi] then fi = CCSCommon:randomChoice(indi, true) end
-	end
-end
-
-function getLineTolerance(rl)
-	local remainingLines = rl
-	if not rl then remainingLines = 1 else remainingLines = remainingLines+1 end -- We wish to have a final line on which to blink the cursor.
-	if cursesstatus then return UI.y-rl else return 25-rl end
-end
-
-function printIndi(i, f)
-	if not i then return end
-	local gIndex = i.gIndex
-	local gender = i.gender
-	local title = i.rulerTitle or i.title
-	local givn = i.givn or i.name
-	local surn = i.surn or i.surname
-	local number = i.number
-	local birt = i.birt or {dat=tostring(i.birth), plac=i.birthplace}
-	local deat = i.deat or {dat=tostring(i.death), plac=i.deathplace}
-	if birt and birt.dat then
-		if birt.dat == "" or birt.dat == "0" or birt.dat == "nil" then birt.dat = nil end
-		if birt.plac == "" or birt.plac == "0" or birt.plac == "nil" then birt.plac = nil end
-	end
-	if deat and deat.dat then
-		if deat.dat == "" or deat.dat == "0" or deat.dat == "nil" then deat.dat = nil end
-		if deat.plac == "" or deat.plac == "0" or deat.plac == "nil" then deat.plac = nil end
-	end
-	local sOut = tostring(gIndex)..". ("..gender..") "
-	if title and title ~= "" then
-		if f ~= 0 then for x in title:gmatch("%S+") do sOut = sOut..x:sub(1, 1).."." end
-		else sOut = sOut..title end
-		sOut = sOut.." "
-	end
-	if givn then sOut = sOut..givn.." "end
-	if surn then sOut = sOut..surn.." " end
-	if number and number ~= 0 then sOut = sOut..CCSCommon:roman(number).." " end
-	if birt or deat then sOut = sOut.."(" end
-	if birt and ((birt.dat and birt.dat ~= "0") or (birt.plac and birt.plac ~= "")) then
-		if not deat or ((not deat.dat or deat.dat == "0") and (not deat.plac or deat.plac == "")) then sOut = sOut.."b. " end
-		if birt.dat and birt.dat ~= "0" then sOut = sOut..birt.dat end
-		if birt.dat and birt.dat ~= "0" and birt.plac then sOut = sOut..", " end
-		if birt.plac and birt.plac ~= "" then
-			if f ~= 0 then
-				sOut = sOut..birt.plac:sub(1, 3)
-				if birt.plac:len() > 3 then sOut = sOut.."." end
-			else sOut = sOut..birt.plac end
-		end
-		if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then sOut = sOut.." - " else sOut = sOut..")" end
-	end
-	if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then
-		if not birt or ((not birt.dat or birt.dat == "0") and (not birt.plac or birt.plac == "")) then sOut = sOut.."d. " end
-		if deat.dat and deat.dat ~= "0" then sOut = sOut..deat.dat end
-		if deat.dat and deat.dat ~= "0" and deat.plac then sOut = sOut..", " end
-		if deat.plac and deat.plac ~= "" then
-			if f ~= 0 then
-				sOut = sOut..deat.plac:sub(1, 3)
-				if deat.plac:len() > 3 then sOut = sOut.."." end
-			else sOut = sOut..deat.plac end
-		end
-		sOut = sOut..")"
-	end
-
-	local indent = ""
-	if f == 1 then indent = "+ "
-	elseif f == 2 then indent = "\t"
-	elseif f == 3 then indent = "\t\t"
-	elseif f == -1 then indent = "    " end
-	UI:printc(indent..sOut.."\n")
-end
-
-function simNew()
-	UI:clear()
-
-	UI:printp("\nDo you want to show detailed info in the console (y/n)? > ")
-	local datin = UI:readl()
-
-	CCSCommon.showinfo = 0
-	if datin:lower() == "y" then CCSCommon.showinfo = 1 end
-
-	UI:printp("\nDo you want to produce maps of the world at major events (y/n)? > ")
-	datin = UI:readl()
-
-	CCSCommon.doMaps = false
-	if datin:lower() == "y" then CCSCommon.doMaps = true end
-
-	local done = false
-	while not done do
-		UI:printp("\nData > ")
-		datin = UI:readl()
-		done = true
-
-		if datin:lower() == "random" then
-			UI:printf("\nDefining countries...")
-
-			CCSCommon:rseed()
-
-			CCSCommon.thisWorld = World:new()
-			local numCountries = math.random(6, 10)
-
-			for j=1,numCountries do
-				UI:printl(string.format("Country %d/%d", j, numCountries))
-				local nl = Country:new()
-				nl:set(CCSCommon)
-				CCSCommon.thisWorld:add(nl)
-			end
-
-			CCSCommon:getAlphabetical()
-		else
-			local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
-			if not i then
-				UI:printf("\nUnable to load data file! Please try again.")
-				done = false
-			end
-		end
-	end
-
-	CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
-	CCSCommon:loop()
-end
-
---[[ function simRemove()
-
-
-	UI:printp("")
-end ]]
-
-function simReview()
-	local _REVIEWING = true
-
-	while _REVIEWING do
-		UI:clear()
-		local sCount = 0
-		local sims = {}
-
-		local dirDotCmd = "dir . /b /ad"
-		if UI.clrcmd == "clear" then dirDotCmd = "dir -1 ." end
-
-		UI:printf("\nAvailable simulations:\n")
-
-		for x in io.popen(dirDotCmd):lines() do
-			local xn = tonumber(x)
-			if xn then
-				local tsstatus, ts = pcall(os.date, "%Y-%m-%d %H:%M:%S", xn)
-				if tsstatus then
-					local eventFile = false
-					local dirSimCmd = "dir "..x.." /b /a-d"
-					if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..x end
-					for y in io.popen(dirSimCmd):lines() do if y:match("events.txt") then eventFile = true end end
-					if eventFile then
-						sCount = sCount+1
-						table.insert(sims, x)
-						UI:printf(string.format("%d\t-\t%s", sCount, os.date("%Y-%m-%d %H:%M:%S", xn)))
-					end
-				end
-			end
-		end
-
-		if sCount == 0 then UI:printf("None") end
-
-		UI:printf("\nEnter the number of a simulation, or B to return to the main menu.\n")
-		UI:printp(" > ")
-		local datin = UI:readl()
-
-		if datin:lower() == "b" then _REVIEWING = false
-		elseif tonumber(datin) and sims[tonumber(datin)] then
-			local dirStamp = sims[tonumber(datin)]
-			local dirSimCmd = "dir "..dirStamp.." /b /a-d"
-			if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..dirStamp end
-			local eventFile = false
-			local gedFile = false
-			local lineFile = false
-			for x in io.popen(dirSimCmd):lines() do
-				if x:match("events.txt") then eventFile = true
-				elseif x:match("families.ged") then gedFile = true
-				elseif x:match("royals.ged") then lineFile = true end
-			end
-			UI:clear()
-
-			local _SELECTED = true
-			while _SELECTED do
-				UI:clear()
-				UI:printf(string.format("\nSelected simulation performed %s\n", os.date('%Y-%m-%d %H:%M:%S', dirStamp)))
-				local ops = {}
-				local thisOp = 1
-				-- if eventFile then ops[thisOp] = "events.txt" UI:printf(string.format("%d\t-\t%s", thisOp, "Events and history")) thisOp = thisOp+1 end
-				if gedFile then ops[thisOp] = "families.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
-				if lineFile then ops[thisOp] = "royals.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal lines of descent")) thisOp = thisOp+1 end
-
-				UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
-				UI:printp(" > ")
-				datin = UI:readl()
-				if datin:lower() == "b" then _SELECTED = false elseif tonumber(datin) and ops[tonumber(datin)] then
-					local op = ops[tonumber(datin)]
-					local f = io.open(CCSCommon:directory({dirStamp, op}))
-					if f then
-						-- if op == "events.txt" then eventReview(f) end
-						if op == "royals.ged" or op == "families.ged" then gedReview(f) end
-
-						f:close()
-						f = nil
-					end
-				end
-			end
-		end
-	end
-end
-
-function testGlyphs()
-	local bmp = {}
-	local top = 2
-	local bottom = 7
-	local pad = 8
-	local width = 2
-	for j=1,pad do table.insert(bmp, {}) end
-	for j, k in pairs(CCSCommon.glyphs) do
-		for l=1,pad do for m=1,pad do table.insert(bmp[l], {0, 0, 0}) end end
-		width = width+(pad-2)
-	end
-	local margin = 1
-	local glyphArr = {}
-	for j, k in pairs(CCSCommon.glyphs) do
-		local xi = -1
-		for l=1,#glyphArr do if xi == -1 and string.byte(j) < string.byte(glyphArr[l]) then xi = l end end
-		if xi == -1 then table.insert(glyphArr, j) else table.insert(glyphArr, xi, j) end
-	end
-	for j=1,#glyphArr do
-		local glyphIndex = glyphArr[j]
-		local k = CCSCommon.glyphs[glyphIndex]
-		local letterRow = 1
-		local letterColumn = 1
-		for l=margin,margin+5 do
-			for m=top,bottom do
-				if k[letterColumn][letterRow] == 1 then bmp[m][l] = {255, 255, 255}
-				else bmp[m][l] = {0, 0, 0} end
-				letterColumn = letterColumn+1
-			end
-			letterColumn = 1
-			letterRow = letterRow+1
-		end
-		margin = margin+6
-	end
-	local adjusted = {}
-	local yi = 1
-	for i=1,pad do
-		adjusted[yi*2] = {}
-		adjusted[(yi*2)-1] = {}
-		local col = bmp[i]
-		for j=1,width do
-			adjusted[yi*2][j*2] = col[j]
-			adjusted[(yi*2)-1][j*2] = col[j]
-			adjusted[yi*2][(j*2)-1] = col[j]
-			adjusted[(yi*2)-1][(j*2)-1] = col[j]
-		end
-		yi = yi+1
-	end
-	pad = pad*2
-	width = width*2
-	local bf = io.open("glyphs.bmp", "w+")
-	local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
-	local hStringLE = string.format("%.8x", pad)
-	local wStringLE = string.format("%.8x", width)
-	local rStringLE = ""
-	local sStringLE = ""
-	local hStringBE = ""
-	local wStringBE = ""
-	local rStringBE = ""
-	local sStringBE = ""
-	for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
-	for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
-	bmpString = bmpString:gsub("w", wStringBE)
-	bmpString = bmpString:gsub("h", hStringBE)
-
-	local byteCount = 0
-	for y=pad,1,-1 do
-		local btWritten = 0
-		for x=1,width do
-			btWritten = btWritten+3
-			byteCount = byteCount+3
-		end
-		while math.fmod(btWritten, 4) ~= 0 do
-			btWritten = btWritten+1
-			byteCount = byteCount+1
-		end
-	end
-
-	rStringLE = string.format("%.8x", byteCount)
-	sStringLE = string.format("%.8x", byteCount+54)
-	for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
-	for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
-	bmpString = bmpString:gsub("s", sStringBE)
-	bmpString = bmpString:gsub("r", rStringBE)
-
-	for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
-
-	for y=pad,1,-1 do
-		local btWritten = 0
-		for x=1,width do
-			if adjusted[y] and adjusted[y][x] then
-				bf:write(string.char(adjusted[y][x][3]))
-				bf:write(string.char(adjusted[y][x][2]))
-				bf:write(string.char(adjusted[y][x][1]))
-			else
-				bf:write(string.char(0))
-				bf:write(string.char(0))
-				bf:write(string.char(0))
-			end
-			btWritten = btWritten+3
-		end
-		while math.fmod(btWritten, 4) ~= 0 do
-			bf:write(string.char(0))
-			btWritten = btWritten+1
-		end
-	end
-
-	bf:flush()
-	bf:close()
-	bf = nil
-end
-
-function testNames(n)
-	local f = io.open("names.txt", "w+")
-	if not f then return end
-	local c = n
-	if not n then c = 12 end
-	for i=1,c do
-		f:write(string.format(" -- LENGTH %d, PERSONAL --", i))
-		for j=1,c do f:write(string.format("\n%s", CCSCommon:name(true, i, i))) end
-		f:write(string.format("\n\n -- LENGTH %d, IMPERSONAL --", i))
-		for j=1,c do f:write(string.format("\n%s", CCSCommon:name(false, i, i))) end
-		f:write("\n\n")
-	end
-	f:flush()
-	f:close()
-	f = nil
-end
-
-City = require("CCSCommon.City")()
-Country = require("CCSCommon.Country")()
-Language = require("CCSCommon.Language")()
-Party = require("CCSCommon.Party")()
-Person = require("CCSCommon.Person")()
-Region = require("CCSCommon.Region")()
-UI = require("CCSCommon.UI")()
-World = require("CCSCommon.World")()
-
 return
 	function()
+		cursesstatus, curses = pcall(require, "curses")
+
+		City = require("CCSCommon.City")()
+		Country = require("CCSCommon.Country")()
+		Language = require("CCSCommon.Language")()
+		Party = require("CCSCommon.Party")()
+		Person = require("CCSCommon.Person")()
+		Region = require("CCSCommon.Region")()
+		UI = require("CCSCommon.UI")()
+		World = require("CCSCommon.World")()
+
+		if not loadstring then loadstring = load end
+		if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
+
+		table.unpack = function(t, n)
+			if not n then return table.unpack(t, 1)
+			elseif t[n] then return t[n], table.unpack(t, n+1) end
+			return t
+		end
+
+		table.contains = function(t, n)
+			if not t or not n then return false end
+			for i, j in pairs(t) do if tostring(n) == tostring(j) then return true end end
+			return false
+		end
+
+		_time = os.clock
+		_stamp = os.time
+		if _time() > 15 then _time = os.time end
+		if _stamp() < 15 then _stamp = os.clock end
+
+		debugTimes = {}
+
+		function debugLine()
+			local tmpF = true
+			while tmpF do
+				UI:printp("\n Debug line > ")
+				datin = UI:readl()
+				if datin == "" then tmpF = false else
+					tmpF = loadstring(datin)
+					if tmpF then
+						local stat, err = pcall(tmpF)
+						if not stat then UI:printf(err) else UI:printf(stat) end
+					end
+				end
+			end
+		end
+
+		--[[ function eventReview(f)
+			local countries = {}
+
+			local l = f:read("*l")
+			while l do
+				local split = {}
+				for x in l:gmatch("%S+") do table.insert(split, x) end
+			end
+		end ]]
+
+		function gedReview(f)
+			local indi = {}
+			local fam = {}
+			local fi = 1
+			local fe = ""
+			local ic = 0
+			local fc = 0
+			local mi = 1
+			local matches = {}
+			local _REVIEWING = true
+
+			if f then
+				UI:printf("\nCounting GEDCOM objects...")
+
+				local l = f:read("*l")
+				while l do
+					local split = {}
+					for x in l:gmatch("%S+") do table.insert(split, x) end
+					if split[1] and split[1] == "0" and split[3] then
+						if split[3] == "INDI" then ic = ic+1 fi = ic
+						elseif split[3] == "FAM" then fc = fc+1 fi = fc end
+					end
+					if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People, %d Families", ic, fc)) end
+					l = f:read("*l")
+					split = nil
+				end
+
+				UI:printl(string.format("%d People, %d Families", ic, fc))
+				fi = 1
+				f:seek("set")
+				UI:printf("\nLoading GEDCOM data...")
+
+				l = f:read("*l")
+				while l do
+					local split = {}
+					for x in l:gmatch("%S+") do table.insert(split, x) end
+					if split[1] and split[1] == "0" and split[3] then
+						if split[3] == "INDI" then
+							if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d People", fi, ic)) end
+							local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
+							local index = tonumber(ifs)
+							if index then
+								indi[index] = {gIndex=index}
+								fi = index
+								fe = ""
+							end
+						elseif split[3] == "FAM" then
+							if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, fc)) end
+							local ifs = split[2]:gsub("@", ""):gsub("F", "")
+							local index = tonumber(ifs)
+							if index then
+								fam[index] = {fIndex=index}
+								fi = index
+								fe = ""
+							end
+						end
+					elseif split[2] == "NAME" and indi[fi] and not indi[fi].surn and not indi[fi].givn then
+						local name = ""
+						for i=3,#split do name = name.." "..split[i] end
+						if not indi[fi].surn then for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end end
+						if not indi[fi].number then for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end end
+						if not indi[fi].givn then
+							name = name:gsub("/%C+/ %C+", "")
+							name = name:gsub("/%C+/", "")
+							name = name:gsub("//", "")
+							for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
+						end
+						if indi[fi].givn and not indi[fi].givn:match("%w") then indi[fi].givn = nil end
+						if indi[fi].surn and not indi[fi].surn:match("%w") then indi[fi].surn = nil end
+						if indi[fi].number and not indi[fi].number:match("%w") then indi[fi].number = nil end
+						fe = ""
+					elseif split[2] == "SURN" then
+						indi[fi].surn = split[3]
+						for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
+						if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
+						fe = ""
+					elseif split[2] == "GIVN" then
+						indi[fi].givn = split[3]
+						for i=4,#split do indi[fi].givn = indi[fi].givn.." "..split[i] end
+						if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
+						fe = ""
+					elseif split[2] == "NPFX" then
+						indi[fi].title = split[3]
+						for i=4,#split do indi[fi].title = indi[fi].title.." "..split[i] end
+						if not indi[fi].title:match("%w") then indi[fi].title = nil end
+						fe = ""
+					elseif split[2] == "NSFX" then
+						indi[fi].number = split[3]
+						for i=4,#split do indi[fi].number = indi[fi].number.." "..split[i] end
+						if not indi[fi].number:match("%w") then indi[fi].number = nil end
+						fe = ""
+					elseif split[2] == "SEX" then indi[fi].gender = split[3] fe = ""
+					elseif split[2] == "BIRT" then fe = split[2]:lower() indi[fi][fe] = {}
+					elseif split[2] == "DEAT" then fe = split[2]:lower() indi[fi][fe] = {}
+					elseif split[2] == "BURI" then fe = split[2]:lower() indi[fi][fe] = {}
+					elseif split[2] == "MARR" then fe = split[2]:lower() fam[fi][fe] = {}
+					elseif split[2] == "DATE" and fe ~= "" then
+						local target = indi
+						if fe == "marr" then target = fam end
+						target[fi][fe].dat = split[3]
+						for i=4,#split do target[fi][fe].dat = target[fi][fe].dat.." "..split[i] end
+						if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." or split[#split] == "C." or split[#split] == "E." then
+							local sI = #split
+							while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
+							if split[sI] then target[fi][fe].dat = -(tonumber(split[sI])) else target[fi][fe].dat = nil end
+						elseif not tonumber(split[#split]) then
+							local sI = #split
+							while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
+							if split[sI] then target[fi][fe].dat = tonumber(split[sI]) else target[fi][fe].dat = nil end
+						else target[fi][fe].dat = tonumber(split[#split]) end
+						if target[fi][fe].dat then target[fi][fe].dat = tostring(target[fi][fe].dat) end
+						if target[fi][fe].dat then if target[fi][fe].dat == "" or target[fi][fe].dat == "0" or target[fi][fe].dat == "nil" then target[fi][fe].dat = nil end end
+					elseif split[2] == "PLAC" and fe ~= "" then
+						local target = indi
+						if fe == "marr" then target = fam end
+						target[fi][fe].plac = split[3]
+						for i=4,#split do target[fi][fe].plac = target[fi][fe].plac.." "..split[i] end
+						while target[fi][fe].plac:match(", ,") do target[fi][fe].plac = target[fi][fe].plac:gsub(", ,", ",") end
+						if not target[fi][fe].plac:match("%w") then target[fi][fe].plac = nil end
+						if target[fi][fe].plac then if target[fi][fe].plac == "" or target[fi][fe].plac == "0" or target[fi][fe].plac == "nil" then target[fi][fe].plac = nil end end
+					elseif split[2] == "FAMS" then
+						if not indi[fi].fams then indi[fi].fams = {} end
+						local ifs = split[3]:gsub("@", ""):gsub("F", "")
+						table.insert(indi[fi].fams, tonumber(ifs))
+						fe = ""
+					elseif split[2] == "FAMC" then
+						local ifs = split[3]:gsub("@", ""):gsub("F", "")
+						indi[fi].famc = tonumber(ifs)
+						fe = ""
+					elseif split[2] == "NOTE" and indi[fi] then
+						if not indi[fi].notes then indi[fi].notes = {} end
+						local note = ""
+						if split[3] then
+							note = split[3]
+							for s=4,#split do note = note.." "..split[s] end
+						end
+						table.insert(indi[fi].notes, note)
+					elseif split[2] == "CONT" and indi[fi] and indi[fi].notes then
+						local note = ""
+						if split[3] then
+							note = split[3]
+							for s=4,#split do note = note.." "..split[s] end
+						end
+						table.insert(indi[fi].notes, note)
+					elseif split[2] == "HUSB" then
+						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
+						fam[fi].husb = tonumber(ifs)
+						fe = ""
+					elseif split[2] == "WIFE" then
+						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
+						fam[fi].wife = tonumber(ifs)
+						fe = ""
+					elseif split[2] == "CHIL" then
+						if not fam[fi].chil then fam[fi].chil = {} end
+						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
+						table.insert(fam[fi].chil, tonumber(ifs))
+						fe = ""
+					end
+
+					split = nil
+					l = f:read("*l")
+				end
+			else
+				indi = CCSCommon.indi
+				fam = CCSCommon.fam
+				ic = CCSCommon.indiCount
+				fc = CCSCommon.famCount
+				fi = CCSCommon:randomChoice(indi, true)
+			end
+
+			while _REVIEWING do
+				UI:clear()
+				local i = indi[fi]
+				local gIndex = i.gIndex
+				local gender = i.gender
+				local title = i.rulerTitle or i.title
+				local givn = i.givn or i.name
+				local surn = i.surn or i.surname
+				local famc = i.famc
+				local fams = i.fams
+				if givn and title then givn = givn:gsub(title.." ", ""):gsub(title, "") end
+				if famc and fam[famc] then
+					local husb = indi[fam[famc].husb]
+					local wife = indi[fam[famc].wife]
+					if husb then
+						local p1fam = fam[husb.famc]
+						if p1fam then
+							printIndi(indi[p1fam.husb], 3)
+							printIndi(indi[p1fam.wife], 3)
+						end
+						printIndi(husb, 2)
+					end
+					if wife then
+						local p2fam = fam[wife.famc]
+						if p2fam then
+							printIndi(indi[p2fam.husb], 3)
+							printIndi(indi[p2fam.wife], 3)
+						end
+						printIndi(wife, 2)
+					end
+				end
+
+				printIndi(i, 0)
+
+				if fams then for j=1,#fams do
+					local fams = fam[fams[j]]
+					if fams then
+						local spouse = nil
+						if gender == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
+						if spouse then printIndi(spouse, 1) end
+						if fams.chil then for k=1,#fams.chil do if indi[fams.chil[k]] then printIndi(indi[fams.chil[k]], -1) end end end
+					end
+				end end
+
+				UI:printc("\n")
+				if #matches > 0 then UI:printc(string.format("\nViewing match %d/%d.", mi, #matches)) end
+				UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
+				if #matches > 0 then
+					if mi < #matches then UI:printc("N to move to the next match.\n") end
+					if mi > 1 then UI:printc("P to move to the previous match.\n") end
+				end
+				UI:printc("S to view this person's notes.\n")
+				UI:printp("\n > ")
+				local datin = UI:readl()
+				local oldFI = fi
+				if datin:lower() == "b" then matches = {} _REVIEWING = false
+				elseif datin:lower() == "f" and famc then fi = fam[famc].husb or oldFI
+				elseif datin:lower() == "m" and famc then fi = fam[famc].wife or oldFI
+				elseif datin:lower() == "n" then
+					mi = mi+1
+					if mi > #matches then mi = #matches end
+					if mi == 0 then mi = 1 end
+					fi = matches[mi]
+				elseif datin:lower() == "p" then
+					mi = mi-1
+					if mi < 1 then mi = 1 end
+					fi = matches[mi]
+				elseif datin:lower() == "e" and _DEBUG then debugLine()
+				elseif datin:lower() == "s" then
+					UI:clear()
+					printIndi(i, 0)
+					UI:printc("\n\n")
+					if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end else UI:printf("This individual has no notes.") end
+					UI:readl()
+				elseif datin ~= "" then
+					matches = {}
+					fi = tonumber(datin) or datin
+					if not fi or not indi[fi] then
+						local scanned = 0
+						for j, k in pairs(indi) do
+							local allMatch = true
+							local fullName = ""
+							local ktitle = k.rulerTitle or k.title
+							local kgivn = k.givn or k.name
+							local ksurn = k.surn or k.surname
+							local knumber = CCSCommon:roman(k.number)
+							if ktitle and ktitle ~= "" then fullName = ktitle.." " end
+							if kgivn then fullName = fullName..kgivn.." " end
+							if ksurn then fullName = fullName..ksurn.." " end
+							if knumber and k.number ~= 0 then fullName = fullName..knumber end
+							fullName = fullName:lower()
+							for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
+							if allMatch then table.insert(matches, j) end
+							scanned = scanned + 1
+							if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, ic)) end
+						end
+						if #matches > 0 then fi = matches[1] mi = 1 end
+					end
+				end
+				if not indi[fi] then fi = oldFI end
+				if not indi[fi] then fi = CCSCommon:randomChoice(indi, true) end
+			end
+		end
+
+		function getLineTolerance(rl) if not rl then return UI.y-1 else return UI.y-rl-1 end end
+
+		function printIndi(i, f)
+			if not i then return end
+			local gIndex = i.gIndex
+			local gender = i.gender
+			local title = i.rulerTitle or i.title
+			local givn = i.givn or i.name
+			local surn = i.surn or i.surname
+			local number = i.number
+			local birt = i.birt or {dat=tostring(i.birth), plac=i.birthplace}
+			local deat = i.deat or {dat=tostring(i.death), plac=i.deathplace}
+			if birt and birt.dat then
+				if birt.dat == "" or birt.dat == "0" or birt.dat == "nil" then birt.dat = nil end
+				if birt.plac == "" or birt.plac == "0" or birt.plac == "nil" then birt.plac = nil end
+			end
+			if deat and deat.dat then
+				if deat.dat == "" or deat.dat == "0" or deat.dat == "nil" then deat.dat = nil end
+				if deat.plac == "" or deat.plac == "0" or deat.plac == "nil" then deat.plac = nil end
+			end
+			local sOut = tostring(gIndex)..". ("..gender..") "
+			if title and title ~= "" then
+				if f ~= 0 then for x in title:gmatch("%S+") do sOut = sOut..x:sub(1, 1).."." end
+				else sOut = sOut..title end
+				sOut = sOut.." "
+			end
+			if givn then sOut = sOut..givn.." "end
+			if surn then sOut = sOut..surn.." " end
+			if number and number ~= 0 then sOut = sOut..CCSCommon:roman(number).." " end
+			if birt or deat then sOut = sOut.."(" end
+			if birt and ((birt.dat and birt.dat ~= "0") or (birt.plac and birt.plac ~= "")) then
+				if not deat or ((not deat.dat or deat.dat == "0") and (not deat.plac or deat.plac == "")) then sOut = sOut.."b. " end
+				if birt.dat and birt.dat ~= "0" then sOut = sOut..birt.dat end
+				if birt.dat and birt.dat ~= "0" and birt.plac then sOut = sOut..", " end
+				if birt.plac and birt.plac ~= "" then
+					if f ~= 0 then
+						sOut = sOut..birt.plac:sub(1, 3)
+						if birt.plac:len() > 3 then sOut = sOut.."." end
+					else sOut = sOut..birt.plac end
+				end
+				if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then sOut = sOut.." - " else sOut = sOut..")" end
+			end
+			if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then
+				if not birt or ((not birt.dat or birt.dat == "0") and (not birt.plac or birt.plac == "")) then sOut = sOut.."d. " end
+				if deat.dat and deat.dat ~= "0" then sOut = sOut..deat.dat end
+				if deat.dat and deat.dat ~= "0" and deat.plac then sOut = sOut..", " end
+				if deat.plac and deat.plac ~= "" then
+					if f ~= 0 then
+						sOut = sOut..deat.plac:sub(1, 3)
+						if deat.plac:len() > 3 then sOut = sOut.."." end
+					else sOut = sOut..deat.plac end
+				end
+				sOut = sOut..")"
+			end
+
+			local indent = ""
+			if f == 1 then indent = "+ "
+			elseif f == 2 then indent = "\t"
+			elseif f == 3 then indent = "\t\t"
+			elseif f == -1 then indent = "    " end
+			UI:printc(indent..sOut.."\n")
+		end
+
+		function simNew()
+			UI:clear()
+
+			UI:printp("\nDo you want to show detailed info in the console (y/n)? > ")
+			local datin = UI:readl()
+
+			CCSCommon.showinfo = 0
+			if datin:lower() == "y" then CCSCommon.showinfo = 1 end
+
+			UI:printp("\nDo you want to produce maps of the world at major events (y/n)? > ")
+			datin = UI:readl()
+
+			CCSCommon.doMaps = false
+			if datin:lower() == "y" then CCSCommon.doMaps = true end
+
+			local done = false
+			while not done do
+				UI:printp("\nData > ")
+				datin = UI:readl()
+				done = true
+
+				if datin:lower() == "random" then
+					UI:printf("\nDefining countries...")
+
+					CCSCommon:rseed()
+
+					CCSCommon.thisWorld = World:new()
+					local numCountries = math.random(6, 10)
+
+					for j=1,numCountries do
+						UI:printl(string.format("Country %d/%d", j, numCountries))
+						local nl = Country:new()
+						nl:set(CCSCommon)
+						CCSCommon.thisWorld:add(nl)
+					end
+
+					CCSCommon:getAlphabetical()
+				else
+					local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
+					if not i then
+						UI:printf("\nUnable to load data file! Please try again.")
+						done = false
+					end
+				end
+			end
+
+			CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
+			CCSCommon:loop()
+		end
+
+		--[[ function simRemove()
+
+
+			UI:printp("")
+		end ]]
+
+		function simReview()
+			local _REVIEWING = true
+
+			while _REVIEWING do
+				UI:clear()
+				local sCount = 0
+				local sims = {}
+
+				local dirDotCmd = "dir . /b /ad"
+				if UI.clrcmd == "clear" then dirDotCmd = "dir -1 ." end
+
+				UI:printf("\nAvailable simulations:\n")
+
+				for x in io.popen(dirDotCmd):lines() do
+					local xn = tonumber(x)
+					if xn then
+						local tsstatus, ts = pcall(os.date, "%Y-%m-%d %H:%M:%S", xn)
+						if tsstatus then
+							local eventFile = false
+							local dirSimCmd = "dir "..x.." /b /a-d"
+							if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..x end
+							for y in io.popen(dirSimCmd):lines() do if y:match("events.txt") then eventFile = true end end
+							if eventFile then
+								sCount = sCount+1
+								table.insert(sims, x)
+								UI:printf(string.format("%d\t-\t%s", sCount, os.date("%Y-%m-%d %H:%M:%S", xn)))
+							end
+						end
+					end
+				end
+
+				if sCount == 0 then UI:printf("None") end
+
+				UI:printf("\nEnter the number of a simulation, or B to return to the main menu.\n")
+				UI:printp(" > ")
+				local datin = UI:readl()
+
+				if datin:lower() == "b" then _REVIEWING = false
+				elseif tonumber(datin) and sims[tonumber(datin)] then
+					local dirStamp = sims[tonumber(datin)]
+					local dirSimCmd = "dir "..dirStamp.." /b /a-d"
+					if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..dirStamp end
+					local eventFile = false
+					local gedFile = false
+					local lineFile = false
+					for x in io.popen(dirSimCmd):lines() do
+						if x:match("events.txt") then eventFile = true
+						elseif x:match("families.ged") then gedFile = true
+						elseif x:match("royals.ged") then lineFile = true end
+					end
+					UI:clear()
+
+					local _SELECTED = true
+					while _SELECTED do
+						UI:clear()
+						UI:printf(string.format("\nSelected simulation performed %s\n", os.date('%Y-%m-%d %H:%M:%S', dirStamp)))
+						local ops = {}
+						local thisOp = 1
+						-- if eventFile then ops[thisOp] = "events.txt" UI:printf(string.format("%d\t-\t%s", thisOp, "Events and history")) thisOp = thisOp+1 end
+						if gedFile then ops[thisOp] = "families.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
+						if lineFile then ops[thisOp] = "royals.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal lines of descent")) thisOp = thisOp+1 end
+
+						UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
+						UI:printp(" > ")
+						datin = UI:readl()
+						if datin:lower() == "b" then _SELECTED = false elseif tonumber(datin) and ops[tonumber(datin)] then
+							local op = ops[tonumber(datin)]
+							local f = io.open(CCSCommon:directory({dirStamp, op}))
+							if f then
+								-- if op == "events.txt" then eventReview(f) end
+								if op == "royals.ged" or op == "families.ged" then gedReview(f) end
+
+								f:close()
+								f = nil
+							end
+						end
+					end
+				end
+			end
+		end
+
+		function testGlyphs()
+			local bmp = {}
+			local top = 2
+			local bottom = 7
+			local pad = 8
+			local width = 2
+			for j=1,pad do table.insert(bmp, {}) end
+			for j, k in pairs(CCSCommon.glyphs) do
+				for l=1,pad do for m=1,pad do table.insert(bmp[l], {0, 0, 0}) end end
+				width = width+(pad-2)
+			end
+			local margin = 1
+			local glyphArr = {}
+			for j, k in pairs(CCSCommon.glyphs) do
+				local xi = -1
+				for l=1,#glyphArr do if xi == -1 and string.byte(j) < string.byte(glyphArr[l]) then xi = l end end
+				if xi == -1 then table.insert(glyphArr, j) else table.insert(glyphArr, xi, j) end
+			end
+			for j=1,#glyphArr do
+				local glyphIndex = glyphArr[j]
+				local k = CCSCommon.glyphs[glyphIndex]
+				local letterRow = 1
+				local letterColumn = 1
+				for l=margin,margin+5 do
+					for m=top,bottom do
+						if k[letterColumn][letterRow] == 1 then bmp[m][l] = {255, 255, 255}
+						else bmp[m][l] = {0, 0, 0} end
+						letterColumn = letterColumn+1
+					end
+					letterColumn = 1
+					letterRow = letterRow+1
+				end
+				margin = margin+6
+			end
+			local adjusted = {}
+			local yi = 1
+			for i=1,pad do
+				adjusted[yi*2] = {}
+				adjusted[(yi*2)-1] = {}
+				local col = bmp[i]
+				for j=1,width do
+					adjusted[yi*2][j*2] = col[j]
+					adjusted[(yi*2)-1][j*2] = col[j]
+					adjusted[yi*2][(j*2)-1] = col[j]
+					adjusted[(yi*2)-1][(j*2)-1] = col[j]
+				end
+				yi = yi+1
+			end
+			pad = pad*2
+			width = width*2
+			local bf = io.open("glyphs.bmp", "w+")
+			local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
+			local hStringLE = string.format("%.8x", pad)
+			local wStringLE = string.format("%.8x", width)
+			local rStringLE = ""
+			local sStringLE = ""
+			local hStringBE = ""
+			local wStringBE = ""
+			local rStringBE = ""
+			local sStringBE = ""
+			for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
+			for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
+			bmpString = bmpString:gsub("w", wStringBE)
+			bmpString = bmpString:gsub("h", hStringBE)
+
+			local byteCount = 0
+			for y=pad,1,-1 do
+				local btWritten = 0
+				for x=1,width do
+					btWritten = btWritten+3
+					byteCount = byteCount+3
+				end
+				while math.fmod(btWritten, 4) ~= 0 do
+					btWritten = btWritten+1
+					byteCount = byteCount+1
+				end
+			end
+
+			rStringLE = string.format("%.8x", byteCount)
+			sStringLE = string.format("%.8x", byteCount+54)
+			for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
+			for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
+			bmpString = bmpString:gsub("s", sStringBE)
+			bmpString = bmpString:gsub("r", rStringBE)
+
+			for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
+
+			for y=pad,1,-1 do
+				local btWritten = 0
+				for x=1,width do
+					if adjusted[y] and adjusted[y][x] then
+						bf:write(string.char(adjusted[y][x][3]))
+						bf:write(string.char(adjusted[y][x][2]))
+						bf:write(string.char(adjusted[y][x][1]))
+					else
+						bf:write(string.char(0))
+						bf:write(string.char(0))
+						bf:write(string.char(0))
+					end
+					btWritten = btWritten+3
+				end
+				while math.fmod(btWritten, 4) ~= 0 do
+					bf:write(string.char(0))
+					btWritten = btWritten+1
+				end
+			end
+
+			bf:flush()
+			bf:close()
+			bf = nil
+		end
+
+		function testNames(n)
+			local f = io.open("names.txt", "w+")
+			if not f then return end
+			local c = n or 12
+			for i=1,c do
+				f:write(string.format(" -- LENGTH %d, PERSONAL --", i))
+				for j=1,c do f:write(string.format("\n%s", CCSCommon:name(true, i, i))) end
+				f:write(string.format("\n\n -- LENGTH %d, IMPERSONAL --", i))
+				for j=1,c do f:write(string.format("\n%s", CCSCommon:name(false, i, i))) end
+				f:write("\n\n")
+			end
+			f:flush()
+			f:close()
+			f = nil
+		end
+
 		local CCSCommon = {
 			alpha = {},
 			c_events = {
@@ -2234,8 +2228,7 @@ return
 			end,
 
 			getAlphabetical = function(self, t)
-				local data = t
-				if not t then data = self.thisWorld.countries end
+				local data = t or self.thisWorld.countries
 				local cKeys = {}
 				for i, cp in pairs(data) do
 					if #cKeys ~= 0 then
@@ -2371,15 +2364,14 @@ return
 
 						for i=#self.alpha,1,-1 do
 							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cp then for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end else table.remove(self.alpha, i) end
+							if not cp or not cp.ongoing then table.remove(self.alpha, i)
+							else for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end end
 						end
 
-						if cursesstatus then
-							cLimit = getLineTolerance(#currentEvents+5)
-							if #currentEvents == 0 then cLimit = cLimit-1 end
-							if cLimit < math.floor(UI.y/2) then cLimit = math.floor(UI.y/2) end
-							eLimit = getLineTolerance(cLimit+5)
-						end
+						cLimit = getLineTolerance(#currentEvents+5)
+						if #currentEvents == 0 then cLimit = cLimit-1 end
+						if cLimit < math.floor(UI.y/2) then cLimit = math.floor(UI.y/2) end
+						eLimit = getLineTolerance(cLimit+5)
 
 						for i=1,#self.alpha do
 							local cp = self.thisWorld.countries[self.alpha[i]]
@@ -2920,8 +2912,7 @@ return
 			rseed = function(self)
 				local t0 = _time()
 				local ts = tostring(_stamp()/t0)
-				local n = tonumber(ts:reverse())
-				if not n then n = tonumber(tostring(t0):reverse()) end
+				local n = tonumber(ts:reverse()) or tonumber(tostring(t0):reverse())
 				math.randomseed(n)
 
 				if _DEBUG then

@@ -1,7 +1,7 @@
-require("CCSCommon.English")
-
 return
 	function()
+		require("CCSCommon.English")
+
 		local Language = {
 			new = function(self)
 				local o = {}
