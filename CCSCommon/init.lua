@@ -1327,9 +1327,7 @@ return
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 then
-								local already = false
-								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if not already and math.random(1, 25) == 10 then
+								if not table.contains(ao, c3) and math.random(1, 25) == 10 then
 									table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 
 									self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
@@ -1346,9 +1344,7 @@ return
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 then
-								local already = false
-								for j=1,#ao do if c3.name == ao[j].name then already = true end end
-								if not already and math.random(1, 25) == 10 then
+								if not table.contains(ao, c3) and math.random(1, 25) == 10 then
 									table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 
 									c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
@@ -2216,12 +2212,10 @@ return
 
 			getAllyOngoing = function(self, country, target, event)
 				local acOut = {}
-
-				local ac = #country.alliances
-				for i=1,ac do
+				for i=1,#country.alliances do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name or c3.allyOngoing[j] == event.."?"..target.name..":"..country.name then table.insert(acOut, c3) end end end
 				end
 
 				return acOut
