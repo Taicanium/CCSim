@@ -671,12 +671,13 @@ return
 					inverse=true,
 					beginEvent=function(self, parent, c1) end,
 					doStep=function(self, parent, c1)
-						if not self.target then return -1 end
+						if not c1 or not c1.alliances or not self.target or not self.target.alliances then return -1 end
 						if c1.relations[self.target.name] and c1.relations[self.target.name] < 35 and math.random(1, 50) < 5 then return self:endEvent(parent, c1) end
 						if math.random(1, 750) < 5 then return self:endEvent(parent, c1) end
 						return 0
 					end,
 					endEvent=function(self, parent, c1)
+						if not c1 or not c1.alliances or not self.target or not self.target.alliances then return -1 end
 						for i=#self.target.alliances,1,-1 do if self.target.alliances[i] == c1.name then table.remove(self.target.alliances, i) end end
 						for i=#c1.alliances,1,-1 do if c1.alliances[i] == self.target.name then table.remove(c1.alliances, i) end end
 
