@@ -6,6 +6,8 @@ Border checking scans for whether two countries or regions have respective coast
 
 The program leaks intense amounts of memory over longer simulations, much more than would be expected from storing the info needed for its output. Should check on garbage collection for temporary table values used in various functions, these may be related.
 
+Extreme amounts of memory (in excess of quadruple the previous usage) are leaked when outputting GEDCOM data for a simulation. This must be fixed quickly.
+
 https://i.imgur.com/Wrp2WMD.png - In this graph, red lines represent memory usage over a 500-year simulation without manual calls to garbage collection; blue lines represent simulations which call collectgarbage() every single step; and green lines represent simulations which call collectgarbage() every 50 steps. The red simulations occupied an average of 1.3 GB of RAM at their ends, while blue simulations occupied an average of 700 MB and green simulations occupied between 750 and 800 MB. Per this data, I have implemented manual calls to garbage collection every 25 steps; calling garbage collection every step nearly triples the needed running time, which isn't practical. This seems a good compromise.
 
 # Possible Features
