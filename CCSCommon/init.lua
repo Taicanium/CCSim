@@ -2216,7 +2216,7 @@ return
 				for i=1,#country.alliances do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name or c3.allyOngoing[j] == event.."?"..target.name..":"..country.name then table.insert(acOut, c3) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
 				return acOut
