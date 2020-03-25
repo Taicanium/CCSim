@@ -116,7 +116,7 @@ return
 				UI:printf("Unwrapping planet to data matrix...")
 				self:unwrap()
 				
-				UI:printf("Distorting data matrix into map projection...")
+				UI:printf("Distorting data matrix into flat projection...")
 				self:mapOutput(parent, "NIL")
 
 				UI:printf("Cross-referencing neighboring points on planet surface...")
