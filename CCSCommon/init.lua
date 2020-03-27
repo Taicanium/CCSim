@@ -1327,14 +1327,14 @@ return
 					doStep=function(self, parent, c1)
 						if not self.target then return -1 end
 
-						local ao = parent:getAllyOngoing(c1, self.target, self.name)
+						local ao1 = parent:getAllyOngoing(c1, self.target, self.name)
+						local ao2 = parent:getAllyOngoing(self.target, c1, self.name)
 						local ac = c1.alliances
 
 						for i=1,#ac do
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
-							if c3 then
-								if not table.contains(ao, c3) and math.random(1, 25) == 10 then
+							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 									table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 
 									self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
@@ -1344,14 +1344,12 @@ return
 							end
 						end
 
-						ao = parent:getAllyOngoing(self.target, c1, self.name)
 						ac = self.target.alliances
 
 						for i=1,#ac do
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
-							if c3 then
-								if not table.contains(ao, c3) and math.random(1, 25) == 10 then
+							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 									table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 
 									c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
@@ -1363,15 +1361,15 @@ return
 
 						local varistab = parent:strengthFactor(c1)-parent:strengthFactor(self.target)
 
-						ao = parent:getAllyOngoing(c1, self.target, self.name)
-						for i=1,#ao do
-							local extFactor = parent:strengthFactor(ao[i])
+						ao1 = parent:getAllyOngoing(c1, self.target, self.name)
+						for i=1,#ao1 do
+							local extFactor = parent:strengthFactor(ao1[i])
 							if extFactor > 0 then varistab = varistab+(extFactor/10) end
 						end
 
-						ao = parent:getAllyOngoing(self.target, c1, self.name)
-						for i=1,#ao do
-							local extFactor = parent:strengthFactor(ao[i])
+						ao2 = parent:getAllyOngoing(self.target, c1, self.name)
+						for i=1,#ao2 do
+							local extFactor = parent:strengthFactor(ao2[i])
 							if extFactor < 0 then varistab = varistab+(extFactor/10) end
 						end
 
@@ -1399,23 +1397,18 @@ return
 							c1.stability = c1.stability+10
 							self.target.stability = self.target.stability-10
 
-							local ao = parent:getAllyOngoing(c1, self.target, self.name)
+							local ao1 = parent:getAllyOngoing(c1, self.target, self.name)
+							local ao2 = parent:getAllyOngoing(self.target, c1, self.name)
 
-							for i=1,#ao do
-								if ao[i] then
-									c1strength = c1strength+ao[i].strength
-									ao[i]:event(parent, "Victory with "..c1.name.." in war with "..self.target.name)
-								end
-							end
+							for i=1,#ao1 do if ao1[i] then
+									c1strength = c1strength+ao1[i].strength
+									ao1[i]:event(parent, "Victory with "..c1.name.." in war with "..self.target.name)
+							end end
 
-							ao = parent:getAllyOngoing(self.target, c1, self.name)
-
-							for i=1,#ao do
-								if ao[i] then
-									c2strength = c2strength+ao[i].strength
-									ao[i]:event(parent, "Defeat with "..self.target.name.." in war with "..c1.name)
-								end
-							end
+							for i=1,#ao2 do if ao2[i] then
+									c2strength = c2strength+ao2[i].strength
+									ao2[i]:event(parent, "Defeat with "..self.target.name.." in war with "..c1.name)
+							end end
 
 							parent:removeAllyOngoing(c1, self.target, self.name)
 							parent:removeAllyOngoing(self.target, c1, self.name)
@@ -1435,18 +1428,17 @@ return
 							c1.stability = c1.stability-20
 							self.target.stability = self.target.stability+20
 
-							local ao = parent:getAllyOngoing(c1, self.target, self.name)
+							local ao1 = parent:getAllyOngoing(c1, self.target, self.name)
+							local ao2 = parent:getAllyOngoing(self.target, c1, self.name)
 
-							for i=1,#ao do
-								c1strength = c1strength+ao[i].strength
-								ao[i]:event(parent, "Defeat with "..c1.name.." in war with "..self.target.name)
+							for i=1,#ao1 do
+								c1strength = c1strength+ao1[i].strength
+								ao1[i]:event(parent, "Defeat with "..c1.name.." in war with "..self.target.name)
 							end
 
-							ao = parent:getAllyOngoing(self.target, c1, self.name)
-
-							for i=1,#ao do
-								c2strength = c2strength+ao[i].strength
-								ao[i]:event(parent, "Victory with "..self.target.name.." in war with "..c1.name)
+							for i=1,#ao2 do
+								c2strength = c2strength+ao2[i].strength
+								ao2[i]:event(parent, "Victory with "..self.target.name.." in war with "..c1.name)
 							end
 
 							parent:removeAllyOngoing(c1, self.target, self.name)
@@ -2222,7 +2214,7 @@ return
 				for i=1,#country.alliances do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3.name) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
 				return acOut
