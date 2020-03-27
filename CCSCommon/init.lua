@@ -1335,12 +1335,11 @@ return
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
-									table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
+								table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 
-									self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
-									c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
-									c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
-								end
+								self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
+								c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
+								c3:event(parent, "Intervened on the side of "..c1.name.." in war with "..self.target.name)
 							end
 						end
 
@@ -1350,12 +1349,11 @@ return
 							local c3 = nil
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
-									table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
+								table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 
-									c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
-									self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
-									c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
-								end
+								c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
+								self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
+								c3:event(parent, "Intervened on the side of "..self.target.name.." in war with "..c1.name)
 							end
 						end
 
