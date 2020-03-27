@@ -1,3 +1,29 @@
+if not loadstring then loadstring = load end
+if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
+
+table.unpack = function(t, n)
+	if not n then return table.unpack(t, 1)
+	elseif t[n] then return t[n], table.unpack(t, n+1) end
+	return t
+end
+
+table.contains = function(t, n)
+	if not t or not n then return false end
+	for i, j in pairs(t) do
+		if tostring(n) == tostring(j) then return true end
+		if type(n) == "table" and type(j) == "table" then
+			if n.name and j.name and j.name == n.name then return true end
+			if n.id and j.id and j.id == n.id then return true end
+		end
+	end
+	return false
+end
+
+_time = os.clock
+_stamp = os.time
+if _time() > 15 then _time = os.time end
+if _stamp() < 15 then _stamp = os.clock end
+
 return
 	function()
 		cursesstatus, curses = pcall(require, "curses")
@@ -10,26 +36,6 @@ return
 		Region = require("CCSCommon.Region")()
 		UI = require("CCSCommon.UI")()
 		World = require("CCSCommon.World")()
-
-		if not loadstring then loadstring = load end
-		if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
-
-		table.unpack = function(t, n)
-			if not n then return table.unpack(t, 1)
-			elseif t[n] then return t[n], table.unpack(t, n+1) end
-			return t
-		end
-
-		table.contains = function(t, n)
-			if not t or not n then return false end
-			for i, j in pairs(t) do if tostring(n) == tostring(j) then return true end end
-			return false
-		end
-
-		_time = os.clock
-		_stamp = os.time
-		if _time() > 15 then _time = os.time end
-		if _stamp() < 15 then _stamp = os.clock end
 
 		debugTimes = {}
 
@@ -2216,7 +2222,7 @@ return
 				for i=1,#country.alliances do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
-					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
+					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3.name) end end end
 				end
 
 				return acOut
