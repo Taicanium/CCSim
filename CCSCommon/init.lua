@@ -812,11 +812,13 @@ return
 					eString="",
 					inverse=false,
 					status=0,
+					conIndex=0,
 					opIntervened = {},
 					govIntervened = {},
 					beginEvent=function(self, parent, c)
 						c.civilWars = c.civilWars+1
 						c:event(parent, "Beginning of "..parent:ordinal(c.civilWars).." civil war")
+						self.conIndex = parent:insertConflict(c.name)
 						self.status = parent:strengthFactor(c) -- -100 is victory for the opposition side; 100 is victory for the present government.
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% opposition"
@@ -840,10 +842,12 @@ return
 											c:event(parent, "Intervention on the side of the opposition by "..cp.name)
 											cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the opposition")
 											table.insert(self.opIntervened, cp.name)
+											table.insert(parent.conflicts[self.conIndex], cp.name)
 										elseif cp.relations[c.name] > 70 and math.random(50, 150-cp.relations[c.name]) == 50 then
 											c:event(parent, "Intervention on the side of the government by "..cp.name)
 											cp:event(parent, "Intervened in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war on the side of the government")
 											table.insert(self.govIntervened, cp.name)
+											table.insert(parent.conflicts[self.conIndex], cp.name)
 										end
 									end
 								end
@@ -939,6 +943,8 @@ return
 								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
 							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." of "..c.name) end
 						end
+						
+						parent.conflicts[self.conIndex] = nil
 
 						return -1
 					end,
@@ -1311,10 +1317,12 @@ return
 					args=2,
 					status=0,
 					eString="",
+					conIndex=0,
 					inverse=true,
 					beginEvent=function(self, parent, c1)
 						c1:event(parent, "Declared war on "..self.target.name)
 						self.target:event(parent, "War declared by "..c1.name)
+						self.conIndex = parent:insertConflict(c1.name, self.target.name)
 						self.status = parent:strengthFactor(c1)-parent:strengthFactor(self.target) -- -100 is victory for the target; 100 is victory for the initiator.
 						local statString = ""
 						if self.status <= -10 then statString = tostring(math.floor(math.abs(self.status))).."% "..self.target.name
@@ -1336,6 +1344,7 @@ return
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 								table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
+								table.insert(parent.conflicts[self.conIndex], c3.name)
 
 								self.target:event(parent, "Intervention by "..c3.name.." on the side of "..c1.name)
 								c1:event(parent, "Intervention by "..c3.name.." against "..self.target.name)
@@ -1350,6 +1359,7 @@ return
 							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 								table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
+								table.insert(parent.conflicts[self.conIndex], c3.name)
 
 								c1:event(parent, "Intervention by "..c3.name.." on the side of "..self.target.name)
 								self.target:event(parent, "Intervention by "..c3.name.." against "..c1.name)
@@ -1454,6 +1464,8 @@ return
 								end
 							end
 						end
+						
+						parent.conflicts[self.conIndex] = nil
 
 						return -1
 					end,
@@ -1476,6 +1488,7 @@ return
 			},
 			cIndi = {},
 			clrcmd = "",
+			conflicts = {},
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
 			culledCount = 0,
 			dirSeparator = "/",
@@ -1771,6 +1784,7 @@ return
 			iSCount = 0,
 			iSIndex = 0,
 			languages = {},
+			maxConflicts = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
@@ -2313,6 +2327,14 @@ return
 				else rString = "None" end
 
 				return rString
+			end,
+			
+			insertConflict = function(self, c1, c2)
+				local i = 0
+				for j=self.maxConflicts+1,1,-1 do if not self.conflicts[j] then i = j end end
+				self.conflicts[i] = {c1, c2}
+				if #self.conflicts > self.maxConflicts then self.maxConflicts = #self.conflicts end
+				return i
 			end,
 
 			loop = function(self)
@@ -3005,7 +3027,11 @@ return
 				if not c then return 0 end
 				local pop = 0
 				if c.rulerParty then pop = c.rulerPopularity-50 end
-				return (pop+(c.stability-50)+(((c.military/#c.people)*100)-50))
+				local involved = 0
+				for i=1,self.maxConflicts do if self.conflicts[i] then for j=1,#self.conflicts[i] do if self.conflicts[i][j] == c.name then involved = involved+1 end end end end
+				if involved == 0 then involved = 1 end
+				involved = (involved == 1 and 1 or (involved*0.75))
+				return (pop+(c.stability-50)+((((c.military/#c.people)*100)-50)))/involved
 			end,
 
 			writeGed = function(self)
