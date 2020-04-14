@@ -106,7 +106,9 @@ return
 					elseif cmd == "g" then indi[fi].gender = split[3-reindexed]
 					elseif cmd == "n" then indi[fi].givn = split[3-reindexed]
 					elseif cmd == "s" then indi[fi].surn = split[3-reindexed]
-					elseif cmd == "t" then indi[fi].title = split[3-reindexed]
+					elseif cmd == "t" then
+						indi[fi].title = split[3-reindexed]
+						if split[4-reindexed] then indi[fi].title = indi[fi].title.." "..split[4-reindexed] end
 					elseif cmd == "o" then indi[fi].number = tonumber(split[3-reindexed])
 					elseif cmd == "r" then indi[fi].rulerName = split[3-reindexed]
 					elseif cmd == "d" then indi[fi].death = tonumber(split[3-reindexed])
