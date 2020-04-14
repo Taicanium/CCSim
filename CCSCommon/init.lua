@@ -95,7 +95,7 @@ return
 						largestRead = math.max(fi, largestRead)
 						if math.fmod(largestRead, 10000) == 0 then
 							UI:printl(string.format("%d/%d people", largestRead, iCount))
-							collectgarbage("collect")
+							if math.fmod(largestRead, 50000) == 0 then collectgarbage("collect") end
 						end
 						reindexed = 0
 					else reindexed = 1 end
@@ -121,8 +121,10 @@ return
 					l = f:read("*l")
 				else l = nil end
 			end
-
+			
+			UI:printl(string.format("%d/%d people", largestRead, iCount))
 			local nextInd = 1
+			
 			for i=1,#indi do
 				local j = indi[i]
 				if j.moth and j.fath then
@@ -130,7 +132,7 @@ return
 					local famStr = tostring(j.moth).."-"..tostring(j.fath)
 					if not fam[famStr] then
 						fInd = nextInd
-						if math.fmod(nextInd, 10000) == 0 then collectgarbage("collect") end
+						if math.fmod(nextInd, 50000) == 0 then collectgarbage("collect") end
 						fam[famStr] = fInd
 						fami[fInd] = {wife=j.moth, husb=j.fath, chil={}}
 						indi[j.moth].fams = indi[j.moth].fams or {}
