@@ -66,178 +66,50 @@ return
 
 		function gedReview(f)
 			local indi = {}
-			local fam = {}
-			local fi = 1
-			local fe = ""
-			local ic = 0
-			local fc = 0
-			local mi = 1
-			local matches = {}
-			local _REVIEWING = true
-
-			if f then
-				UI:printf("\nCounting objects...")
-
-				local l = f:read("*l")
-				while l do
-					local split = {}
-					for x in l:gmatch("%S+") do table.insert(split, x) end
-					if split[1] and tonumber(split[1]) then
-						fi = tonumber(split[1])
-						if fi > ic then ic = fi end
-					end
-					if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People")) end
+			local fams = {}
+			local fami = {}
+			local l = f:read("*l")
+			while l and l ~= "" do
+				local split = {}
+				for x in l:gmatch("%w+") do table.insert(split, x) end
+				if #split > 0 then
+					local index = tonumber(split[1])
+					if not index then print(l) end
+					local cmd = split[2]
+					if not indi[index] then indi[index] = {} end
+					if cmd == "b" then indi[index].birth = tonumber(split[3])
+					elseif cmd == "c" then indi[index].birthplace = split[3]
+					elseif cmd == "g" then indi[index].gender = split[3]
+					elseif cmd == "n" then indi[index].givn = split[3]
+					elseif cmd == "s" then indi[index].surn = split[4]
+					elseif cmd == "d" then indi[index].death = tonumber(split[3])
+					elseif cmd == "e" then indi[index].deathplace = split[3]
+					elseif cmd == "m" then indi[index].moth = tonumber(split[3])
+					elseif cmd == "f" then indi[index].fath = tonumber(split[3]) end
 					l = f:read("*l")
-					split = nil
+				else l = nil end
+			end
+
+			local nextInd = 1
+			for i=1,#indi do
+				local j = indi[i]
+				if j.moth and j.fath then
+					local fInd = 0
+					local famStr = tostring(j.moth).."-"..tostring(j.fath)
+					if not fams[famStr] then
+						fInd = nextInd
+						fams[famStr] = fInd
+						fami[fInd] = {moth=j.moth, fath=j.fath, chil={}}
+						nextInd = nextInd+1
+					else fInd = fams[famStr] end
+					table.insert(fami[fInd].chil, i)
+					j.famc = fInd
 				end
-
-				UI:printl(string.format("%d People", ic))
-				fi = 1
-				f:seek("set")
-				UI:printf("\nLoading data...")
-
-				l = f:read("*l")
-				while l do
-					local split = {}
-					for x in l:gmatch("%S+") do table.insert(split, x) end
-					if split[1] and split[1] == "0" and split[3] then
-						if split[3] == "INDI" then
-							if fi > 0 and indi[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d People", fi, ic)) end
-							local ifs = split[2]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-							local index = tonumber(ifs)
-							if index then
-								indi[index] = {gIndex=index}
-								fi = index
-								fe = ""
-							end
-						elseif split[3] == "FAM" then
-							if fi > 0 and fam[fi] and math.fmod(fi, 10000) == 0 then UI:printl(string.format("%d/%d Families", fi, fc)) end
-							local ifs = split[2]:gsub("@", ""):gsub("F", "")
-							local index = tonumber(ifs)
-							if index then
-								fam[index] = {fIndex=index}
-								fi = index
-								fe = ""
-							end
-						end
-					elseif split[2] == "NAME" and indi[fi] and not indi[fi].surn and not indi[fi].givn then
-						local name = ""
-						for i=3,#split do name = name.." "..split[i] end
-						if not indi[fi].surn then for x in name:gmatch("/(%C+)/") do indi[fi].surn = x end end
-						if not indi[fi].number then for x in name:gmatch("/%C+/ (%C+)") do indi[fi].number = x end end
-						if not indi[fi].givn then
-							name = name:gsub("/%C+/ %C+", "")
-							name = name:gsub("/%C+/", "")
-							name = name:gsub("//", "")
-							for x in name:gmatch("%C+") do if x:sub(x:len(), x:len()) == " " then indi[fi].givn = x:sub(1, x:len()-1) else indi[fi].givn = x end end
-						end
-						if indi[fi].givn and not indi[fi].givn:match("%w") then indi[fi].givn = nil end
-						if indi[fi].surn and not indi[fi].surn:match("%w") then indi[fi].surn = nil end
-						if indi[fi].number and not indi[fi].number:match("%w") then indi[fi].number = nil end
-						fe = ""
-					elseif split[2] == "SURN" then
-						indi[fi].surn = split[3]
-						for i=4,#split do indi[fi].surn = indi[fi].surn.." "..split[i] end
-						if not indi[fi].surn:match("%w") then indi[fi].surn = nil end
-						fe = ""
-					elseif split[2] == "GIVN" then
-						indi[fi].givn = split[3]
-						for i=4,#split do indi[fi].givn = indi[fi].givn.." "..split[i] end
-						if not indi[fi].givn:match("%w") then indi[fi].givn = nil end
-						fe = ""
-					elseif split[2] == "NPFX" then
-						indi[fi].title = split[3]
-						for i=4,#split do indi[fi].title = indi[fi].title.." "..split[i] end
-						if not indi[fi].title:match("%w") then indi[fi].title = nil end
-						fe = ""
-					elseif split[2] == "NSFX" then
-						indi[fi].number = split[3]
-						for i=4,#split do indi[fi].number = indi[fi].number.." "..split[i] end
-						if not indi[fi].number:match("%w") then indi[fi].number = nil end
-						fe = ""
-					elseif split[2] == "SEX" then indi[fi].gender = split[3] fe = ""
-					elseif split[2] == "BIRT" then fe = split[2]:lower() indi[fi][fe] = {}
-					elseif split[2] == "DEAT" then fe = split[2]:lower() indi[fi][fe] = {}
-					elseif split[2] == "BURI" then fe = split[2]:lower() indi[fi][fe] = {}
-					elseif split[2] == "MARR" then fe = split[2]:lower() fam[fi][fe] = {}
-					elseif split[2] == "DATE" and fe ~= "" then
-						local target = indi
-						if fe == "marr" then target = fam end
-						target[fi][fe].dat = split[3]
-						for i=4,#split do target[fi][fe].dat = target[fi][fe].dat.." "..split[i] end
-						if split[#split] and split[#split] == "BC" or split[#split] == "B.C." or split[#split] == "B.C.E." or split[#split] == "B." or split[#split] == "C." or split[#split] == "E." then
-							local sI = #split
-							while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
-							if split[sI] then target[fi][fe].dat = -(tonumber(split[sI])) else target[fi][fe].dat = nil end
-						elseif not tonumber(split[#split]) then
-							local sI = #split
-							while split[sI] and not tonumber(split[sI]) do sI = sI-1 end
-							if split[sI] then target[fi][fe].dat = tonumber(split[sI]) else target[fi][fe].dat = nil end
-						else target[fi][fe].dat = tonumber(split[#split]) end
-						if target[fi][fe].dat then target[fi][fe].dat = tostring(target[fi][fe].dat) end
-						if target[fi][fe].dat then if target[fi][fe].dat == "" or target[fi][fe].dat == "0" or target[fi][fe].dat == "nil" then target[fi][fe].dat = nil end end
-					elseif split[2] == "PLAC" and fe ~= "" then
-						local target = indi
-						if fe == "marr" then target = fam end
-						target[fi][fe].plac = split[3]
-						for i=4,#split do target[fi][fe].plac = target[fi][fe].plac.." "..split[i] end
-						while target[fi][fe].plac:match(", ,") do target[fi][fe].plac = target[fi][fe].plac:gsub(", ,", ",") end
-						if not target[fi][fe].plac:match("%w") then target[fi][fe].plac = nil end
-						if target[fi][fe].plac then if target[fi][fe].plac == "" or target[fi][fe].plac == "0" or target[fi][fe].plac == "nil" then target[fi][fe].plac = nil end end
-					elseif split[2] == "FAMS" then
-						if not indi[fi].fams then indi[fi].fams = {} end
-						local ifs = split[3]:gsub("@", ""):gsub("F", "")
-						table.insert(indi[fi].fams, tonumber(ifs))
-						fe = ""
-					elseif split[2] == "FAMC" then
-						local ifs = split[3]:gsub("@", ""):gsub("F", "")
-						indi[fi].famc = tonumber(ifs)
-						fe = ""
-					elseif split[2] == "NOTE" and indi[fi] then
-						if not indi[fi].notes then indi[fi].notes = {} end
-						local note = ""
-						if split[3] then
-							note = split[3]
-							for s=4,#split do note = note.." "..split[s] end
-						end
-						table.insert(indi[fi].notes, note)
-					elseif split[2] == "CONT" and indi[fi] and indi[fi].notes then
-						local note = ""
-						if split[3] then
-							note = split[3]
-							for s=4,#split do note = note.." "..split[s] end
-						end
-						table.insert(indi[fi].notes, note)
-					elseif split[2] == "HUSB" then
-						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-						fam[fi].husb = tonumber(ifs)
-						fe = ""
-					elseif split[2] == "WIFE" then
-						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-						fam[fi].wife = tonumber(ifs)
-						fe = ""
-					elseif split[2] == "CHIL" then
-						if not fam[fi].chil then fam[fi].chil = {} end
-						local ifs = split[3]:gsub("@", ""):gsub("I", ""):gsub("P", "")
-						table.insert(fam[fi].chil, tonumber(ifs))
-						fe = ""
-					end
-
-					split = nil
-					l = f:read("*l")
-				end
-			else
-				indi = CCSCommon.indi
-				fam = CCSCommon.fam
-				ic = CCSCommon.indiCount
-				fc = CCSCommon.famCount
-				fi = CCSCommon:randomChoice(indi, true)
 			end
 
 			while _REVIEWING do
 				UI:clear()
 				local i = indi[fi]
-				local gIndex = i.gIndex
 				local gender = i.gender
 				local title = i.rulerTitle or i.title
 				local givn = i.givn or i.name

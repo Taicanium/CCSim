@@ -363,6 +363,7 @@ return
 					parent.gedFile:write(tostring(n.gIndex).." g "..tostring(n.gender).."\n")
 					parent.gedFile:write(tostring(n.gIndex).." n "..tostring(n.name).."\n")
 					parent.gedFile:write(tostring(n.gIndex).." s "..tostring(n.surname).."\n")
+					parent.gedFile:flush()
 					self:add(parent, n)
 				end
 			end,

@@ -73,6 +73,7 @@ return
 				self.deathplace = nl.name
 				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
 				parent.gedFile:write(tostring(self.gIndex).." e "..tostring(self.deathplace).."\n")
+				parent.gedFile:flush()
 				self.def = nil -- See above.
 				self.ebelief = nil
 				parent:deepnil(self.ethnicity)
@@ -239,6 +240,7 @@ return
 				parent.gedFile:write(tostring(nn.gIndex).." g "..tostring(nn.birthplace).."\n")
 				parent.gedFile:write(tostring(nn.gIndex).." n "..tostring(nn.name).."\n")
 				parent.gedFile:write(tostring(nn.gIndex).." s "..tostring(nn.surname).."\n")
+				parent.gedFile:flush()
 
 				if _DEBUG then
 					if not debugTimes["Person.dobirth"] then debugTimes["Person.dobirth"] = 0 end
@@ -279,6 +281,7 @@ return
 
 				parent.gedFile:write(tostring(self.gIndex).." m "..tostring(mother.gIndex).."\n")
 				parent.gedFile:write(tostring(self.gIndex).." f "..tostring(father.gIndex).."\n")
+				parent.gedFile:flush()
 
 				local natLang = {}
 				local spokeLang = {}
