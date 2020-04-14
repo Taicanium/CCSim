@@ -31,7 +31,7 @@ return
 				o.gIndex = 0
 				o.gString = ""
 				o.inSuccession = false
-				o.isruler = false
+				o.isRuler = false
 				o.LastRoyalAncestor = ""
 				o.level = 2
 				o.maternalLineTimes = math.huge
@@ -77,7 +77,7 @@ return
 				self.ebelief = nil
 				parent:deepnil(self.ethnicity)
 				self.father = nil
-				self.isruler = nil
+				self.isRuler = nil
 				self.level = nil
 				self.military = nil
 				self.militaryTraining = nil
@@ -202,7 +202,7 @@ return
 
 				nl:add(parent, nn)
 
-				if self.isruler or self.spouse.isruler then
+				if self.isRuler or self.spouse.isRuler then
 					nn.level = self.level-1
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
@@ -212,8 +212,8 @@ return
 				
 				if self.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if selfSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.gIndex then selfSucc = i end end end
 				if self.spouse.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if spouseSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.spouse.gIndex then spouseSucc = i end end end
-				if self.isruler then selfSucc = 0 end
-				if self.spouse.isruler then spouseSucc = 0 end
+				if self.isRuler then selfSucc = 0 end
+				if self.spouse.isRuler then spouseSucc = 0 end
 				
 				if selfSucc < math.huge then for i=1,#self.children do self.children[i].inSuccession = false end end
 				if spouseSucc < math.huge then for i=1,#self.spouse.children do self.spouse.children[i].inSuccession = false end end
@@ -408,7 +408,7 @@ return
 
 					if self.level < 1 then self.level = 1 end
 					if self.level >= #ranks-rankLim then self.level = #ranks-rankLim end
-					if self.isruler then self.level = #ranks end
+					if self.isRuler then self.level = #ranks end
 					if self.parentRuler and sys.dynastic then self.level = #ranks-1 end
 				else self.level = 2 end
 
@@ -469,7 +469,7 @@ return
 					self.party = pmatch.name
 				end
 
-				if self.isruler then
+				if self.isRuler then
 					nl.rulers[#nl.rulers].party = self.party
 					nl.rulerParty = nl.parties[self.party]
 				end
