@@ -340,6 +340,8 @@ return
 					if #self.people > 1 then while self.people[r].isruler do r = math.random(1, #self.people) end end
 					self:delete(parent, r)
 				end
+				
+				if not parent.gedFile then parent.gedFile = io.open(parent:directory({parent.stamp, "ged.dat"}), "a+") end
 
 				for i=1,u-#self.people do
 					local n = Person:new()
@@ -353,11 +355,11 @@ return
 					n.birthplace = self.name
 					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					n.gIndex = parent:nextGIndex()
-					CCSCommon.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
-					CCSCommon.gedFile:write(tostring(n.gIndex).." c "..tostring(n.birthplace).."\n")
-					CCSCommon.gedFile:write(tostring(n.gIndex).." g "..tostring(n.gender).."\n")
-					CCSCommon.gedFile:write(tostring(n.gIndex).." n "..tostring(n.name).."\n")
-					CCSCommon.gedFile:write(tostring(n.gIndex).." s "..tostring(n.surname).."\n")
+					parent.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
+					parent.gedFile:write(tostring(n.gIndex).." c "..tostring(n.birthplace).."\n")
+					parent.gedFile:write(tostring(n.gIndex).." g "..tostring(n.gender).."\n")
+					parent.gedFile:write(tostring(n.gIndex).." n "..tostring(n.name).."\n")
+					parent.gedFile:write(tostring(n.gIndex).." s "..tostring(n.surname).."\n")
 					self:add(parent, n)
 				end
 			end,

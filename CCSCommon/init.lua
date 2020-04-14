@@ -423,7 +423,6 @@ return
 				done = true
 				CCSCommon.stamp = tostring(math.floor(_stamp()))
 				CCSCommon:checkDirectory(CCSCommon.stamp)
-				CCSCommon.gedFile = io.open(CCSCommon:directory({CCSCommon.stamp, "ged.dat"}), "a+")
 
 				if datin:lower() == "random" then
 					UI:printf("\nDefining countries...")
@@ -1333,8 +1332,8 @@ return
 						self.eString = string.format("%s-%s war (%s)", c1.demonym, self.target.demonym, statString)
 					end,
 					doStep=function(self, parent, c1)
-						if not c1 then return -1 end
-						if not self.target then return -1 end
+						if not c1 or not c1.people or #c1.people == 0 then return -1 end
+						if not self.target or not self.target.people or #self.target.people == 0 then return -1 end
 
 						local ao1 = parent:getAllyOngoing(c1, self.target, self.name)
 						local ao2 = parent:getAllyOngoing(self.target, c1, self.name)
@@ -2031,9 +2030,6 @@ return
 				UI:printf("\nPrinting result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
 
-				self.gedFile:flush()
-				self.gedFile:close()
-
 				local cKeys = self:getAlphabetical(self.final)
 				for i=1,#cKeys do
 					local cp = nil
@@ -2372,6 +2368,8 @@ return
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				collectgarbage("collect")
+				
+				self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
 
 				while _running do
 					self.thisWorld:update(self)
@@ -2495,6 +2493,11 @@ return
 					remainingYears = remainingYears-1
 
 					while remainingYears <= 0 do
+						if self.gedFile then
+							self.gedFile:flush()
+							self.gedFile:close()
+							self.gedFile = nil
+						end
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
 						if _DEBUG then UI:printf("L to compare the languages of this world.") end
@@ -2502,7 +2505,9 @@ return
 						UI:printf("Q to exit.")
 						UI:printp("\n > ")
 						local datin = UI:readl()
-						if tonumber(datin) then remainingYears = tonumber(datin)
+						if tonumber(datin) then
+							remainingYears = tonumber(datin)
+							self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
 						elseif datin:lower() == "l" and _DEBUG then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)

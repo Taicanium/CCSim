@@ -234,11 +234,11 @@ return
 					nl:recurseRoyalChildren(self.spouse, spouseSucc)
 				end
 
-				CCSCommon.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
-				CCSCommon.gedFile:write(tostring(nn.gIndex).." c "..tostring(nn.birthplace).."\n")
-				CCSCommon.gedFile:write(tostring(nn.gIndex).." g "..tostring(nn.birthplace).."\n")
-				CCSCommon.gedFile:write(tostring(nn.gIndex).." n "..tostring(nn.name).."\n")
-				CCSCommon.gedFile:write(tostring(nn.gIndex).." s "..tostring(nn.surname).."\n")
+				parent.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
+				parent.gedFile:write(tostring(nn.gIndex).." c "..tostring(nn.birthplace).."\n")
+				parent.gedFile:write(tostring(nn.gIndex).." g "..tostring(nn.birthplace).."\n")
+				parent.gedFile:write(tostring(nn.gIndex).." n "..tostring(nn.name).."\n")
+				parent.gedFile:write(tostring(nn.gIndex).." s "..tostring(nn.surname).."\n")
 
 				if _DEBUG then
 					if not debugTimes["Person.dobirth"] then debugTimes["Person.dobirth"] = 0 end
@@ -277,8 +277,8 @@ return
 				self.father = father
 				self.mother = mother
 
-				CCSCommon.gedFile:write(tostring(self.gIndex).." m "..tostring(mother.gIndex).."\n")
-				CCSCommon.gedFile:write(tostring(self.gIndex).." f "..tostring(father.gIndex).."\n")
+				parent.gedFile:write(tostring(self.gIndex).." m "..tostring(mother.gIndex).."\n")
+				parent.gedFile:write(tostring(self.gIndex).." f "..tostring(father.gIndex).."\n")
 
 				local natLang = {}
 				local spokeLang = {}
