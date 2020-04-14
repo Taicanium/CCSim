@@ -210,10 +210,10 @@ return
 				local selfSucc = math.huge
 				local spouseSucc = math.huge
 				
-				if self.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if selfSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.gIndex then selfSucc = i end end end
-				if self.spouse.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if spouseSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.spouse.gIndex then spouseSucc = i end end end
-				if self.isRuler then selfSucc = 0 end
-				if self.spouse.isRuler then spouseSucc = 0 end
+				if self.isRuler then selfSucc = 0
+				elseif self.inSuccession then for i=1,#nl.lineOfSuccession do if selfSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.gIndex then selfSucc = i end end end
+				if self.spouse.isRuler then spouseSucc = 0
+				elseif self.spouse.inSuccession then for i=1,#nl.lineOfSuccession do if spouseSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.spouse.gIndex then spouseSucc = i end end end
 				
 				if selfSucc < math.huge then for i=1,#self.children do self.children[i].inSuccession = false end end
 				if spouseSucc < math.huge then for i=1,#self.spouse.children do self.spouse.children[i].inSuccession = false end end

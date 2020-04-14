@@ -265,8 +265,11 @@ return
 			end,
 
 			recurseRoyalChildren = function(self, t, n)
-				if not t.children then return nil end
-				if #t.children == 0 then return nil end
+				if not t.children or #t.children == 0 then return nil end
+				
+				local ind = n+1
+				if ind > #self.lineOfSuccession+1 then ind = #self.lineOfSuccession end
+				if ind == 0 then ind = 1 end
 
 				local childrenByAge = {}
 				local hasMale = false
@@ -284,20 +287,20 @@ return
 				if not hasMale and not self.agPrim then for i=#childrenByAge,1,-1 do if not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 					childrenByAge[i].inSuccession = true
 					self:recurseRoyalChildren(childrenByAge[i], n)
-					table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
+					table.insert(self.lineOfSuccession, ind, childrenByAge[i])
 				end end
 				else
 					if not self.agPrim then
 						for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 							childrenByAge[i].inSuccession = true
 							self:recurseRoyalChildren(childrenByAge[i], n)
-							table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
+							table.insert(self.lineOfSuccession, ind, childrenByAge[i])
 						end end
 					end
 					for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 						childrenByAge[i].inSuccession = true
 						self:recurseRoyalChildren(childrenByAge[i], n)
-						table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
+						table.insert(self.lineOfSuccession, ind, childrenByAge[i])
 					end end
 				end
 			end,
