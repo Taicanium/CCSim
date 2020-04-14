@@ -61,7 +61,6 @@ return
 			end,
 
 			destroy = function(self, parent, nl)
-				for i=#nl.lineOfSuccession,1,-1 do if nl.lineOfSuccession[i].gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i) end end
 				self.age = nil
 				self.cbelief = nil
 				self.children = nil

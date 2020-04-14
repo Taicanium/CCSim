@@ -153,8 +153,10 @@ return
 									self:setRuler(parent, p, enthrone)
 								else
 									local p = table.remove(self.lineOfSuccession, 1)
-									if p.nationality ~= self.name then self:add(parent, p) end
-									self:setRuler(parent, p.pIndex, enthrone)
+									if p.def then
+										if p.nationality ~= self.name then self:add(parent, p) end
+										self:setRuler(parent, p.pIndex, enthrone)
+									end
 								end
 							else
 								local p = math.random(1, #self.people)

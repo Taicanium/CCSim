@@ -95,7 +95,7 @@ return
 						largestRead = math.max(fi, largestRead)
 						if math.fmod(largestRead, 10000) == 0 then
 							UI:printl(string.format("%d/%d people", largestRead, iCount))
-							if math.fmod(largestRead, 50000) == 0 then collectgarbage("collect") end
+							if math.fmod(largestRead, 100000) == 0 then collectgarbage("collect") end
 						end
 						reindexed = 0
 					else reindexed = 1 end
@@ -123,6 +123,7 @@ return
 			end
 			
 			UI:printl(string.format("%d/%d people", largestRead, iCount))
+			UI:printf("\nLinking family records...")
 			local nextInd = 1
 			
 			for i=1,#indi do
@@ -132,7 +133,10 @@ return
 					local famStr = tostring(j.moth).."-"..tostring(j.fath)
 					if not fam[famStr] then
 						fInd = nextInd
-						if math.fmod(nextInd, 50000) == 0 then collectgarbage("collect") end
+						if math.fmod(nextInd, 10000) == 0 then
+							UI:printl(string.format("%d/%d people", nextInd, iCount))
+							if math.fmod(nextInd, 100000) == 0 then collectgarbage("collect") end
+						end
 						fam[famStr] = fInd
 						fami[fInd] = {wife=j.moth, husb=j.fath, chil={}}
 						indi[j.moth].fams = indi[j.moth].fams or {}
@@ -154,7 +158,6 @@ return
 			fi = math.random(1, #indi)
 
 			while _REVIEWING do
-				collectgarbage("collect")
 				UI:clear()
 				local i = indi[fi]
 				local gender = i.gender or i.gend
@@ -254,6 +257,7 @@ return
 							mi = 1
 						end
 					end
+					collectgarbage("collect")
 				end
 				if not indi[fi] then fi = oldFI end
 				if not indi[fi] then fi = CCSCommon:randomChoice(indi, true) end
