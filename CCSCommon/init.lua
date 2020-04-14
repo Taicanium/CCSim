@@ -729,7 +729,7 @@ return
 										c2.people[i].region = newr
 										c2.people[i].nationality = c1.name
 										c2.people[i].military = false
-										c2.people[i].isruler = false
+										c2.people[i].isRuler = false
 										c2.people[i].level = 2
 										c2.people[i].title = "Citizen"
 										c2.people[i].parentRuler = false
@@ -897,11 +897,11 @@ return
 							end
 						else -- Opposition victory
 							if math.random(1, 100) < 51 then -- Executed
-								for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
+								for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 							else -- Exiled
 								local newC = parent:randomChoice(parent.thisWorld.countries)
 								if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-								for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
+								for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 							end
 
 							for i=1,#self.govIntervened do
@@ -919,11 +919,11 @@ return
 							c.snt[parent.systems[c.system].name] = c.snt[parent.systems[c.system].name]+1
 							c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
-							c.hasruler = -1
+							c.hasRuler = -1
 							c:checkRuler(parent, true)
 
 							local newRuler = nil
-							for i=1,#c.people do if c.people[i].isruler then newRuler = c.people[i] end end
+							for i=1,#c.people do if c.people[i].isRuler then newRuler = c.people[i] end end
 							if not newRuler then return -1 end
 
 							local namenum = 0
@@ -1015,14 +1015,14 @@ return
 
 						parent:rseed()
 						if math.random(1, 100) < 26 then -- Executed
-							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
+							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
+							for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 						end
 
-						c.hasruler = -1
+						c.hasRuler = -1
 						c:checkRuler(parent, true)
 
 						c.stability = c.stability-5
@@ -1112,7 +1112,7 @@ return
 
 							for i=1,math.floor(#c.people/5) do
 								local p = parent:randomChoice(c.people)
-								while p.isruler do p = parent:randomChoice(c.people) end
+								while p.isRuler do p = parent:randomChoice(c.people) end
 								newl:add(parent, p)
 							end
 
@@ -1169,7 +1169,7 @@ return
 							local nCities = {}
 							for i, j in pairs(newl.regions) do for k, l in pairs(j.cities) do table.insert(nCities, k) end end
 
-							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isruler and c.people[i].region and c.people[i].region.name == newl.name then
+							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isRuler and c.people[i].region and c.people[i].region.name == newl.name then
 								local added = false
 								for j=1,#nCities do if not added and c.people[i].city == nCities then
 									newl:add(parent, c.people[i])
@@ -1283,11 +1283,11 @@ return
 
 						parent:rseed()
 						if math.random(1, 100) < 51 then -- Executed
-							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isruler then c:delete(parent, q) end end
+							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 						else -- Exiled
 							local newC = parent:randomChoice(parent.thisWorld.countries)
 							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
-							for q, r in pairs(c.people) do if r.isruler then newC:add(parent, r) end end
+							for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 						end
 
 						local oldsys = parent.systems[c.system].name
@@ -1298,7 +1298,7 @@ return
 						c:event(parent, "Revolution: "..oldsys.." to "..parent.systems[c.system].name)
 						c:event(parent, "Establishment of the "..parent:ordinal(c.snt[parent.systems[c.system].name]).." "..c.demonym.." "..c.formalities[parent.systems[c.system].name])
 
-						c.hasruler = -1
+						c.hasRuler = -1
 						c:checkRuler(parent, true)
 
 						c.stability = c.stability-10
@@ -2759,7 +2759,7 @@ return
 					if rCount > lim and c2.regions[r] then
 						local rn = c2.regions[r]
 
-						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isruler then c1:add(self, c2.people[i]) end end
+						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isRuler then c1:add(self, c2.people[i]) end end
 
 						c1.regions[rn.name] = rn
 						c2.regions[rn.name] = nil
