@@ -30,6 +30,7 @@ return
 				o.gender = ""
 				o.gIndex = 0
 				o.gString = ""
+				o.inSuccession = false
 				o.isruler = false
 				o.LastRoyalAncestor = ""
 				o.level = 2
@@ -41,6 +42,7 @@ return
 				o.nationality = ""
 				o.nativeLang = {}
 				o.number = 0
+				o.numChildren = 0
 				o.parentRuler = false
 				o.party = ""
 				o.pbelief = 0
@@ -57,24 +59,29 @@ return
 				o.spouse = nil
 				o.surname = ""
 				o.title = "Citizen"
-				o.writeGed = 0
 
 				return o
 			end,
 
 			destroy = function(self, parent, nl)
+				for i=#nl.lineOfSuccession,1,-1 do if nl.lineOfSuccession[i].gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i) end end
 				self.age = nil
 				self.cbelief = nil
+				self.children = nil
 				self.city = nil
 				self.death = parent.years
 				self.deathplace = nl.name
+				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
+				parent.gedFile:write(tostring(self.gIndex).." e "..tostring(self.deathplace).."\n")
 				self.def = nil -- See above.
 				self.ebelief = nil
 				parent:deepnil(self.ethnicity)
+				self.father = nil
 				self.isruler = nil
 				self.level = nil
 				self.military = nil
 				self.militaryTraining = nil
+				self.mother = nil
 				self.nationality = nil
 				self.parentRuler = nil
 				self.party = nil
@@ -189,16 +196,49 @@ return
 
 				nn.region = self.region
 				nn.city = self.city
-
-				if self.gender == "F" then nn:SetFamily(self.spouse, self, parent)
-				else nn:SetFamily(self, self.spouse, parent) end
-
 				nn.birthplace = nl.name
 				nn.age = 0
 				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
+				nn.gIndex = parent:nextGIndex()
+
+				if self.gender == "F" then nn:SetFamily(self.spouse, self, parent)
+				else nn:SetFamily(self, self.spouse, parent) end
 
 				nl:add(parent, nn)
+
+				local selfSucc = math.huge
+				local spouseSucc = math.huge
+				
+				if self.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if selfSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.gIndex then selfSucc = i end end end
+				if self.spouse.inSuccession then for i=#nl.lineOfSuccession,1,-1 do if spouseSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.spouse.gIndex then spouseSucc = i end end end
+				if self.isruler then selfSucc = 0 end
+				if self.spouse.isruler then spouseSucc = 0 end
+				
+				if selfSucc < math.huge then for i=1,#self.children do self.children[i].inSuccession = false end end
+				if spouseSucc < math.huge then for i=1,#self.spouse.children do self.spouse.children[i].inSuccession = false end end
+				
+				if selfSucc < math.huge then
+					for i=#nl.lineOfSuccession,1,-1 do
+						if nl.lineOfSuccession[i].father and nl.lineOfSuccession[i].father.gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i)
+						elseif nl.lineOfSuccession[i].mother and nl.lineOfSuccession[i].mother.gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i) end
+					end
+					nl:recurseRoyalChildren(self, selfSucc)
+				end
+				
+				if spouseSucc < math.huge then
+					for i=#nl.lineOfSuccession,1,-1 do
+						if nl.lineOfSuccession[i].father and nl.lineOfSuccession[i].father.gIndex == self.spouse.gIndex then table.remove(nl.lineOfSuccession, i)
+						elseif nl.lineOfSuccession[i].mother and nl.lineOfSuccession[i].mother.gIndex == self.spouse.gIndex then table.remove(nl.lineOfSuccession, i) end
+					end
+					nl:recurseRoyalChildren(self.spouse, spouseSucc)
+				end
+
+				CCSCommon.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
+				CCSCommon.gedFile:write(tostring(nn.gIndex).." c "..tostring(nn.birthplace).."\n")
+				CCSCommon.gedFile:write(tostring(nn.gIndex).." g "..tostring(nn.birthplace).."\n")
+				CCSCommon.gedFile:write(tostring(nn.gIndex).." n "..tostring(nn.name).."\n")
+				CCSCommon.gedFile:write(tostring(nn.gIndex).." s "..tostring(nn.surname).."\n")
 
 				if _DEBUG then
 					if not debugTimes["Person.dobirth"] then debugTimes["Person.dobirth"] = 0 end
@@ -236,6 +276,9 @@ return
 				table.insert(mother.children, self)
 				self.father = father
 				self.mother = mother
+
+				CCSCommon.gedFile:write(tostring(self.gIndex).." m "..tostring(mother.gIndex).."\n")
+				CCSCommon.gedFile:write(tostring(self.gIndex).." f "..tostring(father.gIndex).."\n")
 
 				local natLang = {}
 				local spokeLang = {}
@@ -310,7 +353,7 @@ return
 
 				if not self.birthplace or self.birthplace == "" then self.birthplace = nl.name end
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
-				if not self.ancName or self.ancName == "" then if self.father then self.ancName = self.father.ancName else self.ancName = self.surname end end
+				if not self.ancName or self.ancName == "" then self.ancName = self.surname end
 
 				if math.random(1, 150) == 12 then self.region = nil end
 

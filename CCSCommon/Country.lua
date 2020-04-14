@@ -23,6 +23,7 @@ return
 				o.frulernames = {}
 				o.hasruler = -1
 				o.language = nil
+				o.lineOfSuccession = {}
 				o.majority = ""
 				o.military = 0
 				o.milThreshold = 5
@@ -51,6 +52,7 @@ return
 				if not n then return end
 
 				if n.nationality ~= self.name and parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality].people then
+					for i=#parent.thisWorld.countries[n.nationality].lineOfSuccession,1,-1 do if parent.thisWorld.countries[n.nationality].lineOfSuccession[i].gIndex == n.gIndex then table.remove(parent.thisWorld.countries[n.nationality].lineOfSuccession, i) end end
 					for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
 					table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
 					for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
@@ -138,51 +140,23 @@ return
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
-						for i=1,#self.people do if self.people[i] and self.people[i].def then self.people[i].pIndex = i end end
+						for i=1,#self.people do if self.people[i] and self.people[i].def then
+							self.people[i].pIndex = i
+							self.people[i].isruler = false
+						end end
 
 						while self.hasruler == -1 do
-							local sys = parent.systems[self.system]
-							if sys.dynastic then
-								local child = nil
-								for r=#self.rulers,1,-1 do if not child and tonumber(self.rulers[r].number) and self.rulers[r].Country == self.name then if self.rulers[r].title == sys.ranks[#sys.ranks] or self.rulers[r].title == sys.franks[#sys.franks] then child = self:recurseRoyalChildren(self.rulers[r]) end end end
-
-								if not child then
-									local possibles = {}
-									local closest = nil
-									local closestGens = math.huge
-									local closestMats = math.huge
-									local closestAge = -1
-
-									for i=1,#self.people do
-										if self.people[i] and self.people[i].def and self.people[i].royalGenerations > 0 then if not self.agPrim or self.people[i].gender == "M" then
-											if self.people[i].royalGenerations == 1 then table.insert(possibles, self.people[i])
-											elseif self.people[i].age <= self.averageAge+25 and self.people[i].rulerName == "" then table.insert(possibles, self.people[i]) end
-										end end
-									end
-
-									for i=1,#possibles do
-										local psp = possibles[i]
-										if psp and psp.royalGenerations < closestGens and psp.maternalLineTimes < closestMats and psp.age > closestAge then if psp.gender == "M" or not self.agPrim or #self.people < 20 then
-											closest = psp
-											closestGens = psp.royalGenerations
-											closestMats = psp.maternalLineTimes
-											closestAge = psp.age
-										end end
-									end
-
-									if not closest then
-										local p = math.random(1, #self.people)
-										if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].rulerName == "" then if self.people[p].gender == "M" or not self.agPrim or #self.people < 20 then self:setRuler(parent, p, enthrone) end end
-									else self:setRuler(parent, closest.pIndex, enthrone) end
-
-									possibles = nil
+							if parent.systems[self.system].dynastic then
+								if #self.lineOfSuccession == 0 then
+									local p = math.random(1, #self.people)
+									self:setRuler(parent, p, enthrone)
 								else
-									if child.nationality ~= self.name then self:add(parent, child) end
-									self:setRuler(parent, child.pIndex, enthrone)
+									local p = table.remove(self.lineOfSuccession, 1)
+									self:setRuler(parent, p.pIndex, enthrone)
 								end
 							else
 								local p = math.random(1, #self.people)
-								if self.people[p] and self.people[p].def and self.people[p].age <= self.averageAge+25 and self.people[p].rulerName == "" then self:setRuler(parent, p, enthrone) end
+								self:setRuler(parent, p, enthrone)
 							end
 						end
 					end
@@ -193,6 +167,7 @@ return
 				if self.people and #self.people > 0 and self.people[y] then
 					local z = table.remove(self.people, y)
 					z:destroy(parent, self)
+					z = nil
 					self.population = self.population-1
 				end
 			end,
@@ -287,34 +262,42 @@ return
 				self.demonym = parent:demonym(self.name)
 			end,
 
-			recurseRoyalChildren = function(self, t)
+			recurseRoyalChildren = function(self, t, n)
 				if not t.children then return nil end
 				if #t.children == 0 then return nil end
 
 				local childrenByAge = {}
 				local hasMale = false
-				local eldestLiving = nil
 
-				table.insert(childrenByAge, t.children[1])
-				for i=2,#t.children do
+				for i=1,#t.children do
 					local found = false
 					for j=1,#childrenByAge do if not found and t.children[i].birth <= childrenByAge[j].birth then
 						table.insert(childrenByAge, j, t.children[i])
 						found = true
 					end end
 					if not found then table.insert(childrenByAge, t.children[i]) end
+					if t.children[i].gender == "M" then hasMale = true end
 				end
-
-				for i=1,#childrenByAge do if childrenByAge[i].gender == "M" then hasMale = true end end
-				for i=1,#childrenByAge do if not eldestLiving then
-					if hasMale then
-						if childrenByAge[i].gender == "M" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
-					elseif not self.agPrim then
-						if not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" then if childrenByAge[i].def then eldestLiving = childrenByAge[i] else eldestLiving = self:recurseRoyalChildren(childrenByAge[i]) end end
-					end
+				
+				if not hasMale and not self.agPrim then for i=#childrenByAge,1,-1 do if not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+					childrenByAge[i].inSuccession = true
+					self:recurseRoyalChildren(childrenByAge[i], n)
+					table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
 				end end
-
-				return eldestLiving
+				else
+					if not self.agPrim then
+						for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+							childrenByAge[i].inSuccession = true
+							self:recurseRoyalChildren(childrenByAge[i], n)
+							table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
+						end end
+					end
+					for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+						childrenByAge[i].inSuccession = true
+						self:recurseRoyalChildren(childrenByAge[i], n)
+						table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
+					end end
+				end
 			end,
 
 			set = function(self, parent)
@@ -367,13 +350,17 @@ return
 					n.ethnicity = {[self.demonym]=100}
 					n.birthplace = self.name
 					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
+					n.gIndex = parent:nextGIndex()
+					CCSCommon.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
+					CCSCommon.gedFile:write(tostring(n.gIndex).." c "..tostring(n.birthplace).."\n")
+					CCSCommon.gedFile:write(tostring(n.gIndex).." g "..tostring(n.gender).."\n")
+					CCSCommon.gedFile:write(tostring(n.gIndex).." n "..tostring(n.name).."\n")
+					CCSCommon.gedFile:write(tostring(n.gIndex).." s "..tostring(n.surname).."\n")
 					self:add(parent, n)
 				end
 			end,
 
 			setRuler = function(self, parent, newRuler, enthrone)
-				for i=1,#self.people do self.people[i].isruler = false end
-
 				self.people[newRuler].prevtitle = self.people[newRuler].title
 				self.people[newRuler].level = #parent.systems[self.system].ranks
 				self.people[newRuler].title = parent.systems[self.system].ranks[self.people[newRuler].level]
@@ -399,8 +386,6 @@ return
 					local namenum = 1
 					for i=1,#self.rulers do if self.rulers[i].dynastic and self.rulers[i].Country == self.name and self.rulers[i].name == self.people[newRuler].rulerName then namenum = namenum+1 end end
 
-					for i, j in pairs(self.people[newRuler].children) do parent:setGensChildren(j, 1, self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name) end
-
 					if enthrone and self.people[newRuler].royalGenerations < math.huge and self.people[newRuler].royalGenerations > 0 then self:event(parent, "Enthronement of "..self.people[newRuler].rulerTitle.." "..self.people[newRuler].rulerName.." "..parent:roman(namenum).." of "..self.name..", "..parent:generationString(self.people[newRuler].royalGenerations, self.people[newRuler].gender).." of "..self.people[newRuler].LastRoyalAncestor) end
 
 					self.people[newRuler].number = namenum
@@ -408,7 +393,10 @@ return
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
+					self.people[newRuler].inSuccession = false
 					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
+
+					self:recurseRoyalChildren(self.people[newRuler], 0)
 
 					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 					table.insert(parent.royals, self.people[newRuler])

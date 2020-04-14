@@ -76,25 +76,25 @@ return
 			local _REVIEWING = true
 
 			if f then
-				UI:printf("\nCounting GEDCOM objects...")
+				UI:printf("\nCounting objects...")
 
 				local l = f:read("*l")
 				while l do
 					local split = {}
 					for x in l:gmatch("%S+") do table.insert(split, x) end
-					if split[1] and split[1] == "0" and split[3] then
-						if split[3] == "INDI" then ic = ic+1 fi = ic
-						elseif split[3] == "FAM" then fc = fc+1 fi = fc end
+					if split[1] and tonumber(split[1]) then
+						fi = tonumber(split[1])
+						if fi > ic then ic = fi end
 					end
-					if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People, %d Families", ic, fc)) end
+					if math.fmod(fi, 10000) == 0 and fi > 1 then UI:printl(string.format("%d People")) end
 					l = f:read("*l")
 					split = nil
 				end
 
-				UI:printl(string.format("%d People, %d Families", ic, fc))
+				UI:printl(string.format("%d People", ic))
 				fi = 1
 				f:seek("set")
-				UI:printf("\nLoading GEDCOM data...")
+				UI:printf("\nLoading data...")
 
 				l = f:read("*l")
 				while l do
@@ -421,6 +421,9 @@ return
 				UI:printp("\nData > ")
 				datin = UI:readl()
 				done = true
+				CCSCommon.stamp = tostring(math.floor(_stamp()))
+				CCSCommon:checkDirectory(CCSCommon.stamp)
+				CCSCommon.gedFile = io.open(CCSCommon:directory({CCSCommon.stamp, "ged.dat"}), "a+")
 
 				if datin:lower() == "random" then
 					UI:printf("\nDefining countries...")
@@ -501,11 +504,9 @@ return
 					if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..dirStamp end
 					local eventFile = false
 					local gedFile = false
-					local lineFile = false
 					for x in io.popen(dirSimCmd):lines() do
 						if x:match("events.txt") then eventFile = true
-						elseif x:match("families.ged") then gedFile = true
-						elseif x:match("royals.ged") then lineFile = true end
+						elseif x:match("ged.dat") then gedFile = true end
 					end
 					UI:clear()
 
@@ -516,8 +517,7 @@ return
 						local ops = {}
 						local thisOp = 1
 						-- if eventFile then ops[thisOp] = "events.txt" UI:printf(string.format("%d\t-\t%s", thisOp, "Events and history")) thisOp = thisOp+1 end
-						if gedFile then ops[thisOp] = "families.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
-						if lineFile then ops[thisOp] = "royals.ged" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal lines of descent")) thisOp = thisOp+1 end
+						if gedFile then ops[thisOp] = "ged.dat" UI:printf(string.format("%d\t-\t%s", thisOp, "Royal families and relations")) thisOp = thisOp+1 end
 
 						UI:printf("\nEnter a selection, or B to return to the previous menu.\n")
 						UI:printp(" > ")
@@ -527,7 +527,7 @@ return
 							local f = io.open(CCSCommon:directory({dirStamp, op}))
 							if f then
 								-- if op == "events.txt" then eventReview(f) end
-								if op == "royals.ged" or op == "families.ged" then gedReview(f) end
+								if op == "ged.dat" then gedReview(f) end
 
 								f:close()
 								f = nil
@@ -943,7 +943,7 @@ return
 								c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." "..newRuler.rulerName.." "..parent:roman(namenum).." of "..c.name)
 							else c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..prevtitle..newRuler.name.." "..newRuler.surname.." of the "..newRuler.party..", now "..newRuler.title.." of "..c.name) end
 						end
-						
+
 						parent.conflicts[self.conIndex] = nil
 
 						return -1
@@ -1333,11 +1333,12 @@ return
 						self.eString = string.format("%s-%s war (%s)", c1.demonym, self.target.demonym, statString)
 					end,
 					doStep=function(self, parent, c1)
+						if not c1 then return -1 end
 						if not self.target then return -1 end
 
 						local ao1 = parent:getAllyOngoing(c1, self.target, self.name)
 						local ao2 = parent:getAllyOngoing(self.target, c1, self.name)
-						local ac = c1.alliances
+						local ac = c1.alliances or {}
 
 						for i=1,#ac do
 							local c3 = nil
@@ -1352,7 +1353,7 @@ return
 							end
 						end
 
-						ac = self.target.alliances
+						ac = self.target.alliances or {}
 
 						for i=1,#ac do
 							local c3 = nil
@@ -1464,7 +1465,7 @@ return
 								end
 							end
 						end
-						
+
 						parent.conflicts[self.conIndex] = nil
 
 						return -1
@@ -1499,6 +1500,7 @@ return
 			famCount = 0,
 			famCulled = {},
 			final = {},
+			gedFile = nil,
 			genLimit = 3,
 			glyphs = {
 				a={{0, 0, 0, 0, 0, 0},
@@ -1786,6 +1788,7 @@ return
 			languages = {},
 			maxConflicts = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri"},
+			nextPerson = 1,
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
@@ -1798,6 +1801,7 @@ return
 			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},
 			royals = {},
 			showinfo = 0,
+			stamp = nil,
 			startyear = 1,
 			systems = {
 				{
@@ -1838,6 +1842,19 @@ return
 			writeMap = false,
 			years = 1,
 			yearstorun = 0,
+
+			checkDirectory = function(self, str)
+				local dirDotCmd = "dir "..str.." /b /ad"
+				if UI.clrcmd == "clear" then dirDotCmd = "dir -1 "..str end
+				local found = true
+				local count = 0
+				for x in io.popen(dirDotCmd):lines() do
+					count = count+1
+					if x:lower():match("not found") then found = false end
+				end
+				if count == 0 then found = false end
+				if not found then os.execute("mkdir "..str) end
+			end,
 
 			compLangs = function(self)
 				local cArr = {}
@@ -2000,8 +2017,11 @@ return
 			directory = function(self, names)
 				if not names or type(names) ~= "table" or #names == 0 then return "" end
 				local strOut = ""
+				if UI.clrcmd == "cls" then self.dirSeparator = "\\" else self.dirSeparator = "/" end
 				if UI.clrcmd == "clear" then strOut = "."..self.dirSeparator end
-				for i=1,#names-1 do strOut = strOut..names[i]..self.dirSeparator end
+				for i=1,#names-1 do
+					strOut = strOut..names[i]..self.dirSeparator
+				end
 				strOut = strOut..names[#names]
 				return strOut
 			end,
@@ -2011,6 +2031,9 @@ return
 
 				UI:printf("\nPrinting result...")
 				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
+
+				self.gedFile:flush()
+				self.gedFile:close()
 
 				local cKeys = self:getAlphabetical(self.final)
 				for i=1,#cKeys do
@@ -2222,6 +2245,7 @@ return
 			end,
 
 			getAllyOngoing = function(self, country, target, event)
+				if not country.alliances then return {} end
 				local acOut = {}
 				for i=1,#country.alliances do
 					local c3 = nil
@@ -2328,7 +2352,7 @@ return
 
 				return rString
 			end,
-			
+
 			insertConflict = function(self, c1, c2)
 				local i = 0
 				for j=self.maxConflicts+1,1,-1 do if not self.conflicts[j] then i = j end end
@@ -2344,10 +2368,8 @@ return
 				local cLimit = 16
 				local eLimit = 6
 
-				if UI.clrcmd == "cls" then self.dirSeparator = "\\" end
 				local mapDir = self:directory({self.stamp, "maps"})
-				os.execute("mkdir "..self:directory({self.stamp}))
-				if self.doMaps then os.execute("mkdir "..mapDir) end
+				self:checkDirectory(mapDir)
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				collectgarbage("collect")
@@ -2476,7 +2498,6 @@ return
 					while remainingYears <= 0 do
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
-						UI:printf("G to record the family and relationship data at this point.")
 						if _DEBUG then UI:printf("L to compare the languages of this world.") end
 						UI:printf("R to record the event data at this point.")
 						UI:printf("Q to exit.")
@@ -2484,7 +2505,6 @@ return
 						local datin = UI:readl()
 						if tonumber(datin) then remainingYears = tonumber(datin)
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
-						elseif datin:lower() == "g" then self:writeGed()
 						elseif datin:lower() == "l" and _DEBUG then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
@@ -2502,7 +2522,6 @@ return
 
 				self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"}))
 				self:finish(true)
-				self:writeGed()
 
 				UI:printf("\nEnd Simulation!")
 			end,
@@ -2680,6 +2699,12 @@ return
 				end
 
 				return nomin
+			end,
+
+			nextGIndex = function(self)
+				local n = self.nextPerson
+				self.nextPerson = self.nextPerson+1
+				return n
 			end,
 
 			ordinal = function(self, n)
@@ -2934,86 +2959,6 @@ return
 				end
 			end,
 
-			setDescent = function(self, t, a)
-				if t then
-					if t.descWrite > -1 then
-						if t.descWrite == 0 then t.descWrite = -1 end
-						if a == 0 then
-							self:setDescent(t.father, 1)
-							self:setDescent(t.mother, 1)
-							for i, j in pairs(t.children) do self:setDescent(j, -1) end
-						elseif a == 1 and not t.descRoyal then
-							t.descRoyal = true
-							self:setDescent(t.father, 1)
-							self:setDescent(t.mother, 1)
-						elseif a == -1 and not t.ancRoyal then
-							t.ancRoyal = true
-							for i, j in pairs(t.children) do self:setDescent(j, -1) end
-						end
-						if a == 0 or t.ancRoyal and t.descRoyal then if t.descWrite ~= 1 then
-							self.culledCount = self.culledCount+1
-							t.cIndex = self.culledCount
-							self.cIndi[t.cIndex] = t
-							t.descWrite = 1
-						end end
-					end
-
-					if t.descWrite == -1 then t.descWrite = 0 end
-				end
-			end,
-
-			setGed = function(self, t, p)
-				if t then
-					if t.writeGed == 0 then
-						t.writeGed = -1
-						if p then t.writeGed = 1 end
-						if t.royalGenerations <= self.genLimit then t.writeGed = 1 end
-						if not t.father and not t.mother then if not t.children or #t.children == 0 then t.writeGed = -1 end end
-						if t.writeGed == 1 then
-							if t.father and t.mother then
-								local fKey = t.father.gString..":"..t.mother.gString
-								if not self.fam[fKey] then
-									self.famCount = self.famCount+1
-									self.fam[fKey] = {husb=t.father.gString, wife=t.mother.gString, chil={}, fIndex=self.famCount}
-								end
-								local found = false
-								for i=1,#self.fam[fKey].chil do if self.fam[fKey].chil[i] == t.gString then found = true end end
-								if not found then
-									local nearest = -1
-									for i=1,#self.fam[fKey].chil do if nearest == -1 and t.birth < self.indi[self.fam[fKey].chil[i]].birth then nearest = i end end
-									if nearest == -1 then table.insert(self.fam[fKey].chil, t.gString) else table.insert(self.fam[fKey].chil, nearest, t.gString) end
-								end
-								t.famc = fKey
-								found = false
-								for i=1,#t.father.fams do if t.father.fams[i] == fKey then found = true end end
-								if not found then table.insert(t.father.fams, fKey) end
-								found = false
-								for i=1,#t.mother.fams do if t.mother.fams[i] == fKey then found = true end end
-								if not found then table.insert(t.mother.fams, fKey) end
-							end
-							if not self.indi[t.gString] then
-								self.indiCount = self.indiCount+1
-								t.gIndex = self.indiCount
-								self.indi[t.gString] = t
-							end
-							self:setGed(t.father, true)
-							self:setGed(t.mother, true)
-							for i, j in pairs(t.children) do self:setGed(j, false) end
-						end
-					end
-
-					if t.writeGed == -1 then t.writeGed = 0 end
-				end
-			end,
-
-			setGensChildren = function(self, t, v, a)
-				if t.royalGenerations >= v then
-					t.royalGenerations = v
-					t.LastRoyalAncestor = a
-				end
-				if t.children then for i, j in pairs(t.children) do self:setGensChildren(j, v+1, a) end end
-			end,
-
 			setLanguage = function(self, nl, r, l)
 				local langName = nl.demonym
 				if r and r.name then langName = langName.." ("..self:demonym(r.name)..")" end
@@ -3032,242 +2977,6 @@ return
 				if involved == 0 then involved = 1 end
 				involved = (involved == 1 and 1 or (involved*0.75))
 				return (pop+(c.stability-50)+((((c.military/#c.people)*100)-50)))/involved
-			end,
-
-			writeGed = function(self)
-				if #self.royals > 0 then
-					of = io.open(self:directory({self.stamp, "families.ged"}), "w+")
-					if not of then return end
-
-					local indiSorted = {}
-					local famSorted = {}
-
-					UI:printf("Generating GEDCOM data...")
-					for i=1,#self.royals do
-						self:setGed(self.royals[i], false)
-						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
-					end
-
-					UI:printf("Sorting GEDCOM individual data...")
-					for i, j in pairs(self.indi) do indiSorted[j.gIndex] = j end
-
-					UI:printf("Sorting GEDCOM family data...")
-					for i, j in pairs(self.fam) do famSorted[j.fIndex] = j end
-
-					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
-
-					UI:printf("Writing individual data...")
-					for i=1,#indiSorted do
-						local j = indiSorted[i]
-						of:write("\n0 @I"..tostring(j.gIndex).."@ INDI\n1 NAME ")
-						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-						of:write(" /"..j.surname:upper().."/")
-						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
-						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
-						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
-						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-						of:write("\n1 SEX "..j.gender.."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
-						if j.birth < 1 then of:write(" B.C.") end
-						of:write("\n2 PLAC "..j.birthplace)
-						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
-						for k, l in pairs(j.fams) do if self.fam[l] then of:write("\n1 FAMS @F"..self.fam[l].fIndex.."@") end end
-						if self.fam[j.famc] then of:write("\n1 FAMC @F"..self.fam[j.famc].fIndex.."@") end
-						local nOne = true
-						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
-							local fStr = ""
-							local dStr = tostring(math.fmod(l, 1))
-							if not nOne then fStr = "\n2 CONT %"
-							else
-								fStr = "\n1 NOTE %"
-								nOne = false
-							end
-							if dStr == "0" then fStr = fStr.."d%% %s"
-							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
-							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
-							of:write(string.format(fStr, l, k))
-						end end
-						local fStr = ""
-						if not nOne then fStr = "\n2 CONT Native language"
-						else
-							fStr = "\n1 NOTE Native language"
-							nOne = false
-						end
-						if #j.nativeLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
-						for k=1,#j.nativeLang do
-							fStr = fStr..j.nativeLang[k].name
-							if k < #j.nativeLang then fStr = fStr..", " end
-						end
-						of:write(fStr)
-						fStr = ""
-						if #j.spokenLang > 0 then
-							fStr = "\n2 CONT Spoken language"
-							if #j.spokenLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
-							for k=1,#j.spokenLang do
-								fStr = fStr..j.spokenLang[k].name
-								if k < #j.spokenLang then fStr = fStr..", " end
-							end
-						end
-						of:write(fStr)
-						UI:printl(string.format("%.2f%% done", (i/#indiSorted*10000)/100))
-					end
-
-					of:flush()
-					UI:printf("Writing family data...")
-					for i=1,#famSorted do
-						local j = famSorted[i]
-						if j and j.husb and self.indi[j.husb] and j.wife and self.indi[j.wife] and #j.chil > 0 then
-							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n1 HUSB @I"..tostring(self.indi[j.husb].gIndex).."@\n1 WIFE @I"..tostring(self.indi[j.wife].gIndex).."@")
-							for k=1,#j.chil do if self.indi[j.chil[k]] then of:write("\n1 CHIL @I"..tostring(self.indi[j.chil[k]].gIndex).."@") end end
-							of:flush()
-						end
-						UI:printl(string.format("%.2f%% done", (i/#famSorted*10000)/100))
-					end
-
-					of:write("\n0 TRLR")
-					of:flush()
-					of:close()
-
-					of = io.open(self:directory({self.stamp, "royals.ged"}), "w+")
-					if not of then return end
-
-					of:write("0 HEAD\n1 SOUR CCSim\n2 NAME Compact Country Simulator\n2 VERS 1.0.0\n1 GEDC\n2 VERS 5.5\n2 FORM LINEAGE-LINKED\n1 CHAR UTF-8\n1 LANG English")
-
-					UI:printf("Isolating royal descent lines...")
-					local cFam = {}
-					local cFamCount = 0
-					local cFamSort = {}
-					for i=1,#self.royals do
-						self:setDescent(self.royals[i], 0)
-						UI:printl(string.format("%.2f%% done", (i/#self.royals*10000)/100))
-					end
-
-					UI:printf("Sorting isolated individuals...")
-					for i=1,#self.cIndi do
-						self.cIndi[i].cFams = {}
-						self.cIndi[i].cFamc = 0
-					end
-					for i=1,#self.cIndi do
-						for j, k in pairs(self.cIndi[i].children) do if k.royalGenerations == 0 or k.ancRoyal and k.descRoyal then
-							local fString = ":"
-							local fat = false
-							local mot = false
-
-							if k.father then if k.father.royalGenerations == 0 or k.surname:match(k.father.surname) or k.father.ancRoyal and k.father.descRoyal then
-								fString = k.father.gString..fString
-								fat = true
-							end end
-							if k.mother then if k.mother.royalGenerations == 0 or k.surname:match(k.mother.surname) or k.mother.ancRoyal and k.mother.descRoyal then
-								fString = fString..k.mother.gString
-								mot = true
-							end end
-
-							if not cFam[fString] then
-								cFamCount = cFamCount+1
-								cFam[fString] = {fIndex=cFamCount, husb=nil, wife=nil, chil={}}
-								if fat then
-									table.insert(k.father.cFams, cFam[fString].fIndex)
-									cFam[fString].husb = k.father.cIndex
-								end
-								if mot then
-									table.insert(k.mother.cFams, cFam[fString].fIndex)
-									cFam[fString].wife = k.mother.cIndex
-								end
-							end
-
-							k.cFamc = cFam[fString].fIndex
-							local found = false
-							for l=1,#cFam[fString].chil do if cFam[fString].chil[l] == k.cIndex then found = true end end
-							if not found then table.insert(cFam[fString].chil, k.cIndex) end
-						end end
-						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
-					end
-
-					UI:printf("Sorting isolated families...")
-					local cfFinished = 0
-					for i, j in pairs(cFam) do
-						cFamSort[j.fIndex] = j
-						cfFinished = cfFinished+1
-						UI:printl(string.format("%.2f%% done", (cfFinished/cFamCount*10000)/100))
-					end
-
-					UI:printf("Writing individual data...")
-					for i=1,#self.cIndi do
-						local j = self.cIndi[i]
-						of:write("\n0 @I"..tostring(j.cIndex).."@ INDI\n1 NAME ")
-						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-						of:write(" /"..j.surname:upper().."/")
-						if j.number ~= 0 then of:write(" "..self:roman(j.number)) end
-						of:write("\n2 SURN "..j.surname:upper().."\n2 GIVN ")
-						if j.rulerName ~= "" then of:write(j.rulerName) else of:write(j.name) end
-						if j.number ~= 0 then of:write("\n2 NSFX "..self:roman(j.number)) end
-						if j.rulerTitle ~= "" then of:write("\n2 NPFX "..tostring(j.rulerTitle)) end
-						of:write("\n1 SEX "..j.gender.."\n1 BIRT\n2 DATE "..tostring(math.abs(j.birth)))
-						if j.birth < 1 then of:write(" B.C.") end
-						of:write("\n2 PLAC "..j.birthplace)
-						if j.death and j.death < self.years and j.death ~= 0 then of:write("\n1 DEAT\n2 DATE "..tostring(math.abs(j.death))) if j.death < 1 then of:write(" B.C.") end of:write("\n2 PLAC "..j.deathplace) end
-						for k=1,#j.cFams do if cFamSort[j.cFams[k]] then of:write("\n1 FAMS @F"..cFamSort[j.cFams[k]].fIndex.."@") end end
-						if cFamSort[j.cFamc] then of:write("\n1 FAMC @F"..cFamSort[j.cFamc].fIndex.."@") end
-						local nOne = true
-						for k, l in pairs(j.ethnicity) do if l >= 0.01 then
-							local fStr = ""
-							local dStr = tostring(math.fmod(l, 1))
-							if not nOne then fStr = "\n2 CONT %"
-							else
-								fStr = "\n1 NOTE %"
-								nOne = false
-							end
-							if dStr == "0" then fStr = fStr.."d%% %s"
-							elseif dStr:len() == 3 and dStr:match("%.") then fStr = fStr..".1f%% %s"
-							elseif dStr:len() > 3 and dStr:match("%.") then fStr = fStr..".2f%% %s" end
-							of:write(string.format(fStr, l, k))
-						end end
-						local fStr = ""
-						if not nOne then fStr = "\n2 CONT Native language"
-						else
-							fStr = "\n1 NOTE Native language"
-							nOne = false
-						end
-						if #j.nativeLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
-						for k=1,#j.nativeLang do
-							fStr = fStr..j.nativeLang[k].name
-							if k < #j.nativeLang then fStr = fStr..", " end
-						end
-						of:write(fStr)
-						fStr = ""
-						if #j.spokenLang > 0 then fStr = "\n2 CONT Spoken language" end
-						if #j.spokenLang > 1 then fStr = fStr.."s: " else fStr = fStr..": " end
-						for k=1,#j.spokenLang do
-							fStr = fStr..j.spokenLang[k].name
-							if k < #j.spokenLang then fStr = fStr..", " end
-						end
-						of:write(fStr)
-						UI:printl(string.format("%.2f%% done", (i/#self.cIndi*10000)/100))
-					end
-
-					of:flush()
-					UI:printf("Writing family data...")
-					for i=1,#cFamSort do
-						local j = cFamSort[i]
-						if j then
-							of:write("\n0 @F"..tostring(j.fIndex).."@ FAM\n")
-							if j.husb and self.cIndi[j.husb] then of:write("1 HUSB @I"..tostring(self.cIndi[j.husb].cIndex).."@\n") end
-							if j.wife and self.cIndi[j.wife] then of:write("1 WIFE @I"..tostring(self.cIndi[j.wife].cIndex).."@\n") end
-							for k=1,#j.chil do if self.cIndi[j.chil[k]] then of:write("1 CHIL @I"..tostring(self.cIndi[j.chil[k]].cIndex).."@\n") end end
-							of:flush()
-						end
-						UI:printl(string.format("%.2f%% done", (i/#cFamSort*10000)/100))
-					end
-
-					of:write("0 TRLR\n")
-					of:flush()
-					of:close()
-					of = nil
-
-					cFam = nil
-					cFamCount = nil
-					cFamSort = nil
-				end
 			end
 		}
 
