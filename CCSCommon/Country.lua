@@ -209,10 +209,8 @@ return
 					return
 				end
 
-				local v = math.ceil(math.random(30, 90)*self.stability)
-				local vi = math.ceil(math.random(30, 90)*(101-self.stability))
-				if v < 1 then v = 1 end
-				if vi < 1 then vi = 1 end
+				local v = math.max(1, math.ceil(math.random(30, 90)*self.stability))
+				local vi = math.max(1, math.ceil(math.random(30, 90)*(101-self.stability)))
 
 				if not self.ongoing then self.ongoing = {} end
 				if not self.relations then
@@ -267,8 +265,7 @@ return
 			recurseRoyalChildren = function(self, t, n)
 				if not t.children or #t.children == 0 then return nil end
 				
-				local ind = n+1
-				if ind > #self.lineOfSuccession+1 then ind = #self.lineOfSuccession end
+				local ind = math.min(n+1, #self.lineOfSuccession+1)
 				if ind == 0 then ind = 1 end
 
 				local childrenByAge = {}
@@ -359,10 +356,10 @@ return
 					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					n.gIndex = parent:nextGIndex()
 					parent.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
-					parent.gedFile:write(tostring(n.gIndex).." c "..tostring(n.birthplace).."\n")
-					parent.gedFile:write(tostring(n.gIndex).." g "..tostring(n.gender).."\n")
-					parent.gedFile:write(tostring(n.gIndex).." n "..tostring(n.name).."\n")
-					parent.gedFile:write(tostring(n.gIndex).." s "..tostring(n.surname).."\n")
+					parent.gedFile:write("c "..tostring(n.birthplace).."\n")
+					parent.gedFile:write("g "..tostring(n.gender).."\n")
+					parent.gedFile:write("n "..tostring(n.name).."\n")
+					parent.gedFile:write("s "..tostring(n.surname).."\n")
 					parent.gedFile:flush()
 					self:add(parent, n)
 				end
@@ -410,6 +407,10 @@ return
 				else
 					table.insert(self.rulers, {dynastic=false, name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
+				
+				if self.people[newRuler].rulerTitle and self.people[newRuler].rulerTitle ~= "" then parent.gedFile:write(tostring(self.people[newRuler].gIndex).." t "..tostring(self.people[newRuler].rulerTitle).."\n") end
+				if self.people[newRuler].number and tostring(self.people[newRuler].number) ~= "0" then parent.gedFile:write("o "..tostring(self.people[newRuler].number).."\n") end
+				if self.people[newRuler].rulerName and self.people[newRuler].rulerName ~= "" then parent.gedFile:write("r "..tostring(self.people[newRuler].rulerName).."\n") end
 
 				parent.writeMap = true
 			end,
@@ -593,8 +594,7 @@ return
 
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
 				self.stability = self.stability+(math.random()-0.2)+math.random(-2, 2)
-				if self.stability > 100 then self.stability = 100 end
-				if self.stability < 1 then self.stability = 1 end
+				self.stability = math.max(1, math.min(100, self.stability))
 
 				while math.floor(#self.people) > math.floor(parent.popLimit*3) do self:delete(parent, parent:randomChoice(self.people, true)) end
 
@@ -625,9 +625,7 @@ return
 				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
 					if not self.relations then self.relations = {} end
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
-					self.relations[cp.name] = self.relations[cp.name]+math.random(-3, 3)
-					if self.relations[cp.name] < 1 then self.relations[cp.name] = 1
-					elseif self.relations[cp.name] > 100 then self.relations[cp.name] = 100 end
+					self.relations[cp.name] = math.min(100, math.max(1, self.relations[cp.name]+math.random(-3, 3)))
 				end end
 
 				self:checkCapital(parent)

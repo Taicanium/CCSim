@@ -14,4 +14,4 @@ Work on implementing an autosave feature. Earlier (buggy) versions had one (whic
 
 # To-do
 
-Family data reviewing must be entirely rewritten to conform to the new temp-file-based data format implemented recently to save memory, since GEDCOM is no longer used.
+The new family data output doesn't include the notes that were included with previous GEDCOM data (ethnicity and languages spoken). Won't be too hard to add back in. Just need time to.

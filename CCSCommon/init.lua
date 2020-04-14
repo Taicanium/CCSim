@@ -65,27 +65,54 @@ return
 		end ]]
 
 		function gedReview(f)
+			local _REVIEWING = true
 			local indi = {}
-			local fams = {}
+			local fam = {}
 			local fami = {}
+			local iCount = 0
+			local fi = 0
+			local reindexed = 1
+			local matches = {}
+			UI:printf("Counting objects...")
 			local l = f:read("*l")
 			while l and l ~= "" do
+				local index = l:gmatch("[%w%-]+")()
+				if tonumber(index) then iCount = math.max(iCount, tonumber(index)) end
+				if math.fmod(iCount, 10000) == 0 then UI:printl(string.format("%d people", iCount)) end
+				l = f:read("*l")
+			end
+			f:seek("set")
+			UI:printl(string.format("%d people", iCount))
+			UI:printf("\nReading object data...")
+			local largestRead = 0
+			l = f:read("*l")
+			while l and l ~= "" do
 				local split = {}
-				for x in l:gmatch("%w+") do table.insert(split, x) end
+				for x in l:gmatch("[%w%-]+") do table.insert(split, x) end
 				if #split > 0 then
-					local index = tonumber(split[1])
-					if not index then print(l) end
-					local cmd = split[2]
-					if not indi[index] then indi[index] = {} end
-					if cmd == "b" then indi[index].birth = tonumber(split[3])
-					elseif cmd == "c" then indi[index].birthplace = split[3]
-					elseif cmd == "g" then indi[index].gender = split[3]
-					elseif cmd == "n" then indi[index].givn = split[3]
-					elseif cmd == "s" then indi[index].surn = split[4]
-					elseif cmd == "d" then indi[index].death = tonumber(split[3])
-					elseif cmd == "e" then indi[index].deathplace = split[3]
-					elseif cmd == "m" then indi[index].moth = tonumber(split[3])
-					elseif cmd == "f" then indi[index].fath = tonumber(split[3]) end
+					if tonumber(split[1]) then
+						fi = tonumber(split[1])
+						largestRead = math.max(fi, largestRead)
+						if math.fmod(largestRead, 10000) == 0 then UI:printl(string.format("%d/%d people", largestRead, iCount)) end
+						reindexed = 0
+					else reindexed = 1 end
+					if not indi[fi] then
+						indi[fi] = {}
+						indi[fi].gIndex = fi
+					end
+					local cmd = split[2-reindexed]
+					if cmd == "b" then indi[fi].birth = tonumber(split[3-reindexed])
+					elseif cmd == "c" then indi[fi].birthplace = split[3-reindexed]
+					elseif cmd == "g" then indi[fi].gender = split[3-reindexed]
+					elseif cmd == "n" then indi[fi].givn = split[3-reindexed]
+					elseif cmd == "s" then indi[fi].surn = split[3-reindexed]
+					elseif cmd == "t" then indi[fi].title = split[3-reindexed]
+					elseif cmd == "o" then indi[fi].number = tonumber(split[3-reindexed])
+					elseif cmd == "r" then indi[fi].rulerName = split[3-reindexed]
+					elseif cmd == "d" then indi[fi].death = tonumber(split[3-reindexed])
+					elseif cmd == "e" then indi[fi].deathplace = split[3-reindexed]
+					elseif cmd == "m" then indi[fi].moth = tonumber(split[3-reindexed])
+					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed]) end
 					l = f:read("*l")
 				else l = nil end
 			end
@@ -96,32 +123,43 @@ return
 				if j.moth and j.fath then
 					local fInd = 0
 					local famStr = tostring(j.moth).."-"..tostring(j.fath)
-					if not fams[famStr] then
+					if not fam[famStr] then
 						fInd = nextInd
-						fams[famStr] = fInd
-						fami[fInd] = {moth=j.moth, fath=j.fath, chil={}}
+						fam[famStr] = fInd
+						fami[fInd] = {wife=j.moth, husb=j.fath, chil={}}
+						indi[j.moth].fams = indi[j.moth].fams or {}
+						indi[j.fath].fams = indi[j.fath].fams or {}
+						local found = false
+						for k=1,#indi[j.moth].fams do if indi[j.moth].fams[k] == fInd then found = true end end
+						if not found then table.insert(indi[j.moth].fams, fInd) end
+						found = false
+						for k=1,#indi[j.fath].fams do if indi[j.fath].fams[k] == fInd then found = true end end
+						if not found then table.insert(indi[j.fath].fams, fInd) end
 						nextInd = nextInd+1
-					else fInd = fams[famStr] end
+					else fInd = fam[famStr] end
 					table.insert(fami[fInd].chil, i)
 					j.famc = fInd
 				end
+				if j.rulerName then j.givn = j.rulerName end
 			end
+			
+			fi = math.random(1, #indi)
 
 			while _REVIEWING do
 				UI:clear()
 				local i = indi[fi]
-				local gender = i.gender
+				local gender = i.gender or i.gend
 				local title = i.rulerTitle or i.title
 				local givn = i.givn or i.name
 				local surn = i.surn or i.surname
 				local famc = i.famc
 				local fams = i.fams
 				if givn and title then givn = givn:gsub(title.." ", ""):gsub(title, "") end
-				if famc and fam[famc] then
-					local husb = indi[fam[famc].husb]
-					local wife = indi[fam[famc].wife]
+				if famc and fami[famc] then
+					local husb = indi[fami[famc].husb]
+					local wife = indi[fami[famc].wife]
 					if husb then
-						local p1fam = fam[husb.famc]
+						local p1fam = fami[husb.famc]
 						if p1fam then
 							printIndi(indi[p1fam.husb], 3)
 							printIndi(indi[p1fam.wife], 3)
@@ -129,7 +167,7 @@ return
 						printIndi(husb, 2)
 					end
 					if wife then
-						local p2fam = fam[wife.famc]
+						local p2fam = fami[wife.famc]
 						if p2fam then
 							printIndi(indi[p2fam.husb], 3)
 							printIndi(indi[p2fam.wife], 3)
@@ -141,7 +179,7 @@ return
 				printIndi(i, 0)
 
 				if fams then for j=1,#fams do
-					local fams = fam[fams[j]]
+					local fams = fami[fams[j]]
 					if fams then
 						local spouse = nil
 						if gender == "M" then spouse = indi[fams.wife] else spouse = indi[fams.husb] end
@@ -162,16 +200,16 @@ return
 				local datin = UI:readl()
 				local oldFI = fi
 				if datin:lower() == "b" then matches = {} _REVIEWING = false
-				elseif datin:lower() == "f" and famc then fi = fam[famc].husb or oldFI
-				elseif datin:lower() == "m" and famc then fi = fam[famc].wife or oldFI
+				elseif datin:lower() == "f" and famc then fi = fami[famc].husb or oldFI
+				elseif datin:lower() == "m" and famc then fi = fami[famc].wife or oldFI
 				elseif datin:lower() == "n" then
 					mi = mi+1
-					if mi > #matches then mi = #matches end
+					mi = math.min(mi, #matches)
 					if mi == 0 then mi = 1 end
 					fi = matches[mi]
 				elseif datin:lower() == "p" then
 					mi = mi-1
-					if mi < 1 then mi = 1 end
+					mi = math.max(mi, 1)
 					fi = matches[mi]
 				elseif datin:lower() == "e" and _DEBUG then debugLine()
 				elseif datin:lower() == "s" then
@@ -200,9 +238,12 @@ return
 							for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
 							if allMatch then table.insert(matches, j) end
 							scanned = scanned + 1
-							if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, ic)) end
+							if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, iCount)) end
 						end
-						if #matches > 0 then fi = matches[1] mi = 1 end
+						if #matches > 0 then
+							fi = matches[1]
+							mi = 1
+						end
 					end
 				end
 				if not indi[fi] then fi = oldFI end
@@ -215,7 +256,7 @@ return
 		function printIndi(i, f)
 			if not i then return end
 			local gIndex = i.gIndex
-			local gender = i.gender
+			local gender = i.gender or i.gend
 			local title = i.rulerTitle or i.title
 			local givn = i.givn or i.name
 			local surn = i.surn or i.surname
@@ -236,7 +277,7 @@ return
 				else sOut = sOut..title end
 				sOut = sOut.." "
 			end
-			if givn then sOut = sOut..givn.." "end
+			if givn then sOut = sOut..givn.." " end
 			if surn then sOut = sOut..surn.." " end
 			if number and number ~= 0 then sOut = sOut..CCSCommon:roman(number).." " end
 			if birt or deat then sOut = sOut.."(" end
@@ -244,24 +285,14 @@ return
 				if not deat or ((not deat.dat or deat.dat == "0") and (not deat.plac or deat.plac == "")) then sOut = sOut.."b. " end
 				if birt.dat and birt.dat ~= "0" then sOut = sOut..birt.dat end
 				if birt.dat and birt.dat ~= "0" and birt.plac then sOut = sOut..", " end
-				if birt.plac and birt.plac ~= "" then
-					if f ~= 0 then
-						sOut = sOut..birt.plac:sub(1, 3)
-						if birt.plac:len() > 3 then sOut = sOut.."." end
-					else sOut = sOut..birt.plac end
-				end
+				if birt.plac and birt.plac ~= "" then sOut = sOut..birt.plac end
 				if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then sOut = sOut.." - " else sOut = sOut..")" end
 			end
 			if deat and ((deat.dat and deat.dat ~= "0") or (deat.plac and deat.plac ~= "")) then
 				if not birt or ((not birt.dat or birt.dat == "0") and (not birt.plac or birt.plac == "")) then sOut = sOut.."d. " end
 				if deat.dat and deat.dat ~= "0" then sOut = sOut..deat.dat end
 				if deat.dat and deat.dat ~= "0" and deat.plac then sOut = sOut..", " end
-				if deat.plac and deat.plac ~= "" then
-					if f ~= 0 then
-						sOut = sOut..deat.plac:sub(1, 3)
-						if deat.plac:len() > 3 then sOut = sOut.."." end
-					else sOut = sOut..deat.plac end
-				end
+				if deat.plac and deat.plac ~= "" then sOut = sOut..deat.plac end
 				sOut = sOut..")"
 			end
 
@@ -350,10 +381,11 @@ return
 						local tsstatus, ts = pcall(os.date, "%Y-%m-%d %H:%M:%S", xn)
 						if tsstatus then
 							local eventFile = false
+							local gedFile = false
 							local dirSimCmd = "dir "..x.." /b /a-d"
 							if UI.clrcmd == "clear" then dirSimCmd = "dir -1 "..x end
-							for y in io.popen(dirSimCmd):lines() do if y:match("events.txt") then eventFile = true end end
-							if eventFile then
+							for y in io.popen(dirSimCmd):lines() do if y:match("events.txt") then eventFile = true elseif y:match("ged.dat") then gedFile = true end end
+							if eventFile or gedFile then
 								sCount = sCount+1
 								table.insert(sims, x)
 								UI:printf(string.format("%d\t-\t%s", sCount, os.date("%Y-%m-%d %H:%M:%S", xn)))
@@ -625,8 +657,7 @@ return
 										end
 									end
 
-									c1.stability = c1.stability-8
-									if c1.stability < 1 then c1.stability = 1 end
+									c1.stability = math.max(1, c1.stability-8)
 									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 									c1.regions[newr.name] = newr
@@ -864,8 +895,7 @@ return
 
 							c2.nodes = nil
 
-							c1.stability = c1.stability-10
-							if c1.stability < 1 then c1.stability = 1 end
+							c1.stability = math.max(1, c1.stability-10)
 							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 							c1.regions[c2.name] = newr
@@ -897,8 +927,7 @@ return
 						c.hasRuler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-5
-						if c.stability < 1 then c.stability = 1 end
+						c.stability = math.max(1, c.stability-5)
 
 						return -1
 					end
@@ -1052,8 +1081,7 @@ return
 							parent.thisWorld:add(newl)
 							parent:getAlphabetical()
 
-							c.stability = c.stability-math.random(5, 10)
-							if c.stability < 1 then c.stability = 1 end
+							c.stability = math.max(1, c.stability-math.random(5, 10))
 
 							newl:checkCapital(parent)
 							newl:checkRuler(parent, true)
@@ -1080,15 +1108,11 @@ return
 						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
 						if not c2.relations[c1.name] then c2.relations[c1.name] = 50 end
 						if recovery < 50 then
-							c1.relations[c2.name] = c1.relations[c2.name]-math.random(10, 25)
-							c2.relations[c1.name] = c2.relations[c1.name]-math.random(10, 25)
-							if c1.relations[c2.name] < 1 then c1.relations[c2.name] = 1 end
-							if c2.relations[c1.name] < 1 then c2.relations[c1.name] = 1 end
+							c1.relations[c2.name] = math.max(1, c1.relations[c2.name]-math.random(10, 25))
+							c2.relations[c1.name] = math.max(1, c2.relations[c1.name]-math.random(10, 25))
 						else
-							c1.relations[c2.name] = c1.relations[c2.name]+math.random(10, 15)
-							c2.relations[c1.name] = c2.relations[c1.name]+math.random(10, 15)
-							if c1.relations[c2.name] > 100 then c1.relations[c2.name] = 100 end
-							if c2.relations[c1.name] > 100 then c2.relations[c1.name] = 100 end
+							c1.relations[c2.name] = math.min(100, c1.relations[c2.name]+math.random(10, 15))
+							c2.relations[c1.name] = math.min(100, c2.relations[c1.name]+math.random(10, 15))
 						end
 
 						return -1
@@ -1107,9 +1131,7 @@ return
 						if c1.relations[c2.name] and c1.relations[c2.name] < 21 then
 							c1:event(parent, "Invaded "..c2.name)
 							c2:event(parent, "Invaded by "..c1.name)
-							c2.stability = c2.stability-10
-							if c1.stability < 1 then c1.stability = 1 end
-							if c2.stability < 1 then c2.stability = 1 end
+							c2.stability = math.max(1, c2.stability-10)
 							c1:setPop(parent, math.ceil(c1.population/1.25))
 							c2:setPop(parent, math.ceil(c2.population/1.4))
 
@@ -1137,8 +1159,8 @@ return
 					performEvent=function(self, parent, c)
 						local popFactor = (50-c.rulerPopularity)
 						local recovery = math.random(1, 151-popFactor)
-						if recovery < 50 then c.stability = c.stability-math.random(15, 25)
-						else c.stability = c.stability+math.random(5, 10) end
+						if recovery < 50 then c.stability = math.max(1, c.stability-math.random(15, 25))
+						else c.stability = math.min(100, c.stability+math.random(5, 10)) end
 
 						return -1
 					end
@@ -1173,8 +1195,7 @@ return
 						c.hasRuler = -1
 						c:checkRuler(parent, true)
 
-						c.stability = c.stability-10
-						if c.stability < 1 then c.stability = 1 end
+						c.stability = math.max(1, c.stability-10)
 
 						if math.floor(#c.people/10) > 1 then for d=1,math.random(1, math.floor(#c.people/10)) do c:delete(parent, math.random(1, #c.people)) end end
 
@@ -1358,18 +1379,13 @@ return
 					end
 				}
 			},
-			cIndi = {},
 			clrcmd = "",
 			conflicts = {},
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
-			culledCount = 0,
 			dirSeparator = "/",
 			disabled = {},
 			doMaps = false,
 			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium"},
-			fam = {},
-			famCount = 0,
-			famCulled = {},
 			final = {},
 			gedFile = nil,
 			genLimit = 3,
@@ -2224,7 +2240,7 @@ return
 				local i = 0
 				for j=self.maxConflicts+1,1,-1 do if not self.conflicts[j] then i = j end end
 				self.conflicts[i] = {c1, c2}
-				if #self.conflicts > self.maxConflicts then self.maxConflicts = #self.conflicts end
+				self.maxConflicts = math.max(self.maxConflicts, #self.conflicts)
 				return i
 			end,
 
@@ -2274,7 +2290,7 @@ return
 
 						cLimit = getLineTolerance(#currentEvents+5)
 						if #currentEvents == 0 then cLimit = cLimit-1 end
-						if cLimit < math.floor(UI.y/2) then cLimit = math.floor(UI.y/2) end
+						cLimit = math.max(cLimit, math.floor(UI.y/2))
 						eLimit = getLineTolerance(cLimit+5)
 
 						for i=1,#self.alpha do

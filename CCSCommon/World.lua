@@ -383,7 +383,7 @@ return
 
 				if self.mapChanged then
 					self.planetC = math.huge
-					for i=1,columnCount do if #self.stretched[i] < self.planetC then self.planetC = #self.stretched[i] end end
+					for i=1,columnCount do self.planetC = math.min(#self.stretched[i], self.planetC) end
 					for i=1,columnCount do
 						local sCol = #self.stretched[i]
 						local diff = sCol-self.planetC
@@ -427,8 +427,7 @@ return
 					table.insert(tCols[tColCount], cA)
 					local nameLen = cA:len()
 					local rulerLen = cR:len()
-					if nameLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = nameLen+1 end
-					if rulerLen+1 > tColWidths[tColCount] then tColWidths[tColCount] = rulerLen+1 end
+					tColWidths[tColCount] = math.max(tColWidths[tColCount], nameLen+1, rulerLen+1)
 				end
 
 				local borderCol = -1
@@ -790,13 +789,10 @@ return
 					if _DEBUG then parent.popLimit = 250
 					else
 						if t1 > 0.5 then
-							if parent.popLimit > 1000 then parent.popLimit = math.floor(parent.popLimit-(50*(t1-0.5))) end
-
-							if parent.popLimit < 1000 then parent.popLimit = 1000 end
+							parent.popLimit = math.max(1000, math.floor(parent.popLimit-(50*(t1-0.5))))
 							if t1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
 						else
-							if parent.popLimit < 3000 then parent.popLimit = math.ceil(parent.popLimit+(50*(0.5-t1))) end
-							if parent.popLimit > 3000 then parent.popLimit = 3000 end
+							parent.popLimit = math.min(3000, math.ceil(parent.popLimit+(50*(0.5-t1))))
 						end
 					end
 				end

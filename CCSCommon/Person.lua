@@ -12,8 +12,6 @@ return
 				o.birth = 0
 				o.birthplace = ""
 				o.cbelief = 0
-				o.cFamc = 0
-				o.cFams = {}
 				o.children = {}
 				o.cIndex = 0
 				o.city = nil
@@ -42,7 +40,6 @@ return
 				o.nationality = ""
 				o.nativeLang = {}
 				o.number = 0
-				o.numChildren = 0
 				o.parentRuler = false
 				o.party = ""
 				o.pbelief = 0
@@ -72,7 +69,7 @@ return
 				self.death = parent.years
 				self.deathplace = nl.name
 				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
-				parent.gedFile:write(tostring(self.gIndex).." e "..tostring(self.deathplace).."\n")
+				parent.gedFile:write("e "..tostring(self.deathplace).."\n")
 				parent.gedFile:flush()
 				self.def = nil -- See above.
 				self.ebelief = nil
@@ -236,10 +233,10 @@ return
 				end
 
 				parent.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
-				parent.gedFile:write(tostring(nn.gIndex).." c "..tostring(nn.birthplace).."\n")
-				parent.gedFile:write(tostring(nn.gIndex).." g "..tostring(nn.birthplace).."\n")
-				parent.gedFile:write(tostring(nn.gIndex).." n "..tostring(nn.name).."\n")
-				parent.gedFile:write(tostring(nn.gIndex).." s "..tostring(nn.surname).."\n")
+				parent.gedFile:write("c "..tostring(nn.birthplace).."\n")
+				parent.gedFile:write("g "..tostring(nn.gender).."\n")
+				parent.gedFile:write("n "..tostring(nn.name).."\n")
+				parent.gedFile:write("s "..tostring(nn.surname).."\n")
 				parent.gedFile:flush()
 
 				if _DEBUG then
@@ -280,7 +277,7 @@ return
 				self.mother = mother
 
 				parent.gedFile:write(tostring(self.gIndex).." m "..tostring(mother.gIndex).."\n")
-				parent.gedFile:write(tostring(self.gIndex).." f "..tostring(father.gIndex).."\n")
+				parent.gedFile:write("f "..tostring(father.gIndex).."\n")
 				parent.gedFile:flush()
 
 				local natLang = {}
@@ -295,10 +292,8 @@ return
 				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and mother.spokenLang[i].name ~= self.region.language.name and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
 
 				table.insert(self.nativeLang, self.region.language)
-				local maxNatLangs = math.random(1, 2)
-				if maxNatLangs > natLangs then maxNatLangs = natLangs end
-				local maxSpokenLangs = math.random(0, 3-maxNatLangs)
-				if maxSpokenLangs > spokeLangs then maxSpokenLangs = spokeLangs end
+				local maxNatLangs = math.min(math.random(1, 2), natLangs)
+				local maxSpokenLangs = math.min(math.random(0, 3-maxNatLangs), spokeLangs)
 				local cycles = 0
 				while #self.nativeLang < maxNatLangs do
 					local choice = parent:randomChoice(natLang)
@@ -409,7 +404,7 @@ return
 						end
 					end
 
-					if self.level < 1 then self.level = 1 end
+					self.level = math.max(1, self.level)
 					if self.level >= #ranks-rankLim then self.level = #ranks-rankLim end
 					if self.isRuler then self.level = #ranks end
 					if self.parentRuler and sys.dynastic then self.level = #ranks-1 end
