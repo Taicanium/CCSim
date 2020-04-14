@@ -93,7 +93,10 @@ return
 					if tonumber(split[1]) then
 						fi = tonumber(split[1])
 						largestRead = math.max(fi, largestRead)
-						if math.fmod(largestRead, 10000) == 0 then UI:printl(string.format("%d/%d people", largestRead, iCount)) end
+						if math.fmod(largestRead, 10000) == 0 then
+							UI:printl(string.format("%d/%d people", largestRead, iCount))
+							collectgarbage("collect")
+						end
 						reindexed = 0
 					else reindexed = 1 end
 					if not indi[fi] then
@@ -127,6 +130,7 @@ return
 					local famStr = tostring(j.moth).."-"..tostring(j.fath)
 					if not fam[famStr] then
 						fInd = nextInd
+						if math.fmod(nextInd, 10000) == 0 then collectgarbage("collect") end
 						fam[famStr] = fInd
 						fami[fInd] = {wife=j.moth, husb=j.fath, chil={}}
 						indi[j.moth].fams = indi[j.moth].fams or {}
@@ -148,6 +152,7 @@ return
 			fi = math.random(1, #indi)
 
 			while _REVIEWING do
+				collectgarbage("collect")
 				UI:clear()
 				local i = indi[fi]
 				local gender = i.gender or i.gend
