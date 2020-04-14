@@ -21,7 +21,7 @@ return
 				o.formalities = {}
 				o.founded = 0
 				o.frulernames = {}
-				o.hasruler = -1
+				o.hasRuler = -1
 				o.language = nil
 				o.lineOfSuccession = {}
 				o.majority = ""
@@ -64,7 +64,7 @@ return
 				n.level = 2
 				n.title = "Citizen"
 				n.military = false
-				n.isruler = false
+				n.isRuler = false
 				n.parentRuler = false
 				if n.spouse then
 					if parent.thisWorld.countries[n.spouse.nationality] and parent.thisWorld.countries[n.spouse.nationality].people and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
@@ -79,7 +79,7 @@ return
 					n.spouse.level = 2
 					n.spouse.title = "Citizen"
 					n.spouse.military = false
-					n.spouse.isruler = false
+					n.spouse.isRuler = false
 					n.spouse.parentRuler = false
 					table.insert(self.people, n.spouse)
 					n.spouse.pIndex = #self.people
@@ -136,17 +136,17 @@ return
 			end,
 
 			checkRuler = function(self, parent, enthrone)
-				if self.hasruler == -1 then
+				if self.hasRuler == -1 then
 					self.ruler = nil
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
 					if #self.people > 1 then
 						for i=1,#self.people do if self.people[i] and self.people[i].def then
 							self.people[i].pIndex = i
-							self.people[i].isruler = false
+							self.people[i].isRuler = false
 						end end
 
-						while self.hasruler == -1 do
+						while self.hasRuler == -1 do
 							if parent.systems[self.system].dynastic then
 								if #self.lineOfSuccession == 0 then
 									local p = math.random(1, #self.people)
@@ -281,20 +281,20 @@ return
 					if t.children[i].gender == "M" then hasMale = true end
 				end
 				
-				if not hasMale and not self.agPrim then for i=#childrenByAge,1,-1 do if not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+				if not hasMale and not self.agPrim then for i=#childrenByAge,1,-1 do if not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 					childrenByAge[i].inSuccession = true
 					self:recurseRoyalChildren(childrenByAge[i], n)
 					table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
 				end end
 				else
 					if not self.agPrim then
-						for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+						for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 							childrenByAge[i].inSuccession = true
 							self:recurseRoyalChildren(childrenByAge[i], n)
 							table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
 						end end
 					end
-					for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and not childrenByAge[i].isruler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
+					for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].nationality == self.name and not childrenByAge[i].inSuccession and childrenByAge[i].def then
 						childrenByAge[i].inSuccession = true
 						self:recurseRoyalChildren(childrenByAge[i], n)
 						table.insert(self.lineOfSuccession, n+1, childrenByAge[i])
@@ -337,7 +337,7 @@ return
 
 				while #self.people > u do
 					local r = math.random(1, #self.people)
-					if #self.people > 1 then while self.people[r].isruler do r = math.random(1, #self.people) end end
+					if #self.people > 1 then while self.people[r].isRuler do r = math.random(1, #self.people) end end
 					self:delete(parent, r)
 				end
 				
@@ -380,9 +380,9 @@ return
 					end
 				else if parent.systems[self.system].dynastic then self.people[newRuler].rulerName = parent:randomChoice(self.rulernames) end end
 
-				self.hasruler = 0
+				self.hasRuler = 0
 				self.ruler = self.people[newRuler]
-				self.people[newRuler].isruler = true
+				self.people[newRuler].isRuler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
 				self.people[newRuler].inSuccession = false
@@ -598,7 +598,7 @@ return
 				self.population = #self.people
 				self.strength = 0
 				self.military = 0
-				self.hasruler = -1
+				self.hasRuler = -1
 				self.rulerPopularity = 0
 				self.age = parent.years-self.founded
 				if self.founded < 1 then self.age = self.age-1 end
@@ -652,7 +652,7 @@ return
 						if 70000-math.pow(age, 2) < 1 or math.random(1, 70000-math.pow(age, 2)) < math.pow(age, 2) then chn = true end
 					end
 
-					if not chn and not self.people[i].isruler and math.random(1, 8000) == 3799 then
+					if not chn and not self.people[i].isRuler and math.random(1, 8000) == 3799 then
 						local cp = parent:randomChoice(parent.thisWorld.countries)
 						if parent.thisWorld.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 						cp:add(parent, self.people[i])
@@ -663,8 +663,8 @@ return
 						self.people[i].pIndex = i
 						self.averageAge = self.averageAge+self.people[i].age
 						if self.people[i].military then self.military = self.military+1 end
-						if self.people[i].isruler then
-							self.hasruler = 0
+						if self.people[i].isRuler then
+							self.hasRuler = 0
 							self.ruler = self.people[i]
 							self.rulerParty = self.parties[self.people[i].party]
 						end
