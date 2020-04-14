@@ -179,11 +179,6 @@ return
 					nn.LastRoyalAncestor = self.spouse.rulerTitle.." "..self.spouse.rulerName.." "..parent:roman(self.spouse.number).." of "..self.spouse.ruledCountry
 				end
 
-				if self.isruler or self.spouse.isruler then
-					nn.level = self.level-1
-					nn.parentRuler = true
-				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
-
 				local sys = parent.systems[nl.system]
 				if nn.gender == "M" or not sys.dynastic then nn.title = sys.ranks[nn.level] else nn.title = sys.franks[nn.level] end
 
@@ -206,6 +201,11 @@ return
 				else nn:SetFamily(self, self.spouse, parent) end
 
 				nl:add(parent, nn)
+
+				if self.isruler or self.spouse.isruler then
+					nn.level = self.level-1
+					nn.parentRuler = true
+				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
 				local selfSucc = math.huge
 				local spouseSucc = math.huge

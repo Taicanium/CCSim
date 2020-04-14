@@ -51,11 +51,12 @@ return
 			add = function(self, parent, n)
 				if not n then return end
 
-				if n.nationality ~= self.name and parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality].people then
-					for i=#parent.thisWorld.countries[n.nationality].lineOfSuccession,1,-1 do if parent.thisWorld.countries[n.nationality].lineOfSuccession[i].gIndex == n.gIndex then table.remove(parent.thisWorld.countries[n.nationality].lineOfSuccession, i) end end
+				if parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality].people then
 					for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
-					table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
-					for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+					if n.pIndex > 0 then
+						table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
+						for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+					end
 				end
 				n.nationality = self.name
 				n.region = nil
@@ -66,8 +67,8 @@ return
 				n.isruler = false
 				n.parentRuler = false
 				if n.spouse then
-					if n.spouse.nationality ~= self.name then
-						if parent.thisWorld.countries[n.spouse.nationality] and parent.thisWorld.countries[n.spouse.nationality].people and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
+					if parent.thisWorld.countries[n.spouse.nationality] and parent.thisWorld.countries[n.spouse.nationality].people and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
+						if n.spouse.pIndex > 0 then
 							table.remove(parent.thisWorld.countries[n.spouse.nationality].people, n.spouse.pIndex)
 							for i=n.spouse.pIndex,#parent.thisWorld.countries[n.spouse.nationality].people do parent.thisWorld.countries[n.spouse.nationality].people[i].pIndex = i end
 						end
@@ -152,6 +153,7 @@ return
 									self:setRuler(parent, p, enthrone)
 								else
 									local p = table.remove(self.lineOfSuccession, 1)
+									if p.nationality ~= self.name then self:add(parent, p) end
 									self:setRuler(parent, p.pIndex, enthrone)
 								end
 							else
@@ -381,6 +383,7 @@ return
 				self.people[newRuler].isruler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
+				self.people[newRuler].inSuccession = false
 
 				if parent.systems[self.system].dynastic then
 					local namenum = 1
@@ -393,13 +396,11 @@ return
 					self.people[newRuler].royalSystem = parent.systems[self.system].name
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
-					self.people[newRuler].inSuccession = false
 					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
 
 					self:recurseRoyalChildren(self.people[newRuler], 0)
 
 					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
-					table.insert(parent.royals, self.people[newRuler])
 				else
 					table.insert(self.rulers, {dynastic=false, name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
