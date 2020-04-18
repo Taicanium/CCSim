@@ -73,6 +73,8 @@ return
 			local fi = 0
 			local reindexed = 1
 			local matches = {}
+			local plc = {}
+			local dms = {}
 			UI:printf("Counting objects...")
 			local l = f:read("*l")
 			while l and l ~= "" do
@@ -88,7 +90,7 @@ return
 			l = f:read("*l")
 			while l and l ~= "" do
 				local split = {}
-				for x in l:gmatch("[%w%-]+") do table.insert(split, x) end
+				for x in l:gmatch("[%w%-%.]+") do table.insert(split, x) end
 				if #split > 0 then
 					if tonumber(split[1]) then
 						fi = tonumber(split[1])
@@ -99,13 +101,13 @@ return
 						end
 						reindexed = 0
 					else reindexed = 1 end
-					if not indi[fi] then
+					if cmd ~= "y" and cmd ~= "z" and not indi[fi] then
 						indi[fi] = {}
 						indi[fi].gIndex = fi
 					end
 					local cmd = split[2-reindexed]
 					if cmd == "b" then indi[fi].birth = tonumber(split[3-reindexed])
-					elseif cmd == "c" then indi[fi].birthplace = split[3-reindexed]
+					elseif cmd == "c" then indi[fi].birthplace = plc[split[3-reindexed]]
 					elseif cmd == "g" then indi[fi].gender = split[3-reindexed]
 					elseif cmd == "n" then indi[fi].givn = split[3-reindexed]
 					elseif cmd == "s" then indi[fi].surn = split[3-reindexed]
@@ -115,9 +117,14 @@ return
 					elseif cmd == "o" then indi[fi].number = tonumber(split[3-reindexed])
 					elseif cmd == "r" then indi[fi].rulerName = split[3-reindexed]
 					elseif cmd == "d" then indi[fi].death = tonumber(split[3-reindexed])
-					elseif cmd == "e" then indi[fi].deathplace = split[3-reindexed]
+					elseif cmd == "e" then indi[fi].deathplace = plc[split[3-reindexed]]
 					elseif cmd == "m" then indi[fi].moth = tonumber(split[3-reindexed])
-					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed]) end
+					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed])
+					elseif cmd == "l" then
+						if not indi[fi].notes then indi[fi].notes = {} end
+						table.insert(indi[fi].notes, split[3-reindexed].."% "..dms[split[4-reindexed]])
+					elseif cmd == "y" then plc[split[4-reindexed]] = split[3-reindexed]
+					elseif cmd == "z" then dms[split[4-reindexed]] = split[3-reindexed] end
 					l = f:read("*l")
 				else l = nil end
 			end
@@ -1395,6 +1402,7 @@ return
 			clrcmd = "",
 			conflicts = {},
 			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
+			demonyms = {},
 			dirSeparator = "/",
 			disabled = {},
 			doMaps = false,
@@ -1696,6 +1704,7 @@ return
 				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revivalist", "Labor", "Monarchist", "Nationalist", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty"},
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum", "Bureau"},
 			},
+			places = {},
 			popCount = 0,
 			popLimit = 2000,
 			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dg", "g"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"rz", "z"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}},

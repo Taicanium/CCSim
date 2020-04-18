@@ -14,4 +14,4 @@ Work on implementing an autosave feature. Earlier (buggy) versions had one (whic
 
 # To-do
 
-The new family data output doesn't include the notes that were included with previous GEDCOM data (ethnicity and languages spoken). Won't be too hard to add back in. Just need time to.
+The new family data output doesn't include native and spoken languages. Won't be too hard to add. Just need time to.

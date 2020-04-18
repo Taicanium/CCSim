@@ -242,7 +242,7 @@ return
 					while found do
 						self.name = parent:name(false, 2)
 						found = false
-						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") then found = true end end
+						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
 					end
 				end
 
@@ -357,11 +357,26 @@ return
 					n.birthplace = self.name
 					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					n.gIndex = parent:nextGIndex()
+					if not parent.places[n.birthplace] then
+						parent.places[n.birthplace] = n.gIndex
+						parent.gedFile:write("y "..tostring(n.birthplace).." "..tostring(n.gIndex).."\n")
+					end
 					parent.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
-					parent.gedFile:write("c "..tostring(n.birthplace).."\n")
+					parent.gedFile:write("c "..tostring(parent.places[n.birthplace]).."\n")
 					parent.gedFile:write("g "..tostring(n.gender).."\n")
 					parent.gedFile:write("n "..tostring(n.name).."\n")
 					parent.gedFile:write("s "..tostring(n.surname).."\n")
+					for i, j in pairs(n.ethnicity) do
+						if not parent.demonyms[i] then
+							parent.demonyms[i] = n.gIndex
+							parent.gedFile:write("z "..tostring(i).." "..tostring(n.gIndex).."\n")
+						end
+						if j > 0.08 then
+							local pct = string.format("%.2f", j)
+							for k=1,3 do if pct:sub(pct:len(), pct:len()) == "0" or pct:sub(pct:len(), pct:len()) == "." then pct = pct:sub(1, pct:len()-1) end end
+							parent.gedFile:write("l "..pct.."% "..tostring(parent.demonyms[i]).."\n")
+						end
+					end
 					parent.gedFile:flush()
 					self:add(parent, n)
 				end

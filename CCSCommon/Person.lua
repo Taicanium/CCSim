@@ -67,8 +67,12 @@ return
 				self.city = nil
 				self.death = parent.years
 				self.deathplace = nl.name
+				if not parent.places[self.deathplace] then
+					parent.places[self.deathplace] = self.gIndex
+					parent.gedFile:write("y "..tostring(self.deathplace).." "..tostring(self.gIndex).."\n")
+				end
 				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
-				parent.gedFile:write("e "..tostring(self.deathplace).."\n")
+				parent.gedFile:write("e "..tostring(parent.places[self.deathplace]).."\n")
 				parent.gedFile:flush()
 				self.def = nil -- See above.
 				self.ebelief = nil
@@ -231,11 +235,26 @@ return
 					nl:recurseRoyalChildren(self.spouse, spouseSucc)
 				end
 
+				if not parent.places[nn.birthplace] then
+					parent.places[nn.birthplace] = nn.gIndex
+					parent.gedFile:write("y "..tostring(nn.birthplace).." "..tostring(nn.gIndex).."\n")
+				end
 				parent.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
-				parent.gedFile:write("c "..tostring(nn.birthplace).."\n")
+				parent.gedFile:write("c "..tostring(parent.places[nn.birthplace]).."\n")
 				parent.gedFile:write("g "..tostring(nn.gender).."\n")
 				parent.gedFile:write("n "..tostring(nn.name).."\n")
 				parent.gedFile:write("s "..tostring(nn.surname).."\n")
+				for i, j in pairs(nn.ethnicity) do
+					if not parent.demonyms[i] then
+						parent.demonyms[i] = nn.gIndex
+						parent.gedFile:write("z "..tostring(i).." "..tostring(nn.gIndex).."\n")
+					end
+					if j > 0.08 then
+						local pct = string.format("%.2f", j)
+						for k=1,3 do if pct:sub(pct:len(), pct:len()) == "0" or pct:sub(pct:len(), pct:len()) == "." then pct = pct:sub(1, pct:len()-1) end end
+						parent.gedFile:write("l "..pct.."% "..tostring(parent.demonyms[i]).."\n")
+					end
+				end
 				parent.gedFile:flush()
 
 				if _DEBUG then
