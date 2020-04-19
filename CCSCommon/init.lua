@@ -135,15 +135,15 @@ return
 			
 			for i=1,#indi do
 				local j = indi[i]
+				if math.fmod(i, 10000) == 0 then
+					UI:printl(string.format("%d/%d people", i, iCount))
+					if math.fmod(i, 100000) == 0 then collectgarbage("collect") end
+				end
 				if j.moth and j.fath then
 					local fInd = 0
 					local famStr = tostring(j.moth).."-"..tostring(j.fath)
 					if not fam[famStr] then
 						fInd = nextInd
-						if math.fmod(nextInd, 10000) == 0 then
-							UI:printl(string.format("%d/%d people", nextInd, iCount))
-							if math.fmod(nextInd, 100000) == 0 then collectgarbage("collect") end
-						end
 						fam[famStr] = fInd
 						fami[fInd] = {wife=j.moth, husb=j.fath, chil={}}
 						indi[j.moth].fams = indi[j.moth].fams or {}
@@ -1728,7 +1728,7 @@ return
 				{
 					name="Monarchy",
 					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
-					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marquess", "Duchess", "Princess", "Queen"},
+					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marchioness", "Duchess", "Princess", "Queen"},
 					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship", "Domain"},
 					dynastic=true
 				},
