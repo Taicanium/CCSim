@@ -63,7 +63,7 @@ Notably, when randomly generating countries, CCSim also generates a set of rando
 
 The titles in each system are as follows:
 
-Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Lord/Lady", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marquess", "Duke/Duchess", "Prince/Princess", "King/Queen"
+Monarchy: "Homeless", "Citizen", "Mayor", "Knight/Dame", "Lord/Lady", "Baron/Baroness", "Viscount/Viscountess", "Earl/Countess", "Marquis/Marchioness", "Duke/Duchess", "Prince/Princess", "King/Queen"
 
 Republic: "Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"
 
