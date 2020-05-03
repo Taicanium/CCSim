@@ -51,6 +51,7 @@ return
 									x=x,
 									y=y,
 									z=z,
+									continent="",
 									country="",
 									countrySet=false,
 									countryDone=false,
@@ -94,6 +95,7 @@ return
 									x=x,
 									y=y,
 									z=z,
+									continent="",
 									country="",
 									countrySet=false,
 									countryDone=false,
@@ -122,9 +124,9 @@ return
 				UI:printf("Cross-referencing neighboring points on planet surface...")
 				for i=1,#self.stretched do
 					for j=1,#self.stretched[i] do
-						local x, y, z = table.unpack(self.stretched[i][j], 5)
+						local x, y, z = table.unpack(self.stretched[i][j], 6)
 						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] and self.stretched[i-k][j-l] then
-							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l], 5)
+							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l], 6)
 							local found = false
 							for m=1,#self.planet[x][y][z].neighbors do if not found then
 								local mx, my, mz = table.unpack(self.planet[x][y][z].neighbors[m])
@@ -139,7 +141,7 @@ return
 				local planetSize = #self.planetdefined
 
 				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
-				local continents = math.random(10, 15)
+				local continents = math.random(5, 9)
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
@@ -155,6 +157,7 @@ return
 					end
 
 					self.planet[x][y][z].land = true
+					self.planet[x][y][z].continent = parent:name(false, 3, 2)
 					table.insert(freeNodes, {x, y, z})
 				end
 				local doneLand = continents
@@ -172,6 +175,7 @@ return
 						for neighbor=1,#self.planet[x][y][z].neighbors do
 							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
 							if not self.planet[nx][ny][nz].land and math.random(1, 8) == math.random(1, 8) then
+								self.planet[nx][ny][nz].continent = self.planet[x][y][z].continent
 								self.planet[nx][ny][nz].land = true
 								doneLand = doneLand+1
 								self.planet[nx][ny][nz].waterNeighbors = false
@@ -331,8 +335,9 @@ return
 				end
 
 				local columnCount = #self.unwrapped
-				self.colors = {}
-				local leaders = {}
+				self.colors = {["\x01\x01CONTINENTS"]={0, 0, 0}, ["\x02\x01COUNTRIES"]={0, 0, 0}}
+				local leaders = {["\x01\x01CONTINENTS"]="", ["\x02\x01COUNTRIES"]=""}
+				local continents = {}
 
 				iColumn = 1
 				if self.mapChanged then
@@ -356,11 +361,34 @@ return
 						local cTriplet = self.cTriplets[countryStr]
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, ex, ey, ez}) end
+								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, node.continent, ex, ey, ez}) end
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, ex, ey, ez}) end
+									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, node.continent, ex, ey, ez}) end
 									deviated = deviated-1
+								end
+							end
+						end
+						if node.continent ~= "" and not continents[node.continent] then
+							local cFound = false
+							while not cFound do
+								cFound = true
+								local r = math.random(0, 255)
+								local g = math.random(0, 255)
+								local b = math.random(0, 255)
+								for k, l in pairs(continents) do
+									local unq = math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3])
+									if unq < 60 then cFound = false end
+									if r > 230 and g > 230 and b > 230 then unq = false end
+									if r < 25 and g < 25 and b < 25 then unq = false end
+								end
+								if cFound then
+									-- We cheat here a little bit to display continent names and outline colors on the map legend.
+									-- Treat them as countries, but with no ruler string, and with a separate color palette that isn't tied to the one for actual countries. Also, place a hidden character at the beginning of their index key that sorts them at the top of an alphabetic list.
+									-- We will also assign a similar hidden character to each country.
+									continents[node.continent] = {r, g, b}
+									self.colors["\x01"..node.continent] = {r, g, b}
+									leaders["\x01"..node.continent] = ""
 								end
 							end
 						end
@@ -368,15 +396,15 @@ return
 						if country then
 							local sysName = parent.systems[country.system].name
 							local sntVal = country.snt[sysName]
-							local legendStr = string.lower(countryStr.." ("..parent:ordinal(sntVal).." "..sysName..")")
+							local legendStr = "\x02"..string.lower(countryStr.." ("..parent:ordinal(sntVal).." "..sysName..")")
 							if cTriplet then
 								self.colors[legendStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
 								local ruler = country.rulers[#country.rulers]
 								if ruler then leaders[legendStr] = parent:getRulerStringShort(ruler) else leaders[legendStr] = "no ruler" end
 							end
 						elseif cTriplet then
-							self.colors[countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
-							leaders[countryStr] = "no ruler"
+							self.colors["\x02"..countryStr] = {cTriplet[1], cTriplet[2], cTriplet[3]}
+							leaders["\x02"..countryStr] = "no ruler"
 						end
 					end
 				end
@@ -455,21 +483,41 @@ return
 							extended[(i*2)-1][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
-							if self.stretched[i+1] and self.stretched[i+1][accCol] and self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
-								extended[i*2][(cCol*2)-1] = {0, 0, 0}
-								extended[i*2][cCol*2] = {0, 0, 0}
+							if self.stretched[i+1] and self.stretched[i+1][accCol] then
+								if self.stretched[i+1][accCol][5] ~= self.stretched[i][accCol][5] then
+									extended[i*2][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+									extended[i*2][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+								elseif self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
+									extended[i*2][(cCol*2)-1] = {0, 0, 0}
+									extended[i*2][cCol*2] = {0, 0, 0}
+								end
 							end
-							if self.stretched[i-1] and self.stretched[i-1][accCol] and self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
-								extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-								extended[(i*2)-1][cCol*2] = {0, 0, 0}
+							if self.stretched[i-1] and self.stretched[i-1][accCol] then
+								if self.stretched[i-1][accCol][5] ~= self.stretched[i][accCol][5] then
+									extended[(i*2)-1][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[(i*2)-1][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+								elseif self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+									extended[(i*2)-1][cCol*2] = {0, 0, 0}
+								end
 							end
-							if self.stretched[i][accCol+1] and self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
-								extended[(i*2)-1][cCol*2] = {0, 0, 0}
-								extended[i*2][cCol*2] = {0, 0, 0}
+							if self.stretched[i][accCol+1] then
+								if self.stretched[i][accCol+1][5] ~= self.stretched[i][accCol][5] then
+									extended[(i*2)-1][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+									extended[i*2][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+								elseif self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][cCol*2] = {0, 0, 0}
+									extended[i*2][cCol*2] = {0, 0, 0}
+								end
 							end
-							if self.stretched[i][accCol-1] and self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
-								extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-								extended[i*2][(cCol*2)-1] = {0, 0, 0}
+							if self.stretched[i][accCol-1] then
+								if self.stretched[i][accCol-1][5] ~= self.stretched[i][accCol][5] then
+									extended[(i*2)-1][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[i*2][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+								elseif self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
+									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
+									extended[i*2][(cCol*2)-1] = {0, 0, 0}
+								end
 							end
 						else
 							extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
@@ -511,7 +559,7 @@ return
 							margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 							for k=1,nameLen do -- For each character...
 								local letter = name:sub(k, k):lower() -- CCSCommon.glyphs has keys in lowercase.
-								local glyph = parent.glyphs[letter] or parent.glyphs[" "] -- If there's a character not in our array, leave it as a blank space. Better than a nil exception.
+								local glyph = parent.glyphs[letter] or parent.glyphs[" "] -- If there's a character not in our matrix, leave it as a blank space.
 								local letterRow = 1
 								local letterColumn = 1
 								-- The glyph is itself a 2D matrix of monochrome pixel values -- 0 for black, 1 for white.
@@ -678,43 +726,6 @@ return
 						self.planet[p][q][r].mapWritten = true
 						vox = true
 					end
-					if quad == 1 then
-						if vox and self.planet[p] and self.planet[p][q+1] and self.planet[p][q+1][r] and not self.planet[p][q+1][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q+1] or not self.planet[p+1][q+1][r] then nextVox = true end end
-						if nextVox or not vox then
-							q = q+1
-							if q > 0 then
-								q = -self.planetR
-								p = p+1
-							end
-						else p = p+1 end
-					elseif quad == 2 then
-						if vox and self.planet[p-1] and self.planet[p-1][q] and self.planet[p-1][q][r] and not self.planet[p-1][q][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q+1] or not self.planet[p-1][q+1][r] then nextVox = true end end
-						if nextVox or not vox then
-							p = p-1
-							if p < 0 then
-								p = self.planetR
-								q = q+1
-							end
-						else q = q+1 end
-					elseif quad == 3 then
-						if vox and self.planet[p] and self.planet[p][q-1] and self.planet[p][q-1][r] and not self.planet[p][q-1][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q-1] or not self.planet[p-1][q-1][r] then nextVox = true end end
-						if nextVox or not vox then
-							q = q-1
-							if q < 0 then
-								q = self.planetR
-								p = p-1
-							end
-						else p = p-1 end
-					elseif quad == 4 then
-						if vox and self.planet[p+1] and self.planet[p+1][q] and self.planet[p+1][q][r] and not self.planet[p+1][q][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q-1] or not self.planet[p+1][q-1][r] then nextVox = true end end
-						if nextVox or not vox then
-							p = p+1
-							if p > 0 then
-								p = -self.planetR
-								q = q-1
-							end
-						else q = q-1 end
-					end
 					if quad == 1 and p > self.planetR then
 						quad = 2
 						p = self.planetR
@@ -733,6 +744,44 @@ return
 						q = -self.planetR
 						r = r+1
 						iColumn = iColumn+1
+					else
+						if quad == 1 then
+							if vox and self.planet[p] and self.planet[p][q+1] and self.planet[p][q+1][r] and not self.planet[p][q+1][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q+1] or not self.planet[p+1][q+1][r] then nextVox = true end end
+							if nextVox or not vox then
+								q = q+1
+								if q > 0 then
+									q = -self.planetR
+									p = p+1
+								end
+							else p = p+1 end
+						elseif quad == 2 then
+							if vox and self.planet[p-1] and self.planet[p-1][q] and self.planet[p-1][q][r] and not self.planet[p-1][q][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q+1] or not self.planet[p-1][q+1][r] then nextVox = true end end
+							if nextVox or not vox then
+								p = p-1
+								if p < 0 then
+									p = self.planetR
+									q = q+1
+								end
+							else q = q+1 end
+						elseif quad == 3 then
+							if vox and self.planet[p] and self.planet[p][q-1] and self.planet[p][q-1][r] and not self.planet[p][q-1][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q-1] or not self.planet[p-1][q-1][r] then nextVox = true end end
+							if nextVox or not vox then
+								q = q-1
+								if q < 0 then
+									q = self.planetR
+									p = p-1
+								end
+							else p = p-1 end
+						elseif quad == 4 then
+							if vox and self.planet[p+1] and self.planet[p+1][q] and self.planet[p+1][q][r] and not self.planet[p+1][q][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q-1] or not self.planet[p+1][q-1][r] then nextVox = true end end
+							if nextVox or not vox then
+								p = p+1
+								if p > 0 then
+									p = -self.planetR
+									q = q-1
+								end
+							else q = q-1 end
+						end
 					end
 					vox = false
 					nextVox = false
