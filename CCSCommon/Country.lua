@@ -509,6 +509,7 @@ return
 					if parent.thisWorld.planet[x][y][z].region == "" or not self.regions[parent.thisWorld.planet[x][y][z].region] then
 						if not patron then
 							parent.thisWorld.planet[x][y][z].country = ""
+							parent.thisWorld.planet[x][y][z].continent = ""
 							parent.thisWorld.planet[x][y][z].land = false
 						else
 							parent.thisWorld.planet[x][y][z].country = patron.name

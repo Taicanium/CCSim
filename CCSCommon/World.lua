@@ -252,17 +252,27 @@ return
 						self.planet[x][y][z].countrySet = false
 					end
 
-					if defined == prevDefined then allDefined = true end
+					if defined == prevDefined then
+						allDefined = true
+						for i=1,planetSize do
+							local x, y, z = table.unpack(self.planetdefined[i])
+							if self.planet[x][y][z].land and self.planet[x][y][z].country == "" then
+								allDefined = false
+								local nl = Country:new()
+								nl:set(parent)
+								self:add(nl)
+								self.planet[x][y][z].country = nl.name
+								self.planet[x][y][z].countrySet = true
+								defined = defined+1
+							end
+						end
+					end
+					
 					prevDefined = defined
-
 					UI:printl(string.format("%.2f%% done", (defined/doneLand)*100))
 				end
-
-				for i=1,planetSize do
-					local x, y, z = table.unpack(self.planetdefined[i])
-					if self.planet[x][y][z].country == "" then self.planet[x][y][z].land = false end
-				end
-
+				
+				parent:getAlphabetical()
 				UI:printf("Defining regional boundaries...")
 
 				for i, j in pairs(self.countries) do
@@ -410,26 +420,26 @@ return
 				end
 
 				if self.mapChanged then
-					self.planetC = math.huge
-					for i=1,columnCount do self.planetC = math.min(#self.stretched[i], self.planetC) end
+					self.planetC = 0
+					for i=1,columnCount do self.planetC = math.max(#self.stretched[i], self.planetC) end
 					for i=1,columnCount do
 						local sCol = #self.stretched[i]
-						local diff = sCol-self.planetC
+						local diff = self.planetC-sCol
 						while diff > 1 do
-							local ratio = sCol/diff
+							local ratio = self.planetC/diff
 							local rate = 0
 							for j=#self.stretched[i],1,-1 do
 								if rate >= ratio then
-									table.remove(self.stretched[i], j)
+									table.insert(self.stretched[i], j+1, self.stretched[i][j])
 									diff = diff-1
 									rate = rate-ratio
 								end
 								rate = rate+1
 							end
 							sCol = #self.stretched[i]
-							diff = sCol-self.planetC
+							diff = self.planetC-sCol
 						end
-						if diff == 1 then table.remove(self.stretched[i], #self.stretched[i]) end
+						if diff == 1 then table.insert(self.stretched[i], 1, self.stretched[i][1]) end
 					end
 				end
 
