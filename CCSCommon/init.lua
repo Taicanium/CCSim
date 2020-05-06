@@ -509,68 +509,8 @@ return
 				end
 				yi = yi+1
 			end
-			pad = pad*2
-			width = width*2
-			local bf = io.open("glyphs.bmp", "w+")
-			local bmpString = "424Ds000000003600000028000000wh0100180000000000r130B0000130B00000000000000000000"
-			local hStringLE = string.format("%.8x", pad)
-			local wStringLE = string.format("%.8x", width)
-			local rStringLE = ""
-			local sStringLE = ""
-			local hStringBE = ""
-			local wStringBE = ""
-			local rStringBE = ""
-			local sStringBE = ""
-			for x in hStringLE:gmatch("%w%w") do hStringBE = x..hStringBE end
-			for x in wStringLE:gmatch("%w%w") do wStringBE = x..wStringBE end
-			bmpString = bmpString:gsub("w", wStringBE)
-			bmpString = bmpString:gsub("h", hStringBE)
-
-			local byteCount = 0
-			for y=pad,1,-1 do
-				local btWritten = 0
-				for x=1,width do
-					btWritten = btWritten+3
-					byteCount = byteCount+3
-				end
-				while math.fmod(btWritten, 4) ~= 0 do
-					btWritten = btWritten+1
-					byteCount = byteCount+1
-				end
-			end
-
-			rStringLE = string.format("%.8x", byteCount)
-			sStringLE = string.format("%.8x", byteCount+54)
-			for x in sStringLE:gmatch("%w%w") do sStringBE = x..sStringBE end
-			for x in rStringLE:gmatch("%w%w") do rStringBE = x..rStringBE end
-			bmpString = bmpString:gsub("s", sStringBE)
-			bmpString = bmpString:gsub("r", rStringBE)
-
-			for x in bmpString:gmatch("%w%w") do bf:write(string.char(tonumber(x, 16))) end
-
-			for y=pad,1,-1 do
-				local btWritten = 0
-				for x=1,width do
-					if adjusted[y] and adjusted[y][x] then
-						bf:write(string.char(adjusted[y][x][3]))
-						bf:write(string.char(adjusted[y][x][2]))
-						bf:write(string.char(adjusted[y][x][1]))
-					else
-						bf:write(string.char(0))
-						bf:write(string.char(0))
-						bf:write(string.char(0))
-					end
-					btWritten = btWritten+3
-				end
-				while math.fmod(btWritten, 4) ~= 0 do
-					bf:write(string.char(0))
-					btWritten = btWritten+1
-				end
-			end
-
-			bf:flush()
-			bf:close()
-			bf = nil
+			
+			CCSCommon:bmpOut("glyphs", adjusted, width*2, pad*2)
 		end
 
 		function testNames(n)
@@ -1750,6 +1690,70 @@ return
 			writeMap = false,
 			years = 1,
 			yearstorun = 0,
+			
+			bmpOut = function(self, label, data, w, h)
+				local bf = io.open(label..".bmp", "w+b")
+				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+				local hStringLE = string.format("%.8x", h or 600)
+				local wStringLE = string.format("%.8x", w or 800)
+				local rStringLE = ""
+				local sStringLE = ""
+				local hArr = {}
+				local wArr = {}
+				local rArr = {}
+				local sArr = {}
+				for x in hStringLE:gmatch("%w%w") do table.insert(hArr, tonumber(x, 16)) end
+				for x in wStringLE:gmatch("%w%w") do table.insert(wArr, tonumber(x, 16)) end
+
+				local byteCount = 0
+				for y=h,1,-1 do
+					local btWritten = w*3
+					while math.fmod(btWritten, 4) ~= 0 do btWritten = btWritten+1 end
+					byteCount = byteCount+btWritten
+				end
+
+				rStringLE = string.format("%.8x", byteCount)
+				sStringLE = string.format("%.8x", byteCount+54)
+				for x in rStringLE:gmatch("%w%w") do table.insert(rArr, tonumber(x, 16)) end
+				for x in sStringLE:gmatch("%w%w") do table.insert(sArr, tonumber(x, 16)) end
+
+				for i=1,4 do bmpArr[i+2] = sArr[5-i] end
+				for i=1,4 do bmpArr[i+18] = wArr[5-i] end
+				for i=1,4 do bmpArr[i+22] = hArr[5-i] end
+				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
+				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
+
+				for y=h,1,-1 do -- Bottom-to-top, as required by the BMP format.
+					local btWritten = 0
+					for x=1,w do
+						if data[y] and data[y][x] then
+							if data[y][x][3] then bf:write(string.char(data[y][x][3] > -1 and data[y][x][3] < 256 and data[y][x][3] or 255)) end
+							if data[y][x][2] then bf:write(string.char(data[y][x][2] > -1 and data[y][x][2] < 256 and data[y][x][2] or 255)) end
+							if data[y][x][1] then bf:write(string.char(data[y][x][1] > -1 and data[y][x][1] < 256 and data[y][x][1] or 255)) end
+						else
+							bf:write(string.char(0))
+							bf:write(string.char(0))
+							bf:write(string.char(0))
+						end
+						btWritten = btWritten+3
+
+					end
+					while math.fmod(btWritten, 4) ~= 0 do
+						bf:write(string.char(0))
+						btWritten = btWritten+1
+					end
+				end
+
+				bf:flush()
+				bf:close()
+
+				bf = nil
+				sArr = nil
+				wArr = nil
+				hArr = nil
+				rArr = nil
+				bmpArr = nil
+			end,
 
 			checkDirectory = function(self, str)
 				local dirDotCmd = "dir "..str.." /b /ad"

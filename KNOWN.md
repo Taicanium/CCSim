@@ -1,7 +1,5 @@
 # Bugs
 
-There are sets of columns in produced maps that are cut entirely out for reasons unknown. This should be fixed as soon as possible.
-
 Border checking scans for whether two countries or regions have respective coastlines (and thus whether they can reach other by water), but does not check whether the coastlines themselves are actually connected by water; that is, if the two countries or regions have coastlines on different bodies of water, it does not check if those bodies are themselves connected.
 
 # Possible Features

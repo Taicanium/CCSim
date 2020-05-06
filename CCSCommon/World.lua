@@ -125,8 +125,12 @@ return
 				for i=1,#self.stretched do
 					for j=1,#self.stretched[i] do
 						local x, y, z = table.unpack(self.stretched[i][j], 6)
-						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] and self.stretched[i-k][j-l] then
-							local nx, ny, nz = table.unpack(self.stretched[i-k][j-l], 6)
+						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] then
+							local xi = i-k
+							local yi = j-l
+							if yi < 1 then yi = yi+#self.stretched[xi] end
+							if yi > #self.stretched[xi] then yi = yi-#self.stretched[xi] end
+							local nx, ny, nz = table.unpack(self.stretched[xi][yi], 6)
 							local found = false
 							for m=1,#self.planet[x][y][z].neighbors do if not found then
 								local mx, my, mz = table.unpack(self.planet[x][y][z].neighbors[m])
@@ -254,7 +258,7 @@ return
 
 					if defined == prevDefined then
 						allDefined = true
-						for i=1,planetSize do
+						for i=1,planetSize do if allDefined then
 							local x, y, z = table.unpack(self.planetdefined[i])
 							if self.planet[x][y][z].land and self.planet[x][y][z].country == "" then
 								allDefined = false
@@ -262,10 +266,9 @@ return
 								nl:set(parent)
 								self:add(nl)
 								self.planet[x][y][z].country = nl.name
-								self.planet[x][y][z].countrySet = true
 								defined = defined+1
 							end
-						end
+						end end
 					end
 					
 					prevDefined = defined
@@ -292,7 +295,7 @@ return
 			delete = function(self, parent, nz)
 				if not nz then return end
 
-				self.cTriplets[nz.name] = nil
+				self.cTriplets["\x02"..nz.name] = nil
 				self.countries[nz.name] = nil
 
 				nz:destroy(parent)
@@ -315,8 +318,8 @@ return
 				local planetSize = #self.planetdefined
 
 				for i, cp in pairs(self.countries) do
-					if not self.cTriplets[cp.name] then
-						self.cTriplets[cp.name] = nil
+					if not self.cTriplets["\x02"..cp.name] then
+						self.cTriplets["\x02"..cp.name] = nil
 
 						local r = 0
 						local g = 0
@@ -340,14 +343,13 @@ return
 							end
 						end
 
-						self.cTriplets[cp.name] = {r, g, b}
+						self.cTriplets["\x02"..cp.name] = {r, g, b}
 					end
 				end
 
 				local columnCount = #self.unwrapped
 				self.colors = {["\x01\x01CONTINENTS"]={0, 0, 0}, ["\x02\x01COUNTRIES"]={0, 0, 0}}
 				local leaders = {["\x01\x01CONTINENTS"]="", ["\x02\x01COUNTRIES"]=""}
-				local continents = {}
 
 				iColumn = 1
 				if self.mapChanged then
@@ -359,6 +361,7 @@ return
 						if #col > self.planetC then self.planetC = #col end
 					end
 				end
+				
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
 					local pixelsPerUnit = math.floor(self.planetC/#column)
@@ -368,39 +371,43 @@ return
 						local ex, ey, ez = table.unpack(column[j])
 						local node = self.planet[ex][ey][ez]
 						local countryStr = node.country
-						local cTriplet = self.cTriplets[countryStr]
+						local cTriplet = self.cTriplets["\x02"..countryStr]
+						if not node.land or not cTriplet then cTriplet = {22, 22, 170} end
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, node.continent, ex, ey, ez}) end
+								table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez})
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									if node.land and cTriplet then table.insert(self.stretched[columnCount-i+1], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez}) else table.insert(self.stretched[columnCount-i+1], {22, 22, 170, node.region, node.continent, ex, ey, ez}) end
+									table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez})
 									deviated = deviated-1
 								end
 							end
 						end
-						if node.continent ~= "" and not continents[node.continent] then
-							local cFound = false
-							while not cFound do
-								cFound = true
-								local r = math.random(0, 255)
-								local g = math.random(0, 255)
-								local b = math.random(0, 255)
-								for k, l in pairs(continents) do
-									local unq = math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3])
-									if unq < 60 then cFound = false end
-									if r > 230 and g > 230 and b > 230 then unq = false end
-									if r < 25 and g < 25 and b < 25 then unq = false end
-								end
-								if cFound then
-									-- We cheat here a little bit to display continent names and outline colors on the map legend.
-									-- Treat them as countries, but with no ruler string, and with a separate color palette that isn't tied to the one for actual countries. Also, place a hidden character at the beginning of their index key that sorts them at the top of an alphabetic list.
-									-- We will also assign a similar hidden character to each country.
-									continents[node.continent] = {r, g, b}
-									self.colors["\x01"..node.continent] = {r, g, b}
-									leaders["\x01"..node.continent] = ""
+						cTriplet = self.cTriplets["\x02"..countryStr]
+						if node.continent ~= "" and not self.colors["\x01"..node.continent] then
+							if not self.cTriplets["\x01"..node.continent] then
+								local cFound = false
+								while not cFound do
+									cFound = true
+									local r = math.random(0, 255)
+									local g = math.random(0, 255)
+									local b = math.random(0, 255)
+									for k, l in pairs(self.cTriplets) do
+										local unq = math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3])
+										if unq < 60 then cFound = false end
+										if r > 230 and g > 230 and b > 230 then unq = false end
+										if r < 25 and g < 25 and b < 25 then unq = false end
+									end
+									if cFound then
+										-- We cheat here a little bit to display continent names and outline colors on the map legend.
+										-- Treat them as countries, but with no ruler string, and with a separate color palette that isn't tied to the one for actual countries. Also, place a hidden character at the beginning of their index key that sorts them at the top of an alphabetic list.
+										-- We will also assign a similar hidden character to each country.
+										self.cTriplets["\x01"..node.continent] = {r, g, b}
+									end
 								end
 							end
+							self.colors["\x01"..node.continent] = self.cTriplets["\x01"..node.continent]
+							leaders["\x01"..node.continent] = ""
 						end
 						local country = self.countries[countryStr]
 						if country then
@@ -420,26 +427,25 @@ return
 				end
 
 				if self.mapChanged then
-					self.planetC = 0
-					for i=1,columnCount do self.planetC = math.max(#self.stretched[i], self.planetC) end
+					self.planetC = math.huge
+					for i=1,columnCount do self.planetC = math.min(#self.stretched[i], self.planetC) end
 					for i=1,columnCount do
 						local sCol = #self.stretched[i]
-						local diff = self.planetC-sCol
+						local diff = sCol-self.planetC
 						while diff > 1 do
-							local ratio = self.planetC/diff
+							local ratio = sCol/diff
 							local rate = 0
 							for j=#self.stretched[i],1,-1 do
+								rate = rate+1
 								if rate >= ratio then
-									table.insert(self.stretched[i], j+1, self.stretched[i][j])
-									diff = diff-1
+									table.remove(self.stretched[i], j)
 									rate = rate-ratio
 								end
-								rate = rate+1
 							end
 							sCol = #self.stretched[i]
-							diff = self.planetC-sCol
+							diff = sCol-self.planetC
 						end
-						if diff == 1 then table.insert(self.stretched[i], 1, self.stretched[i][1]) end
+						if diff == 1 then table.remove(self.stretched[i], 1) end
 					end
 				end
 
@@ -495,8 +501,8 @@ return
 							extended[i*2][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							if self.stretched[i+1] and self.stretched[i+1][accCol] then
 								if self.stretched[i+1][accCol][5] ~= self.stretched[i][accCol][5] then
-									extended[i*2][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
-									extended[i*2][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
 									extended[i*2][(cCol*2)-1] = {0, 0, 0}
 									extended[i*2][cCol*2] = {0, 0, 0}
@@ -504,8 +510,8 @@ return
 							end
 							if self.stretched[i-1] and self.stretched[i-1][accCol] then
 								if self.stretched[i-1][accCol][5] ~= self.stretched[i][accCol][5] then
-									extended[(i*2)-1][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
-									extended[(i*2)-1][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
 								elseif self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
 									extended[(i*2)-1][cCol*2] = {0, 0, 0}
@@ -513,8 +519,8 @@ return
 							end
 							if self.stretched[i][accCol+1] then
 								if self.stretched[i][accCol+1][5] ~= self.stretched[i][accCol][5] then
-									extended[(i*2)-1][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
-									extended[i*2][cCol*2] = continents[self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][cCol*2] = {0, 0, 0}
 									extended[i*2][cCol*2] = {0, 0, 0}
@@ -522,8 +528,8 @@ return
 							end
 							if self.stretched[i][accCol-1] then
 								if self.stretched[i][accCol-1][5] ~= self.stretched[i][accCol][5] then
-									extended[(i*2)-1][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
-									extended[i*2][(cCol*2)-1] = continents[self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
 								elseif self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
 									extended[i*2][(cCol*2)-1] = {0, 0, 0}
@@ -546,6 +552,7 @@ return
 						extended[i*2][j*2] = {0, 0, 0}
 					end
 				end
+				
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
 					for j=1,#tCol do -- For every country name in this column...
@@ -645,71 +652,12 @@ return
 				local totalC = margin*2 -- Account for the addition of the legend in our bitmap dimensions.
 				self.planetD = columnCount*2 -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
 
-				local bf = io.open(label..".bmp", "w+b")
-				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-				local hStringLE = string.format("%.8x", self.planetD)
-				local wStringLE = string.format("%.8x", totalC)
-				local rStringLE = ""
-				local sStringLE = ""
-				local hArr = {}
-				local wArr = {}
-				local rArr = {}
-				local sArr = {}
-				for x in hStringLE:gmatch("%w%w") do table.insert(hArr, tonumber(x, 16)) end
-				for x in wStringLE:gmatch("%w%w") do table.insert(wArr, tonumber(x, 16)) end
+				parent:bmpOut(label, extended, totalC, self.planetD)
 
-				local byteCount = 0
-				for y=self.planetD,1,-1 do
-					local btWritten = totalC*3
-					while math.fmod(btWritten, 4) ~= 0 do btWritten = btWritten+1 end
-					byteCount = byteCount+btWritten
-				end
-
-				rStringLE = string.format("%.8x", byteCount)
-				sStringLE = string.format("%.8x", byteCount+54)
-				for x in rStringLE:gmatch("%w%w") do table.insert(rArr, tonumber(x, 16)) end
-				for x in sStringLE:gmatch("%w%w") do table.insert(sArr, tonumber(x, 16)) end
-
-				for i=1,4 do bmpArr[i+2] = sArr[5-i] end
-				for i=1,4 do bmpArr[i+18] = wArr[5-i] end
-				for i=1,4 do bmpArr[i+22] = hArr[5-i] end
-				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
-				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
-
-				for y=self.planetD,1,-1 do -- Bottom-to-top, as required by the BMP format.
-					local btWritten = 0
-					for x=1,totalC do
-						if extended[y] and extended[y][x] then
-							if extended[y][x][3] then bf:write(string.char(extended[y][x][3])) else bf:write(string.char(0)) end
-							if extended[y][x][2] then bf:write(string.char(extended[y][x][2])) else bf:write(string.char(0)) end
-							if extended[y][x][1] then bf:write(string.char(extended[y][x][1])) else bf:write(string.char(0)) end
-						else
-							bf:write(string.char(0))
-							bf:write(string.char(0))
-							bf:write(string.char(0))
-						end
-						btWritten = btWritten+3
-
-					end
-					while math.fmod(btWritten, 4) ~= 0 do
-						bf:write(string.char(0))
-						btWritten = btWritten+1
-					end
-				end
-
-				bf:flush()
-				bf:close()
-
-				bf = nil
-				sArr = nil
-				wArr = nil
-				hArr = nil
-				rArr = nil
 				extended = nil
 				tCols = nil
 				extCols = nil
 				colorKeys = nil
-				bmpArr = nil
 				tColWidths = nil
 				leaders = nil
 
@@ -732,7 +680,8 @@ return
 				while r <= self.planetR do
 					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
 						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
-						table.insert(self.unwrapped[iColumn], {p, q, r})
+						-- This has got to be the strangest bug I've ever encountered...
+						if quad == 1 then table.insert(self.unwrapped[iColumn], {p, q, -r}) else table.insert(self.unwrapped[iColumn], {p, q, r}) end
 						self.planet[p][q][r].mapWritten = true
 						vox = true
 					end
@@ -797,7 +746,7 @@ return
 					nextVox = false
 				end
 
-				for i=-self.planetR,self.planetR,1 do if self.planet[i] then for j=-self.planetR,self.planetR,1 do if self.planet[i][j] then for k=-self.planetR,self.planetR,1 do if self.planet[i][j][k] and self.planet[i][j][k].mapWritten then table.insert(self.planetdefined, {i, j, k}) else self.planet[i][j][k] = nil end end end end end end
+				for i=-self.planetR,self.planetR do if self.planet[i] then for j=-self.planetR,self.planetR do if self.planet[i][j] then for k=-self.planetR,self.planetR do if self.planet[i][j][k] and self.planet[i][j][k].mapWritten then table.insert(self.planetdefined, {i, j, k}) else self.planet[i][j][k] = nil end end end end end end
 
 				if _DEBUG then
 					if not debugTimes["World.unwrap"] then debugTimes["World.unwrap"] = 0 end
