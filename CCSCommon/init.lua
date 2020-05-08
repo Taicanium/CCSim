@@ -159,7 +159,6 @@ return
 					table.insert(fami[fInd].chil, i)
 					j.famc = fInd
 				end
-				if j.rulerName then j.givn = j.rulerName end
 			end
 			
 			fi = math.random(1, #indi)
@@ -174,6 +173,7 @@ return
 				local famc = i.famc
 				local fams = i.fams
 				if givn and title then givn = givn:gsub(title.." ", ""):gsub(title, "") end
+				if i.rulerName and title then i.rulerName = i.rulerName:gsub(title.." ", ""):gsub(title, "") end
 				if famc and fami[famc] then
 					local husb = indi[fami[famc].husb]
 					local wife = indi[fami[famc].wife]
@@ -235,7 +235,8 @@ return
 					UI:clear()
 					printIndi(i, 0)
 					UI:printc("\n\n")
-					if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end else UI:printf("This individual has no notes.") end
+					if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end elseif not i.rulerName then UI:printf("This individual has no notes.") end
+					if i.rulerName then UI:printf("\nBirth name: "..givn.." "..surn) end
 					UI:readl()
 				elseif datin ~= "" then
 					matches = {}
@@ -247,10 +248,12 @@ return
 							local fullName = ""
 							local ktitle = k.rulerTitle or k.title
 							local kgivn = k.givn or k.name
+							local krulerName = k.rulerName
 							local ksurn = k.surn or k.surname
 							local knumber = CCSCommon:roman(k.number)
 							if ktitle and ktitle ~= "" then fullName = ktitle.." " end
 							if kgivn then fullName = fullName..kgivn.." " end
+							if kRulerName then fullName = fullName..kRulerName.." " end
 							if ksurn then fullName = fullName..ksurn.." " end
 							if knumber and k.number ~= 0 then fullName = fullName..knumber end
 							fullName = fullName:lower()
@@ -297,7 +300,8 @@ return
 				else sOut = sOut..title end
 				sOut = sOut.." "
 			end
-			if givn then sOut = sOut..givn.." " end
+			if givn and not i.rulerName then sOut = sOut..givn.." "
+			elseif i.rulerName then sOut = sOut..i.rulerName.." " end
 			if surn then sOut = sOut..surn.." " end
 			if number and number ~= 0 then sOut = sOut..CCSCommon:roman(number).." " end
 			if birt or deat then sOut = sOut.."(" end
