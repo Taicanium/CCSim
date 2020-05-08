@@ -33,7 +33,7 @@ return
 				parent:rseed()
 
 				UI:printf("Benchmarking...")
-				self.planetR = 250
+				self.planetR = 175
 				local bVol = math.pow((self.planetR*2)+1, 3)/100
 				local bench = {}
 
@@ -70,10 +70,10 @@ return
 				end end
 
 				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 125 or _DEBUG then benchAdjust = 125 end
+				if benchAdjust > 100 or _DEBUG then benchAdjust = 100 end
 
-				local rMin = 250
-				local rMax = 325
+				local rMin = 175
+				local rMax = 225
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				local gridVol = math.pow((self.planetR*2)+1, 3)/100
 				parent:deepnil(bench)
