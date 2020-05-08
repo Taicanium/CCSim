@@ -33,21 +33,19 @@ return
 				parent:rseed()
 
 				UI:printf("Benchmarking...")
-				local bRad = 175
-				local bVol = math.pow((bRad*2)+1, 3)/100
+				self.planetR = 250
+				local bVol = math.pow((self.planetR*2)+1, 3)/100
 				local bench = {}
 
 				local t0 = _time()
 				local bdone = 0
 
-				if not _DEBUG then for x=-bRad,bRad do
-					for y=-bRad,bRad do
-						for z=-bRad,bRad do
+				if not _DEBUG then for x=-self.planetR,self.planetR do
+					for y=-self.planetR,self.planetR do
+						for z=-self.planetR,self.planetR do
 							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
-							if fsqrt < bRad+0.5 and fsqrt > bRad-0.5 then
-								if not bench[x] then bench[x] = {} end
-								if not bench[x][y] then bench[x][y] = {} end
-								bench[x][y][z] = {
+							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
+								bench[self:getNodeFromCoords(x, y, z)] = {
 									x=x,
 									y=y,
 									z=z,
@@ -72,10 +70,10 @@ return
 				end end
 
 				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 75 or _DEBUG then benchAdjust = 75 end
+				if benchAdjust > 125 or _DEBUG then benchAdjust = 125 end
 
-				local rMin = 130
-				local rMax = 175
+				local rMin = 250
+				local rMax = 325
 				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
 				local gridVol = math.pow((self.planetR*2)+1, 3)/100
 				parent:deepnil(bench)
@@ -89,9 +87,7 @@ return
 						for z=-self.planetR,self.planetR do
 							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
-								if not self.planet[x] then self.planet[x] = {} end
-								if not self.planet[x][y] then self.planet[x][y] = {} end
-								self.planet[x][y][z] = {
+								self.planet[self:getNodeFromCoords(x, y, z)] = {
 									x=x,
 									y=y,
 									z=z,
@@ -124,19 +120,17 @@ return
 				UI:printf("Cross-referencing neighboring points on planet surface...")
 				for i=1,#self.stretched do
 					for j=1,#self.stretched[i] do
-						local x, y, z = table.unpack(self.stretched[i][j], 6)
+						local xyz = self.stretched[i][j][6]
 						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] then
 							local xi = i-k
 							local yi = j-l
 							if yi < 1 then yi = yi+#self.stretched[xi] end
 							if yi > #self.stretched[xi] then yi = yi-#self.stretched[xi] end
-							local nx, ny, nz = table.unpack(self.stretched[xi][yi], 6)
 							local found = false
-							for m=1,#self.planet[x][y][z].neighbors do if not found then
-								local mx, my, mz = table.unpack(self.planet[x][y][z].neighbors[m])
-								if mx == nx and my == ny and mz == nz then found = true end
+							for m=1,#self.planet[xyz].neighbors do if not found then
+								if self.planet[xyz].neighbors[m] == self.stretched[xi][yi][6] then found = true end
 							end end
-							if not found then table.insert(self.planet[x][y][z].neighbors, {nx, ny, nz}) end
+							if not found then table.insert(self.planet[xyz].neighbors, self.stretched[xi][yi][6]) end
 						end end end end
 					end
 				end
@@ -150,52 +144,49 @@ return
 				for i=1,continents do
 					local located = true
 					local cSeed = parent:randomChoice(self.planetdefined)
-					local x, y, z = table.unpack(cSeed)
 
-					if self.planet[x][y][z].land then located = false end
+					if self.planet[cSeed].land then located = false end
 					while not located do
 						cSeed = parent:randomChoice(self.planetdefined)
-						x, y, z = table.unpack(cSeed)
 						located = true
-						if self.planet[x][y][z].land then located = false end
+						if self.planet[cSeed].land then located = false end
 					end
 
-					self.planet[x][y][z].land = true
-					self.planet[x][y][z].continent = parent:name(false, 3, 2)
-					table.insert(freeNodes, {x, y, z})
+					self.planet[cSeed].land = true
+					self.planet[cSeed].continent = parent:name(false, 3, 2)
+					table.insert(freeNodes, cSeed)
 				end
 				local doneLand = continents
 				while doneLand < maxLand do
 					local node = math.random(1, #freeNodes)
-					local x, y, z = table.unpack(freeNodes[node])
+					local xyz = freeNodes[node]
 
-					while not self.planet[x][y][z].waterNeighbors do
+					while not self.planet[xyz].waterNeighbors do
 						table.remove(freeNodes, node)
 						node = math.random(1, #freeNodes)
-						x, y, z = table.unpack(freeNodes[node])
+						xyz = freeNodes[node]
 					end
 
 					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
-							if not self.planet[nx][ny][nz].land and math.random(1, 8) == math.random(1, 8) then
-								self.planet[nx][ny][nz].continent = self.planet[x][y][z].continent
-								self.planet[nx][ny][nz].land = true
+						for neighbor=1,#self.planet[xyz].neighbors do
+							local nxyz = self.planet[xyz].neighbors[neighbor]
+							if not self.planet[nxyz].land and math.random(1, 8) == math.random(1, 8) then
+								self.planet[nxyz].continent = self.planet[xyz].continent
+								self.planet[nxyz].land = true
 								doneLand = doneLand+1
-								self.planet[nx][ny][nz].waterNeighbors = false
-								for i, j in pairs(self.planet[nx][ny][nz].neighbors) do
-									local jx, jy, jz = table.unpack(j)
-									if not self.planet[jx][jy][jz].land then self.planet[nx][ny][nz].waterNeighbors = true end
+								self.planet[nxyz].waterNeighbors = false
+								for i, j in pairs(self.planet[nxyz].neighbors) do
+									if not self.planet[j].land then self.planet[nxyz].waterNeighbors = true end
 								end
-								if self.planet[nx][ny][nz].waterNeighbors then table.insert(freeNodes, {nx, ny, nz}) end
+								if self.planet[nxyz].waterNeighbors then table.insert(freeNodes, nxyz) end
 							end
 						end
 					end
 
-					self.planet[x][y][z].waterNeighbors = false
-					for neighbor=1,#self.planet[x][y][z].neighbors do
-						local nx, ny, nz = table.unpack(self.planet[x][y][z].neighbors[neighbor])
-						if not self.planet[nx][ny][nz].land then self.planet[x][y][z].waterNeighbors = true end
+					self.planet[xyz].waterNeighbors = false
+					for neighbor=1,#self.planet[xyz].neighbors do
+						local nxyz = self.planet[xyz].neighbors[neighbor]
+						if not self.planet[nxyz].land then self.planet[xyz].waterNeighbors = true end
 					end
 
 					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
@@ -205,7 +196,7 @@ return
 
 				UI:printf("Rooting countries...")
 				local ci = 1
-				local defined = 0
+				local defined = {}
 
 				for i, cp in pairs(self.countries) do
 					UI:printl(string.format("Country %d/%d", ci, self.numCountries))
@@ -213,66 +204,57 @@ return
 
 					local located = true
 					local rnd = parent:randomChoice(self.planetdefined)
-					local x, y, z = table.unpack(rnd)
+					while self.planet[rnd].country ~= "" or not self.planet[rnd].land do rnd = parent:randomChoice(self.planetdefined) end
 
-					if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
-					while not located do
-						rnd = parent:randomChoice(self.planetdefined)
-						x, y, z = table.unpack(rnd)
-						located = true
-						if self.planet[x][y][z].country ~= "" or not self.planet[x][y][z].land then located = false end
-					end
-
-					self.planet[x][y][z].country = cp.name
-					defined = defined+1
+					self.planet[rnd].country = cp.name
+					table.insert(defined, rnd)
 				end
 
 				UI:printf("Setting territories...")
 
 				local allDefined = false
-				local prevDefined = defined
+				local prevDefined = #defined
 				ci = 1
 
 				while not allDefined do
-					for i=1,planetSize do
-						local x, y, z = table.unpack(self.planetdefined[i])
+					for i=1,#defined do
+						local xyz = defined[i]
 
-						if self.planet[x][y][z].land and self.planet[x][y][z].country ~= "" and not self.planet[x][y][z].countrySet and not self.planet[x][y][z].countryDone then
-							for j=1,#self.planet[x][y][z].neighbors do
-								local neighbor = self.planet[x][y][z].neighbors[j]
-								local nx, ny, nz = table.unpack(neighbor)
-								if self.planet[nx][ny][nz].land and self.planet[nx][ny][nz].country == "" then
-									self.planet[nx][ny][nz].country = self.planet[x][y][z].country
-									self.planet[nx][ny][nz].countrySet = true
-									defined = defined+1
+						if self.planet[xyz].land and self.planet[xyz].country ~= "" and not self.planet[xyz].countrySet and not self.planet[xyz].countryDone then
+							for j=1,#self.planet[xyz].neighbors do
+								local neighbor = self.planet[xyz].neighbors[j]
+								if self.planet[neighbor].land and self.planet[neighbor].country == "" then
+									self.planet[neighbor].country = self.planet[xyz].country
+									self.planet[neighbor].countrySet = true
+									table.insert(defined, neighbor)
 								end
 							end
-							self.planet[x][y][z].countryDone = true
+							self.planet[xyz].countryDone = true
 						end
 					end
 
-					for i=1,planetSize do
-						local x, y, z = table.unpack(self.planetdefined[i])
-						self.planet[x][y][z].countrySet = false
+					for i=1,#defined do
+						local xyz = defined[i]
+						self.planet[xyz].countrySet = false
 					end
 
-					if defined == prevDefined then
+					if #defined == prevDefined then
 						allDefined = true
 						for i=1,planetSize do if allDefined then
-							local x, y, z = table.unpack(self.planetdefined[i])
-							if self.planet[x][y][z].land and self.planet[x][y][z].country == "" then
+							local xyz = self.planetdefined[i]
+							if self.planet[xyz].land and self.planet[xyz].country == "" then
 								allDefined = false
 								local nl = Country:new()
 								nl:set(parent)
 								self:add(nl)
-								self.planet[x][y][z].country = nl.name
-								defined = defined+1
+								self.planet[xyz].country = nl.name
+								table.insert(defined, xyz)
 							end
 						end end
 					end
 					
-					prevDefined = defined
-					UI:printl(string.format("%.2f%% done", (defined/doneLand)*100))
+					prevDefined = #defined
+					UI:printl(string.format("%.2f%% done", (#defined/doneLand)*100))
 				end
 				
 				parent:getAlphabetical()
@@ -309,6 +291,10 @@ return
 					cp:destroy(parent)
 					cp = nil
 				end
+			end,
+			
+			getNodeFromCoords = function(self, x, y, z)
+				return ((x+self.planetR)*math.pow(self.planetR*2+1, 2))+((y+self.planetR)*(self.planetR*2+1))+(z+self.planetR)+1
 			end,
 
 			mapOutput = function(self, parent, label)
@@ -368,17 +354,17 @@ return
 					local deviation = math.fmod(self.planetC/#column, 1)
 					local deviated = 0
 					for j=1,#column do
-						local ex, ey, ez = table.unpack(column[j])
-						local node = self.planet[ex][ey][ez]
+						local exyz = column[j]
+						local node = self.planet[exyz]
 						local countryStr = node.country
 						local cTriplet = self.cTriplets["\x02"..countryStr]
 						if not node.land or not cTriplet then cTriplet = {22, 22, 170} end
 						if self.mapChanged then
 							for k=1,pixelsPerUnit do
-								table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez})
+								table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, exyz})
 								deviated = deviated+deviation
 								while deviated >= 1 do
-									table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, ex, ey, ez})
+									table.insert(self.stretched[i], {cTriplet[1], cTriplet[2], cTriplet[3], node.region, node.continent, exyz})
 									deviated = deviated-1
 								end
 							end
@@ -670,73 +656,76 @@ return
 			unwrap = function(self)
 				local t0 = _time()
 
+				local rd = self.planetR
 				local p = 1
-				local q = -self.planetR
-				local r = -self.planetR
+				local q = -rd
+				local r = -rd
 				local quad = 1
 				local iColumn = 1
 				local vox = false
 				local nextVox = false
-				while r <= self.planetR do
-					if self.planet[p] and self.planet[p][q] and self.planet[p][q][r] and not self.planet[p][q][r].mapWritten then
+				while r <= rd do
+					local pqr = self:getNodeFromCoords(p, q, r)
+					if self.planet[pqr] and not self.planet[pqr].mapWritten then
 						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
 						-- This has got to be the strangest bug I've ever encountered...
-						if quad == 1 then table.insert(self.unwrapped[iColumn], {p, q, -r}) else table.insert(self.unwrapped[iColumn], {p, q, r}) end
-						self.planet[p][q][r].mapWritten = true
+						if quad == 1 then table.insert(self.unwrapped[iColumn], self:getNodeFromCoords(p, q, -r)) else table.insert(self.unwrapped[iColumn], pqr) end
+						table.insert(self.planetdefined, pqr)
+						self.planet[pqr].mapWritten = true
 						vox = true
 					end
-					if quad == 1 and p > self.planetR then
+					if quad == 1 and p > rd then
 						quad = 2
-						p = self.planetR
+						p = rd
 						q = 1
-					elseif quad == 2 and q > self.planetR then
+					elseif quad == 2 and q > rd then
 						quad = 3
 						p = -1
-						q = self.planetR
-					elseif quad == 3 and p < -self.planetR then
+						q = rd
+					elseif quad == 3 and p < -rd then
 						quad = 4
-						p = -self.planetR
+						p = -rd
 						q = -1
-					elseif quad == 4 and q < -self.planetR then
+					elseif quad == 4 and q < -rd then
 						quad = 1
 						p = 1
-						q = -self.planetR
+						q = -rd
 						r = r+1
 						iColumn = iColumn+1
 					else
 						if quad == 1 then
-							if vox and self.planet[p] and self.planet[p][q+1] and self.planet[p][q+1][r] and not self.planet[p][q+1][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q+1] or not self.planet[p+1][q+1][r] then nextVox = true end end
+							if vox and self.planet[self:getNodeFromCoords(p, q+1, r)] and not self.planet[self:getNodeFromCoords(p, q+1, r)].mapWritten and not self.planet[self:getNodeFromCoords(p+1, q+1, r)] then nextVox = true end
 							if nextVox or not vox then
 								q = q+1
 								if q > 0 then
-									q = -self.planetR
+									q = -rd
 									p = p+1
 								end
 							else p = p+1 end
 						elseif quad == 2 then
-							if vox and self.planet[p-1] and self.planet[p-1][q] and self.planet[p-1][q][r] and not self.planet[p-1][q][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q+1] or not self.planet[p-1][q+1][r] then nextVox = true end end
+							if vox and self.planet[self:getNodeFromCoords(p-1, q, r)] and not self.planet[self:getNodeFromCoords(p-1, q, r)].mapWritten and not self.planet[self:getNodeFromCoords(p-1, q+1, r)] then nextVox = true end
 							if nextVox or not vox then
 								p = p-1
 								if p < 0 then
-									p = self.planetR
+									p = rd
 									q = q+1
 								end
 							else q = q+1 end
 						elseif quad == 3 then
-							if vox and self.planet[p] and self.planet[p][q-1] and self.planet[p][q-1][r] and not self.planet[p][q-1][r].mapWritten then if not self.planet[p-1] or not self.planet[p-1][q-1] or not self.planet[p-1][q-1][r] then nextVox = true end end
+							if vox and self.planet[self:getNodeFromCoords(p, q-1, r)] and not self.planet[self:getNodeFromCoords(p, q-1, r)].mapWritten and not self.planet[self:getNodeFromCoords(p-1, q-1, r)] then nextVox = true end
 							if nextVox or not vox then
 								q = q-1
 								if q < 0 then
-									q = self.planetR
+									q = rd
 									p = p-1
 								end
 							else p = p-1 end
 						elseif quad == 4 then
-							if vox and self.planet[p+1] and self.planet[p+1][q] and self.planet[p+1][q][r] and not self.planet[p+1][q][r].mapWritten then if not self.planet[p+1] or not self.planet[p+1][q-1] or not self.planet[p+1][q-1][r] then nextVox = true end end
+							if vox and self.planet[self:getNodeFromCoords(p+1, q, r)] and not self.planet[self:getNodeFromCoords(p+1, q, r)].mapWritten and not self.planet[self:getNodeFromCoords(p+1, q-1, r)] then nextVox = true end
 							if nextVox or not vox then
 								p = p+1
 								if p > 0 then
-									p = -self.planetR
+									p = -rd
 									q = q-1
 								end
 							else q = q-1 end
@@ -745,8 +734,6 @@ return
 					vox = false
 					nextVox = false
 				end
-
-				for i=-self.planetR,self.planetR do if self.planet[i] then for j=-self.planetR,self.planetR do if self.planet[i][j] then for k=-self.planetR,self.planetR do if self.planet[i][j][k] and self.planet[i][j][k].mapWritten then table.insert(self.planetdefined, {i, j, k}) else self.planet[i][j][k] = nil end end end end end end
 
 				if _DEBUG then
 					if not debugTimes["World.unwrap"] then debugTimes["World.unwrap"] = 0 end

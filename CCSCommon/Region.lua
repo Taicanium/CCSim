@@ -21,23 +21,23 @@ return
 				local otherWater = false
 
 				for i=1,#self.nodes do
-					local x, y, z = table.unpack(self.nodes[i])
-					if parent.thisWorld.planet[x][y][z].region == self.name then
-						if parent.thisWorld.planet[x][y][z].waterNeighbors then selfWater = true end
-						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
-							if parent.thisWorld.planet[nx][ny][nz].country == other.name or parent.thisWorld.planet[nx][ny][nz].region == other.name then return 1 end
+					local xyz = self.nodes[i]
+					if parent.thisWorld.planet[xyz].region == self.name then
+						if parent.thisWorld.planet[xyz].waterNeighbors then selfWater = true end
+						for j=1,#parent.thisWorld.planet[xyz].neighbors do
+							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
+							if parent.thisWorld.planet[nxyz].country == other.name or parent.thisWorld.planet[nxyz].region == other.name then return 1 end
 						end
 					end
 				end
 
 				for i=1,#other.nodes do
-					local x, y, z = table.unpack(other.nodes[i])
-					if parent.thisWorld.planet[x][y][z].country == other.name or parent.thisWorld.planet[x][y][z].region == other.name then
-						if parent.thisWorld.planet[x][y][z].waterNeighbors then otherWater = true end
-						for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-							local nx, ny, nz = table.unpack(parent.thisWorld.planet[x][y][z].neighbors[j])
-							if parent.thisWorld.planet[nx][ny][nz].region == self.name then return 1 end
+					local xyz = other.nodes[i]
+					if parent.thisWorld.planet[xyz].country == other.name or parent.thisWorld.planet[xyz].region == other.name then
+						if parent.thisWorld.planet[xyz].waterNeighbors then otherWater = true end
+						for j=1,#parent.thisWorld.planet[xyz].neighbors do
+							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
+							if parent.thisWorld.planet[nxyz].region == self.name then return 1 end
 						end
 					end
 				end

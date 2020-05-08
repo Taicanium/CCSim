@@ -608,12 +608,12 @@ return
 									end
 
 									for i=1,#parent.thisWorld.planetdefined do
-										local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-										if parent.thisWorld.planet[x][y][z].country == c2.name then
-											parent.thisWorld.planet[x][y][z].country = c1.name
-											parent.thisWorld.planet[x][y][z].region = c2.name
-											table.insert(c1.nodes, {x, y, z})
-											table.insert(newr.nodes, {x, y, z})
+										local xyz = parent.thisWorld.planetdefined[i]
+										if parent.thisWorld.planet[xyz].country == c2.name then
+											parent.thisWorld.planet[xyz].country = c1.name
+											parent.thisWorld.planet[xyz].region = c2.name
+											table.insert(c1.nodes, xyz)
+											table.insert(newr.nodes, xyz)
 										end
 									end
 
@@ -844,12 +844,12 @@ return
 							end
 
 							for i=1,#parent.thisWorld.planetdefined do
-								local x, y, z = table.unpack(parent.thisWorld.planetdefined[i])
-								if parent.thisWorld.planet[x][y][z].country == c2.name then
-									parent.thisWorld.planet[x][y][z].country = c1.name
-									parent.thisWorld.planet[x][y][z].region = c2.name
-									table.insert(newr.nodes, {x, y, z})
-									table.insert(c1.nodes, {x, y, z})
+								local xyz = parent.thisWorld.planetdefined[i]
+								if parent.thisWorld.planet[xyz].country == c2.name then
+									parent.thisWorld.planet[xyz].country = c1.name
+									parent.thisWorld.planet[xyz].region = c2.name
+									table.insert(newr.nodes, xyz)
+									table.insert(c1.nodes, xyz)
 								end
 							end
 
@@ -934,9 +934,9 @@ return
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
 							for i=1,#nc.nodes do
-								local x, y, z = table.unpack(nc.nodes[i])
-								parent.thisWorld.planet[x][y][z].country = newl.name
-								parent.thisWorld.planet[x][y][z].region = ""
+								local xyz = nc.nodes[i]
+								parent.thisWorld.planet[xyz].country = newl.name
+								parent.thisWorld.planet[xyz].region = ""
 							end
 
 							local retrieved = false
@@ -979,19 +979,18 @@ return
 
 							local pR = nil
 							for i=#c.nodes,1,-1 do
-								local x, y, z = table.unpack(c.nodes[i])
-								if parent.thisWorld.planet[x][y][z].country == c.name and c.regions[parent.thisWorld.planet[x][y][z].region] then
-									for j=1,#parent.thisWorld.planet[x][y][z].neighbors do
-										local neighbor = parent.thisWorld.planet[x][y][z].neighbors[j]
-										local nx, ny, nz = table.unpack(neighbor)
-										local nnode = parent.thisWorld.planet[nx][ny][nz]
+								local xyz = c.nodes[i]
+								if parent.thisWorld.planet[xyz].country == c.name and c.regions[parent.thisWorld.planet[xyz].region] then
+									for j=1,#parent.thisWorld.planet[xyz].neighbors do
+										local neighbor = parent.thisWorld.planet[xyz].neighbors[j]
+										local nnode = parent.thisWorld.planet[neighbor]
 										if nnode.country == newl.name then
-											pR = c.regions[parent.thisWorld.planet[x][y][z].region]
-											j = #parent.thisWorld.planet[x][y][z].neighbors
+											pR = c.regions[parent.thisWorld.planet[xyz].region]
+											j = #parent.thisWorld.planet[xyz].neighbors
 											i = 0
 										end
 									end
-								elseif parent.thisWorld.planet[x][y][z].country == newl.name then table.remove(c.nodes, i) end
+								elseif parent.thisWorld.planet[xyz].country == newl.name then table.remove(c.nodes, i) end
 							end
 
 							if not pR then pR = parent:randomChoice(c.regions) end
@@ -1001,12 +1000,12 @@ return
 							for i, j in pairs(nc.cities) do
 								for k, l in pairs(newl.regions) do
 									for m=1,#l.nodes do
-										local x, y, z = table.unpack(l.nodes[m])
-										if parent.thisWorld.planet[x][y][z].city == j.name then
+										local xyz = l.nodes[m]
+										if parent.thisWorld.planet[xyz].city == j.name then
 											l.cities[j.name] = j
 											nc.cities[j.name] = nil
 										elseif x == j.x and y == j.y and z == j.z then
-											parent.thisWorld.planet[x][y][z].city = j.name
+											parent.thisWorld.planet[xyz].city = j.name
 											l.cities[j.name] = j
 											nc.cities[j.name] = nil
 										end
@@ -2679,17 +2678,17 @@ return
 						c2.regions[rn.name] = nil
 
 						for i=1,#self.thisWorld.planetdefined do
-							local x, y, z = table.unpack(self.thisWorld.planetdefined[i])
+							local xyz = self.thisWorld.planetdefined[i]
 
-							if self.thisWorld.planet[x][y][z].country == c2.name and self.thisWorld.planet[x][y][z].region == rn.name then
-								self.thisWorld.planet[x][y][z].country = c1.name
-								self.thisWorld.planet[x][y][z].region = rn.name
+							if self.thisWorld.planet[xyz].country == c2.name and self.thisWorld.planet[xyz].region == rn.name then
+								self.thisWorld.planet[xyz].country = c1.name
+								self.thisWorld.planet[xyz].region = rn.name
 							end
 						end
 
 						for i=#c2.nodes,1,-1 do
-							local x, y, z = table.unpack(c2.nodes[i])
-							if self.thisWorld.planet[x][y][z].country == c1.name then
+							local xyz = c2.nodes[i]
+							if self.thisWorld.planet[xyz].country == c1.name then
 								local rn = table.remove(c2.nodes, i)
 								rn = nil
 							end
