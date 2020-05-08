@@ -248,7 +248,7 @@ return
 							local fullName = ""
 							local ktitle = k.rulerTitle or k.title
 							local kgivn = k.givn or k.name
-							local krulerName = k.rulerName
+							local kRulerName = k.rulerName
 							local ksurn = k.surn or k.surname
 							local knumber = CCSCommon:roman(k.number)
 							if ktitle and ktitle ~= "" then fullName = ktitle.." " end
@@ -259,7 +259,7 @@ return
 							fullName = fullName:lower()
 							for x in string.gmatch(datin:lower(), "%w+") do if not fullName:match(x) then allMatch = false end end
 							if allMatch then table.insert(matches, j) end
-							scanned = scanned + 1
+							scanned = scanned+1
 							if scanned > 1 and math.fmod(scanned, 10000) == 0 then UI:printl(string.format("Scanned %d/%d people...", scanned, iCount)) end
 						end
 						if #matches > 0 then
@@ -2418,6 +2418,7 @@ return
 						end
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
+						UI:printf("G to review family tree and genealogical data.")
 						if _DEBUG then UI:printf("L to compare the languages of this world.") end
 						UI:printf("R to record the event data at this point.")
 						UI:printf("Q to exit.")
@@ -2427,6 +2428,11 @@ return
 							remainingYears = tonumber(datin)
 							self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
+						elseif datin:lower() == "g" then
+							local gf = io.open(self:directory({self.stamp, "ged.dat"}), "r")
+							gedReview(gf)
+							gf:close()
+							gf = nil
 						elseif datin:lower() == "l" and _DEBUG then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
