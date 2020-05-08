@@ -470,23 +470,29 @@ return
 				end
 
 				local allDefined = false
+				local totalDefined = #defined
 				local prevDefined = #defined
 
 				while not allDefined do
-					for i=1,#defined do
+					for i=#defined,1,-1 do
 						local xyz = defined[i]
+						local nDefined = true
 
 						if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
 							for j=1,#parent.thisWorld.planet[xyz].neighbors do
 								local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
 								if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+									nDefined = false
 									parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
 									parent.thisWorld.planet[nxyz].regionSet = true
 									table.insert(defined, nxyz)
+									totalDefined = totalDefined+1
 								end
 							end
 							parent.thisWorld.planet[xyz].regionDone = true
 						end
+						
+						if nDefined then table.remove(defined, i) end
 					end
 
 					for i=1,#self.nodes do
@@ -494,8 +500,8 @@ return
 						parent.thisWorld.planet[xyz].regionSet = false
 					end
 
-					if #defined == prevDefined then allDefined = true end
-					prevDefined = #defined
+					if totalDefined == prevDefined then allDefined = true end
+					prevDefined = totalDefined
 				end
 
 				for i=#self.nodes,1,-1 do

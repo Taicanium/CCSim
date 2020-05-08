@@ -333,7 +333,8 @@ return
 			CCSCommon.showinfo = 0
 			if datin:lower() == "y" then CCSCommon.showinfo = 1 end
 
-			UI:printp("\nDo you want to produce maps of the world at major events (y/n)? > ")
+			UI:printf("\nDo you want to produce maps of the world at major events (y/n)?")
+			UI:printp("Be advised map generation is an intensive task and will greatly slow down the simulation. > ")
 			datin = UI:readl()
 
 			CCSCommon.doMaps = false

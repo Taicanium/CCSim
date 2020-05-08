@@ -153,7 +153,7 @@ return
 					end
 
 					self.planet[cSeed].land = true
-					self.planet[cSeed].continent = parent:name(false, 3, 2)
+					self.planet[cSeed].continent = parent:name(true, 3, 2)
 					table.insert(freeNodes, cSeed)
 				end
 				local doneLand = continents
@@ -167,10 +167,10 @@ return
 						xyz = freeNodes[node]
 					end
 
-					if math.random(1, 10) == math.random(1, 10) then
-						for neighbor=1,#self.planet[xyz].neighbors do
+					for neighbor=1,#self.planet[xyz].neighbors do
+						if math.random(1, 40) == math.random(1, 40) then
 							local nxyz = self.planet[xyz].neighbors[neighbor]
-							if not self.planet[nxyz].land and math.random(1, 8) == math.random(1, 8) then
+							if not self.planet[nxyz].land then
 								self.planet[nxyz].continent = self.planet[xyz].continent
 								self.planet[nxyz].land = true
 								doneLand = doneLand+1
@@ -213,24 +213,30 @@ return
 				UI:printf("Setting territories...")
 
 				local allDefined = false
+				local totalDefined = #defined
 				local prevDefined = #defined
 				ci = 1
 
 				while not allDefined do
-					for i=1,#defined do
+					for i=#defined,1,-1 do
 						local xyz = defined[i]
+						local nDefined = true
 
 						if self.planet[xyz].land and self.planet[xyz].country ~= "" and not self.planet[xyz].countrySet and not self.planet[xyz].countryDone then
 							for j=1,#self.planet[xyz].neighbors do
 								local neighbor = self.planet[xyz].neighbors[j]
 								if self.planet[neighbor].land and self.planet[neighbor].country == "" then
+									nDefined = false
 									self.planet[neighbor].country = self.planet[xyz].country
 									self.planet[neighbor].countrySet = true
 									table.insert(defined, neighbor)
+									totalDefined = totalDefined+1
 								end
 							end
 							self.planet[xyz].countryDone = true
 						end
+						
+						if nDefined then table.remove(defined, i) end
 					end
 
 					for i=1,#defined do
@@ -238,7 +244,7 @@ return
 						self.planet[xyz].countrySet = false
 					end
 
-					if #defined == prevDefined then
+					if totalDefined == prevDefined then
 						allDefined = true
 						for i=1,planetSize do if allDefined then
 							local xyz = self.planetdefined[i]
@@ -249,12 +255,13 @@ return
 								self:add(nl)
 								self.planet[xyz].country = nl.name
 								table.insert(defined, xyz)
+								totalDefined = totalDefined+1
 							end
 						end end
 					end
 					
-					prevDefined = #defined
-					UI:printl(string.format("%.2f%% done", (#defined/doneLand)*100))
+					prevDefined = totalDefined
+					UI:printl(string.format("%.2f%% done", (totalDefined/doneLand)*100))
 				end
 				
 				parent:getAlphabetical()
@@ -690,6 +697,7 @@ return
 						quad = 1
 						p = 1
 						q = -rd
+						UI:printl(string.format("%.2f%% done", ((r+rd)/((rd*2)+1))*100))
 						r = r+1
 						iColumn = iColumn+1
 					else
