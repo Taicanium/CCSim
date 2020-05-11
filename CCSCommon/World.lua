@@ -31,82 +31,31 @@ return
 
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
-
-				UI:printf("Benchmarking...")
-				self.planetR = 175
-				local bVol = math.pow((self.planetR*2)+1, 3)/100
-				local bench = {}
-
 				local t0 = _time()
-				local bdone = 0
-
-				if not _DEBUG then for x=-self.planetR,self.planetR do
-					for y=-self.planetR,self.planetR do
-						for z=-self.planetR,self.planetR do
-							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
-							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
-								bench[self:getNodeFromCoords(x, y, z)] = {
-									x=x,
-									y=y,
-									z=z,
-									continent="",
-									country="",
-									countrySet=false,
-									countryDone=false,
-									region="",
-									regionSet=false,
-									regionDone=false,
-									city="",
-									land=false,
-									waterNeighbors=true,
-									mapWritten=false,
-									neighbors={}
-								}
-							end
-							bdone = bdone+1
-						end
-					end
-					UI:printl(string.format("%.2f%% done", (bdone/bVol)))
-				end end
-
-				local benchAdjust = math.floor(_time()-t0)
-				if benchAdjust > 100 or _DEBUG then benchAdjust = 100 end
-
-				local rMin = 175
+				local rMin = 180
 				local rMax = 225
-				self.planetR = math.floor(math.random(rMin-benchAdjust, rMax-benchAdjust))
-				local gridVol = math.pow((self.planetR*2)+1, 3)/100
-				parent:deepnil(bench)
+				self.planetR = math.floor(math.random(rMin, rMax))
+				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
+				local rdone = 0
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
 
-				local rdone = 0
-
 				for x=-self.planetR,self.planetR do
 					for y=-self.planetR,self.planetR do
-						for z=-self.planetR,self.planetR do
-							local fsqrt = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
-							if fsqrt < self.planetR+0.5 and fsqrt > self.planetR-0.5 then
-								self.planet[self:getNodeFromCoords(x, y, z)] = {
-									x=x,
-									y=y,
-									z=z,
-									continent="",
-									country="",
-									countrySet=false,
-									countryDone=false,
-									region="",
-									regionSet=false,
-									regionDone=false,
-									city="",
-									land=false,
-									waterNeighbors=true,
-									mapWritten=false,
-									neighbors={}
-								}
-							end
-							rdone = rdone+1
-						end
+						local mag = self.planetR/math.sqrt(math.pow(self.planetR, 2)+math.pow(x, 2)+math.pow(y, 2))
+						local xm = x*mag
+						local ym = y*mag
+						local zm = self.planetR*mag
+						if math.fmod(xm, 1) >= 0.5 then xm = math.ceil(xm) else xm = math.floor(xm) end
+						if math.fmod(ym, 1) >= 0.5 then ym = math.ceil(ym) else ym = math.floor(ym) end
+						if math.fmod(zm, 1) >= 0.5 then zm = math.ceil(zm) else zm = math.floor(zm) end
+						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, ym, zm)] = { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, zm, ym)] = { x=xm, y=zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(-zm, xm, ym)] = { x=-zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(zm, xm, ym)] = { x=zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						rdone = rdone+6
 					end
 					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
 				end
@@ -134,6 +83,8 @@ return
 						end end end end
 					end
 				end
+
+				collectgarbage("collect")
 
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
@@ -168,7 +119,7 @@ return
 					end
 
 					for neighbor=1,#self.planet[xyz].neighbors do
-						if math.random(1, 40) == math.random(1, 40) then
+						if math.random(1, 35) == math.random(1, 35) then
 							local nxyz = self.planet[xyz].neighbors[neighbor]
 							if not self.planet[nxyz].land then
 								self.planet[nxyz].continent = self.planet[xyz].continent
@@ -193,6 +144,8 @@ return
 				end
 
 				parent:deepnil(freeNodes)
+
+				collectgarbage("collect")
 
 				UI:printf("Rooting countries...")
 				local ci = 1
@@ -235,7 +188,7 @@ return
 							end
 							self.planet[xyz].countryDone = true
 						end
-						
+
 						if nDefined then table.remove(defined, i) end
 					end
 
@@ -259,11 +212,11 @@ return
 							end
 						end end
 					end
-					
+
 					prevDefined = totalDefined
 					UI:printl(string.format("%.2f%% done", (totalDefined/doneLand)*100))
 				end
-				
+
 				parent:getAlphabetical()
 				UI:printf("Defining regional boundaries...")
 
@@ -279,6 +232,8 @@ return
 					parent.disabled[j.name:lower()] = false
 					parent.disabled["!"..j.name:lower()] = false
 				end
+
+				collectgarbage("collect")
 			end,
 
 			delete = function(self, parent, nz)
@@ -299,7 +254,7 @@ return
 					cp = nil
 				end
 			end,
-			
+
 			getNodeFromCoords = function(self, x, y, z)
 				return ((x+self.planetR)*math.pow(self.planetR*2+1, 2))+((y+self.planetR)*(self.planetR*2+1))+(z+self.planetR)+1
 			end,
@@ -354,7 +309,7 @@ return
 						if #col > self.planetC then self.planetC = #col end
 					end
 				end
-				
+
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
 					local pixelsPerUnit = math.floor(self.planetC/#column)
@@ -545,7 +500,7 @@ return
 						extended[i*2][j*2] = {0, 0, 0}
 					end
 				end
-				
+
 				for i=1,tColCount do -- For every column of text in the legend...
 					local tCol = tCols[i]
 					for j=1,#tCol do -- For every country name in this column...
@@ -675,8 +630,7 @@ return
 					local pqr = self:getNodeFromCoords(p, q, r)
 					if self.planet[pqr] and not self.planet[pqr].mapWritten then
 						while not self.unwrapped[iColumn] do table.insert(self.unwrapped, {}) end
-						-- This has got to be the strangest bug I've ever encountered...
-						if quad == 1 then table.insert(self.unwrapped[iColumn], self:getNodeFromCoords(p, q, -r)) else table.insert(self.unwrapped[iColumn], pqr) end
+						table.insert(self.unwrapped[iColumn], pqr)
 						table.insert(self.planetdefined, pqr)
 						self.planet[pqr].mapWritten = true
 						vox = true

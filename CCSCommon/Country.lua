@@ -266,7 +266,7 @@ return
 
 			recurseRoyalChildren = function(self, t, n)
 				if not t.children or #t.children == 0 then return end
-				
+
 				local ind = math.max(1, math.min(n+1, #self.lineOfSuccession+1))
 				local childrenByAge = {}
 
@@ -278,7 +278,7 @@ return
 					end end
 					if not found then table.insert(childrenByAge, t.children[i]) end
 				end
-				
+
 				if not self.agPrim then
 					for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and not childrenByAge[i].isRuler and childrenByAge[i].rulerName == "" and childrenByAge[i].def then
 						if not childrenByAge[i].inSuccession then table.insert(self.lineOfSuccession, ind, childrenByAge[i]) end
@@ -331,7 +331,7 @@ return
 					if #self.people > 1 then while self.people[r].isRuler do r = math.random(1, #self.people) end end
 					self:delete(parent, r)
 				end
-				
+
 				if not parent.gedFile then parent.gedFile = io.open(parent:directory({parent.stamp, "ged.dat"}), "a+") end
 
 				for i=1,u-#self.people do
@@ -413,11 +413,11 @@ return
 				else
 					table.insert(self.rulers, {dynastic=false, name=self.people[newRuler].name, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=self.people[newRuler].surname, children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
 				end
-				
+
 				if self.people[newRuler].rulerTitle and self.people[newRuler].rulerTitle ~= "" then parent.gedFile:write(tostring(self.people[newRuler].gIndex).." t "..tostring(self.people[newRuler].rulerTitle).."\n") end
 				if self.people[newRuler].number and tostring(self.people[newRuler].number) ~= "0" then parent.gedFile:write("o "..tostring(self.people[newRuler].number).."\n") end
 				if self.people[newRuler].rulerName and self.people[newRuler].rulerName ~= "" then parent.gedFile:write("r "..tostring(self.people[newRuler].rulerName).."\n") end
-				
+
 				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i].def then table.remove(self.lineOfSuccession, i) end end
 
 				parent.writeMap = true
@@ -491,7 +491,7 @@ return
 							end
 							parent.thisWorld.planet[xyz].regionDone = true
 						end
-						
+
 						if nDefined then table.remove(defined, i) end
 					end
 

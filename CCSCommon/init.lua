@@ -128,11 +128,11 @@ return
 					l = f:read("*l")
 				else l = nil end
 			end
-			
+
 			UI:printl(string.format("%d/%d people", largestRead, iCount))
 			UI:printf("\nLinking family records...")
 			local nextInd = 1
-			
+
 			for i=1,#indi do
 				local j = indi[i]
 				if math.fmod(i, 10000) == 0 then
@@ -160,7 +160,7 @@ return
 					j.famc = fInd
 				end
 			end
-			
+
 			fi = math.random(1, #indi)
 
 			while _REVIEWING do
@@ -338,7 +338,7 @@ return
 			if datin:lower() == "y" then CCSCommon.showinfo = 1 end
 
 			UI:printf("\nDo you want to produce maps of the world at major events (y/n)?")
-			UI:printp("Be advised map generation is an intensive task and will greatly slow down the simulation. > ")
+			UI:printp("Be advised map generation is a disk-intensive task and will greatly slow down the simulation. > ")
 			datin = UI:readl()
 
 			CCSCommon.doMaps = false
@@ -514,7 +514,7 @@ return
 				end
 				yi = yi+1
 			end
-			
+
 			CCSCommon:bmpOut("glyphs", adjusted, width*2, pad*2)
 		end
 
@@ -1694,7 +1694,7 @@ return
 			writeMap = false,
 			years = 1,
 			yearstorun = 0,
-			
+
 			bmpOut = function(self, label, data, w, h)
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
@@ -2286,7 +2286,7 @@ return
 				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
 
 				collectgarbage("collect")
-				
+
 				self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
 
 				while _running do

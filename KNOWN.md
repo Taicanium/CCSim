@@ -12,4 +12,6 @@ Work on implementing an autosave feature. Earlier (buggy) versions had one (whic
 
 # To-do
 
+I have been working on learning the TIFF format with the intention of replacing BMP maps with TIFF maps. TIFF is a much more compact (and compression-friendly) file format and doesn't appear too difficult to implement. However it is still something I need to become familiar with enough to code around.
+
 The new family data output doesn't include native and spoken languages. Won't be too hard to add. Just need time to.
