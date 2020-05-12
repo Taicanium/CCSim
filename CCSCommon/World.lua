@@ -42,13 +42,14 @@ return
 
 				for x=-self.planetR,self.planetR do
 					for y=-self.planetR,self.planetR do
-						local mag = self.planetR/math.sqrt(math.pow(self.planetR, 2)+math.pow(x, 2)+math.pow(y, 2))
+						local z = self.planetR
+						local mag = z/math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 						local xm = x*mag
 						local ym = y*mag
-						local zm = self.planetR*mag
-						if math.fmod(xm, 1) >= 0.5 then xm = math.ceil(xm) else xm = math.floor(xm) end
-						if math.fmod(ym, 1) >= 0.5 then ym = math.ceil(ym) else ym = math.floor(ym) end
-						if math.fmod(zm, 1) >= 0.5 then zm = math.ceil(zm) else zm = math.floor(zm) end
+						local zm = z*mag
+						if math.fmod(xm, 1) >= 0.501 then xm = math.ceil(xm) else xm = math.floor(xm) end
+						if math.fmod(ym, 1) >= 0.501 then ym = math.ceil(ym) else ym = math.floor(ym) end
+						if math.fmod(zm, 1) >= 0.501 then zm = math.ceil(zm) else zm = math.floor(zm) end
 						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
 						self.planet[self:getNodeFromCoords(xm, ym, zm)] = { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
 						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
@@ -651,8 +652,8 @@ return
 						quad = 1
 						p = 1
 						q = -rd
-						UI:printl(string.format("%.2f%% done", ((r+rd)/((rd*2)+1))*100))
 						r = r+1
+						UI:printl(string.format("%.2f%% done", ((r+rd)/((rd*2)+1))*100))
 						iColumn = iColumn+1
 					else
 						if quad == 1 then
