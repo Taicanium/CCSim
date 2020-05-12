@@ -650,22 +650,18 @@ return
 							c.capitalregion = nil
 							c.capitalcity = nil
 
-							while not c.capitalcity do
-								for i, j in pairs(c.regions) do
-									for k, l in pairs(j.cities) do
-										if l.name ~= oldcap and not c.capitalcity and math.random(1, 100) == 35 then
-											c.capitalregion = j.name
-											c.capitalcity = k
+							while not c.capitalcity do for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do
+								if l.name ~= oldcap and not c.capitalcity and math.random(1, 100) == 35 then
+									c.capitalregion = j.name
+									c.capitalcity = k
 
-											local msg = "Capital moved"
-											if oldcap ~= "" then msg = msg.." from "..oldcap end
-											msg = msg.." to "..c.capitalcity
+									local msg = "Capital moved"
+									if oldcap ~= "" then msg = msg.." from "..oldcap end
+									msg = msg.." to "..c.capitalcity
 
-											c:event(parent, msg)
-										end
-									end
+									c:event(parent, msg)
 								end
-							end
+							end end end
 						end
 
 						return -1
