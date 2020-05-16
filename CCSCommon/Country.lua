@@ -243,6 +243,7 @@ return
 						self.name = parent:name(false, 2)
 						found = false
 						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
+						for i, j in pairs(parent.thisWorld.countries) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
 					end
 				end
 
@@ -300,8 +301,6 @@ return
 				self:makename(parent)
 				self.agPrim = parent:randomChoice({true, false})
 
-				if self.population <= 1 then if _DEBUG then self:setPop(parent, 150) else self:setPop(parent, math.random(750, 1500)) end end
-
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end
 				if rcount == 0 then
@@ -313,13 +312,14 @@ return
 					end
 				end
 
+				if self.founded == 0 then self.founded = parent.years end
+
 				self.capitalregion = parent:randomChoice(self.regions, true)
 				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
 
-				if self.founded == 0 then self.founded = parent.years end
-
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
+				if self.population <= 1 then self:setPop(parent, _DEBUG and 150 or math.random(750, 1500)) end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 
@@ -343,12 +343,14 @@ return
 					n.level = 2
 					n.title = "Citizen"
 					n.ethnicity = {[self.demonym]=100}
-					n.birthplace = self.name
+					n.region = parent:randomChoice(self.regions)
+					n.city = parent:randomChoice(n.region.cities)
+					n.birthplace = n.city.name..", "..n.region.name..", "..self.name
 					n.gString = n.gender.." "..n.name.." "..n.surname.." "..n.birth.." "..n.birthplace
 					n.gIndex = parent:nextGIndex()
 					if not parent.places[n.birthplace] then
 						parent.places[n.birthplace] = n.gIndex
-						parent.gedFile:write("y "..tostring(n.birthplace).." "..tostring(n.gIndex).."\n")
+						parent.gedFile:write("y "..tostring(n.gIndex).." "..tostring(n.birthplace).."\n")
 					end
 					parent.gedFile:write(tostring(n.gIndex).." b "..tostring(n.birth).."\n")
 					parent.gedFile:write("c "..tostring(parent.places[n.birthplace]).."\n")
@@ -358,7 +360,7 @@ return
 					for i, j in pairs(n.ethnicity) do
 						if not parent.demonyms[i] then
 							parent.demonyms[i] = n.gIndex
-							parent.gedFile:write("z "..tostring(i).." "..tostring(n.gIndex).."\n")
+							parent.gedFile:write("z "..tostring(n.gIndex).." "..tostring(i).."\n")
 						end
 						if j > 0.08 then
 							local pct = string.format("%.2f", j)
@@ -419,8 +421,6 @@ return
 				if self.people[newRuler].rulerName and self.people[newRuler].rulerName ~= "" then parent.gedFile:write("r "..tostring(self.people[newRuler].rulerName).."\n") end
 
 				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i].def then table.remove(self.lineOfSuccession, i) end end
-
-				parent.writeMap = true
 			end,
 
 			setTerritory = function(self, parent, patron, patronRegion)
@@ -662,7 +662,7 @@ return
 						if 70000-math.pow(age, 2) < 1 or math.random(1, 70000-math.pow(age, 2)) < math.pow(age, 2) then chn = true end
 					end
 
-					if not chn and not self.people[i].isRuler and math.random(1, 8000) == 3799 then
+					if not chn and not self.people[i].isRuler and math.random(1, self.people[i].age < 35 and 6500 or 9500) == 3799 then
 						local cp = parent:randomChoice(parent.thisWorld.countries)
 						if parent.thisWorld.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
 						cp:add(parent, self.people[i])

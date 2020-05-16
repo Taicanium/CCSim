@@ -64,16 +64,21 @@ return
 				self.age = nil
 				self.cbelief = nil
 				self.children = nil
+				if not self.deathplace or self.deathplace == "" then
+					self.deathplace = nl.name
+					if self.region and self.region.cities then self.deathplace = self.region.name..", "..self.deathplace end
+					if self.city then self.deathplace = self.city.name..", "..self.deathplace end
+				end
 				self.city = nil
 				self.death = parent.years
-				self.deathplace = nl.name
 				if not parent.places[self.deathplace] then
 					parent.places[self.deathplace] = self.gIndex
-					parent.gedFile:write("y "..tostring(self.deathplace).." "..tostring(self.gIndex).."\n")
+					parent.gedFile:write("y "..tostring(self.gIndex).." "..tostring(self.deathplace).."\n")
 				end
 				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
 				parent.gedFile:write("e "..tostring(parent.places[self.deathplace]).."\n")
 				parent.gedFile:flush()
+				self.city = nil
 				self.def = nil -- See above.
 				self.ebelief = nil
 				parent:deepnil(self.ethnicity)
@@ -192,7 +197,7 @@ return
 
 				nn.region = self.region
 				nn.city = self.city
-				nn.birthplace = nl.name
+				nn.birthplace = self.city.name..", "..self.region.name..", "..nl.name
 				nn.age = 0
 				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
@@ -237,7 +242,7 @@ return
 
 				if not parent.places[nn.birthplace] then
 					parent.places[nn.birthplace] = nn.gIndex
-					parent.gedFile:write("y "..tostring(nn.birthplace).." "..tostring(nn.gIndex).."\n")
+					parent.gedFile:write("y "..tostring(nn.gIndex).." "..tostring(nn.birthplace).."\n")
 				end
 				parent.gedFile:write(tostring(nn.gIndex).." b "..tostring(parent.years).."\n")
 				parent.gedFile:write("c "..tostring(parent.places[nn.birthplace]).."\n")
@@ -247,7 +252,7 @@ return
 				for i, j in pairs(nn.ethnicity) do
 					if not parent.demonyms[i] then
 						parent.demonyms[i] = nn.gIndex
-						parent.gedFile:write("z "..tostring(i).." "..tostring(nn.gIndex).."\n")
+						parent.gedFile:write("z "..tostring(nn.gIndex).." "..tostring(i).."\n")
 					end
 					if j > 0.08 then
 						local pct = string.format("%.2f", j)
@@ -368,31 +373,38 @@ return
 				if self.birth <= -1 then self.age = self.age-1 end
 
 				if not self.birthplace or self.birthplace == "" then self.birthplace = nl.name end
+				self.deathplace = nl.name
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
 				if not self.ancName or self.ancName == "" then self.ancName = self.surname end
 
-				if math.random(1, 150) == 12 then self.region = nil end
+				if math.random(1, self.age < 25 and 1000 or 1800) == 135 then self.city = nil end
+				if math.random(1, self.age < 25 and 2800 or 3400) == 435 then self.region = nil end
 
-				if not self.region then
-					self.region = parent:randomChoice(nl.regions)
-					self.city = nil
-				end
-
-				if self.region and not self.city then
-					self.city = parent:randomChoice(self.region.cities)
+				if not self.region or not self.region.cities or not self.city then
+					if not self.region or not self.region.cities then
+						self.region = parent:randomChoice(nl.regions)
+						self.city = nil
+					end
+					if self.region and self.region.cities and not self.city then self.city = parent:randomChoice(self.region.cities) end
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
 					end
 				end
 
-				if self.region then self.region.population = self.region.population+1 end
-				if self.city then self.city.population = self.city.population+1 end
+				if self.region and self.region.cities then
+					self.region.population = self.region.population+1
+					self.deathplace = self.region.name..", "..self.deathplace
+				end
+				if self.city then
+					self.city.population = self.city.population+1
+					self.deathplace = self.city.name..", "..self.deathplace
+				end
 
 				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region.name)..")", nl) end
 				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
 
-				if self.nativeLang and #self.nativeLang > 0 then
+				if self.region and self.nativeLang and #self.nativeLang > 0 then
 					local langFound = false
 					for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
 					if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end

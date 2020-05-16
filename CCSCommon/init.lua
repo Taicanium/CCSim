@@ -90,7 +90,7 @@ return
 			l = f:read("*l")
 			while l and l ~= "" do
 				local split = {}
-				for x in l:gmatch("[%w%-%.]+") do table.insert(split, x) end
+				for x in l:gmatch("[%w%-%.,]+") do table.insert(split, x) end
 				if #split > 0 then
 					if tonumber(split[1]) then
 						fi = tonumber(split[1])
@@ -122,9 +122,19 @@ return
 					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed])
 					elseif cmd == "l" then
 						if not indi[fi].notes then indi[fi].notes = {} end
+						if not split[3-reindexed] or not dms or not split[4-reindexed] or not dms[split[4-reindexed]] then UI:printf(string.format("%d %s", 4-reindexed, split[4-reindexed], #dms)) end
 						table.insert(indi[fi].notes, split[3-reindexed].."% "..dms[split[4-reindexed]])
-					elseif cmd == "y" then plc[split[4-reindexed]] = split[3-reindexed]
-					elseif cmd == "z" then dms[split[4-reindexed]] = split[3-reindexed] end
+					elseif cmd == "y" then
+						local inx = split[3-reindexed]
+						local loc = split[4-reindexed]
+						for q=5-reindexed,#split do loc = loc.." "..split[q] end
+						plc[inx] = loc
+					elseif cmd == "z" then
+						local inx = split[3-reindexed]
+						local loc = split[4-reindexed]
+						for q=5-reindexed,#split do loc = loc.." "..split[q] end
+						dms[inx] = loc
+					end
 					l = f:read("*l")
 				else l = nil end
 			end
@@ -1053,6 +1063,7 @@ return
 
 							newl:checkCapital(parent)
 							newl:checkRuler(parent, true)
+							parent.writeMap = true
 							parent.thisWorld.mapChanged = true
 
 							nc.subregions = nil
@@ -1832,7 +1843,7 @@ return
 					if datin:lower() == "b" then _REVIEWING = false end
 				end
 			end,
-			
+
 			constructNumber = function(self, n, bitwise)
 				nOut = 0
 				for i=1,#n do
@@ -1841,7 +1852,7 @@ return
 				end
 				return nOut
 			end,
-			
+
 			deconstructNumber = function(self, n, bytes)
 				if bytes then
 					local bytesOut = {}
@@ -2178,7 +2189,7 @@ return
 						end
 
 						cp:makename(self, 3)
-						if _DEBUG then cp:setPop(self, 100) else cp:setPop(self, 300) end
+						cp:setPop(self, _DEBUG and 100 or 300)
 
 						self.final[cp.name] = cp
 					end
@@ -2733,7 +2744,11 @@ return
 					if rCount > lim and c2.regions[r] then
 						local rn = c2.regions[r]
 
-						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name and not c2.people[i].isRuler then c1:add(self, c2.people[i]) end end
+						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name then
+							c2.people[i].region = nil
+							c2.people[i].city = nil
+							if not c2.people[i].isRuler then c1:add(self, c2.people[i]) end
+						end end
 
 						c1.regions[rn.name] = rn
 						c2.regions[rn.name] = nil
@@ -2961,7 +2976,11 @@ return
 				if not self.tiffDict[str] then self.tiffNextCode = self.tiffNextCode+1 end
 				return self.tiffDict[str] or self.tiffNextCode
 			end,
-			
+
+			tiffFormat = function(self, arr, off, num, abs)
+				for i=1,4 do if abs then arr[#arr-off+i-1] = num[i] else arr[off+i-1] = num[i] end end
+			end,
+
 			tiffInitialize = function(self)
 				self.tiffBitness = 9
 				self.tiffDict = {}
@@ -2969,7 +2988,7 @@ return
 				self.tiffNextCode = 257
 				return true
 			end,
-			
+
 			tiffOut = function(self, label, data, w, h)
 				local omega = ""
 				local strip = 1
@@ -3007,13 +3026,11 @@ return
 					local iStrip = strips[i]
 					local stripCompressed = {}
 					self:tiffInitialize()
-					self:tiffWrite(stripCompressed, 256)
-					bitsWritten = bitsWritten+self.tiffBitness
+					bitsWritten = bitsWritten+self:tiffWrite(stripCompressed, 256)
 					for i=1,#iStrip do
 						local K = iStrip[i]
 						if self.tiffDict[omega..K] then omega = omega..K else
-							self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega))
-							bitsWritten = bitsWritten+self.tiffBitness
+							bitsWritten = bitsWritten+self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega))
 							local code = self:tiffCodeFromString(omega..K)
 							self.tiffDict[omega..K] = code
 							if code >= 510 then self.tiffBitness = 10 end
@@ -3021,43 +3038,37 @@ return
 							if code >= 2046 then self.tiffBitness = 12 end
 							if code >= 4094 then return self:tiffInitialize() end
 							omega = K
-							if self.tiffNextCode == 4094 then self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega), 12) bitsWritten = bitsWritten+self.tiffBitness end
+							if self.tiffNextCode == 4094 then bitsWritten = bitsWritten+self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega), 12) end
 						end
 					end
-					self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega))
-					bitsWritten = bitsWritten+self.tiffBitness
-					self:tiffWrite(stripCompressed, 257)
-					bitsWritten = bitsWritten+self.tiffBitness
+					bitsWritten = bitsWritten+self:tiffWrite(stripCompressed, self:tiffCodeFromString(omega))
+					bitsWritten = bitsWritten+self:tiffWrite(stripCompressed, 257)
 					for i=1,8-math.fmod(bitsWritten, 8) do table.insert(stripCompressed, 0) end
 					table.insert(compressedStrips, stripCompressed)
 					local byteCount = self:deconstructNumber(#stripCompressed/8, true)
 					for i=1,4 do table.insert(tiffHeader, byteCount[i] or 0x00) end
 				end
-				
+
 				local fd = io.open(label..".tiff", "w+b")
 				for i=1,4-math.fmod(#tiffHeader, 4) do table.insert(tiffHeader, 0x00) end
 				local offOffset = #tiffHeader
-				local stripOffsets = self:deconstructNumber(offOffset, true)
-				for i=1,4 do tiffIFD[#tiffIFD-20+i] = stripOffsets[i] or 0x00 end
+				self:tiffFormat(tiffHeader, 19, self:deconstructNumber(offOffset, true), false)
 				for i=1,#compressedStrips do for j=1,4 do table.insert(tiffHeader, 0x00) end end
 				local totalOffset = #tiffHeader+#tiffIFD
 				totalOffset = totalOffset+(4-math.fmod(totalOffset, 4))
 				for i=1,#compressedStrips do
-					local stripOffset = self:deconstructNumber(totalOffset, true)
-					for j=1,4 do tiffHeader[offOffset+j+((i-1)*4)] = stripOffset[j] or 0x00 end
-					local adjust = 8-math.fmod(#compressedStrips[i], 8)
+					self:tiffFormat(tiffHeader, offOffset+((i-1)*4), self:deconstructNumber(totalOffset, true), true)
+					local adjust = 16-math.fmod(#compressedStrips[i], 16)
 					totalOffset = totalOffset+((#compressedStrips[i]+adjust)/8)
-					totalOffset = totalOffset+(8-math.fmod(totalOffset, 8))
+					totalOffset = totalOffset+(16-math.fmod(totalOffset, 16))
 				end
 				local firstOff = self:deconstructNumber(#tiffHeader)
-				for i=1,4 do tiffHeader[i+4] = firstOff[i] end
+				self:tiffFormat(tiffHeader, 5, firstOff, true)
 				for i=1,#tiffHeader do fd:write(string.char(tiffHeader[i] or 0x00)) end
 				local stripCount = self:deconstructNumber(#compressedStrips, true)
-				for i=1,4 do
-					tiffIFD[#tiffIFD-12+i] = stripCount[i] or 0x00
-					tiffIFD[#tiffIFD-24+i] = stripCount[i] or 0x00
-				end
-				for i=1,#tiffIFD do fd:write(string.char(tiffIFD[i])) end
+				self:tiffFormat(tiffIFD, 11, stripCount, false)
+				self:tiffFormat(tiffIFD, 23, stripCount, false)
+				for i=1,#tiffIFD do fd:write(string.char(tiffIFD[i] or 0x00)) end
 				for i=1,#compressedStrips do for j=1,#compressedStrips[i],8 do
 					local tmpArr = {}
 					for k=1,8 do table.insert(tmpArr, compressedStrips[i][j+k-1] or 0x00) end
@@ -3067,13 +3078,14 @@ return
 				fd:close()
 				fd = nil
 			end,
-			
+
 			tiffWrite = function(self, stream, code, bitness)
 				if not bitness then bitness = self.tiffBitness end
 				local str = self:deconstructNumber(code, false)
 				local strTmp = #str
 				for i=strTmp,bitness do table.insert(str, 1, 0) end
 				for i=1,#str do table.insert(stream, str[i]) end
+				return bitness
 			end
 		}
 

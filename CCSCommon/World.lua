@@ -32,8 +32,8 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin = 180
-				local rMax = 225
+				local rMin = _DEBUG and 50 or 180
+				local rMax = _DEBUG and 75 or 225
 				self.planetR = math.floor(math.random(rMin, rMax))
 				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
 				local rdone = 0
@@ -179,7 +179,7 @@ return
 						if self.planet[xyz].land and self.planet[xyz].country ~= "" and not self.planet[xyz].countrySet and not self.planet[xyz].countryDone then
 							for j=1,#self.planet[xyz].neighbors do
 								local neighbor = self.planet[xyz].neighbors[j]
-								if self.planet[neighbor].land and self.planet[neighbor].country == "" then
+								if self.planet[neighbor].land and self.planet[neighbor].continent == self.planet[xyz].continent and self.planet[neighbor].country == "" then
 									nDefined = false
 									self.planet[neighbor].country = self.planet[xyz].country
 									self.planet[neighbor].countrySet = true
@@ -452,6 +452,8 @@ return
 								if self.stretched[i+1][accCol][5] ~= self.stretched[i][accCol][5] then
 									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
 									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
 								elseif self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
 									extended[i*2][(cCol*2)-1] = {0, 0, 0}
 									extended[i*2][cCol*2] = {0, 0, 0}
@@ -461,6 +463,8 @@ return
 								if self.stretched[i-1][accCol][5] ~= self.stretched[i][accCol][5] then
 									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
 									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
 									extended[(i*2)-1][cCol*2] = {0, 0, 0}
@@ -470,6 +474,8 @@ return
 								if self.stretched[i][accCol+1][5] ~= self.stretched[i][accCol][5] then
 									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
 									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
+									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
+									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
 								elseif self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][cCol*2] = {0, 0, 0}
 									extended[i*2][cCol*2] = {0, 0, 0}
@@ -479,6 +485,8 @@ return
 								if self.stretched[i][accCol-1][5] ~= self.stretched[i][accCol][5] then
 									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
 									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
+									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
+									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
 									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
 									extended[i*2][(cCol*2)-1] = {0, 0, 0}
