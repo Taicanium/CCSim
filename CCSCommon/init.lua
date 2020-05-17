@@ -2479,7 +2479,7 @@ return
 						end
 						UI:printf("\nEnter a number of years to continue, or:")
 						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
-						UI:printf("G to review family tree and genealogical data.")
+						UI:printf("G to review family links and genealogical data.")
 						if _DEBUG then UI:printf("L to compare the languages of this world.") end
 						UI:printf("R to record the event data at this point.")
 						UI:printf("Q to exit.")

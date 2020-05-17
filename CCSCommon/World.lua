@@ -406,6 +406,8 @@ return
 				local top = 2
 				local bottom = 9
 				local lineLen = 2
+				local zeroRGB = {0, 0, 0}
+				local maxRGB = {255, 255, 255}
 				local colorKeys = parent:getAlphabetical(self.colors)
 				for i=1,#colorKeys do
 					local cA = colorKeys[i]
@@ -443,7 +445,7 @@ return
 					local cCol = 1
 					local accCol = borderCol
 					while cCol <= self.planetC do
-						if self.stretched[i][accCol] then
+						if self.stretched[i] and self.stretched[i][accCol] then
 							extended[(i*2)-1][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[(i*2)-1][cCol*2] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
 							extended[i*2][(cCol*2)-1] = {self.stretched[i][accCol][1], self.stretched[i][accCol][2], self.stretched[i][accCol][3]}
@@ -455,8 +457,8 @@ return
 									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
 									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
 								elseif self.stretched[i+1][accCol][4] ~= self.stretched[i][accCol][4] then
-									extended[i*2][(cCol*2)-1] = {0, 0, 0}
-									extended[i*2][cCol*2] = {0, 0, 0}
+									extended[i*2][(cCol*2)-1] = zeroRGB
+									extended[i*2][cCol*2] = zeroRGB
 								end
 							end
 							if self.stretched[i-1] and self.stretched[i-1][accCol] then
@@ -466,8 +468,8 @@ return
 									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
 									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i-1][accCol][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-									extended[(i*2)-1][cCol*2] = {0, 0, 0}
+									extended[(i*2)-1][(cCol*2)-1] = zeroRGB
+									extended[(i*2)-1][cCol*2] = zeroRGB
 								end
 							end
 							if self.stretched[i][accCol+1] then
@@ -477,8 +479,8 @@ return
 									extended[(i*2)-1][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][(cCol*2)-1]
 									extended[i*2][(cCol*2)-1] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][(cCol*2)-1]
 								elseif self.stretched[i][accCol+1][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][cCol*2] = {0, 0, 0}
-									extended[i*2][cCol*2] = {0, 0, 0}
+									extended[(i*2)-1][cCol*2] = zeroRGB
+									extended[i*2][cCol*2] = zeroRGB
 								end
 							end
 							if self.stretched[i][accCol-1] then
@@ -488,25 +490,25 @@ return
 									extended[(i*2)-1][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[(i*2)-1][cCol*2]
 									extended[i*2][cCol*2] = self.colors["\x01"..self.stretched[i][accCol][5]] or extended[i*2][cCol*2]
 								elseif self.stretched[i][accCol-1][4] ~= self.stretched[i][accCol][4] then
-									extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-									extended[i*2][(cCol*2)-1] = {0, 0, 0}
+									extended[(i*2)-1][(cCol*2)-1] = zeroRGB
+									extended[i*2][(cCol*2)-1] = zeroRGB
 								end
 							end
 						else
-							extended[(i*2)-1][(cCol*2)-1] = {0, 0, 0}
-							extended[(i*2)-1][cCol*2] = {0, 0, 0}
-							extended[i*2][(cCol*2)-1] = {0, 0, 0}
-							extended[i*2][cCol*2] = {0, 0, 0}
+							extended[(i*2)-1][(cCol*2)-1] = zeroRGB
+							extended[(i*2)-1][cCol*2] = zeroRGB
+							extended[i*2][(cCol*2)-1] = zeroRGB
+							extended[i*2][cCol*2] = zeroRGB
 						end
 						cCol = cCol+1
 						accCol = accCol+1
 						if accCol > self.planetC then accCol = 1 end
 					end
 					for j=self.planetC+1,self.planetC+colSum do
-						extended[(i*2)-1][(j*2)-1] = {0, 0, 0}
-						extended[(i*2)-1][j*2] = {0, 0, 0}
-						extended[i*2][(j*2)-1] = {0, 0, 0}
-						extended[i*2][j*2] = {0, 0, 0}
+						extended[(i*2)-1][(j*2)-1] = zeroRGB
+						extended[(i*2)-1][j*2] = zeroRGB
+						extended[i*2][(j*2)-1] = zeroRGB
+						extended[i*2][j*2] = zeroRGB
 					end
 				end
 
@@ -540,23 +542,23 @@ return
 								-- Our vertical line height is 8 pixels, and each glyph is 6x6 pixels with the first column always empty. With each character's first and last columns overlapping, this leaves two pixels of padding between characters and three pixels between lines (we will later shift ten pixels down when moving lines).
 								for l=top+1,bottom-1 do -- Top and bottom will always be 8 pixels apart.
 									for m=margin,margin+5 do
-										if glyph[letterRow][letterColumn] == 1 then
-											extended[(l*2)-1][(m*2)-1] = {255, 255, 255} -- White.
-											extended[(l*2)-1][m*2] = {255, 255, 255}
-											extended[l*2][(m*2)-1] = {255, 255, 255}
-											extended[l*2][m*2] = {255, 255, 255}
-										else
-											extended[(l*2)-1][(m*2)-1] = {0, 0, 0} -- Black.
-											extended[(l*2)-1][m*2] = {0, 0, 0}
-											extended[l*2][(m*2)-1] = {0, 0, 0}
-											extended[l*2][m*2] = {0, 0, 0}
+										if glyph[letterRow][letterColumn] == 1 then -- White.
+											extended[(l*2)-1][(m*2)-1] = maxRGB
+											extended[(l*2)-1][m*2] = maxRGB
+											extended[l*2][(m*2)-1] = maxRGB
+											extended[l*2][m*2] = maxRGB
+										else -- Black.
+											extended[(l*2)-1][(m*2)-1] = zeroRGB
+											extended[(l*2)-1][m*2] = zeroRGB
+											extended[l*2][(m*2)-1] = zeroRGB
+											extended[l*2][m*2] = zeroRGB
 										end
 										letterColumn = letterColumn+1 -- Move to the right!
 									end
 									letterColumn = 1 -- Move back to the far left, and then...
 									letterRow = letterRow+1 -- Move down. Quite like a CR+LF.
 								end
-								margin = margin+6 -- Move to the last pixel of the last character. With our one pixel of padding on all sides, this will leave the appropriate space between letters.
+								margin = margin+6 -- Move to the last column of this character. With our one pixel of padding on all sides, this will leave the appropriate space between letters.
 							end
 							margin = colMargin -- Just like when drawing out a single glyph matrix, here is our CR+LF for the entire line. Revert to the start of the line...
 							top = top+10
@@ -579,15 +581,15 @@ return
 								for l=top+1,bottom-1 do
 									for m=margin,margin+5 do
 										if glyph[letterRow][letterColumn] == 1 then
-											extended[(l*2)-1][(m*2)-1] = {255, 255, 255}
-											extended[(l*2)-1][m*2] = {255, 255, 255}
-											extended[l*2][(m*2)-1] = {255, 255, 255}
-											extended[l*2][m*2] = {255, 255, 255}
+											extended[(l*2)-1][(m*2)-1] = maxRGB
+											extended[(l*2)-1][m*2] = maxRGB
+											extended[l*2][(m*2)-1] = maxRGB
+											extended[l*2][m*2] = maxRGB
 										else
-											extended[(l*2)-1][(m*2)-1] = {0, 0, 0}
-											extended[(l*2)-1][m*2] = {0, 0, 0}
-											extended[l*2][(m*2)-1] = {0, 0, 0}
-											extended[l*2][m*2] = {0, 0, 0}
+											extended[(l*2)-1][(m*2)-1] = zeroRGB
+											extended[(l*2)-1][m*2] = zeroRGB
+											extended[l*2][(m*2)-1] = zeroRGB
+											extended[l*2][m*2] = zeroRGB
 										end
 										letterColumn = letterColumn+1
 									end
@@ -601,7 +603,7 @@ return
 							bottom = bottom+10
 						end
 					end
-					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire column...
+					margin = margin+20+(tColWidths[i]*6) -- Shift over an entire text column...
 					top = 2
 					bottom = 9 -- And begin at the top left anew.
 				end
