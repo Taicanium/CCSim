@@ -24,7 +24,7 @@ while _RUNNING do
 	UI:printp("\n > ")
 
 	local datin = UI:readl()
-	if datin == "1" then simNew() _RUNNING = false
+	if datin == "1" or datin == "" then simNew() _RUNNING = false
 	elseif datin == "2" then simReview()
 	elseif datin == "3" and _DEBUG then debugLine()
 	elseif datin:lower() == "q" then _RUNNING = false end

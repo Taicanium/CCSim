@@ -33,7 +33,10 @@ return
 					local op = parent:randomChoice(ops)
 					local doOp = {}
 					if op == "OMIT" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), " "}
-					elseif op == "REPLACE" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))}
+					elseif op == "REPLACE" then
+						local group = parent:randomChoice(self.repGroups)
+						local index = math.random(1, 2)
+						doOp = {group[index == 1 and 1 or 2], group[index == 1 and 2 or 1]}
 					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
 					local i = 1
 					while i <= #ENGLISH do
@@ -78,6 +81,10 @@ return
 				factor = factor/#ENGLISH
 				return factor
 			end,
+			
+			repGroups = {
+				{"o", "au"}, {"o", "ou"}, {"a", "e"}, {"u", "o"}, {"th", "t"}, {"th", "f"}, {"th", "s"}, {"ng", "n"}, {"b", "p"}, {"d", "t"}, {"sh", "s"}, {"sh", "th"}, {"v", "f"}, {"c", "g"}, {"z", "s"}, {"h", ""}, {"ch", "sh"},
+			},
 		}
 
 		Language.__index = Language

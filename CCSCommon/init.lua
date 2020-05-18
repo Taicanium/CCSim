@@ -1795,6 +1795,12 @@ return
 				local regs = {}
 				local testString = "The quick brown vixen and its master the mouse"
 				local wCount = 0
+				local screens = {{}}
+				local screenIndex = 1
+				local lnCount = 0
+				local lnCorrect = 0
+				local lastCountry = ""
+				local screen = screens[screenIndex]
 				local _REVIEWING = true
 
 				for x in testString:gmatch("%w+") do wCount = wCount+1 end
@@ -1810,37 +1816,53 @@ return
 					end
 				end
 
-				while _REVIEWING do
-					local lnCount = 0
-					UI:clear()
-					local lastCountry = ""
-					UI:printf(string.format("Translating the text \"%s.\"\n", testString))
-					for i=1,#cArr do if lnCount < getLineTolerance(2) then
-						local lang = cArr[i][2]
-						if lang then
-							if cArr[i][1] ~= lastCountry then
-								UI:printf(cArr[i][1])
-								lnCount = lnCount+1
-								lastCountry = cArr[i][1]
-							end
-							local outString = ""
-							local wIndex = 1
-							for x in testString:gmatch("%w+") do if lang.wordTable[x:lower()] then
-								if wIndex == 1 then
-									local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
-									outString = outString..initWord:gsub(" ", "")
-								else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
-								if wIndex < wCount then outString = outString.." " end
-								wIndex = wIndex+1
-							end end
-							UI:printf(string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString))
-							lnCount = lnCount+1
+				for i=1,#cArr do
+					local lang = cArr[i][2]
+					if lang then
+						if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(6)) or lnCount+lnCorrect >= getLineTolerance(6) then
+							lnCount = 0
+							lnCorrect = 0
+							lastCountry = ""
+							screenIndex = screenIndex+1
+							screens[screenIndex] = {}
+							screen = screens[screenIndex]
 						end
-					end end
+						if cArr[i][1] ~= lastCountry then
+							table.insert(screen, cArr[i][1])
+							lastCountry = cArr[i][1]
+							lnCorrect = lnCorrect+1
+						end
+						local outString = ""
+						local wIndex = 1
+						for x in testString:gmatch("%w+") do if lang.wordTable[x:lower()] then
+							if wIndex == 1 then
+								local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
+								outString = outString..initWord:gsub(" ", "")
+							else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
+							if wIndex < wCount then outString = outString.." " end
+							wIndex = wIndex+1
+						end end
+						if lnCount+lnCorrect < getLineTolerance(6) then table.insert(screen, string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString)) end
+						lnCount = lnCount+1
+					end
+				end
+				
+				screenIndex = 1
+
+				while _REVIEWING do
+					screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
+					screen = screens[screenIndex]
+					UI:clear()
+					UI:printf(string.format("Translating the text \"%s.\" (%d)\n", testString, #cArr))
+					for i=1,#screen do UI:printf(screen[i]) end
 					UI:printf("\nEnter B to return to the previous menu.")
+					UI:printf("Enter N to move to the next set of languages.")
+					UI:printf("Enter P to move to the previous set of languages.")
 					UI:printp(" > ")
 					local datin = UI:readl()
-					if datin:lower() == "b" then _REVIEWING = false end
+					if datin:lower() == "b" then _REVIEWING = false
+					elseif datin:lower() == "n" then screenIndex = screenIndex+1
+					elseif datin:lower() == "p" then screenIndex = screenIndex-1 end
 				end
 			end,
 
