@@ -7,7 +7,7 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.name = ""
+				o.name = tostring(math.random(0, math.pow(2, 20)-1))
 				o.wordTable = {}
 
 				return o
@@ -81,7 +81,7 @@ return
 				factor = factor/#ENGLISH
 				return factor
 			end,
-			
+
 			repGroups = {
 				{"o", "au"}, {"o", "ou"}, {"a", "e"}, {"u", "o"}, {"th", "t"}, {"th", "f"}, {"th", "s"}, {"ng", "n"}, {"b", "p"}, {"d", "t"}, {"sh", "s"}, {"sh", "th"}, {"v", "f"}, {"c", "g"}, {"z", "s"}, {"h", ""}, {"ch", "sh"},
 			},

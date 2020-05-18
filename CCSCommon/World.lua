@@ -767,6 +767,7 @@ return
 
 				local t2 = _time()
 				if math.fmod(parent.years, 20) == 0 then collectgarbage("collect") end
+				if _DEBUG and math.fmod(parent.years, 100) == 0 then parent:compLangs(true) end
 				local t3 = _time()
 				if _DEBUG then
 					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end

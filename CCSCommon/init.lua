@@ -1,10 +1,6 @@
-if not loadstring then loadstring = load end
-if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim will not function without it!") return nil end
-
-table.unpack = function(t, n)
-	if not n then return table.unpack(t, 1)
-	elseif t[n] then return t[n], table.unpack(t, n+1) end
-	return t
+if _DEBUG then
+	if not loadstring then loadstring = load end
+	if not debug or not debug.upvaluejoin or not debug.getupvalue or not debug.setupvalue or not loadstring then error("Could not locate the Lua debug library! CCSim debug functions will not operate without it!") return nil end
 end
 
 table.contains = function(t, n)
@@ -360,7 +356,7 @@ return
 				datin = UI:readl()
 				done = true
 				CCSCommon.stamp = tostring(math.floor(_stamp()))
-				CCSCommon:checkDirectory(CCSCommon.stamp)
+				CCSCommon:checkDirectory(".", CCSCommon.stamp)
 
 				if datin:lower() == "random" then
 					UI:printf("\nDefining countries...")
@@ -387,7 +383,6 @@ return
 				end
 			end
 
-			CCSCommon.thisWorld:constructVoxelPlanet(CCSCommon)
 			CCSCommon:loop()
 		end
 
@@ -482,9 +477,11 @@ return
 			local bottom = 7
 			local pad = 8
 			local width = 2
+			local zeroRGB = {0, 0, 0}
+			local maxRGB = {255, 255, 255}
 			for j=1,pad do table.insert(bmp, {}) end
 			for j, k in pairs(CCSCommon.glyphs) do
-				for l=1,pad do for m=1,pad do table.insert(bmp[l], {0, 0, 0}) end end
+				for l=1,pad do for m=1,pad do table.insert(bmp[l], zeroRGB) end end
 				width = width+(pad-2)
 			end
 			local margin = 1
@@ -501,8 +498,8 @@ return
 				local letterColumn = 1
 				for l=margin,margin+5 do
 					for m=top,bottom do
-						if k[letterColumn][letterRow] == 1 then bmp[m][l] = {255, 255, 255}
-						else bmp[m][l] = {0, 0, 0} end
+						if k[letterColumn][letterRow] == 1 then bmp[m][l] = maxRGB
+						else bmp[m][l] = zeroRGB end
 						letterColumn = letterColumn+1
 					end
 					letterColumn = 1
@@ -584,7 +581,7 @@ return
 					end
 				},
 				{
-					name="Annexation",
+					name="Annex",
 					chance=3,
 					target=nil,
 					args=2,
@@ -595,50 +592,48 @@ return
 						for i=1,#c2.rulers do if c2.rulers[i].Country == c1.name then patron = true end end
 						for i=1,#c1.rulers do if c1.rulers[i].Country == c2.name then patron = true end end
 
-						if not patron then
-							if c1.majority == c2.majority then
-								if c1.relations[c2.name] and c1.relations[c2.name] > 85 then
-									c1:event(parent, "Annexed "..c2.name)
-									c2:event(parent, "Annexed by "..c1.name)
+						if not patron and c1.majority == c2.majority and c1.relations[c2.name] and c1.relations[c2.name] > 85 then
+							parent:setLanguage(c1, newr, parent:getLanguage(c2.demonym, c2))
 
-									local newr = Region:new()
-									newr.name = c2.name
+							c1:event(parent, "Annexed "..c2.name)
+							c2:event(parent, "Annexed by "..c1.name)
 
-									for i=#c2.people,1,-1 do
-										c2.people[i].region = newr
-										c2.people[i].nationality = c1.name
-										c2.people[i].military = false
-										c2.people[i].isRuler = false
-										c2.people[i].level = 2
-										c2.people[i].title = "Citizen"
-										c2.people[i].parentRuler = false
-										table.insert(c1.people, table.remove(c2.people, i))
-									end
+							local newr = Region:new()
+							newr.name = c2.name
 
-									c2.people = nil
+							for i=#c2.people,1,-1 do
+								c2.people[i].region = newr
+								c2.people[i].nationality = c1.name
+								c2.people[i].military = false
+								c2.people[i].isRuler = false
+								c2.people[i].level = 2
+								c2.people[i].title = "Citizen"
+								c2.people[i].parentRuler = false
+								table.insert(c1.people, table.remove(c2.people, i))
+							end
 
-									for i, j in pairs(c2.regions) do
-										table.insert(newr.subregions, j)
-										for k, l in pairs(j.cities) do newr.cities[k] = l end
-									end
+							c2.people = nil
 
-									for i=1,#parent.thisWorld.planetdefined do
-										local xyz = parent.thisWorld.planetdefined[i]
-										if parent.thisWorld.planet[xyz].country == c2.name then
-											parent.thisWorld.planet[xyz].country = c1.name
-											parent.thisWorld.planet[xyz].region = c2.name
-											table.insert(c1.nodes, xyz)
-											table.insert(newr.nodes, xyz)
-										end
-									end
+							for i, j in pairs(c2.regions) do
+								table.insert(newr.subregions, j)
+								for k, l in pairs(j.cities) do newr.cities[k] = l end
+							end
 
-									c1.stability = math.max(1, c1.stability-8)
-									if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
-
-									c1.regions[newr.name] = newr
-									parent.thisWorld:delete(parent, c2)
+							for i=1,#parent.thisWorld.planetdefined do
+								local xyz = parent.thisWorld.planetdefined[i]
+								if parent.thisWorld.planet[xyz].country == c2.name then
+									parent.thisWorld.planet[xyz].country = c1.name
+									parent.thisWorld.planet[xyz].region = c2.name
+									table.insert(c1.nodes, xyz)
+									table.insert(newr.nodes, xyz)
 								end
 							end
+
+							c1.stability = math.max(1, c1.stability-8)
+							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
+
+							c1.regions[newr.name] = newr
+							parent.thisWorld:delete(parent, c2)
 						end
 
 						return -1
@@ -842,10 +837,13 @@ return
 					args=2,
 					inverse=true,
 					performEvent=function(self, parent, c1, c2, r)
+						if not c1 or not c2 or not c1.alliances or not c2.alliances then return -1 end
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name or r then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name or r then return -1 end end
 
 						if r or c1.relations[c2.name] and c1.relations[c2.name] < 21 and c1.strength > c2.strength then
+							parent:setLanguage(c1, newr, parent:getLanguage(c2.demonym, c2))
+
 							if not r then
 								c1:event(parent, "Conquered "..c2.name)
 								c2:event(parent, "Conquered by "..c1.name)
@@ -986,6 +984,8 @@ return
 									parent.final[i] = nil
 								end
 							end
+
+							parent:setLanguage(newl, nil, parent:getLanguage(c.demonym.." ("..parent:demonym(newl.name)..")", c))
 
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
@@ -1748,17 +1748,17 @@ return
 				for y=h,1,-1 do -- Bottom-to-top, as required by the BMP format.
 					local btWritten = 0
 					for x=1,w do
-						if data[y] and data[y][x] then
-							if data[y][x][3] then bf:write(string.char(data[y][x][3] > -1 and data[y][x][3] < 256 and data[y][x][3] or 255)) end
-							if data[y][x][2] then bf:write(string.char(data[y][x][2] > -1 and data[y][x][2] < 256 and data[y][x][2] or 255)) end
-							if data[y][x][1] then bf:write(string.char(data[y][x][1] > -1 and data[y][x][1] < 256 and data[y][x][1] or 255)) end
+						if data[y] and data[y][x] and data[y][x][3] and data[y][x][2] and data[y][x][1] then
+							bf:write(string.char(data[y][x][3]))
+							bf:write(string.char(data[y][x][2]))
+							bf:write(string.char(data[y][x][1]))
 						else
 							bf:write(string.char(0))
 							bf:write(string.char(0))
 							bf:write(string.char(0))
 						end
-						btWritten = btWritten+3
 
+						btWritten = btWritten+3
 					end
 					while math.fmod(btWritten, 4) ~= 0 do
 						bf:write(string.char(0))
@@ -1777,20 +1777,19 @@ return
 				bmpArr = nil
 			end,
 
-			checkDirectory = function(self, str)
+			checkDirectory = function(self, str, dir)
 				local dirDotCmd = "dir "..str.." /b /ad"
 				if UI.clrcmd == "clear" then dirDotCmd = "dir -1 "..str end
-				local found = true
+				local found = false
 				local count = 0
 				for x in io.popen(dirDotCmd):lines() do
 					count = count+1
-					if x:lower():match("not found") then found = false end
+					if x:lower():match(dir) then found = true end
 				end
-				if count == 0 then found = false end
-				if not found then os.execute("mkdir "..str) end
+				if not found then os.execute("mkdir "..self:directory({str, dir})) end
 			end,
 
-			compLangs = function(self)
+			compLangs = function(self, writeOut)
 				local cArr = {}
 				local regs = {}
 				local testString = "The quick brown vixen and its master the mouse"
@@ -1819,14 +1818,14 @@ return
 				for i=1,#cArr do
 					local lang = cArr[i][2]
 					if lang then
-						if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(6)) or lnCount+lnCorrect >= getLineTolerance(6) then
+						if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(6)) or lnCount+lnCorrect >= getLineTolerance(6) then
 							lnCount = 0
 							lnCorrect = 0
 							lastCountry = ""
 							screenIndex = screenIndex+1
 							screens[screenIndex] = {}
 							screen = screens[screenIndex]
-						end
+						end end
 						if cArr[i][1] ~= lastCountry then
 							table.insert(screen, cArr[i][1])
 							lastCountry = cArr[i][1]
@@ -1842,27 +1841,37 @@ return
 							if wIndex < wCount then outString = outString.." " end
 							wIndex = wIndex+1
 						end end
-						if lnCount+lnCorrect < getLineTolerance(6) then table.insert(screen, string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString)) end
+						if writeOut or lnCount+lnCorrect < getLineTolerance(6) then table.insert(screen, string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString)) end
 						lnCount = lnCount+1
 					end
 				end
-				
+
 				screenIndex = 1
 
 				while _REVIEWING do
 					screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
 					screen = screens[screenIndex]
-					UI:clear()
-					UI:printf(string.format("Translating the text \"%s.\" (%d)\n", testString, #cArr))
-					for i=1,#screen do UI:printf(screen[i]) end
-					UI:printf("\nEnter B to return to the previous menu.")
-					UI:printf("Enter N to move to the next set of languages.")
-					UI:printf("Enter P to move to the previous set of languages.")
-					UI:printp(" > ")
-					local datin = UI:readl()
-					if datin:lower() == "b" then _REVIEWING = false
-					elseif datin:lower() == "n" then screenIndex = screenIndex+1
-					elseif datin:lower() == "p" then screenIndex = screenIndex-1 end
+					if writeOut then
+						local f = io.open(self:directory({self.stamp, "langs_"..self.years..".txt"}), "a+")
+						for i=1,#screen do f:write(screen[i].."\n") end
+						f:flush()
+						f:close()
+						f = nil
+						screenIndex = screenIndex+1
+						if screenIndex > #screens then _REVIEWING = false end
+					else
+						UI:clear()
+						UI:printf(string.format("Translating the text \"%s.\" (%d)\n", testString, #cArr))
+						for i=1,#screen do UI:printf(screen[i]) end
+						UI:printf("\nEnter B to return to the previous menu.")
+						UI:printf("Enter N to move to the next set of languages.")
+						UI:printf("Enter P to move to the previous set of languages.")
+						UI:printp(" > ")
+						local datin = UI:readl()
+						if datin:lower() == "b" then _REVIEWING = false
+						elseif datin:lower() == "n" then screenIndex = screenIndex+1
+						elseif datin:lower() == "p" then screenIndex = screenIndex-1 end
+					end
 				end
 			end,
 
@@ -2294,7 +2303,7 @@ return
 						local newLang = Language:new()
 						newLang:define(self)
 						self:setLanguage(nl, nil, newLang)
-					end
+					else self:setLanguage(nl, nil, nl.language) end
 
 					for i, j in pairs(nl.regions) do if not j.language then
 						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
@@ -2309,7 +2318,9 @@ return
 					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
 				end
 
-				return nil
+				local newLang = Language:new()
+				newLang:define(self)
+				return newLang
 			end,
 
 			getRulerString = function(self, data)
@@ -2364,9 +2375,11 @@ return
 				local cLimit = 16
 				local eLimit = 6
 
-				local mapDir = self:directory({self.stamp, "maps"})
-				self:checkDirectory(mapDir)
-				self.thisWorld:mapOutput(self, self:directory({mapDir, "initial"}))
+				self.thisWorld:constructVoxelPlanet(self)
+
+				local stampDir = self:directory({self.stamp})
+				self:checkDirectory(stampDir, "maps")
+				self.thisWorld:mapOutput(self, self:directory({stampDir, "maps", "initial"}))
 
 				collectgarbage("collect")
 
@@ -2713,27 +2726,21 @@ return
 			end,
 
 			nextGIndex = function(self)
-				local n = self.nextPerson
 				self.nextPerson = self.nextPerson+1
-				return n
+				return self.nextPerson-1
 			end,
 
 			ordinal = function(self, n)
-				local tmp = tonumber(n)
-				if not tmp then return n end
+				if not tonumber(n) then return n end
 				local fin = ""
 
 				local ts = tostring(n)
-				if ts:sub(ts:len(), ts:len()) == "1" then
-					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
-					else fin = ts.."st" end
-				elseif ts:sub(ts:len(), ts:len()) == "2" then
-					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
-					else fin = ts.."nd" end
-				elseif ts:sub(ts:len(), ts:len()) == "3" then
-					if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th"
-					else fin = ts.."rd" end
-				else fin = ts.."th" end
+				if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th" else
+					if ts:sub(ts:len(), ts:len()) == "1" then fin = ts.."st"
+					elseif ts:sub(ts:len(), ts:len()) == "2" then fin = ts.."nd"
+					elseif ts:sub(ts:len(), ts:len()) == "3" then fin = ts.."rd"
+					else fin = ts.."th" end
+				end
 
 				return fin
 			end,
