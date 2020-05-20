@@ -386,10 +386,6 @@ return
 						self.city = nil
 					end
 					if self.region and self.region.cities and not self.city then self.city = parent:randomChoice(self.region.cities) end
-					if self.spouse then
-						self.spouse.region = self.region
-						self.spouse.city = self.city
-					end
 				end
 
 				if self.region and self.region.cities then
@@ -399,6 +395,10 @@ return
 				if self.city then
 					self.city.population = self.city.population+1
 					self.deathplace = self.city.name..", "..self.deathplace
+					if self.spouse then
+						self.spouse.region = self.region
+						self.spouse.city = self.city
+					end
 				end
 
 				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region.name)..")", nl) end

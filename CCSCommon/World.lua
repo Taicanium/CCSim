@@ -77,21 +77,18 @@ return
 							if yi < 1 then yi = yi+#self.stretched[xi] end
 							if yi > #self.stretched[xi] then yi = yi-#self.stretched[xi] end
 							local found = false
-							for m=1,#self.planet[xyz].neighbors do if not found then
-								if self.planet[xyz].neighbors[m] == self.stretched[xi][yi][6] then found = true end
-							end end
+							for m=1,#self.planet[xyz].neighbors do if not found and self.planet[xyz].neighbors[m] == self.stretched[xi][yi][6] then found = true end end
 							if not found then table.insert(self.planet[xyz].neighbors, self.stretched[xi][yi][6]) end
 						end end end end
 					end
 				end
 
 				collectgarbage("collect")
-
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
 
 				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
-				local continents = math.random(5, 9)
+				local continents = math.random(5, 8)
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
@@ -119,21 +116,17 @@ return
 						xyz = freeNodes[node]
 					end
 
-					for neighbor=1,#self.planet[xyz].neighbors do
-						if math.random(1, 35) == math.random(1, 35) then
-							local nxyz = self.planet[xyz].neighbors[neighbor]
-							if not self.planet[nxyz].land then
-								self.planet[nxyz].continent = self.planet[xyz].continent
-								self.planet[nxyz].land = true
-								doneLand = doneLand+1
-								self.planet[nxyz].waterNeighbors = false
-								for i, j in pairs(self.planet[nxyz].neighbors) do
-									if not self.planet[j].land then self.planet[nxyz].waterNeighbors = true end
-								end
-								if self.planet[nxyz].waterNeighbors then table.insert(freeNodes, nxyz) end
-							end
+					for neighbor=1,#self.planet[xyz].neighbors do if math.random(1, 35) == math.random(1, 35) then
+						local nxyz = self.planet[xyz].neighbors[neighbor]
+						if not self.planet[nxyz].land then
+							self.planet[nxyz].continent = self.planet[xyz].continent
+							self.planet[nxyz].land = true
+							doneLand = doneLand+1
+							self.planet[nxyz].waterNeighbors = false
+							for i, j in pairs(self.planet[nxyz].neighbors) do if not self.planet[j].land then self.planet[nxyz].waterNeighbors = true end end
+							if self.planet[nxyz].waterNeighbors then table.insert(freeNodes, nxyz) end
 						end
-					end
+					end end
 
 					self.planet[xyz].waterNeighbors = false
 					for neighbor=1,#self.planet[xyz].neighbors do
@@ -141,11 +134,10 @@ return
 						if not self.planet[nxyz].land then self.planet[xyz].waterNeighbors = true end
 					end
 
-					if math.fmod(doneLand, 100) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
+					if math.fmod(doneLand, 500) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
 				end
 
 				parent:deepnil(freeNodes)
-
 				collectgarbage("collect")
 
 				UI:printf("Rooting countries...")
@@ -349,8 +341,8 @@ return
 									end
 									if cFound then
 										-- We cheat here a little bit to display continent names and outline colors on the map legend.
-										-- Treat them as countries, but with no ruler string, and with a separate color palette that isn't tied to the one for actual countries. Also, place a hidden character at the beginning of their index key that sorts them at the top of an alphabetic list.
-										-- We will also assign a similar hidden character to each country.
+										-- Treat them as countries with no ruler string. Also, place a non-printing character at the beginning of their index key that sorts them at the top of an alphabetic list.
+										-- We will also assign a similar hidden character to each country, specifically \x02 which will sort them immediately following the continents.
 										self.cTriplets["\x01"..node.continent] = {r, g, b}
 									end
 								end
@@ -754,14 +746,11 @@ return
 				local t1 = _time()-t0
 
 				if parent.years > parent.startyear+1 then
-					if _DEBUG then parent.popLimit = 250
-					else
+					if _DEBUG then parent.popLimit = 250 else
 						if t1 > 0.5 then
 							parent.popLimit = math.max(1000, math.floor(parent.popLimit-(50*(t1-0.5))))
 							if t1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
-						else
-							parent.popLimit = math.min(3000, math.ceil(parent.popLimit+(50*(0.5-t1))))
-						end
+						else parent.popLimit = math.min(3000, math.ceil(parent.popLimit+(50*(0.5-t1)))) end
 					end
 				end
 
