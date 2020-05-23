@@ -125,8 +125,10 @@ return
 				if self.gender == "M" then
 					nn.surname = self.surname
 					nn.ancName = self.ancName
-					self.region = self.spouse.region
-					self.city = self.spouse.city
+					self.region = self.spouse.region or self.region
+					self.city = self.spouse.city or self.city
+					self.spouse.region = self.region or self.spouse.region
+					self.spouse.city = self.city or self.spouse.city
 					nn.region = self.region
 					nn.city = self.city
 				else
@@ -134,6 +136,8 @@ return
 					nn.ancName = self.spouse.ancName
 					self.spouse.region = self.region
 					self.spouse.city = self.city
+					self.region = self.spouse.region or self.region
+					self.city = self.spouse.city or self.city
 					nn.region = self.region
 					nn.city = self.city
 				end
@@ -406,6 +410,10 @@ return
 				if self.isRuler then
 					self.region = nl.regions[nl.capitalregion] or self.region
 					self.city = self.region.cities[nl.capitalcity] or self.city
+					if self.spouse then
+						self.spouse.region = self.region
+						self.spouse.city = self.city
+					end
 				end
 				
 				if self.city then
