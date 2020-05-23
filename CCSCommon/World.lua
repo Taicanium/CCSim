@@ -116,22 +116,18 @@ return
 						xyz = freeNodes[node]
 					end
 
-					for neighbor=1,#self.planet[xyz].neighbors do if math.random(1, 35) == math.random(1, 35) then
-						local nxyz = self.planet[xyz].neighbors[neighbor]
+					if math.random(1, 12) == math.random(1, 12) then
+						self.planet[xyz].waterNeighbors = false
+						local nxyz = parent:randomChoice(self.planet[xyz].neighbors)
 						if not self.planet[nxyz].land then
 							self.planet[nxyz].continent = self.planet[xyz].continent
 							self.planet[nxyz].land = true
 							doneLand = doneLand+1
 							self.planet[nxyz].waterNeighbors = false
-							for i, j in pairs(self.planet[nxyz].neighbors) do if not self.planet[j].land then self.planet[nxyz].waterNeighbors = true end end
+							for i=1,#self.planet[nxyz].neighbors do self.planet[nxyz].waterNeighbors = self.planet[nxyz].waterNeighbors or not self.planet[self.planet[nxyz].neighbors[i]].land end
 							if self.planet[nxyz].waterNeighbors then table.insert(freeNodes, nxyz) end
 						end
-					end end
-
-					self.planet[xyz].waterNeighbors = false
-					for neighbor=1,#self.planet[xyz].neighbors do
-						local nxyz = self.planet[xyz].neighbors[neighbor]
-						if not self.planet[nxyz].land then self.planet[xyz].waterNeighbors = true end
+						for i=1,#self.planet[xyz].neighbors do self.planet[xyz].waterNeighbors = self.planet[xyz].waterNeighbors or not self.planet[self.planet[xyz].neighbors[i]].land end
 					end
 
 					if math.fmod(doneLand, 500) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
