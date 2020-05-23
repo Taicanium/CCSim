@@ -118,7 +118,7 @@ return
 
 					if math.random(1, 12) == math.random(1, 12) then
 						self.planet[xyz].waterNeighbors = false
-						local nxyz = parent:randomChoice(self.planet[xyz].neighbors)
+						local nxyz = self.planet[xyz].neighbors[math.random(1, #self.planet[xyz].neighbors)]
 						if not self.planet[nxyz].land then
 							self.planet[nxyz].continent = self.planet[xyz].continent
 							self.planet[nxyz].land = true
