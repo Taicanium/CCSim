@@ -125,9 +125,17 @@ return
 				if self.gender == "M" then
 					nn.surname = self.surname
 					nn.ancName = self.ancName
+					self.region = self.spouse.region
+					self.city = self.spouse.city
+					nn.region = self.region
+					nn.city = self.city
 				else
 					nn.surname = self.spouse.surname
 					nn.ancName = self.spouse.ancName
+					self.spouse.region = self.region
+					self.spouse.city = self.city
+					nn.region = self.region
+					nn.city = self.city
 				end
 
 				if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 and self.surname ~= self.spouse.surname then
@@ -377,8 +385,10 @@ return
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
 				if not self.ancName or self.ancName == "" then self.ancName = self.surname end
 
-				if math.random(1, self.age < 25 and 1000 or 1800) == 135 then self.city = nil end
-				if math.random(1, self.age < 25 and 2800 or 3400) == 435 then self.region = nil end
+				if self.age >= 14 then
+					if math.random(1, self.age < 25 and 1000 or 1800) == 135 then self.city = nil end
+					if math.random(1, self.age < 25 and 3000 or 5400) == 435 then self.region = nil end
+				end
 
 				if not self.region or not self.region.cities or not self.city then
 					if not self.region or not self.region.cities then
@@ -392,6 +402,12 @@ return
 					self.region.population = self.region.population+1
 					self.deathplace = self.region.name..", "..self.deathplace
 				end
+				
+				if self.isRuler then
+					self.region = nl.regions[nl.capitalregion] or self.region
+					self.city = self.region.cities[nl.capitalcity] or self.city
+				end
+				
 				if self.city then
 					self.city.population = self.city.population+1
 					self.deathplace = self.city.name..", "..self.deathplace
