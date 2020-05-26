@@ -2089,6 +2089,8 @@ return
 				of:flush()
 				of:close()
 				of = nil
+
+				if cursesstatus then curses.endwin() end
 			end,
 
 			fncopy = function(self, fn)

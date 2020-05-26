@@ -32,8 +32,8 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin = _DEBUG and 50 or 180
-				local rMax = _DEBUG and 75 or 225
+				local rMin = _DEBUG and 50 or 210
+				local rMax = _DEBUG and 75 or 265
 				self.planetR = math.floor(math.random(rMin, rMax))
 				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
 				local rdone = 0
@@ -43,19 +43,19 @@ return
 				for x=-self.planetR,self.planetR do
 					for y=-self.planetR,self.planetR do
 						local z = self.planetR
-						local mag = z/math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
+						local mag = self.planetR/math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
 						local xm = x*mag
 						local ym = y*mag
 						local zm = z*mag
 						if math.fmod(xm, 1) >= 0.501 then xm = math.ceil(xm) else xm = math.floor(xm) end
 						if math.fmod(ym, 1) >= 0.501 then ym = math.ceil(ym) else ym = math.floor(ym) end
 						if math.fmod(zm, 1) >= 0.501 then zm = math.ceil(zm) else zm = math.floor(zm) end
-						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
-						self.planet[self:getNodeFromCoords(xm, ym, zm)] = { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
-						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
-						self.planet[self:getNodeFromCoords(xm, zm, ym)] = { x=xm, y=zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
-						self.planet[self:getNodeFromCoords(-zm, xm, ym)] = { x=-zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
-						self.planet[self:getNodeFromCoords(zm, xm, ym)] = { x=zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = self.planet[self:getNodeFromCoords(xm, ym, -zm)] or { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, ym, zm)] = self.planet[self:getNodeFromCoords(xm, ym, zm)] or { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = self.planet[self:getNodeFromCoords(xm, -zm, ym)] or { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(xm, zm, ym)] = self.planet[self:getNodeFromCoords(xm, zm, ym)] or { x=xm, y=zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(-zm, xm, ym)] = self.planet[self:getNodeFromCoords(-zm, xm, ym)] or { x=-zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
+						self.planet[self:getNodeFromCoords(zm, xm, ym)] = self.planet[self:getNodeFromCoords(zm, xm, ym)] or { x=zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={} }
 						rdone = rdone+6
 					end
 					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
@@ -245,7 +245,7 @@ return
 			end,
 
 			getNodeFromCoords = function(self, x, y, z)
-				return ((x+self.planetR)*math.pow(self.planetR*2+1, 2))+((y+self.planetR)*(self.planetR*2+1))+(z+self.planetR)+1
+				return ((x+self.planetR)*math.pow(self.planetR*2+1, 2))+((y+self.planetR)*(self.planetR*2+1))+z
 			end,
 
 			mapOutput = function(self, parent, label)

@@ -107,11 +107,11 @@ return
 
 				if not self.spouse or not self.spouse.def then return nil end
 
-				if self.gender == "M" then if self.age < 14 or self.age > 65 then return nil end
-				elseif self.gender == "F" then if self.age < 14 or self.age > 55 then return nil end end
+				if self.gender == "M" then if self.age < 15 or self.age > 65 then return nil end
+				elseif self.gender == "F" then if self.age < 15 or self.age > 55 then return nil end end
 
-				if self.spouse.gender == "M" then if self.spouse.age < 14 or self.spouse.age > 65 then return nil end
-				elseif self.spouse.gender == "F" then if self.spouse.age < 14 or self.spouse.age > 55 then return nil end end
+				if self.spouse.gender == "M" then if self.spouse.age < 15 or self.spouse.age > 65 then return nil end
+				elseif self.spouse.gender == "F" then if self.spouse.age < 15 or self.spouse.age > 55 then return nil end end
 
 				local nn = Person:new()
 				local nFound = true
@@ -389,7 +389,7 @@ return
 				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
 				if not self.ancName or self.ancName == "" then self.ancName = self.surname end
 
-				if self.age >= 14 then
+				if self.age > 14 then
 					if math.random(1, self.age < 25 and 1000 or 1800) == 135 then self.city = nil end
 					if math.random(1, self.age < 25 and 3000 or 5400) == 435 then self.region = nil end
 				end
@@ -406,7 +406,7 @@ return
 					self.region.population = self.region.population+1
 					self.deathplace = self.region.name..", "..self.deathplace
 				end
-				
+
 				if self.isRuler then
 					self.region = nl.regions[nl.capitalregion] or self.region
 					self.city = self.region.cities[nl.capitalcity] or self.city
@@ -415,7 +415,7 @@ return
 						self.spouse.city = self.city
 					end
 				end
-				
+
 				if self.city then
 					self.city.population = self.city.population+1
 					self.deathplace = self.city.name..", "..self.deathplace
@@ -538,12 +538,12 @@ return
 					self.militaryTraining = self.militaryTraining+1
 					nl.strength = nl.strength+self.militaryTraining
 				else
-					if not military and self.age < 35 then
+					if not military and self.age > 14 and self.age < 35 then
 						if math.random(1, 250) < nl.milThreshold then
 							self.military = true
 							self.militaryTraining = 0
 						end
-					elseif self.age > 65 then self.military = false end
+					elseif self.age > 55 then self.military = false end
 				end
 
 				local lEth = parent:randomChoice(self.ethnicity, true)

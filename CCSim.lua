@@ -31,6 +31,4 @@ while _RUNNING do
 end
 
 CCSCommon = nil
-if cursesstatus then curses.endwin() end
-
 os.exit(0)
