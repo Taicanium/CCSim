@@ -91,16 +91,16 @@ return
 
 			borders = function(self, parent, other)
 				if not other or not other.nodes or type(other.nodes) ~= "table" then return 0 end
-				local selfWater = false
-				local otherWater = false
+				local selfWater = {}
+				local otherWater = {}
 
 				for i=1,#self.nodes do
 					local xyz = self.nodes[i]
 					if parent.thisWorld.planet[xyz].country == self.name then
-						if parent.thisWorld.planet[xyz].waterNeighbors then selfWater = true end
 						for j=1,#parent.thisWorld.planet[xyz].neighbors do
 							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].country == other.name or parent.thisWorld.planet[nxyz].region == other.name then return 1 end
+							if parent.thisWorld.planet[nxyz].land then if parent.thisWorld.planet[nxyz].country == other.name or parent.thisWorld.planet[nxyz].region == other.name then return 1 end
+							else selfWater[parent.thisWorld.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
@@ -108,15 +108,16 @@ return
 				for i=1,#other.nodes do
 					local xyz = other.nodes[i]
 					if parent.thisWorld.planet[xyz].country == other.name or parent.thisWorld.planet[xyz].region == other.name then
-						if parent.thisWorld.planet[xyz].waterNeighbors then otherWater = true end
 						for j=1,#parent.thisWorld.planet[xyz].neighbors do
 							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].country == self.name then return 1 end
+							if parent.thisWorld.planet[nxyz].land then if parent.thisWorld.planet[nxyz].country == self.name then return 1 end
+							else otherWater[parent.thisWorld.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
+				
+				for i, j in pairs(selfWater) do if otherWater[i] then return 1 end end
 
-				if selfWater and otherWater then return 1 end
 				return 0
 			end,
 

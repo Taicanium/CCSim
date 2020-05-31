@@ -1,7 +1,5 @@
 # Bugs
 
-Border checking scans for whether two countries or regions have respective coastlines (and thus whether they can reach other by water), but does not check whether the coastlines themselves are actually connected by water; that is, if the two countries or regions have coastlines on different bodies of water, it does not check if those bodies are themselves connected.
-
 # Possible Features
 
 Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
@@ -14,6 +12,6 @@ Store event data in a temporary data file the same way we now store genealogical
 
 # To-do
 
-I have been working on learning the TIFF format with the intention of replacing BMP maps with TIFF maps. TIFF is a much more compact (and compression-friendly) file format and doesn't appear too difficult to implement. However it is still something I need to become familiar with enough to code around.
+I have been working on learning the TIFF format with the intention of replacing BMP maps with TIFF maps. TIFF is a much more compact (and compression-friendly) file format and doesn't appear too difficult to implement. However it is still something I need to become familiar enough with to code around.
 
 The new family data output doesn't include native and spoken languages. Won't be too hard to add. Just need time to.

@@ -1115,7 +1115,7 @@ return
 							c2:setPop(parent, math.ceil(c2.population/1.4))
 
 							local rcount = 0
-							for q, b in pairs(c2.regions) do if b:borders(parent, c1) > 0 then rcount = rcount+1 end end
+							for q, b in pairs(c2.regions) do if b:borders(parent, c1) == 1 then rcount = rcount+1 end end
 							if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
 								local c = parent:randomChoice(c2.regions)
 								if reg then
@@ -1326,7 +1326,7 @@ return
 
 							if c2strength > c1strength+(c1strength/5) then
 								local rcount = 0
-								for q, b in pairs(c1.regions) do if b:borders(parent, c2) > 0 then rcount = rcount+1 end end
+								for q, b in pairs(c1.regions) do if b:borders(parent, c2) == 1 then rcount = rcount+1 end end
 								if rcount > 1 then
 									local reg = parent:randomChoice(c1.regions)
 									if reg then
