@@ -11,6 +11,7 @@ return
 				o.fromFile = false
 				o.gPop = 0
 				o.initialState = true
+				o.landNodes = {}
 				o.mapChanged = true
 				o.numCountries = 0
 				o.planet = {}
@@ -33,8 +34,8 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin = _DEBUG and 50 or 210
-				local rMax = _DEBUG and 75 or 265
+				local rMin = _DEBUG and 50 or 200
+				local rMax = _DEBUG and 75 or 250
 				self.planetR = math.floor(math.random(rMin, rMax))
 				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
 				local rdone = 0
@@ -51,12 +52,12 @@ return
 						if math.fmod(xm, 1) >= 0.501 then xm = math.ceil(xm) else xm = math.floor(xm) end
 						if math.fmod(ym, 1) >= 0.501 then ym = math.ceil(ym) else ym = math.floor(ym) end
 						if math.fmod(zm, 1) >= 0.501 then zm = math.ceil(zm) else zm = math.floor(zm) end
-						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = self.planet[self:getNodeFromCoords(xm, ym, -zm)] or { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
-						self.planet[self:getNodeFromCoords(xm, ym, zm)] = self.planet[self:getNodeFromCoords(xm, ym, zm)] or { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
-						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = self.planet[self:getNodeFromCoords(xm, -zm, ym)] or { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
-						self.planet[self:getNodeFromCoords(xm, zm, ym)] = self.planet[self:getNodeFromCoords(xm, zm, ym)] or { x=xm, y=zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
-						self.planet[self:getNodeFromCoords(-zm, xm, ym)] = self.planet[self:getNodeFromCoords(-zm, xm, ym)] or { x=-zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
-						self.planet[self:getNodeFromCoords(zm, xm, ym)] = self.planet[self:getNodeFromCoords(zm, xm, ym)] or { x=zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "" }
+						self.planet[self:getNodeFromCoords(xm, ym, -zm)] = self.planet[self:getNodeFromCoords(xm, ym, -zm)] or { x=xm, y=ym, z=-zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(xm, ym, zm)] = self.planet[self:getNodeFromCoords(xm, ym, zm)] or { x=xm, y=ym, z=zm, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(xm, -zm, ym)] = self.planet[self:getNodeFromCoords(xm, -zm, ym)] or { x=xm, y=-zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(xm, zm, ym)] = self.planet[self:getNodeFromCoords(xm, zm, ym)] or { x=xm, y=zm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(-zm, xm, ym)] = self.planet[self:getNodeFromCoords(-zm, xm, ym)] or { x=-zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(zm, xm, ym)] = self.planet[self:getNodeFromCoords(zm, xm, ym)] or { x=zm, y=xm, z=ym, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=true, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
 						rdone = rdone+6
 					end
 					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
@@ -89,24 +90,20 @@ return
 				local planetSize = #self.planetdefined
 
 				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
-				local continents = math.random(5, 8)
+				local continents = math.random(4, 8)
+				local doneLand = continents
 				local freeNodes = {}
 				for i=1,continents do
 					local located = true
 					local cSeed = parent:randomChoice(self.planetdefined)
-
-					if self.planet[cSeed].land then located = false end
-					while not located do
-						cSeed = parent:randomChoice(self.planetdefined)
-						located = true
-						if self.planet[cSeed].land then located = false end
-					end
+					while self.planet[cSeed].land do cSeed = parent:randomChoice(self.planetdefined) end
 
 					self.planet[cSeed].land = true
 					self.planet[cSeed].continent = parent:name(true, 3, 2)
 					table.insert(freeNodes, cSeed)
+					table.insert(self.landNodes, cSeed)
 				end
-				local doneLand = continents
+
 				while doneLand < maxLand do
 					local node = math.random(1, #freeNodes)
 					local xyz = freeNodes[node]
@@ -117,12 +114,13 @@ return
 						xyz = freeNodes[node]
 					end
 
-					if math.random(1, 12) == math.random(1, 12) then
+					if math.random(1, 6) == math.random(1, 4) then
 						self.planet[xyz].waterNeighbors = false
 						local nxyz = self.planet[xyz].neighbors[math.random(1, #self.planet[xyz].neighbors)]
 						if not self.planet[nxyz].land then
 							self.planet[nxyz].continent = self.planet[xyz].continent
 							self.planet[nxyz].land = true
+							table.insert(self.landNodes, nxyz)
 							doneLand = doneLand+1
 							self.planet[nxyz].waterNeighbors = false
 							for i=1,#self.planet[nxyz].neighbors do self.planet[nxyz].waterNeighbors = self.planet[nxyz].waterNeighbors or not self.planet[self.planet[nxyz].neighbors[i]].land end
@@ -131,42 +129,8 @@ return
 						for i=1,#self.planet[xyz].neighbors do self.planet[xyz].waterNeighbors = self.planet[xyz].waterNeighbors or not self.planet[self.planet[xyz].neighbors[i]].land end
 					end
 
-					if math.fmod(doneLand, 500) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
+					if math.fmod(doneLand, 1000) == 0 then UI:printl(string.format("%.2f%% done", (doneLand/maxLand)*100)) end
 				end
-				
-				UI:printf("Mapping bodies of water...")
-				local wNodes = 0
-				local wFinished = 0
-				for i=1,#self.planetdefined do if not self.planet[self.planetdefined[i]].land then wNodes = wNodes+1 end end
-				
-				for i=1,#self.planetdefined do if self.planet[self.planetdefined[i]].land then for j=1,#self.planet[self.planetdefined[i]].neighbors do
-					local nxyz = self.planet[self.planetdefined[i]].neighbors[j]
-					if not self.planet[nxyz].land and self.planet[nxyz].waterBody == "" then
-						self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 3, 2))
-						while self.waterBodies[self.planet[nxyz].waterBody] do self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 3, 2)) end
-						self.waterBodies[self.planet[nxyz].waterBody] = 1
-						wFinished = wFinished+1
-						local waterNodesToTest = {nxyz}
-						local tested = {}
-						while #waterNodesToTest > 0 do
-							if math.fmod(wFinished, 500) == 0 then UI:printl(string.format("%.2f%% done", (wFinished/wNodes)*100)) end
-							if self.planet[waterNodesToTest[1]].waterTested then table.insert(tested, table.remove(waterNodesToTest, 1)) else
-								for j=1,#self.planet[waterNodesToTest[1]].neighbors do
-									local mxyz = self.planet[waterNodesToTest[1]].neighbors[j]
-									if not self.planet[mxyz].land and self.planet[mxyz].waterBody == "" and not self.planet[mxyz].waterTested then
-										self.planet[mxyz].waterBody = self.planet[waterNodesToTest[1]].waterBody
-										self.waterBodies[self.planet[mxyz].waterBody] = self.waterBodies[self.planet[mxyz].waterBody]+1
-										wFinished = wFinished+1
-										table.insert(waterNodesToTest, mxyz)
-									end
-								end
-								parent.thisWorld.planet[waterNodesToTest[1]].waterTested = true
-								table.insert(tested, table.remove(waterNodesToTest, 1))
-							end
-						end
-						for k=1,#tested do self.planet[tested[k]].waterTested = false end
-					end
-				end end end
 
 				parent:deepnil(freeNodes)
 				collectgarbage("collect")
@@ -250,6 +214,110 @@ return
 					j:setTerritory(parent)
 				end
 
+				UI:printf("Populating small islands...")
+				local archipelagos = math.random(5, 7)
+				for a=1,archipelagos do
+					UI:printl(string.format("Group %d/%d", a, archipelagos))
+					local archCenter = parent:randomChoice(self.planetdefined)
+					local archName = parent:demonym(parent:name(false, 2, 2))
+					while self.planet[archCenter].land do archCenter = parent:randomChoice(self.planetdefined) end
+					local nearestLand = -1
+					local nearestLandDist = math.huge
+					for j=1,#self.landNodes do
+						local nxyz = self.planet[self.landNodes[j]]
+						if nxyz and nxyz.continent ~= "" then
+							local mag = math.sqrt(math.pow(nxyz.x-self.planet[archCenter].x, 2)+math.pow(nxyz.y-self.planet[archCenter].y, 2)+math.pow(nxyz.z-self.planet[archCenter].z, 2))
+							if mag < nearestLandDist then
+								nearestLand = self.landNodes[j]
+								nearestLandDist = mag
+							end
+						end
+					end
+					local islands = math.random(5, 9)
+					local archSize = math.floor(planetSize/math.random(60/islands, 325/islands))
+					local archRegion = Region:new()
+					archRegion:makename(self.countries[self.planet[nearestLand].country], parent)
+					archRegion.name = archName
+					local archNodes = {archCenter}
+					self.countries[self.planet[nearestLand].country].regions[archRegion.name] = archRegion
+					self.planet[archCenter].archipelago = archRegion.name
+					while #archNodes < archSize do
+						local nextNode = parent:randomChoice(archNodes)
+						for i=1,#self.planet[nextNode].neighbors do
+							local nxyz = self.planet[nextNode].neighbors[i]
+							if self.planet[nxyz].archipelago ~= archRegion.name and math.random(1, 4) == math.random(1, 4) then
+								table.insert(archNodes, nxyz)
+								self.planet[nxyz].archipelago = archRegion.name
+							end
+						end
+					end
+					for i=1,islands do
+						UI:printl(string.format("Group %d/%d, Island %d/%d", a, archipelagos, i, islands))
+						local nSeed = parent:randomChoice(archNodes)
+						while self.planet[nSeed].land do nSeed = parent:randomChoice(archNodes) end
+
+						local islandNodes = {}
+						table.insert(islandNodes, nSeed)
+						local islandSize = math.floor(archSize/math.random(20, 36))
+						for j=1,islandSize-1 do if #islandNodes > 0 then
+							local nextNode = math.random(1, #islandNodes)
+							local iters = 0
+							while not self.planet[islandNodes[nextNode]].waterNeighbors do
+								nextNode = math.random(1, #islandNodes)
+								iters = iters+1
+								if iters > #islandNodes*2 then break end
+							end
+							self.planet[islandNodes[nextNode]].land = true
+							self.planet[islandNodes[nextNode]].waterBody = ""
+							self.planet[islandNodes[nextNode]].continent = self.planet[nearestLand].continent
+							self.planet[islandNodes[nextNode]].country = self.planet[nearestLand].country
+							self.planet[islandNodes[nextNode]].region = archRegion.name
+							table.insert(self.landNodes, islandNodes[nextNode])
+							if self.countries[self.planet[islandNodes[nextNode]].country] then table.insert(self.countries[self.planet[islandNodes[nextNode]].country].nodes, islandNodes[nextNode]) end
+							table.insert(archRegion.nodes, islandNodes[nextNode])
+							self.planet[islandNodes[nextNode]].waterNeighbors = false
+							for k=1,#self.planet[islandNodes[nextNode]].neighbors do
+								self.planet[islandNodes[nextNode]].waterNeighbors = self.planet[islandNodes[nextNode]].waterNeighbors or not self.planet[self.planet[islandNodes[nextNode]].neighbors[k]].land
+								if not self.planet[self.planet[islandNodes[nextNode]].neighbors[k]].land then table.insert(islandNodes, self.planet[islandNodes[nextNode]].neighbors[k]) end
+							end
+							if not self.planet[islandNodes[nextNode]].waterNeighbors then table.remove(islandNodes, nextNode) end
+						end end
+					end
+				end
+
+				UI:printf("Mapping bodies of water...")
+				local wNodes = 0
+				local wFinished = 0
+				for i=1,planetSize do if not self.planet[self.planetdefined[i]].land then wNodes = wNodes+1 end end
+
+				for i=1,planetSize do if self.planet[self.planetdefined[i]].land then for j=1,#self.planet[self.planetdefined[i]].neighbors do
+					local nxyz = self.planet[self.planetdefined[i]].neighbors[j]
+					if not self.planet[nxyz].land and self.planet[nxyz].waterBody == "" then
+						self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 2, 2))
+						while self.waterBodies[self.planet[nxyz].waterBody] do self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 2, 2)) end
+						self.waterBodies[self.planet[nxyz].waterBody] = 1
+						local waterNodesToTest = {nxyz}
+						local tested = {}
+						while #waterNodesToTest > 0 do
+							if math.fmod(wFinished, 500) == 0 then UI:printl(string.format("%.2f%% done", (wFinished/wNodes)*100)) end
+							if not self.planet[waterNodesToTest[1]].waterTested then
+								for j=1,#self.planet[waterNodesToTest[1]].neighbors do
+									local mxyz = self.planet[waterNodesToTest[1]].neighbors[j]
+									if not self.planet[mxyz].land and self.planet[mxyz].waterBody == "" and not self.planet[mxyz].waterTested then
+										self.planet[mxyz].waterBody = self.planet[waterNodesToTest[1]].waterBody
+										self.waterBodies[self.planet[mxyz].waterBody] = self.waterBodies[self.planet[mxyz].waterBody]+1
+										wFinished = wFinished+1
+										table.insert(waterNodesToTest, mxyz)
+									end
+								end
+								parent.thisWorld.planet[waterNodesToTest[1]].waterTested = true
+							end
+							table.insert(tested, table.remove(waterNodesToTest, 1))
+						end
+						for k=1,#tested do self.planet[tested[k]].waterTested = false end
+					end
+				end end end
+
 				self.mapChanged = true
 
 				for i, j in pairs(parent.c_events) do
@@ -320,7 +388,7 @@ return
 						self.cTriplets["\x03"..cp.name] = {r, g, b}
 					end
 				end
-				
+
 				local zeroRGB = {0, 0, 0}
 				local maxRGB = {255, 255, 255}
 				local waterRGB = {22, 22, 170}
@@ -488,7 +556,7 @@ return
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
 					if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end
 				end
-				
+
 				for i=1,#self.stretched do
 					extRows[i] = 0
 					for j=1,#self.stretched[i] do if self.stretched[i][j] and self.stretched[i][j][1] == 22 and self.stretched[i][j][2] == 22 and self.stretched[i][j][3] == 170 then extRows[i] = extRows[i]+1 end end
@@ -871,7 +939,31 @@ return
 
 				local t2 = _time()
 				if math.fmod(parent.years, 20) == 0 then collectgarbage("collect") end
-				if _DEBUG and math.fmod(parent.years, 100) == 0 then parent:compLangs(true) end
+				if math.fmod(parent.years, 100) == 0 then
+					for i=#parent.languages,1,-1 do
+						local found = false
+						for k, l in pairs(self.countries) do
+							if parent.languages[i].name:match(l.demonym) then found = true end
+							if not found then
+								local fn = function(rfn, parent, r, lang, iterations)
+									local rFound = false
+									for o, p in pairs(r.regions or r.subregions) do if not rFound then
+										local dem = parent:demonym(p.name)
+										if lang.name:match(dem) then rFound = true end
+										if not rFound then rFound = rfn(rfn, parent, p, lang, iterations+1) end
+									end end
+									return rFound
+								end
+								found = fn(fn, parent, l, parent.languages[i], 1)
+							end
+						end
+						if not found then
+							local lang = table.remove(parent.languages, i)
+							lang = nil
+						end
+					end
+					if _DEBUG then parent:compLangs(true) end
+				end
 				local t3 = _time()
 				if _DEBUG then
 					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end

@@ -41,7 +41,7 @@ return
 						end
 					end
 				end
-				
+
 				for i, j in pairs(selfWater) do if otherWater[i] then return 1 end end
 
 				return 0

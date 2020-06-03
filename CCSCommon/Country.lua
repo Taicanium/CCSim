@@ -115,7 +115,7 @@ return
 						end
 					end
 				end
-				
+
 				for i, j in pairs(selfWater) do if otherWater[i] then return 1 end end
 
 				return 0
@@ -496,12 +496,29 @@ return
 						if nDefined then table.remove(defined, i) end
 					end
 
+					if totalDefined == prevDefined then
+						allDefined = true
+						for i=1,#self.nodes do if allDefined then
+							local nxyz = self.nodes[i]
+							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+								allDefined = false
+								local nr = Region:new()
+								nr:makename(self, parent)
+								self.regions[nr.name] = nr
+								parent.thisWorld.planet[nxyz].region = nr.name
+								parent.thisWorld.planet[nxyz].regionSet = true
+								table.insert(defined, nxyz)
+								table.insert(nr.nodes, nxyz)
+								totalDefined = totalDefined+1
+							end
+						end end
+					end
+
 					for i=1,#self.nodes do
 						local xyz = self.nodes[i]
 						parent.thisWorld.planet[xyz].regionSet = false
 					end
 
-					if totalDefined == prevDefined then allDefined = true end
 					prevDefined = totalDefined
 				end
 
