@@ -1861,11 +1861,11 @@ return
 						if screenIndex > #screens then _REVIEWING = false end
 					else
 						UI:clear()
-						UI:printf(string.format("Translating the text \"%s.\" (%d)\n", testString, #cArr))
+						UI:printf(string.format("Translating the text \"%s.\"\n", testString))
 						for i=1,#screen do UI:printf(screen[i]) end
 						UI:printf("\nEnter B to return to the previous menu.")
-						UI:printf("Enter N to move to the next set of languages.")
-						UI:printf("Enter P to move to the previous set of languages.")
+						if screenIndex < #screens then UI:printf("Enter N to move to the next set of languages.") end
+						if screenIndex > 1 then UI:printf("Enter P to move to the previous set of languages.") end
 						UI:printp(" > ")
 						local datin = UI:readl()
 						if datin:lower() == "b" then _REVIEWING = false
