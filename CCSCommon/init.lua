@@ -2531,7 +2531,7 @@ return
 							gedReview(gf)
 							gf:close()
 							gf = nil
-						elseif datin:lower() == "l" and _DEBUG then self:compLangs()
+						elseif datin:lower() == "l" then self:compLangs()
 						elseif datin:lower() == "r" then self:finish(false)
 						elseif datin:lower() == "q" then
 							_running = false
