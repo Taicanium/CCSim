@@ -86,7 +86,7 @@ return
 			l = f:read("*l")
 			while l and l ~= "" do
 				local split = {}
-				for x in l:gmatch("[%w%-%.,]+") do table.insert(split, x) end
+				for x in l:gmatch("[%w%-%.,%']+") do table.insert(split, x) end
 				if #split > 0 then
 					if tonumber(split[1]) then
 						fi = tonumber(split[1])
