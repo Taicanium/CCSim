@@ -7,9 +7,7 @@ return
 
 				o.name = ""
 				o.population = 0
-				o.x = nil
-				o.y = nil
-				o.z = nil
+				o.node = nil
 
 				return o
 			end,

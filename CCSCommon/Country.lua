@@ -549,10 +549,7 @@ return
 					while cCount > maxC or cCount > #j.nodes do
 						local c = parent:randomChoice(j.cities, true)
 						local r = j.cities[c]
-						local x = r.x
-						local y = r.y
-						local z = r.z
-						if x and y and z then parent.thisWorld.planet[parent.thisWorld:getNodeFromCoords(x, y, z)].city = "" end
+						if r.node then parent.thisWorld.planet[r.node].city = "" end
 						j.cities[c] = nil
 						cCount = cCount-1
 					end
@@ -564,9 +561,7 @@ return
 							for m=1,#self.nodes do
 								local xyz = self.nodes[m]
 								if parent.thisWorld.planet[xyz].city == l.name then
-									l.x = parent.thisWorld.planet[xyz].x
-									l.y = parent.thisWorld.planet[xyz].y
-									l.z = parent.thisWorld.planet[xyz].z
+									l.node = xyz
 									m = #self.nodes+1
 								end
 							end
@@ -579,12 +574,10 @@ return
 									if parent.thisWorld.planet[pd].city == "" or parent.thisWorld.planet[pd].city == l.name then cFound = true end
 								end
 
-								l.x = parent.thisWorld.planet[pd].x
-								l.y = parent.thisWorld.planet[pd].y
-								l.z = parent.thisWorld.planet[pd].z
+								l.node = pd
 							end
 
-							parent.thisWorld.planet[parent.thisWorld:getNodeFromCoords(l.x, l.y, l.z)].city = l.name
+							parent.thisWorld.planet[l.node].city = l.name
 						else j.cities[k] = nil end
 					end
 				end
