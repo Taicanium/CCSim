@@ -15,8 +15,10 @@ return
 				return o
 			end,
 
-			borders = function(self, parent, other)
+			borders = function(self, parent, other, oRegion)
 				if not other or not other.nodes or type(other.nodes) ~= "table" then return 0 end
+				local otherItem = "country"
+				if oRegion then otherItem = "region" end
 				local selfWater = {}
 				local otherWater = {}
 
@@ -25,24 +27,24 @@ return
 					if parent.thisWorld.planet[xyz].region == self.name then
 						for j=1,#parent.thisWorld.planet[xyz].neighbors do
 							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land then if parent.thisWorld.planet[nxyz].country == other.name or parent.thisWorld.planet[nxyz].region == other.name then return 1 end
-							else selfWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz][otherItem] == other.name then return 1
+							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then selfWater[parent.thisWorld.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
 
 				for i=1,#other.nodes do
 					local xyz = other.nodes[i]
-					if parent.thisWorld.planet[xyz].country == other.name or parent.thisWorld.planet[xyz].region == other.name then
+					if parent.thisWorld.planet[xyz][otherItem] == other.name then
 						for j=1,#parent.thisWorld.planet[xyz].neighbors do
 							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land then if parent.thisWorld.planet[nxyz].region == self.name then return 1 end
-							else otherWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].region == self.name then return 1
+							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then otherWater[parent.thisWorld.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
 
-				for i, j in pairs(selfWater) do if otherWater[i] then return 1 end end
+				for i, j in pairs(selfWater) do if selfWater[i] and otherWater[i] then return 1 end end
 
 				return 0
 			end,

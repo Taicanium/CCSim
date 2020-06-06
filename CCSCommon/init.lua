@@ -1115,11 +1115,11 @@ return
 							c2:setPop(parent, math.ceil(c2.population/1.4))
 
 							local rcount = 0
-							for q, b in pairs(c2.regions) do if b:borders(parent, c1) == 1 then rcount = rcount+1 end end
+							for q, b in pairs(c2.regions) do if b:borders(parent, c1, false) == 1 then rcount = rcount+1 end end
 							if rcount > 1 and c1.strength > c2.strength+(c2.strength/5) and math.random(1, 30) < 5 then
 								local c = parent:randomChoice(c2.regions)
 								if reg then
-									while reg:borders(parent, c1) == 0 do reg = parent:randomChoice(c2.regions) end
+									while reg:borders(parent, c1, false) == 0 do reg = parent:randomChoice(c2.regions) end
 									parent:regionTransfer(c1, c2, reg.name, false)
 								end
 							end
@@ -1326,11 +1326,11 @@ return
 
 							if c2strength > c1strength+(c1strength/5) then
 								local rcount = 0
-								for q, b in pairs(c1.regions) do if b:borders(parent, c2) == 1 then rcount = rcount+1 end end
+								for q, b in pairs(c1.regions) do if b:borders(parent, c2, false) == 1 then rcount = rcount+1 end end
 								if rcount > 1 then
 									local reg = parent:randomChoice(c1.regions)
 									if reg then
-										while reg:borders(parent, c2) == 0 do reg = parent:randomChoice(c1.regions) end
+										while reg:borders(parent, c2, false) == 0 do reg = parent:randomChoice(c1.regions) end
 										parent:regionTransfer(self.target, c1, reg.name, false)
 									end
 								end
@@ -1346,7 +1346,7 @@ return
 						for i=1,#c2.ongoing do if c2.ongoing[i].name == self.name and c2.ongoing[i].target.name == c1.name then return -1 end end
 						for i=1,#c1.alliances do if c1.alliances[i] == c2.name then return -1 end end
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name then return -1 end end
-						if c1:borders(parent, c2) == 0 then return -1 end
+						if c1:borders(parent, c2, false) == 0 then return -1 end
 
 						if not c1.relations[c2.name] then c1.relations[c2.name] = 50 end
 						if c1.relations[c2.name] and c1.relations[c2.name] < 30 then
