@@ -841,6 +841,11 @@ return
 					parent.iSIndex = 1
 					UI:printf("Constructing initial populations...")
 				end
+				
+				if math.fmod(parent.years, 101) == 0 then
+					parent.langPeriod = parent.langPeriod+1
+					UI:printl("Deviating languages...")
+				end
 
 				for i, cp in pairs(self.countries) do if cp then
 					if self.initialState then
@@ -863,8 +868,6 @@ return
 
 				for i, cp in pairs(self.countries) do if cp then cp:eventloop(parent) end end
 				for i, cp in pairs(self.countries) do if cp then self.gPop = self.gPop+cp.population end end
-				
-				if math.fmod(parent.years, 151) == 0 then parent.langPeriod = parent.langPeriod+1 end
 
 				local t1 = _time()-t0
 

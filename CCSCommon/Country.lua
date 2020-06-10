@@ -704,7 +704,7 @@ return
 				end
 				self.majority = largest
 
-				if math.fmod(parent.years, 151) == 0 then
+				if math.fmod(parent.years, 101) == 0 then
 					for i, j in pairs(self.regions) do self.regions[i]:deviateDialects(self, parent) end
 					local newLang = self.language:deviate(parent, 0.06)
 					self.language = newLang
