@@ -34,8 +34,8 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin = _DEBUG and 75 or 200
-				local rMax = _DEBUG and 85 or 250
+				local rMin = _DEBUG and 75 or 180
+				local rMax = _DEBUG and 85 or 225
 				self.planetR = math.floor(math.random(rMin, rMax))
 				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
 				local rdone = 0
@@ -82,7 +82,7 @@ return
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
 
-				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2))
+				local maxLand = math.random(math.floor(planetSize/2.75), math.ceil(planetSize/2.15))
 				local continents = math.random(4, 8)
 				local doneLand = continents
 				local freeNodes = {}
@@ -107,7 +107,7 @@ return
 						xyz = freeNodes[node]
 					end
 
-					if math.random(1, 6) == math.random(1, 4) then
+					if math.random(1, 5) == math.random(1, 4) then
 						self.planet[xyz].waterNeighbors = false
 						local nxyz = self.planet[xyz].neighbors[math.random(1, #self.planet[xyz].neighbors)]
 						if not self.planet[nxyz].land then
