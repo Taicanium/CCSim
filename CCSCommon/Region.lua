@@ -8,6 +8,7 @@ return
 				o.cities = {}
 				o.language = nil
 				o.name = ""
+				o.nl = ""
 				o.nodes = {}
 				o.population = 0
 				o.subregions = {}
@@ -49,17 +50,22 @@ return
 				return 0
 			end,
 
+			deviateDialects = function(self, country, parent)
+				if not self.language then self.language = parent:getLanguage(self, country) end
+				local newLang = self.language:deviate(parent, 0.06)
+				newLang.name = parent:demonym(self.name)
+				self.language = newLang
+				table.insert(parent.languages, 1, self.language)
+				for i, j in pairs(self.subregions) do j:deviateDialects(country, parent) end
+			end,
+
 			makename = function(self, country, parent)
-				self.name = parent:name(false)
 				local dup = true
 				while dup do
+					self.name = parent:name(false, 3, 2)
 					dup = false
-					for i, j in pairs(country.regions) do
-						if self.name == j.name then
-							self.name = parent:name(false)
-							dup = true
-						end
-					end
+					for i, j in pairs(parent.final) do if self.name == j.name then dup = true end end
+					for i, j in pairs(parent.thisWorld.countries) do if not dup then for k, l in pairs(j.regions) do if j.name == self.name then dup = true end end end end
 				end
 
 				local cCount = 0
@@ -70,10 +76,12 @@ return
 					for i=1,cCount do
 						local c = City:new()
 						c:makename(country, parent)
-
+						c.nl = self.name
 						self.cities[c.name] = c
 					end
 				end
+
+				self.nl = country.name
 			end,
 		}
 

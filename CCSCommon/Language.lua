@@ -7,7 +7,9 @@ return
 				local o = {}
 				setmetatable(o, self)
 
-				o.name = tostring(math.random(0, math.pow(2, 20)-1))
+				o.descentTree = {}
+				o.name = tostring(math.random(0, math.pow(2, 24)-1))
+				o.testString = ""
 				o.wordTable = {}
 
 				return o
@@ -19,10 +21,15 @@ return
 					local word = parent:namecheck(parent:name(true, ln, ln))
 					self.wordTable[ENGLISH[i]] = word:lower()
 				end end
+				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..self.wordTable[x:lower()]:gsub(" ", "").." " end
+				self.testString = self.testString:sub(1, self.testString:len()-1)
+				self.testString = self.testString:gsub("^%w", string.upper)
 			end,
 
 			deviate = function(self, parent, factor)
 				local newList = Language:new()
+				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
+				table.insert(newList.descentTree, {self.name.." (period "..tostring(parent.langPeriod)..")", self.testString})
 				local ops = {"OMIT", "REPLACE", "INSERT"}
 
 				local fct = 0
@@ -63,6 +70,9 @@ return
 				end
 
 				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] end end
+				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..newList.wordTable[x:lower()]:gsub(" ", "").." " end
+				newList.testString = newList.testString:sub(1, newList.testString:len()-1)
+				newList.testString = newList.testString:gsub("^%w", string.upper)
 
 				return newList
 			end,
@@ -72,11 +82,10 @@ return
 				for i=1,#ENGLISH do
 					local wrd1 = self.wordTable[ENGLISH[i]]
 					local wrd2 = other.wordTable[ENGLISH[i]]
+					for j=wrd1:len()+1,wrd2:len() do wrd1 = wrd1.." " end
 
-					while wrd1:len() < wrd2:len() do wrd1 = wrd1.." " end
-					while wrd2:len() < wrd1:len() do wrd2 = wrd2.." " end
 					local div = 1/wrd1:len()
-					for j=1,wrd1:len() do if wrd1:sub(j, j) ~= wrd2:sub(j, j) then factor = factor+div end end
+					for j=1,wrd1:len() do if wrd2:len() < j or wrd1:sub(j, j) ~= wrd2:sub(j, j) then factor = factor+div end end
 				end
 				factor = factor/#ENGLISH
 				return factor

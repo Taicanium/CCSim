@@ -92,7 +92,7 @@ return
 					while self.planet[cSeed].land do cSeed = parent:randomChoice(self.planetdefined) end
 
 					self.planet[cSeed].land = true
-					self.planet[cSeed].continent = parent:name(true, 3, 2)
+					self.planet[cSeed].continent = parent:name(true, 2, 2)
 					table.insert(freeNodes, cSeed)
 					table.insert(self.landNodes, cSeed)
 				end
@@ -266,8 +266,6 @@ return
 							self.planet[islandNodes[nextNode]].country = self.planet[nearestLand].country
 							self.planet[islandNodes[nextNode]].region = archRegion.name
 							table.insert(self.landNodes, islandNodes[nextNode])
-							if self.countries[self.planet[islandNodes[nextNode]].country] then table.insert(self.countries[self.planet[islandNodes[nextNode]].country].nodes, islandNodes[nextNode]) end
-							table.insert(archRegion.nodes, islandNodes[nextNode])
 							self.planet[islandNodes[nextNode]].waterNeighbors = false
 							for k=1,#self.planet[islandNodes[nextNode]].neighbors do
 								self.planet[islandNodes[nextNode]].waterNeighbors = self.planet[islandNodes[nextNode]].waterNeighbors or not self.planet[self.planet[islandNodes[nextNode]].neighbors[k]].land
@@ -844,6 +842,8 @@ return
 					UI:printf("Constructing initial populations...")
 				end
 
+				if math.fmod(parent.years, 150) == 0 then parent.langPeriod = parent.langPeriod+1 end
+
 				for i, cp in pairs(self.countries) do if cp then
 					if self.initialState then
 						UI:printl(string.format("Country %d/%d", parent.iSIndex, parent.iSCount))
@@ -878,31 +878,13 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 20) == 0 then collectgarbage("collect") end
-				if math.fmod(parent.years, 100) == 0 then
-					for i=#parent.languages,1,-1 do
-						local found = false
-						for k, l in pairs(self.countries) do
-							if parent.languages[i].name:match(l.demonym) then found = true end
-							if not found then
-								local fn = function(rfn, parent, r, lang, iterations)
-									local rFound = false
-									for o, p in pairs(r.regions or r.subregions) do if not rFound then
-										local dem = parent:demonym(p.name)
-										if lang.name:match(dem) then rFound = true end
-										if not rFound then rFound = rfn(rfn, parent, p, lang, iterations+1) end
-									end end
-									return rFound
-								end
-								found = fn(fn, parent, l, parent.languages[i], 1)
-							end
-						end
-						if not found then
-							local lang = table.remove(parent.languages, i)
-							lang = nil
-						end
+				if math.fmod(parent.years, 20) == 0 then
+					UI:printl("Collecting garbage...")
+					if math.fmod(parent.years, 100) == 0 then
+						for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
+						if _DEBUG then parent:compLangs(true) end
 					end
-					if _DEBUG then parent:compLangs(true) end
+					collectgarbage("collect")
 				end
 				local t3 = _time()
 				if _DEBUG then

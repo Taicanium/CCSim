@@ -11,8 +11,8 @@ return
 				o.allyOngoing = {}
 				o.averageAge = 0
 				o.birthrate = 3
-				o.capitalcity = ""
-				o.capitalregion = ""
+				o.capitalcity = nil
+				o.capitalregion = nil
 				o.civilWars = 0
 				o.demonym = ""
 				o.dfif = {} -- Demonym First In Formality; i.e. instead of "Republic of China", use "Chinese Republic"
@@ -127,15 +127,12 @@ return
 				local oldcap = self.capitalcity
 				local oldreg = self.capitalregion
 
-				if not self.capitalregion or not self.regions[self.capitalregion] or not self.capitalcity or not self.regions[self.capitalregion].cities[self.capitalcity] then
-					self.capitalregion = parent:randomChoice(self.regions, true)
+				if not self.capitalregion or not self.capitalcity or self.capitalcity.nl ~= self.name then while not self.capitalregion or not self.capitalregion.cities do
+					self.capitalregion = parent:randomChoice(self.regions)
 					self.capitalcity = nil
-				end
+				end end
 
-				if not self.capitalcity then
-					self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
-					if oldcap and self.regions[oldreg] and self.regions[oldreg].cities[oldcap] then self:event(parent, "Capital moved from "..oldcap.." to "..self.capitalcity) end
-				end
+				while not self.capitalcity do self.capitalcity = parent:randomChoice(self.capitalregion.cities) end
 			end,
 
 			checkRuler = function(self, parent, enthrone)
@@ -243,8 +240,11 @@ return
 				if not self.name or self.name == "" then
 					local found = true
 					while found do
-						self.name = parent:name(false, 2)
+						self.name = parent:name(false, 3, 2)
+						self.demonym = parent:demonym(self.name)
 						found = false
+						if self.name == self.demonym then found = true end
+						if self.name == "" or self.demonym == "" then found = true end
 						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
 						for i, j in pairs(parent.thisWorld.countries) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
 					end
@@ -260,12 +260,12 @@ return
 					for k=1,rn do table.insert(self.frulernames, parent:name(true)) end
 				end
 
+				self.demonym = parent:demonym(self.name)
+
 				for i=1,#parent.systems do
 					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
 					self.dfif[parent.systems[i].name] = parent:randomChoice({true, false})
 				end
-
-				self.demonym = parent:demonym(self.name)
 			end,
 
 			recurseRoyalChildren = function(self, t, n)
@@ -303,6 +303,8 @@ return
 				self.system = math.random(1, #parent.systems)
 				self:makename(parent)
 				self.agPrim = parent:randomChoice({true, false})
+				self.language = parent:getLanguage(self, self)
+				self.language.name = self.demonym
 
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end
@@ -311,14 +313,17 @@ return
 					for i=1,rcount do
 						local r = Region:new()
 						r:makename(self, parent)
+						r.nl = self.name
+						r.language = parent:getLanguage(r, self)
+						r.language.name = parent:demonym(r.name)
 						self.regions[r.name] = r
 					end
 				end
 
 				if self.founded == 0 then self.founded = parent.years end
 
-				self.capitalregion = parent:randomChoice(self.regions, true)
-				self.capitalcity = parent:randomChoice(self.regions[self.capitalregion].cities, true)
+				self.capitalregion = parent:randomChoice(self.regions)
+				self.capitalcity = parent:randomChoice(self.capitalregion.cities)
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
@@ -426,8 +431,7 @@ return
 				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i].def then table.remove(self.lineOfSuccession, i) end end
 			end,
 
-			setTerritory = function(self, parent, patron, patronRegion)
-				parent:deepnil(self.nodes)
+			setTerritory = function(self, parent)
 				self.nodes = {}
 
 				for i=1,#parent.thisWorld.planetdefined do
@@ -445,142 +449,117 @@ return
 				for i, j in pairs(self.regions) do rCount = rCount+1 end
 
 				while rCount > maxR or rCount > #self.nodes do
-					local r = parent:randomChoice(self.regions, true)
-					self.regions[r] = nil
+					local r = parent:randomChoice(self.regions)
+					self.regions[r.name] = nil
 					rCount = rCount-1
 				end
 
 				local defined = {}
 
-				for i, j in pairs(self.regions) do
+				for i, j in pairs(self.regions) do if j.nodes and #j.nodes == 0 then
+					j.nodes = {}
 					local found = false
 					for k=1,#self.nodes do
 						local xyz = self.nodes[k]
 						if parent.thisWorld.planet[xyz].region == j.name then
 							found = true
 							table.insert(defined, xyz)
+							table.insert(j.nodes, xyz)
 						end
 						if found then k = #self.nodes+1 end
 					end
 
 					if not found then
 						local pd = parent:randomChoice(self.nodes)
-						while parent.thisWorld.planet[pd].region ~= "" and parent.thisWorld.planet[pd].region ~= j.name do pd = parent:randomChoice(self.nodes) end
+						while parent.thisWorld.planet[pd].region and parent.thisWorld.planet[pd].region ~= "" and parent.thisWorld.planet[pd].region ~= j.name do
+							UI:printl(string.format("%d %d %s %s %s%s", #self.nodes, pd, parent.thisWorld.planet[pd].region, j.name, self.name, string.rep(" ", 20)))
+							pd = parent:randomChoice(self.nodes)
+						end
 
 						parent.thisWorld.planet[pd].region = j.name
 						table.insert(defined, pd)
+						table.insert(j.nodes, pd)
 					end
-				end
-
-				local allDefined = false
-				local totalDefined = #defined
-				local prevDefined = #defined
-
-				while not allDefined do
-					for i=#defined,1,-1 do
-						local xyz = defined[i]
-						local nDefined = true
-
-						if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
-							for j=1,#parent.thisWorld.planet[xyz].neighbors do
-								local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-								if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
-									nDefined = false
-									parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
-									parent.thisWorld.planet[nxyz].regionSet = true
-									table.insert(defined, nxyz)
-									totalDefined = totalDefined+1
-								end
-							end
-							parent.thisWorld.planet[xyz].regionDone = true
-						end
-
-						if nDefined then table.remove(defined, i) end
-					end
-
-					if totalDefined == prevDefined then
-						allDefined = true
-						for i=1,#self.nodes do if allDefined then
-							local nxyz = self.nodes[i]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
-								allDefined = false
-								local nr = Region:new()
-								nr:makename(self, parent)
-								self.regions[nr.name] = nr
-								parent.thisWorld.planet[nxyz].region = nr.name
-								parent.thisWorld.planet[nxyz].regionSet = true
-								table.insert(defined, nxyz)
-								table.insert(nr.nodes, nxyz)
-								totalDefined = totalDefined+1
-							end
-						end end
-					end
-
-					for i=1,#self.nodes do
-						local xyz = self.nodes[i]
-						parent.thisWorld.planet[xyz].regionSet = false
-					end
-
-					prevDefined = totalDefined
-				end
-
-				for i=#self.nodes,1,-1 do
-					local xyz = self.nodes[i]
-
-					if parent.thisWorld.planet[xyz].region == "" or not self.regions[parent.thisWorld.planet[xyz].region] then
-						if not patron then
-							parent.thisWorld.planet[xyz].country = ""
-							parent.thisWorld.planet[xyz].continent = ""
-							parent.thisWorld.planet[xyz].land = false
-						else
-							parent.thisWorld.planet[xyz].country = patron.name
-							parent.thisWorld.planet[xyz].region = patronRegion.name
-							table.insert(patron.nodes, xyz)
-							table.insert(patronRegion.nodes, xyz)
-						end
-						local rn = table.remove(self.nodes, i)
-						parent:deepnil(rn)
-					else table.insert(self.regions[parent.thisWorld.planet[xyz].region].nodes, xyz) end
-				end
-
-				if not patron then for i, j in pairs(self.regions) do
-					local cCount = 0
-					local maxC = math.ceil(#j.nodes/25)
-					for k, l in pairs(j.cities) do cCount = cCount+1 end
-
-					while cCount > maxC or cCount > #j.nodes do
-						local c = parent:randomChoice(j.cities, true)
-						local r = j.cities[c]
-						if r.node then parent.thisWorld.planet[r.node].city = "" end
-						j.cities[c] = nil
-						cCount = cCount-1
-					end
-				end end
+				elseif j.nodes and j.nodes > 0 then for k=#j.nodes,1,-1 do
+					local xyz = j.nodes[k]
+					if parent.thisWorld.planet[xyz].country == self.name then parent.thisWorld.planet[xyz].region = j.name else table.remove(j.nodes, k) end
+				end end end
 
 				for i, j in pairs(self.regions) do
+					local allDefined = false
+					local totalDefined = #defined
+					local prevDefined = #defined
+
+					while not allDefined do
+						for i=#defined,1,-1 do
+							local xyz = defined[i]
+							local nDefined = true
+
+							if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
+								for j=1,#parent.thisWorld.planet[xyz].neighbors do
+									local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
+									if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+										nDefined = false
+										parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
+										parent.thisWorld.planet[nxyz].regionSet = true
+										table.insert(defined, nxyz)
+										table.insert(self.regions[parent.thisWorld.planet[nxyz].region].nodes, nxyz)
+										totalDefined = totalDefined+1
+									end
+								end
+								parent.thisWorld.planet[xyz].regionDone = true
+							end
+
+							if nDefined then table.remove(defined, i) end
+						end
+
+						if totalDefined == prevDefined then
+							allDefined = true
+							for i=1,#self.nodes do if allDefined then
+								local nxyz = self.nodes[i]
+								if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+									allDefined = false
+									local nr = Region:new()
+									nr:makename(self, parent)
+									nr.nl = self.name
+									self.regions[nr.name] = nr
+									parent.thisWorld.planet[nxyz].region = nr.name
+									parent.thisWorld.planet[nxyz].regionSet = true
+									table.insert(defined, nxyz)
+									table.insert(nr.nodes, nxyz)
+									totalDefined = totalDefined+1
+								end
+							end end
+						end
+
+						for i=1,#self.nodes do
+							local xyz = self.nodes[i]
+							parent.thisWorld.planet[xyz].regionSet = false
+						end
+
+						prevDefined = totalDefined
+					end
+				end
+
+				for i, j in pairs(self.regions) do
+					local cCount = 0
+					for k, l in pairs(j.cities) do cCount = cCount+1 end
+
+					if cCount == 0 then
+						local nc = City:new()
+						nc:makename(self, parent)
+						nc.nl = self.name
+						j.cities[nc.name] = nc
+						cCount = cCount+1
+					end
+
 					for k, l in pairs(j.cities) do
-						if not patron then
-							for m=1,#self.nodes do
-								local xyz = self.nodes[m]
-								if parent.thisWorld.planet[xyz].city == l.name then
-									l.node = xyz
-									m = #self.nodes+1
-								end
-							end
+						while not l.node do
+							local pd = parent:randomChoice(j.nodes)
+							if parent.thisWorld.planet[pd].city == "" or parent.thisWorld.planet[pd].city == l.name then l.node = pd end
+						end
 
-							if not l.x or not l.y or not l.z then
-								local pd = parent:randomChoice(j.nodes)
-								local cFound = false
-								while not cFound do
-									pd = parent:randomChoice(j.nodes)
-									if parent.thisWorld.planet[pd].city == "" or parent.thisWorld.planet[pd].city == l.name then cFound = true end
-								end
-
-								l.node = pd
-							end
-
-							parent.thisWorld.planet[l.node].city = l.name
-						else j.cities[k] = nil end
+						parent.thisWorld.planet[l.node].city = l.name
 					end
 				end
 			end,
@@ -613,6 +592,8 @@ return
 				local t0 = _time()
 				parent:rseed()
 
+				if not self.language then self.language = parent:getLanguage(self, self) end
+
 				for i=1,#parent.systems do if not self.snt[parent.systems[i].name] or self.snt[parent.systems[i].name] == -1 then self.snt[parent.systems[i].name] = 0 end end
 				self.stability = self.stability+(math.random()-0.2)+math.random(-2, 2)
 				self.stability = math.max(1, math.min(100, self.stability))
@@ -625,6 +606,7 @@ return
 				self.military = 0
 				self.hasRuler = -1
 				self.rulerPopularity = 0
+				self.language.name = self.demonym
 				self.age = parent.years-self.founded
 				if self.founded < 1 then self.age = self.age-1 end
 				if self.population < parent.popLimit then self.birthrate = 3
@@ -649,14 +631,16 @@ return
 					self.relations[cp.name] = math.min(100, math.max(1, self.relations[cp.name]+math.random(-3, 3)))
 				end end
 
-				self:checkCapital(parent)
-
-				if not self.language then self.language = parent:getLanguage(self.demonym, self) end
-
 				for i, j in pairs(self.regions) do
+					j.nl = self.name
 					j.population = 0
-					for k, l in pairs(j.cities) do l.population = 0 end
+					for k, l in pairs(j.cities) do
+						l.nl = self.name
+						l.population = 0
+					end
 				end
+
+				self:checkCapital(parent)
 
 				self.milThreshold = 5
 				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
@@ -693,7 +677,10 @@ return
 						end
 					end
 
-					if chn then self:delete(parent, i) end
+					if chn then
+						self:delete(parent, i)
+						self.population = self.population-1
+					end
 				end
 
 				self.averageAge = self.averageAge/#self.people
@@ -717,7 +704,13 @@ return
 				end
 				self.majority = largest
 
-				if math.fmod(parent.years, 100) == 0 then for i, j in pairs(self.regions) do parent:setLanguage(self, j, j.language:deviate(parent, 0.06)) end end
+				if math.fmod(parent.years, 150) == 0 then
+					local newLang = self.language:deviate(parent, 0.06)
+					self.language = newLang
+					self.language.name = self.demonym
+					table.insert(parent.languages, 1, self.language)
+					for i, j in pairs(self.regions) do self.regions[i]:deviateDialects(self, parent) end
+				end
 
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end

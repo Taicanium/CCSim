@@ -593,13 +593,13 @@ return
 						for i=1,#c1.rulers do if c1.rulers[i].Country == c2.name then patron = true end end
 
 						if not patron and c1.majority == c2.majority and c1.relations[c2.name] and c1.relations[c2.name] > 85 then
-							parent:setLanguage(c1, newr, parent:getLanguage(c2.demonym, c2))
-
 							c1:event(parent, "Annexed "..c2.name)
 							c2:event(parent, "Annexed by "..c1.name)
 
 							local newr = Region:new()
 							newr.name = c2.name
+							newr.language = parent:getLanguage(c2, c1)
+							table.insert(parent.languages, 1, newr.language)
 
 							for i=#c2.people,1,-1 do
 								c2.people[i].region = newr
@@ -624,8 +624,6 @@ return
 								if parent.thisWorld.planet[xyz].country == c2.name then
 									parent.thisWorld.planet[xyz].country = c1.name
 									parent.thisWorld.planet[xyz].region = c2.name
-									table.insert(c1.nodes, xyz)
-									table.insert(newr.nodes, xyz)
 								end
 							end
 
@@ -647,26 +645,26 @@ return
 					inverse=false,
 					performEvent=function(self, parent, c)
 						local cCount = 0
-						for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do if l.name ~= c.capitalcity and l.name ~= "" then cCount = cCount+1 end end end
+						local oldcapName = nil
+						if c.capitalcity then oldcapName = c.capitalcity.name end
+						for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do if l.name ~= oldcapName and l.name ~= "" then cCount = cCount+1 end end end
 
 						if cCount > 2 then
 							local oldreg = c.capitalregion
 							local oldcap = c.capitalcity
-							if not oldreg then oldreg = "" end
-							if not oldcap then oldcap = "" end
 							c.capitalregion = nil
 							c.capitalcity = nil
 							local cycles = 0
 
 							while not c.capitalcity do for i, j in pairs(c.regions) do for k, l in pairs(j.cities) do
 								cycles = cycles+1
-								if l.name ~= oldcap and not c.capitalcity and math.random(1, 50) == 35 then
-									c.capitalregion = j.name
-									c.capitalcity = l.name
+								if l.name ~= oldcapName and not c.capitalcity and math.random(1, 50) == 35 then
+									c.capitalregion = j
+									c.capitalcity = l
 
 									local msg = "Capital moved"
-									if oldcap ~= "" then msg = msg.." from "..oldcap end
-									msg = msg.." to "..c.capitalcity
+									if oldcapName then msg = msg.." from "..oldcapName end
+									msg = msg.." to "..c.capitalcity.name
 
 									c:event(parent, msg)
 								end
@@ -842,8 +840,6 @@ return
 						for i=1,#c2.alliances do if c2.alliances[i] == c1.name or r then return -1 end end
 
 						if r or c1.relations[c2.name] and c1.relations[c2.name] < 21 and c1.strength > c2.strength then
-							parent:setLanguage(c1, newr, parent:getLanguage(c2.demonym, c2))
-
 							if not r then
 								c1:event(parent, "Conquered "..c2.name)
 								c2:event(parent, "Conquered by "..c1.name)
@@ -851,6 +847,8 @@ return
 
 							local newr = Region:new()
 							newr.name = c2.name
+							newr.language = parent:getLanguage(c2, c1)
+							table.insert(parent.languages, 1, newr.language)
 
 							for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
 							c2.people = nil
@@ -865,12 +863,8 @@ return
 								if parent.thisWorld.planet[xyz].country == c2.name then
 									parent.thisWorld.planet[xyz].country = c1.name
 									parent.thisWorld.planet[xyz].region = c2.name
-									table.insert(newr.nodes, xyz)
-									table.insert(c1.nodes, xyz)
 								end
 							end
-
-							c2.nodes = nil
 
 							c1.stability = math.max(1, c1.stability-10)
 							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
@@ -950,12 +944,7 @@ return
 							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i]) end
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
-							for i=1,#nc.nodes do
-								local xyz = nc.nodes[i]
-								parent.thisWorld.planet[xyz].country = newl.name
-								parent.thisWorld.planet[xyz].region = ""
-							end
-
+							for i, xyz in pairs(parent.thisWorld.planetdefined) do if parent.thisWorld.planet[xyz].region == newl.name then parent.thisWorld.planet[xyz].country = newl.name end end
 							local retrieved = false
 
 							for i, j in pairs(parent.final) do
@@ -984,69 +973,44 @@ return
 									parent.final[i] = nil
 								end
 							end
-
-							parent:setLanguage(newl, nil, parent:getLanguage(c.demonym.." ("..parent:demonym(newl.name)..")", c))
+							
+							for i, j in pairs(newl.regions) do for k=1,#j.nodes do
+								local xyz = j.nodes[k]
+								if parent.thisWorld.planet[xyz].region == newl.name then parent.thisWorld.planet[xyz].region = j.name end
+							end end
 
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
-							for i=1,math.floor(#c.people/5) do
-								local p = parent:randomChoice(c.people)
-								while p.isRuler do p = parent:randomChoice(c.people) end
-								newl:add(parent, p)
-							end
-
-							local pR = nil
-							for i=#c.nodes,1,-1 do
-								local xyz = c.nodes[i]
-								if parent.thisWorld.planet[xyz].country == c.name and c.regions[parent.thisWorld.planet[xyz].region] then
-									for j=1,#parent.thisWorld.planet[xyz].neighbors do
-										local neighbor = parent.thisWorld.planet[xyz].neighbors[j]
-										local nnode = parent.thisWorld.planet[neighbor]
-										if nnode.country == newl.name then
-											pR = c.regions[parent.thisWorld.planet[xyz].region]
-											j = #parent.thisWorld.planet[xyz].neighbors
-											i = 0
-										end
-									end
-								elseif parent.thisWorld.planet[xyz].country == newl.name then table.remove(c.nodes, i) end
-							end
-
-							if not pR then pR = parent:randomChoice(c.regions) end
 							newl:set(parent)
-							newl:setTerritory(parent, c, pR)
+							newl:setTerritory(parent)
+							newl.language = parent:getLanguage(newl, c)
+							table.insert(parent.languages, 1, newl.language)
 
-							for i, j in pairs(nc.cities) do
-								for k, l in pairs(newl.regions) do
-									for m=1,#l.nodes do
-										local xyz = l.nodes[m]
-										if parent.thisWorld.planet[xyz].city == j.name then
-											l.cities[j.name] = j
-											nc.cities[j.name] = nil
-										elseif x == j.x and y == j.y and z == j.z then
-											parent.thisWorld.planet[xyz].city = j.name
-											l.cities[j.name] = j
-											nc.cities[j.name] = nil
-										end
-									end
-								end
-							end
-
-							local nrCount = 0
-							for i, j in pairs(newl.regions) do nrCount = nrCount+1 end
 							for i, j in pairs(newl.regions) do
 								local cCount = 0
 								for k, l in pairs(j.cities) do cCount = cCount+1 end
 								if cCount == 0 then
 									local nC = City:new()
-									nC:makename(country, parent)
-
+									nC:makename(newl, parent)
+									nC.nl = newl.name
+									nC.node = nil
+									while not nC.node or parent.thisWorld.planet[nC.node].region ~= j.name do nC.node = parent:randomChoice(parent.thisWorld.planetdefined) end
+									parent.thisWorld.planet[nC.node].city = nC.name
 									j.cities[nC.name] = nC
 								end
 							end
 
 							local nCities = {}
 							for i, j in pairs(newl.regions) do for k, l in pairs(j.cities) do table.insert(nCities, k) end end
+
+							parent.thisWorld:add(newl)
+
+							for i=1,math.floor(#c.people/5) do
+								local p = parent:randomChoice(c.people)
+								while p.isRuler do p = parent:randomChoice(c.people) end
+								newl:add(parent, p)
+							end
 
 							for i=#c.people,1,-1 do if c.people[i] and c.people[i].def and not c.people[i].isRuler and c.people[i].region and c.people[i].region.name == newl.name then
 								local added = false
@@ -1056,19 +1020,28 @@ return
 								end end
 							end end
 
-							parent.thisWorld:add(newl)
 							parent:getAlphabetical()
 
 							c.stability = math.max(1, c.stability-math.random(5, 10))
 
-							newl:checkCapital(parent)
-							newl:checkRuler(parent, true)
+							for i, j in pairs(c.regions) do
+								j.nl = c.name
+								for k, l in pairs(j.cities) do l.nl = c.name end
+							end
+
+							for i, j in pairs(newl.regions) do
+								j.nl = newl.name
+								for k, l in pairs(j.cities) do l.nl = newl.name end
+							end
+
+							c:checkCapital(parent)
 							parent.writeMap = true
 							parent.thisWorld.mapChanged = true
 
 							nc.subregions = nil
 							nc.cities = nil
-							parent:deepnil(nc)
+
+							collectgarbage("collect")
 						end
 
 						return -1
@@ -1365,7 +1338,7 @@ return
 			dirSeparator = "/",
 			disabled = {},
 			doMaps = false,
-			endgroups = {"land", "ia", "y", "ar", "a", "es", "tria", "tra", "an", "ica", "ria", "ium"},
+			endgroups = {"land", "ia", "y", "ar", "a", "tria", "tra", "an", "ica", "ria", "ium"},
 			final = {},
 			gedFile = nil,
 			genLimit = 3,
@@ -1652,9 +1625,10 @@ return
 			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			iSCount = 0,
 			iSIndex = 0,
+			langPeriod = 1,
 			languages = {},
 			maxConflicts = 1,
-			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri", "zi", "za", "zar", "zen"},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri", "zi", "za", "zar", "zen", "tar", "la", "li", "len", "lor", "lir"},
 			nextPerson = 1,
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
@@ -1704,6 +1678,7 @@ return
 					dynastic=false
 				}
 			},
+			langTestString = "The quick brown vixen and its master the mouse",
 			thisWorld = {},
 			tiffBitness = 9,
 			tiffDict = {},
@@ -1790,87 +1765,226 @@ return
 			end,
 
 			compLangs = function(self, writeOut)
-				local cArr = {}
-				local regs = {}
-				local testString = "The quick brown vixen and its master the mouse"
-				local wCount = 0
-				local screens = {{}}
-				local screenIndex = 1
-				local lnCount = 0
-				local lnCorrect = 0
-				local lastCountry = ""
-				local screen = screens[screenIndex]
 				local _REVIEWING = true
+				local _GLOSSARY = false
+				local _DESCENT = nil
+				local oldDescent = nil
 
-				for x in testString:gmatch("%w+") do wCount = wCount+1 end
-				for i, j in pairs(self.thisWorld.countries) do for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end end
-				local rKeys = self:getAlphabetical(regs)
+				while _REVIEWING do
+					local cArr = {}
+					local regs = {}
+					local wCount = 0
+					local screens = {{}}
+					local screenIndex = 1
+					local lnCount = 0
+					local lnCorrect = 0
+					local lastCountry = ""
+					local screen = screens[screenIndex]
+					local screenMargins = {}
 
-				for i=1,#rKeys do
-					local key = regs[rKeys[i]]
-					local country = self.thisWorld.countries[key:match("(%w+)!")]
-					if country then
-						local region = country.regions[key:match("!(%w+)")]
-						if region and region.language then table.insert(cArr, {country.demonym:upper(), region.language}) end
-					end
-				end
+					if not _GLOSSARY then
+						if _DESCENT then
+							local mainLang = nil
+							for i=1,#self.languages do if self.languages[i].name == _DESCENT then mainLang = self.languages[i] end end
+							if not mainLang then _DESCENT = nil else
+								if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
+								screenMargins[screenIndex] = math.max(screenMargins[screenIndex], mainLang.name:len()+1)
+								for i=#mainLang.descentTree,1,-1 do
+									if lnCount >= getLineTolerance(8) then
+										lnCount = 0
+										screenIndex = screenIndex+1
+									end
+									screenMargins[screenIndex] = math.max(screenMargins[screenIndex], mainLang.descentTree[i][1]:len()+1)
+								end
 
-				for i=1,#cArr do
-					local lang = cArr[i][2]
-					if lang then
-						if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(6)) or lnCount+lnCorrect >= getLineTolerance(6) then
+								lnCount = 0
+								screenIndex = 1
+								table.insert(screen, string.format("%s:%s\"%s.\"", mainLang.name, string.rep(" ", screenMargins[screenIndex]-mainLang.name:len()), mainLang.testString))
+
+								for i=#mainLang.descentTree,1,-1 do
+									if lnCount >= getLineTolerance(8) then
+										lnCount = 0
+										screenIndex = screenIndex+1
+										screens[screenIndex] = {}
+										screen = screens[screenIndex]
+									end
+									table.insert(screen, string.format("%s:%s\"%s.\"", mainLang.descentTree[i][1], string.rep(" ", screenMargins[screenIndex]-mainLang.descentTree[i][1]:len()), mainLang.descentTree[i][2]))
+									lnCount = lnCount+1
+								end
+							end
+						end
+
+						if not _DESCENT then
+							for i, j in pairs(self.thisWorld.countries) do
+								regs[j.name.."!".."Standard "..j.demonym] = j.name.."!".."Standard "..j.demonym
+								for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end
+							end
+							local rKeys = self:getAlphabetical(regs)
+
+							for i=1,#rKeys do
+								local key = regs[rKeys[i]]
+								local country = self.thisWorld.countries[key:match("(%w+)!")]
+								if country then
+									local region = country.regions[key:match("!(%w+)")]
+									if region and region.language then table.insert(cArr, {country.demonym, region.language, false})
+									elseif key:match("Standard") then table.insert(cArr, {country.demonym, country.language, true}) end
+								end
+							end
+
+							for i=1,#cArr do
+								local lang = cArr[i][2]
+								if lang then
+									local trueName = (cArr[i][3] and "Standard "..lang.name or lang.name)
+									if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
+										lnCount = 0
+										lnCorrect = 0
+										lastCountry = ""
+										screenIndex = screenIndex+1
+									end end
+									if cArr[i][1] ~= lastCountry then
+										lastCountry = cArr[i][1]
+										lnCorrect = lnCorrect+1
+									end
+									if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
+									screenMargins[screenIndex] = math.max(screenMargins[screenIndex], trueName:len()+1)
+									lnCount = lnCount+1
+								end
+							end
+
+							screenIndex = 1
 							lnCount = 0
 							lnCorrect = 0
 							lastCountry = ""
-							screenIndex = screenIndex+1
-							screens[screenIndex] = {}
-							screen = screens[screenIndex]
-						end end
-						if cArr[i][1] ~= lastCountry then
-							table.insert(screen, cArr[i][1])
-							lastCountry = cArr[i][1]
-							lnCorrect = lnCorrect+1
+
+							for i=1,#cArr do
+								local lang = cArr[i][2]
+								if lang then
+									local trueName = (cArr[i][3] and "Standard "..lang.name or lang.name)
+									if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
+										lnCount = 0
+										lnCorrect = 0
+										lastCountry = ""
+										screenIndex = screenIndex+1
+										screens[screenIndex] = {}
+										screen = screens[screenIndex]
+									end end
+									if cArr[i][1] ~= lastCountry then
+										table.insert(screen, cArr[i][1])
+										lastCountry = cArr[i][1]
+										lnCorrect = lnCorrect+1
+									end
+									if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d. %s:%s\"%s.\"", #screen+1-lnCorrect, trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
+									lnCount = lnCount+1
+								end
+							end
 						end
-						local outString = ""
-						local wIndex = 1
-						for x in testString:gmatch("%w+") do if lang.wordTable[x:lower()] then
-							if wIndex == 1 then
-								local initWord = lang.wordTable[x:lower()]:gsub("^(%w)%w+", string.upper)..lang.wordTable[x:lower()]:gsub("^%w(%w+)", "%1")
-								outString = outString..initWord:gsub(" ", "")
-							else outString = outString..lang.wordTable[x:lower()]:gsub(" ", "") end
-							if wIndex < wCount then outString = outString.." " end
-							wIndex = wIndex+1
-						end end
-						if writeOut or lnCount+lnCorrect < getLineTolerance(6) then table.insert(screen, string.format("\t%s: \"%s.\"", lang.name:match("%((%w+)%)"), outString)) end
-						lnCount = lnCount+1
-					end
-				end
 
-				screenIndex = 1
+						oldDescent = _DESCENT
+						screenIndex = 1
 
-				while _REVIEWING do
-					screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
-					screen = screens[screenIndex]
-					if writeOut then
-						local f = io.open(self:directory({self.stamp, "langs_"..self.years..".txt"}), "a+")
-						for i=1,#screen do f:write(screen[i].."\n") end
-						f:flush()
-						f:close()
-						f = nil
-						screenIndex = screenIndex+1
-						if screenIndex > #screens then _REVIEWING = false end
+						while not _GLOSSARY and _DESCENT == oldDescent do
+							screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
+							screen = screens[screenIndex]
+							if writeOut then
+								local f = io.open(self:directory({self.stamp, "langs_"..self.years..".txt"}), "a+")
+								for i=1,#screen do f:write(screen[i].."\n") end
+								f:flush()
+								f:close()
+								f = nil
+								screenIndex = screenIndex+1
+								if screenIndex > #screens then
+									_REVIEWING = false
+									_GLOSSARY = true
+								end
+							else
+								UI:clear()
+								UI:printf(string.format("Translating the text \"%s.\"\n", self.langTestString))
+								for i=1,#screen do UI:printf(screen[i]) end
+								UI:printf("\nEnter B to return to the previous menu.")
+								if not _DESCENT then UI:printf("Enter G to view a list of all languages, historical and living.") end
+								if screenIndex < #screens then UI:printf("Enter N to move to the next set of languages.") end
+								if screenIndex > 1 then UI:printf("Enter P to move to the previous set of languages.") end
+								if not _DESCENT then UI:printf("Enter a number to view the descent tree of a language in this list.") end
+								UI:printp(" > ")
+								local datin = UI:readl()
+								if datin:lower() == "b" then
+									if _DESCENT then _DESCENT = nil else
+										_REVIEWING = false
+										_GLOSSARY = true
+									end
+								elseif datin:lower() == "g" then _GLOSSARY = true
+								elseif datin:lower() == "n" then screenIndex = screenIndex+1
+								elseif datin:lower() == "p" then screenIndex = screenIndex-1
+								elseif tonumber(datin) then for i=1,#screen do if screen[i]:match("\t"..datin..". ") then
+									_DESCENT = screen[i]:match(" (%S+):")
+									_DESCENT = _DESCENT:gsub("Standard ", "")
+								end end end
+							end
+						end
 					else
-						UI:clear()
-						UI:printf(string.format("Translating the text \"%s.\"\n", testString))
-						for i=1,#screen do UI:printf(screen[i]) end
-						UI:printf("\nEnter B to return to the previous menu.")
-						if screenIndex < #screens then UI:printf("Enter N to move to the next set of languages.") end
-						if screenIndex > 1 then UI:printf("Enter P to move to the previous set of languages.") end
-						UI:printp(" > ")
-						local datin = UI:readl()
-						if datin:lower() == "b" then _REVIEWING = false
-						elseif datin:lower() == "n" then screenIndex = screenIndex+1
-						elseif datin:lower() == "p" then screenIndex = screenIndex-1 end
+						local allLanguages = {}
+						for i=1,#self.languages do
+							if not allLanguages[self.languages[i].name] then allLanguages[self.languages[i].name] = self.languages[i].testString end
+							for j=1,#self.languages[i].descentTree do if not allLanguages[self.languages[i].descentTree[j][1]] then allLanguages[self.languages[i].descentTree[j][1]] = self.languages[i].descentTree[j][2] end end
+						end
+						local alphaLangs = self:getAlphabetical(allLanguages)
+
+						for i=1,#alphaLangs do
+							local key = alphaLangs[i]
+							if lnCount+lnCorrect >= getLineTolerance(8) then
+								lnCount = 0
+								lnCorrect = 0
+								lastCountry = ""
+								screenIndex = screenIndex+1
+							end
+							if not key:match("period") then key = key.." (current period)" end
+							if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
+							screenMargins[screenIndex] = math.max(screenMargins[screenIndex], key:len()+1)
+							lnCount = lnCount+1
+						end
+
+						screenIndex = 1
+						lnCount = 0
+						lnCorrect = 0
+						lastCountry = ""
+
+						for i=1,#alphaLangs do
+							local key = alphaLangs[i]
+							local lang = allLanguages[key]
+							if lnCount+lnCorrect >= getLineTolerance(8) then
+								lnCount = 0
+								lnCorrect = 0
+								lastCountry = ""
+								screenIndex = screenIndex+1
+								screens[screenIndex] = {}
+								screen = screens[screenIndex]
+							end
+							if not key:match("period") then key = key.." (current period)" end
+							if not key:gmatch(" ([0-9]+)%)")() or key:gmatch(" ([0-9]+)%)")() ~= tostring(self.langPeriod) then if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("%d. %s:%s\"%s.\"", #screen+1, key, string.rep(" ", screenMargins[screenIndex]-key:len()), lang)) end end
+							lnCount = lnCount+1
+						end
+
+						screenIndex = 1
+
+						while _GLOSSARY do
+							screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
+							screen = screens[screenIndex]
+							UI:clear()
+							UI:printf(string.format("Translating the text \"%s.\"\n", self.langTestString))
+							for i=1,#screen do UI:printf(screen[i]) end
+							UI:printf("\nEnter B to return to the previous menu.")
+							UI:printf("Enter G to return to viewing living languages only.")
+							if screenIndex < #screens then UI:printf("Enter N to move to the next set of languages.") end
+							if screenIndex > 1 then UI:printf("Enter P to move to the previous set of languages.") end
+							UI:printp(" > ")
+							local datin = UI:readl()
+							if datin:lower() == "b" then
+								_REVIEWING = false
+								_GLOSSARY = false
+							elseif datin:lower() == "g" then _GLOSSARY = false
+							elseif datin:lower() == "n" then screenIndex = screenIndex+1
+							elseif datin:lower() == "p" then screenIndex = screenIndex-1 end
+						end
 					end
 				end
 			end,
@@ -2150,8 +2264,8 @@ return
 							for q=3,#mat do s.name = s.name.." "..mat[q] end
 							fr.cities[s.name] = s
 							if mat[1] == "P" then
-								fc.capitalregion = fr.name
-								fc.capitalcity = s.name
+								fc.capitalregion = fr
+								fc.capitalcity = s
 							end
 						else
 							local counter = ""
@@ -2297,31 +2411,42 @@ return
 				return cKeys
 			end,
 
-			getLanguage = function(self, id, nl)
+			getLanguage = function(self, r, nl)
+				local id = self:demonym(r.name)
+				if r.language then r.language.name = id end
 				for i=1,#self.languages do if self.languages[i].name == id then return self.languages[i] end end
+				if r.language then
+					r.language.name = id
+					table.insert(self.languages, 1, r.language)
+					return r.language
+				end
 
 				if nl then
 					if not nl.language then
 						local newLang = Language:new()
 						newLang:define(self)
-						self:setLanguage(nl, nil, newLang)
-					else self:setLanguage(nl, nil, nl.language) end
+						newLang.name = self:demonym(nl.name)
+						table.insert(self.languages, 1, newLang)
+						nl.language = newLang
+					end
 
-					for i, j in pairs(nl.regions) do if not j.language then
-						local langID = nl.demonym.." ("..self:demonym(j.name)..")"
-						found = false
-						for i=1,#self.languages do if not found and self.languages[i].name == langID then
-							found = true
-							j.language = self.languages[i]
-						end end
-						if not found then self:setLanguage(nl, j, nl.language:deviate(self, 0.06)) end
-					end end
+					if r.name == nl.name then
+						nl.language.name = id
+						table.insert(self.languages, 1, nl.language)
+						return nl.language
+					end
 
-					for i=#self.languages,1,-1 do if self.languages[i].name == id then return self.languages[i] end end
+					local newLang = nl.language:deviate(self, 0.06)
+					newLang.name = id
+					r.language = newLang
+					table.insert(self.languages, 1, r.language)
+					return newLang
 				end
 
 				local newLang = Language:new()
 				newLang:define(self)
+				newLang.name = id
+				table.insert(self.languages, 1, newLang)
 				return newLang
 			end,
 
@@ -2749,9 +2874,10 @@ return
 
 			randomChoice = function(self, t, doKeys)
 				local t0 = _time()
+				if not t then return nil end
 
 				local keys = {}
-				if t and t[1] then if doKeys then return math.random(1, #t) else return t[math.random(1, #t)] end end
+				if t and #t ~= 0 then if doKeys then return math.random(1, #t) else return t[math.random(1, #t)] end end
 				for key, value in pairs(t) do table.insert(keys, key) end
 				if #keys == 0 then return nil
 				elseif #keys == 1 then if doKeys then return keys[1] else return t[keys[1]] end end
@@ -2774,15 +2900,18 @@ return
 
 					if rCount > lim and c2.regions[r] then
 						local rn = c2.regions[r]
+						rn.nl = c1.name
+						rn.population = 0
+						for i, j in pairs(rn.cities) do j.nl = c1.name end
+
+						c1.regions[rn.name] = rn
+						c2.regions[rn.name] = nil
 
 						for i=#c2.people,1,-1 do if c2.people[i] and c2.people[i].region and c2.people[i].region.name == rn.name then
 							c2.people[i].region = nil
 							c2.people[i].city = nil
 							if not c2.people[i].isRuler then c1:add(self, c2.people[i]) end
 						end end
-
-						c1.regions[rn.name] = rn
-						c2.regions[rn.name] = nil
 
 						for i=1,#self.thisWorld.planetdefined do
 							local xyz = self.thisWorld.planetdefined[i]
@@ -2793,21 +2922,16 @@ return
 							end
 						end
 
-						for i=#c2.nodes,1,-1 do
-							local xyz = c2.nodes[i]
-							if self.thisWorld.planet[xyz].country == c1.name then
-								local rn = table.remove(c2.nodes, i)
-								rn = nil
-							end
-						end
+						if not conq and c2.capitalregion.name == rn.name then
+							local msg = "Capital moved from "..c2.capitalcity.name.." to "
 
-						if not conq and c2.capitalregion == rn.name then
-							local msg = "Capital moved from "..c2.capitalcity.." to "
+							c2.capitalregion = nil
+							c2.capitalcity = nil
 
-							c2.capitalregion = self:randomChoice(c2.regions).name
-							c2.capitalcity = self:randomChoice(c2.regions[c2.capitalregion].cities, true)
+							while not c2.capitalregion do c2.capitalregion = self:randomChoice(c2.regions) end
+							while not c2.capitalcity do c2.capitalcity = self:randomChoice(c2.capitalregion.cities) end
 
-							msg = msg..c2.capitalcity
+							msg = msg..c2.capitalcity.name
 							c2:event(self, msg)
 						end
 
@@ -2981,15 +3105,6 @@ return
 					if not debugTimes["CCSCommon.rseed"] then debugTimes["CCSCommon.rseed"] = 0 end
 					debugTimes["CCSCommon.rseed"] = debugTimes["CCSCommon.rseed"]+_time()-t0
 				end
-			end,
-
-			setLanguage = function(self, nl, r, l)
-				local langName = nl.demonym
-				if r and r.name then langName = langName.." ("..self:demonym(r.name)..")" end
-				for i=#self.languages,1,-1 do if self.languages[i].name == langName then table.remove(self.languages, i) end end
-				l.name = langName
-				table.insert(self.languages, l)
-				if r then r.language = self:getLanguage(langName, nl) else nl.language = self:getLanguage(langName, nl) end
 			end,
 
 			strengthFactor = function(self, c)

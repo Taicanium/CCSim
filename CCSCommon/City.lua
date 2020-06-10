@@ -6,14 +6,16 @@ return
 				setmetatable(o, self)
 
 				o.name = ""
-				o.population = 0
+				o.nl = ""
 				o.node = nil
+				o.population = 0
 
 				return o
 			end,
 
 			makename = function(self, country, parent)
 				self.name = parent:name(true)
+				self.nl = country.name
 			end
 		}
 

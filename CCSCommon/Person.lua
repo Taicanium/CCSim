@@ -138,8 +138,8 @@ return
 					self.spouse.city = self.city
 					self.region = self.spouse.region or self.region
 					self.city = self.spouse.city or self.city
-					nn.region = self.region
-					nn.city = self.city
+					nn.region = self.spouse.region
+					nn.city = self.spouse.city
 				end
 
 				if self.royalGenerations < 5 and self.spouse.royalGenerations < 5 and self.surname ~= self.spouse.surname then
@@ -207,9 +207,9 @@ return
 				end
 				for i, j in pairs(nn.ethnicity) do nn.ethnicity[i] = nn.ethnicity[i]/2 end
 
-				nn.region = self.region
-				nn.city = self.city
-				nn.birthplace = self.city.name..", "..self.region.name..", "..nl.name
+				nn.birthplace = nl.name
+				if nn.region then nn.birthplace = nn.region.name..", "..nn.birthplace end
+				if nn.city then nn.birthplace = nn.city.name..", "..nn.birthplace end
 				nn.age = 0
 				nn.gString = nn.gender.." "..nn.name.." "..nn.surname.." "..nn.birth.." "..nn.birthplace
 				nn.nationality = nl.name
@@ -321,12 +321,12 @@ return
 				local natLangs = 0
 				local spokeLangs = 0
 
-				if father.nativeLang then for i=1,#father.nativeLang do if father.nativeLang[i] and father.nativeLang[i].name ~= self.region.language.name and not natLang[father.nativeLang[i].name] then natLangs = natLangs+1 natLang[father.nativeLang[i].name] = father.nativeLang[i] end end end
-				if father.spokenLang then for i=1,#father.spokenLang do if father.spokenLang[i] and father.spokenLang[i].name ~= self.region.language.name and not spokeLang[father.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[father.spokenLang[i].name] = father.spokenLang[i] end end end
-				if mother.nativeLang then for i=1,#mother.nativeLang do if mother.nativeLang[i] and mother.nativeLang[i].name ~= self.region.language.name and not natLang[mother.nativeLang[i].name] then natLangs = natLangs+1 natLang[mother.nativeLang[i].name] = mother.nativeLang[i] end end end
-				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and mother.spokenLang[i].name ~= self.region.language.name and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
+				if father.nativeLang then for i=1,#father.nativeLang do if father.nativeLang[i] and not natLang[father.nativeLang[i].name] then natLangs = natLangs+1 natLang[father.nativeLang[i].name] = father.nativeLang[i] end end end
+				if father.spokenLang then for i=1,#father.spokenLang do if father.spokenLang[i] and not spokeLang[father.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[father.spokenLang[i].name] = father.spokenLang[i] end end end
+				if mother.nativeLang then for i=1,#mother.nativeLang do if mother.nativeLang[i] and not natLang[mother.nativeLang[i].name] then natLangs = natLangs+1 natLang[mother.nativeLang[i].name] = mother.nativeLang[i] end end end
+				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
 
-				table.insert(self.nativeLang, self.region.language)
+				if self.region then table.insert(self.nativeLang, self.region.language) end
 				local maxNatLangs = math.min(math.random(1, 2), natLangs)
 				local maxSpokenLangs = math.min(math.random(0, 3-maxNatLangs), spokeLangs)
 				local cycles = 0
@@ -386,34 +386,24 @@ return
 
 				if not self.birthplace or self.birthplace == "" then self.birthplace = nl.name end
 				self.deathplace = nl.name
-				if not self.surname or self.surname == "" then self.surname = parent:name(true, 6) end
+				if not self.surname or self.surname == "" then self.surname = parent:name(true) end
 				if not self.ancName or self.ancName == "" then self.ancName = self.surname end
 
 				if self.age > 14 then
-					if math.random(1, self.age < 25 and 1000 or 1800) == 135 then self.city = nil end
-					if math.random(1, self.age < 25 and 3000 or 5400) == 435 then self.region = nil end
+					if math.random(1, self.age < 28 and 600 or 3200) == 435 then self.city = nil end
+					if math.random(1, self.age < 28 and 1800 or 8400) == 435 then self.region = nil end
 				end
 
 				if not self.region or not self.region.cities or not self.city then
-					if not self.region or not self.region.cities then
-						self.region = parent:randomChoice(nl.regions)
-						self.city = nil
-					end
-					if self.region and self.region.cities and not self.city then self.city = parent:randomChoice(self.region.cities) end
+					self.region = parent:randomChoice(nl.regions)
+					self.city = nil
 				end
 
-				if self.region and self.region.cities then
+				if self.region and not self.city then self.city = parent:randomChoice(self.region.cities) end
+
+				if self.region then
 					self.region.population = self.region.population+1
 					self.deathplace = self.region.name..", "..self.deathplace
-				end
-
-				if self.isRuler then
-					self.region = nl.regions[nl.capitalregion] or self.region
-					self.city = self.region.cities[nl.capitalcity] or self.city
-					if self.spouse then
-						self.spouse.region = self.region
-						self.spouse.city = self.city
-					end
 				end
 
 				if self.city then
@@ -425,7 +415,16 @@ return
 					end
 				end
 
-				if self.region and not self.region.language then self.region.language = parent:getLanguage(nl.demonym.." ("..parent:demonym(self.region.name)..")", nl) end
+				if self.isRuler then
+					self.region = nl.capitalregion or self.region
+					self.city = nl.capitalcity or self.city
+					if self.spouse then
+						self.spouse.region = self.region
+						self.spouse.city = self.city
+					end
+				end
+
+				if self.region and not self.region.language then self.region.language = parent:getLanguage(self.region, nl) end
 				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
 
 				if self.region and self.nativeLang and #self.nativeLang > 0 then
