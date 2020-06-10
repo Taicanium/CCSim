@@ -240,7 +240,7 @@ return
 				if not self.name or self.name == "" then
 					local found = true
 					while found do
-						self.name = parent:name(false, 3, 2)
+						self.name = parent:name(false, 2, 2)
 						self.demonym = parent:demonym(self.name)
 						found = false
 						if self.name == self.demonym then found = true end

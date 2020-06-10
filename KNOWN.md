@@ -2,6 +2,8 @@
 
 There is an issue with lines of succession that causes random cousins to succeed instead of children born after a person takes the throne.
 
+Languages are occasionally mislabeled according to time period, causing, e.g. "English (period 4)" to appear twice in the same descent tree.
+
 # Possible Features
 
 Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.

@@ -62,7 +62,7 @@ return
 			makename = function(self, country, parent)
 				local dup = true
 				while dup do
-					self.name = parent:name(false, 3, 2)
+					self.name = parent:name(false, 2, 2)
 					dup = false
 					for i, j in pairs(parent.final) do if self.name == j.name then dup = true end end
 					for i, j in pairs(parent.thisWorld.countries) do if not dup then for k, l in pairs(j.regions) do if j.name == self.name then dup = true end end end end
