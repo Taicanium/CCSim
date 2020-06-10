@@ -704,12 +704,12 @@ return
 				end
 				self.majority = largest
 
-				if math.fmod(parent.years, 150) == 0 then
+				if math.fmod(parent.years, 151) == 0 then
+					for i, j in pairs(self.regions) do self.regions[i]:deviateDialects(self, parent) end
 					local newLang = self.language:deviate(parent, 0.06)
 					self.language = newLang
 					self.language.name = self.demonym
 					table.insert(parent.languages, 1, self.language)
-					for i, j in pairs(self.regions) do self.regions[i]:deviateDialects(self, parent) end
 				end
 
 				if _DEBUG then
