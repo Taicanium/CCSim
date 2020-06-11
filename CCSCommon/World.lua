@@ -842,7 +842,7 @@ return
 					UI:printf("Constructing initial populations...")
 				end
 				
-				if math.fmod(parent.years, 101) == 0 then
+				if math.fmod(parent.years, 100) == 0 then
 					parent.langPeriod = parent.langPeriod+1
 					UI:printl("Deviating languages...")
 				end
@@ -881,9 +881,9 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 21) == 0 then
+				if math.fmod(parent.years, 20) == 0 then
 					UI:printl("Collecting garbage...")
-					if math.fmod(parent.years, 101) == 0 then
+					if math.fmod(parent.years, 100) == 0 then
 						for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
 						if _DEBUG then parent:compLangs(true) end
 					end
