@@ -598,7 +598,7 @@ return
 
 							local newr = Region:new()
 							newr.name = c2.name
-							newr.language = parent:getLanguage(c2, c1)
+							newr.language = c2.language
 							table.insert(parent.languages, 1, newr.language)
 
 							for i=#c2.people,1,-1 do
@@ -847,7 +847,7 @@ return
 
 							local newr = Region:new()
 							newr.name = c2.name
-							newr.language = parent:getLanguage(c2, c1)
+							newr.language = c2.language
 							table.insert(parent.languages, 1, newr.language)
 
 							for i=#c2.people,1,-1 do c1:add(parent, c2.people[i]) end
@@ -984,8 +984,7 @@ return
 
 							newl:set(parent)
 							newl:setTerritory(parent)
-							newl.language = parent:getLanguage(newl, c)
-							table.insert(parent.languages, 1, newl.language)
+							newl.language = c.language
 
 							for i, j in pairs(newl.regions) do
 								local cCount = 0
@@ -1793,8 +1792,10 @@ return
 									if lnCount >= getLineTolerance(8) then
 										lnCount = 0
 										screenIndex = screenIndex+1
+										if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
 									end
 									screenMargins[screenIndex] = math.max(screenMargins[screenIndex], mainLang.descentTree[i][1]:len()+1)
+									lnCount = lnCount+1
 								end
 
 								lnCount = 0
@@ -1815,6 +1816,8 @@ return
 						end
 
 						if not _DESCENT then
+							local alreadyMatched = {}
+
 							for i, j in pairs(self.thisWorld.countries) do
 								regs[j.name.."!".."Standard "..j.demonym] = j.name.."!".."Standard "..j.demonym
 								for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end
@@ -1826,8 +1829,13 @@ return
 								local country = self.thisWorld.countries[key:match("(%w+)!")]
 								if country then
 									local region = country.regions[key:match("!(%w+)")]
-									if region and region.language then table.insert(cArr, {country.demonym, region.language, false})
-									elseif key:match("Standard") then table.insert(cArr, {country.demonym, country.language, true}) end
+									if region and region.language and not alreadyMatched[region.language.name] then
+										table.insert(cArr, {country.demonym, region.language, false})
+										alreadyMatched[region.language.name] = true
+									elseif key:match("Standard") and not alreadyMatched[country.language.name] then
+										table.insert(cArr, {country.demonym, country.language, true})
+										alreadyMatched[country.language.name] = true
+									end
 								end
 							end
 
@@ -1855,6 +1863,7 @@ return
 							lnCount = 0
 							lnCorrect = 0
 							lastCountry = ""
+							local decimalMargin = (tostring(getLineTolerance(8))):len()
 
 							for i=1,#cArr do
 								local lang = cArr[i][2]
@@ -1873,7 +1882,7 @@ return
 										lastCountry = cArr[i][1]
 										lnCorrect = lnCorrect+1
 									end
-									if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d. %s:%s\"%s.\"", #screen+1-lnCorrect, trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
+									if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
 									lnCount = lnCount+1
 								end
 							end
@@ -1947,6 +1956,7 @@ return
 						lnCount = 0
 						lnCorrect = 0
 						lastCountry = ""
+						local decimalMargin = (tostring(getLineTolerance(8))):len()
 
 						for i=1,#alphaLangs do
 							local key = alphaLangs[i]
@@ -1960,7 +1970,7 @@ return
 								screen = screens[screenIndex]
 							end
 							if not key:match("period") then key = key.." (current period)" end
-							if not key:gmatch(" ([0-9]+)%)")() or key:gmatch(" ([0-9]+)%)")() ~= tostring(self.langPeriod) then if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("%d. %s:%s\"%s.\"", #screen+1, key, string.rep(" ", screenMargins[screenIndex]-key:len()), lang)) end end
+							if not key:gmatch(" ([0-9]+)%)")() or key:gmatch(" ([0-9]+)%)")() ~= tostring(self.langPeriod) then if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("%d.%s%s:%s\"%s.\"", #screen+1, string.rep(" ", decimalMargin), key, string.rep(" ", screenMargins[screenIndex]-key:len()), lang)) end end
 							lnCount = lnCount+1
 						end
 
@@ -2413,10 +2423,8 @@ return
 
 			getLanguage = function(self, r, nl)
 				local id = self:demonym(r.name)
-				if r.language then r.language.name = id end
 				for i=1,#self.languages do if self.languages[i].name == id then return self.languages[i] end end
-				if r.language then
-					r.language.name = id
+				if r.language and r.language.name == id then
 					table.insert(self.languages, 1, r.language)
 					return r.language
 				end
@@ -2428,18 +2436,14 @@ return
 						newLang.name = self:demonym(nl.name)
 						table.insert(self.languages, 1, newLang)
 						nl.language = newLang
-					end
-
-					if r.name == nl.name then
-						nl.language.name = id
-						table.insert(self.languages, 1, nl.language)
-						return nl.language
+						r.language = newLang
+						return newLang
 					end
 
 					local newLang = nl.language:deviate(self, 0.06)
 					newLang.name = id
 					r.language = newLang
-					table.insert(self.languages, 1, r.language)
+					table.insert(self.languages, 1, newLang)
 					return newLang
 				end
 

@@ -9,6 +9,7 @@ return
 
 				o.descentTree = {}
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
+				o.period = 1
 				o.testString = ""
 				o.wordTable = {}
 
@@ -24,12 +25,13 @@ return
 				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..self.wordTable[x:lower()]:gsub(" ", "").." " end
 				self.testString = self.testString:sub(1, self.testString:len()-1)
 				self.testString = self.testString:gsub("^%w", string.upper)
+				self.period = parent.langPeriod
 			end,
 
 			deviate = function(self, parent, factor)
 				local newList = Language:new()
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
-				table.insert(newList.descentTree, {self.name.." (period "..tostring(parent.langPeriod)..")", self.testString})
+				table.insert(newList.descentTree, {self.name.." (period "..self.period..")", self.testString})
 				local ops = {"OMIT", "REPLACE", "INSERT"}
 
 				local fct = 0
@@ -73,6 +75,7 @@ return
 				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..newList.wordTable[x:lower()]:gsub(" ", "").." " end
 				newList.testString = newList.testString:sub(1, newList.testString:len()-1)
 				newList.testString = newList.testString:gsub("^%w", string.upper)
+				newList.period = parent.langPeriod
 
 				return newList
 			end,

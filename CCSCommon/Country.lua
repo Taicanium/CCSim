@@ -303,8 +303,10 @@ return
 				self.system = math.random(1, #parent.systems)
 				self:makename(parent)
 				self.agPrim = parent:randomChoice({true, false})
-				self.language = parent:getLanguage(self, self)
-				self.language.name = self.demonym
+				if not self.language then
+					self.language = parent:getLanguage(self, self)
+					self.language.name = self.demonym
+				end
 
 				local rcount = 0
 				for i, j in pairs(self.regions) do rcount = rcount+1 end
@@ -314,8 +316,7 @@ return
 						local r = Region:new()
 						r:makename(self, parent)
 						r.nl = self.name
-						r.language = parent:getLanguage(r, self)
-						r.language.name = parent:demonym(r.name)
+						r.language = self.language
 						self.regions[r.name] = r
 					end
 				end
@@ -480,7 +481,7 @@ return
 						table.insert(defined, pd)
 						table.insert(j.nodes, pd)
 					end
-				elseif j.nodes and j.nodes > 0 then for k=#j.nodes,1,-1 do
+				elseif j.nodes and #j.nodes > 0 then for k=#j.nodes,1,-1 do
 					local xyz = j.nodes[k]
 					if parent.thisWorld.planet[xyz].country == self.name then parent.thisWorld.planet[xyz].region = j.name else table.remove(j.nodes, k) end
 				end end end
@@ -522,6 +523,7 @@ return
 									local nr = Region:new()
 									nr:makename(self, parent)
 									nr.nl = self.name
+									nr.language = self.language
 									self.regions[nr.name] = nr
 									parent.thisWorld.planet[nxyz].region = nr.name
 									parent.thisWorld.planet[nxyz].regionSet = true
@@ -538,6 +540,16 @@ return
 						end
 
 						prevDefined = totalDefined
+					end
+					
+					if #j.nodes == 0 then self.regions[i] = nil else
+						local cCount = 0
+						for k, l in pairs(j.cities) do cCount = cCount+1 end
+						while #j.nodes < cCount do
+							local xyz = parent:randomChoice(j.cities, true)
+							if j.cities[xyz].node then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
+							j.cities[xyz] = nil
+						end
 					end
 				end
 
@@ -703,14 +715,6 @@ return
 					end
 				end
 				self.majority = largest
-
-				if math.fmod(parent.years, 100) == 0 then
-					for i, j in pairs(self.regions) do self.regions[i]:deviateDialects(self, parent) end
-					local newLang = self.language:deviate(parent, 0.06)
-					self.language = newLang
-					self.language.name = self.demonym
-					table.insert(parent.languages, 1, self.language)
-				end
 
 				if _DEBUG then
 					if not debugTimes["Country.update"] then debugTimes["Country.update"] = 0 end

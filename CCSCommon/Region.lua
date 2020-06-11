@@ -51,11 +51,12 @@ return
 			end,
 
 			deviateDialects = function(self, country, parent)
-				if not self.language then self.language = parent:getLanguage(self, country) end
-				local newLang = self.language:deviate(parent, 0.06)
-				newLang.name = parent:demonym(self.name)
-				self.language = newLang
-				table.insert(parent.languages, 1, self.language)
+				if not self.language or self.language.name ~= parent:demonym(self.name) then self.language = parent:getLanguage(self, country) else
+					local newLang = self.language:deviate(parent, 0.06)
+					newLang.name = parent:demonym(self.name)
+					self.language = newLang
+					table.insert(parent.languages, 1, self.language)
+				end
 				for i, j in pairs(self.subregions) do j:deviateDialects(country, parent) end
 			end,
 

@@ -231,6 +231,7 @@ return
 					local archRegion = Region:new()
 					archRegion:makename(self.countries[self.planet[nearestLand].country], parent)
 					archRegion.name = archName
+					archRegion.language = self.countries[self.planet[nearestLand].country].language
 					local archNodes = {archCenter}
 					self.countries[self.planet[nearestLand].country].regions[archRegion.name] = archRegion
 					self.planet[archCenter].archipelago = archRegion.name
@@ -238,7 +239,7 @@ return
 						local nextNode = parent:randomChoice(archNodes)
 						for i=1,#self.planet[nextNode].neighbors do
 							local nxyz = self.planet[nextNode].neighbors[i]
-							if self.planet[nxyz].archipelago ~= archRegion.name and math.random(1, 4) == math.random(1, 4) then
+							if self.planet[nxyz].archipelago ~= archRegion.name and math.random(1, 3) == math.random(1, 3) then
 								table.insert(archNodes, nxyz)
 								self.planet[nxyz].archipelago = archRegion.name
 							end
@@ -841,11 +842,6 @@ return
 					parent.iSIndex = 1
 					UI:printf("Constructing initial populations...")
 				end
-				
-				if math.fmod(parent.years, 100) == 0 then
-					parent.langPeriod = parent.langPeriod+1
-					UI:printl("Deviating languages...")
-				end
 
 				for i, cp in pairs(self.countries) do if cp then
 					if self.initialState then
@@ -882,11 +878,22 @@ return
 
 				local t2 = _time()
 				if math.fmod(parent.years, 20) == 0 then
-					UI:printl("Collecting garbage...")
 					if math.fmod(parent.years, 100) == 0 then
+						UI:printl("Deviating languages...")
+						parent.langPeriod = parent.langPeriod+1
+						for i, j in pairs(self.countries) do
+							if j.language.name ~= j.demonym then j.language = parent:getLanguage(j, j) else
+								local newLang = j.language:deviate(parent, 0.06)
+								j.language = newLang
+								j.language.name = j.demonym
+								table.insert(parent.languages, 1, j.language)
+								for k, l in pairs(j.regions) do l:deviateDialects(j, parent) end
+							end
+						end
 						for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
 						if _DEBUG then parent:compLangs(true) end
 					end
+					UI:printl("Collecting garbage...")
 					collectgarbage("collect")
 				end
 				local t3 = _time()
