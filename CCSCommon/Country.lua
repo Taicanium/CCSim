@@ -486,79 +486,72 @@ return
 					if parent.thisWorld.planet[xyz].country == self.name then parent.thisWorld.planet[xyz].region = j.name else table.remove(j.nodes, k) end
 				end end end
 
-				for i, j in pairs(self.regions) do
-					local allDefined = false
-					local totalDefined = #defined
-					local prevDefined = #defined
+				local allDefined = false
+				local totalDefined = #defined
+				local prevDefined = #defined
 
-					while not allDefined do
-						for i=#defined,1,-1 do
-							local xyz = defined[i]
-							local nDefined = true
+				while not allDefined do
+					for i=#defined,1,-1 do
+						local xyz = defined[i]
+						local nDefined = true
 
-							if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
-								for j=1,#parent.thisWorld.planet[xyz].neighbors do
-									local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-									if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
-										nDefined = false
-										parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
-										parent.thisWorld.planet[nxyz].regionSet = true
-										table.insert(defined, nxyz)
-										table.insert(self.regions[parent.thisWorld.planet[nxyz].region].nodes, nxyz)
-										totalDefined = totalDefined+1
-									end
-								end
-								parent.thisWorld.planet[xyz].regionDone = true
-							end
-
-							if nDefined then table.remove(defined, i) end
-						end
-
-						if totalDefined == prevDefined then
-							allDefined = true
-							for i=1,#self.nodes do if allDefined then
-								local nxyz = self.nodes[i]
-								if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
-									allDefined = false
-									local nr = Region:new()
-									nr:makename(self, parent)
-									nr.nl = self.name
-									nr.language = self.language
-									self.regions[nr.name] = nr
-									parent.thisWorld.planet[nxyz].region = nr.name
+						if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
+							for j=1,#parent.thisWorld.planet[xyz].neighbors do
+								local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
+								if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+									nDefined = false
+									parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
 									parent.thisWorld.planet[nxyz].regionSet = true
 									table.insert(defined, nxyz)
-									table.insert(nr.nodes, nxyz)
+									table.insert(self.regions[parent.thisWorld.planet[nxyz].region].nodes, nxyz)
 									totalDefined = totalDefined+1
 								end
-							end end
-						end
-
-						for i=1,#self.nodes do
-							local xyz = self.nodes[i]
-							parent.thisWorld.planet[xyz].regionSet = false
-						end
-
-						prevDefined = totalDefined
-					end
-					
-					if #j.nodes == 0 then self.regions[i] = nil else
-						local cCount = 0
-						for k, l in pairs(j.cities) do cCount = cCount+1 end
-						while #j.nodes < cCount do
-							local xyz = parent:randomChoice(j.cities, true)
-							if xyz then
-								if j.cities[xyz] and j.cities[xyz].node and parent.thisWorld.planet[j.cities[xyz].node] then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
-								j.cities[xyz] = nil
-								cCount = cCount-1
 							end
+							parent.thisWorld.planet[xyz].regionDone = true
 						end
+
+						if nDefined then table.remove(defined, i) end
 					end
+
+					if totalDefined == prevDefined then
+						allDefined = true
+						for i=1,#self.nodes do if allDefined then
+							local nxyz = self.nodes[i]
+							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+								allDefined = false
+								local nr = Region:new()
+								nr:makename(self, parent)
+								nr.nl = self.name
+								nr.language = self.language
+								self.regions[nr.name] = nr
+								parent.thisWorld.planet[nxyz].region = nr.name
+								parent.thisWorld.planet[nxyz].regionSet = true
+								table.insert(defined, nxyz)
+								table.insert(nr.nodes, nxyz)
+								totalDefined = totalDefined+1
+							end
+						end end
+					end
+
+					for i=1,#self.nodes do
+						local xyz = self.nodes[i]
+						parent.thisWorld.planet[xyz].regionSet = false
+					end
+
+					prevDefined = totalDefined
 				end
 
-				for i, j in pairs(self.regions) do
+				for i, j in pairs(self.regions) do if #j.nodes == 0 then self.regions[i] = nil else
 					local cCount = 0
 					for k, l in pairs(j.cities) do cCount = cCount+1 end
+					while #j.nodes < cCount do
+						local xyz = parent:randomChoice(j.cities, true)
+						if xyz then
+							if j.cities[xyz] and j.cities[xyz].node and parent.thisWorld.planet[j.cities[xyz].node] then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
+							j.cities[xyz] = nil
+							cCount = cCount-1
+						end
+					end
 
 					if cCount == 0 then
 						local nc = City:new()
@@ -576,7 +569,7 @@ return
 
 						parent.thisWorld.planet[l.node].city = l.name
 					end
-				end
+				end end
 			end,
 
 			triggerEvent = function(self, parent, i, r, o)

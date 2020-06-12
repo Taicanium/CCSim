@@ -1007,7 +1007,7 @@ return
 									parent.final[i] = nil
 								end
 							end
-							
+
 							for i, j in pairs(newl.regions) do for k=1,#j.nodes do
 								local xyz = j.nodes[k]
 								if parent.thisWorld.planet[xyz].region == newl.name then parent.thisWorld.planet[xyz].region = j.name end
