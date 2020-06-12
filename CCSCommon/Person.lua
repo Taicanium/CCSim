@@ -327,6 +327,13 @@ return
 				if mother.spokenLang then for i=1,#mother.spokenLang do if mother.spokenLang[i] and not spokeLang[mother.spokenLang[i].name] then spokeLangs = spokeLangs+1 spokeLang[mother.spokenLang[i].name] = mother.spokenLang[i] end end end
 
 				if self.region then table.insert(self.nativeLang, self.region.language) end
+				if not parent.fileLangs[self.region.language.name] then
+					local lCount = 0
+					for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+					parent.fileLangs[self.region.language.name] = lCount+1
+					parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+				end
+				parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[self.region.language.name]).."\n")
 				local maxNatLangs = math.min(math.random(1, 2), natLangs)
 				local maxSpokenLangs = math.min(math.random(0, 3-maxNatLangs), spokeLangs)
 				local cycles = 0
@@ -338,10 +345,24 @@ return
 							inherit = math.random(1, 100)
 							if inherit < 21 then
 								table.insert(self.spokenLang, choice)
+								if not parent.fileLangs[choice.name] then
+									local lCount = 0
+									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+									parent.fileLangs[choice.name] = lCount+1
+									parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+								end
+								parent.gedFile:write("h "..tostring(parent.fileLangs[choice.name]).."\n")
 								maxNatLangs = maxNatLangs-1
 								natLang[choice.name] = nil
 							else
 								table.insert(self.nativeLang, choice)
+								if not parent.fileLangs[choice.name] then
+									local lCount = 0
+									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+									parent.fileLangs[choice.name] = lCount+1
+									parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+								end
+								parent.gedFile:write("i "..tostring(parent.fileLangs[choice.name]).."\n")
 								natLang[choice.name] = nil
 							end
 						end
@@ -358,10 +379,24 @@ return
 							inherit = math.random(1, 100)
 							if inherit < 51 then
 								table.insert(self.nativeLang, choice)
+								if not parent.fileLangs[choice.name] then
+									local lCount = 0
+									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+									parent.fileLangs[choice.name] = lCount+1
+									parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+								end
+								parent.gedFile:write("i "..tostring(parent.fileLangs[choice.name]).."\n")
 								maxSpokenLangs = maxSpokenLangs-1
 								spokeLang[choice.name] = nil
 							else
 								table.insert(self.spokenLang, choice)
+								if not parent.fileLangs[choice.name] then
+									local lCount = 0
+									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+									parent.fileLangs[choice.name] = lCount+1
+									parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+								end
+								parent.gedFile:write("h "..tostring(parent.fileLangs[choice.name]).."\n")
 								spokeLang[choice.name] = nil
 							end
 						end
@@ -425,7 +460,16 @@ return
 				end
 
 				if self.region and not self.region.language then self.region.language = parent:getLanguage(self.region, nl) end
-				if self.region then if not self.nativeLang or #self.nativeLang == 0 then self.nativeLang = {self.region.language} end end
+				if self.region and self.region.language then if not self.nativeLang or #self.nativeLang == 0 then
+					self.nativeLang = {self.region.language}
+					if not parent.fileLangs[self.region.language.name] then
+						local lCount = 0
+						for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+						parent.fileLangs[self.region.language.name] = lCount+1
+						parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+					end
+					parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[self.region.language.name]).."\n")
+				end end
 
 				if self.region and self.nativeLang and #self.nativeLang > 0 then
 					local langFound = false
@@ -433,7 +477,16 @@ return
 					if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
 					if not langFound then
 						local langChance = math.random(1, 10)
-						if langChance == 5 then table.insert(self.spokenLang, self.region.language) end
+						if langChance == 5 then
+							table.insert(self.spokenLang, self.region.language)
+							if not parent.fileLangs[self.region.language.name] then
+								local lCount = 0
+								for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+								parent.fileLangs[self.region.language.name] = lCount+1
+								parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+							end
+							parent.gedFile:write(tostring(self.gIndex).." h "..tostring(parent.fileLangs[self.region.language.name]).."\n")
+						end
 					end
 				end
 

@@ -71,6 +71,7 @@ return
 			local matches = {}
 			local plc = {}
 			local dms = {}
+			local lgs = {}
 			UI:printf("Counting objects...")
 			local l = f:read("*l")
 			while l and l ~= "" do
@@ -97,7 +98,7 @@ return
 						end
 						reindexed = 0
 					else reindexed = 1 end
-					if cmd ~= "y" and cmd ~= "z" and not indi[fi] then
+					if cmd ~= "y" and cmd ~= "z" and cmd ~= "j" and not indi[fi] then
 						indi[fi] = {}
 						indi[fi].gIndex = fi
 					end
@@ -105,6 +106,12 @@ return
 					if cmd == "b" then indi[fi].birth = tonumber(split[3-reindexed])
 					elseif cmd == "c" then indi[fi].birthplace = plc[split[3-reindexed]]
 					elseif cmd == "g" then indi[fi].gender = split[3-reindexed]
+					elseif cmd == "h" then
+						if not indi[fi].spokeLang then indi[fi].spokeLang = {} end
+						table.insert(indi[fi].spokeLang, lgs[split[3-reindexed]])
+					elseif cmd == "i" then
+						if not indi[fi].natLang then indi[fi].natLang = {} end
+						table.insert(indi[fi].natLang, lgs[split[3-reindexed]])
 					elseif cmd == "n" then indi[fi].givn = split[3-reindexed]
 					elseif cmd == "s" then indi[fi].surn = split[3-reindexed]
 					elseif cmd == "t" then
@@ -117,9 +124,8 @@ return
 					elseif cmd == "m" then indi[fi].moth = tonumber(split[3-reindexed])
 					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed])
 					elseif cmd == "l" then
-						if not indi[fi].notes then indi[fi].notes = {} end
-						if not split[3-reindexed] or not dms or not split[4-reindexed] or not dms[split[4-reindexed]] then UI:printf(string.format("%d %s", 4-reindexed, split[4-reindexed], #dms)) end
-						table.insert(indi[fi].notes, split[3-reindexed].."% "..dms[split[4-reindexed]])
+						if not indi[fi].ethn then indi[fi].ethn = {} end
+						table.insert(indi[fi].ethn, split[3-reindexed].."% "..dms[split[4-reindexed]])
 					elseif cmd == "y" then
 						local inx = split[3-reindexed]
 						local loc = split[4-reindexed]
@@ -130,6 +136,11 @@ return
 						local loc = split[4-reindexed]
 						for q=5-reindexed,#split do loc = loc.." "..split[q] end
 						dms[inx] = loc
+					elseif cmd == "j" then
+						local inx = split[3-reindexed]
+						local loc = split[4-reindexed]
+						for q=5-reindexed,#split do loc = loc.." "..split[q] end
+						lgs[inx] = loc
 					end
 					l = f:read("*l")
 				else l = nil end
@@ -220,6 +231,7 @@ return
 					if mi < #matches then UI:printc("N to move to the next match.\n") end
 					if mi > 1 then UI:printc("P to move to the previous match.\n") end
 				end
+				UI:printc("R to select a random person.\n")
 				UI:printc("S to view this person's notes.\n")
 				UI:printp("\n > ")
 				local datin = UI:readl()
@@ -237,12 +249,34 @@ return
 					mi = math.max(mi, 1)
 					fi = matches[mi]
 				elseif datin:lower() == "e" and _DEBUG then debugLine()
+				elseif datin:lower() == "r" then
+					matches = {}
+					fi = CCSCommon:randomChoice(indi, true)
 				elseif datin:lower() == "s" then
 					UI:clear()
 					printIndi(i, 0)
 					UI:printc("\n\n")
-					if i.notes then for s=1,#i.notes do UI:printf(i.notes[s]) end elseif not i.rulerName then UI:printf("This individual has no notes.") end
+					if not i.rulerName and not i.ethn and not i.spokeLang and not i.natLang then UI:printf("This individual has no notes.") end
 					if i.rulerName then UI:printf("\nBirth name: "..givn.." "..surn) end
+					if i.natLang or i.spokeLang then UI:printc("\n") end
+					if i.natLang then
+						UI:printc("Native language")
+						if #i.natLang > 1 then UI:printc("s") end
+						UI:printc(": ")
+						for x=1,#i.natLang-1 do UI:printc(i.natLang[x]..", ") end
+						UI:printc(i.natLang[#i.natLang].."\n")
+					end
+					if i.spokeLang then
+						UI:printc("Spoken language")
+						if #i.spokeLang > 1 then UI:printc("s") end
+						UI:printc(": ")
+						for x=1,#i.spokeLang-1 do UI:printc(i.spokeLang[x]..", ") end
+						UI:printc(i.spokeLang[#i.spokeLang].."\n")
+					end
+					if i.ethn then
+						UI:printf("\n")
+						for x=1,#i.ethn do UI:printf(i.ethn[x]) end
+					end
 					UI:readl()
 				elseif datin ~= "" then
 					matches = {}
@@ -1338,6 +1372,7 @@ return
 			disabled = {},
 			doMaps = false,
 			endgroups = {"land", "ia", "y", "ar", "a", "tria", "tra", "an", "ica", "ria", "ium"},
+			fileLangs = {},
 			final = {},
 			gedFile = nil,
 			genLimit = 3,

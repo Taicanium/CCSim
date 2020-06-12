@@ -15,5 +15,3 @@ Store event data in a temporary data file the same way we now store genealogical
 # To-do
 
 I have been working on learning the TIFF format with the intention of replacing BMP maps with TIFF maps. TIFF is a much more compact (and compression-friendly) file format and doesn't appear too difficult to implement. However it is still something I need to become familiar enough with to code around.
-
-The new family data output doesn't include native and spoken languages. Won't be too hard to add. Just need time to.
