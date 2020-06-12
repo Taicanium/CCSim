@@ -233,17 +233,26 @@ return
 					archRegion.name = archName
 					archRegion.language = self.countries[self.planet[nearestLand].country].language
 					local archNodes = {archCenter}
+					local archDefined = 1
 					self.countries[self.planet[nearestLand].country].regions[archRegion.name] = archRegion
 					self.planet[archCenter].archipelago = archRegion.name
-					while #archNodes < archSize do
-						local nextNode = parent:randomChoice(archNodes)
-						for i=1,#self.planet[nextNode].neighbors do
-							local nxyz = self.planet[nextNode].neighbors[i]
-							if self.planet[nxyz].archipelago ~= archRegion.name and math.random(1, 3) == math.random(1, 3) then
-								table.insert(archNodes, nxyz)
-								self.planet[nxyz].archipelago = archRegion.name
+					while archDefined < archSize do
+						local nextNode = math.random(1, #archNodes)
+						while not archNodes[nextNode] or not self.planet[archNodes[nextNode]] do nextNode = math.random(1, #archNodes) end
+						local neighborNodes = false
+						for i=1,#self.planet[archNodes[nextNode]].neighbors do
+							local nxyz = self.planet[archNodes[nextNode]].neighbors[i]
+							if self.planet[nxyz].archipelago ~= archRegion.name then
+								neighborNodes = true
+								if math.random(1, 3) == math.random(1, 2) then
+									table.insert(archNodes, nxyz)
+									self.planet[nxyz].archipelago = archRegion.name
+									archDefined = archDefined+1
+									neighborNodes = true
+								end
 							end
 						end
+						if not neighborNodes then table.remove(archNodes, nextNode) end
 					end
 					for i=1,islands do
 						UI:printl(string.format("Group %d/%d, Island %d/%d", a, archipelagos, i, islands))
@@ -877,22 +886,26 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 20) == 0 then
-					if math.fmod(parent.years, 100) == 0 then
-						UI:printl("Deviating languages...")
+				if math.fmod(parent.years, 35) == 0 then
+					UI:printl("Deviating languages...")
+					parent.langEML = parent.langEML+1
+					if parent.langEML == 4 then
+						parent.langEML = 1
 						parent.langPeriod = parent.langPeriod+1
-						for i, j in pairs(self.countries) do
-							if j.language.name ~= j.demonym then j.language = parent:getLanguage(j, j) else
-								local newLang = j.language:deviate(parent, 0.06)
-								j.language = newLang
-								j.language.name = j.demonym
-								table.insert(parent.languages, 1, j.language)
-								for k, l in pairs(j.regions) do l:deviateDialects(j, parent) end
-							end
-						end
-						for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
-						if _DEBUG then parent:compLangs(true) end
 					end
+					for i, j in pairs(self.countries) do
+						if j.language.name ~= j.demonym then j.language = parent:getLanguage(j, j) else
+							for k, l in pairs(j.regions) do l:deviateDialects(j, parent) end
+							local newLang = j.language:deviate(parent)
+							j.language = newLang
+							j.language.name = j.demonym
+							table.insert(parent.languages, 1, j.language)
+						end
+					end
+					for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
+					if _DEBUG then parent:compLangs(true) end
+				end
+				if math.fmod(parent.years, 20) == 0 then
 					UI:printl("Collecting garbage...")
 					collectgarbage("collect")
 				end

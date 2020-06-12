@@ -8,6 +8,8 @@ return
 				setmetatable(o, self)
 
 				o.descentTree = {}
+				o.eml = 1
+				o.letterCount = 0
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
 				o.period = 1
 				o.testString = ""
@@ -19,63 +21,66 @@ return
 			define = function(self, parent)
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
 					local ln = math.ceil(ENGLISH[i]:len()/3)
-					local word = parent:namecheck(parent:name(true, ln, ln))
+					local word = parent:name(true, ln, ln)
 					self.wordTable[ENGLISH[i]] = word:lower()
+					self.letterCount = self.letterCount+word:len()
 				end end
 				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..self.wordTable[x:lower()]:gsub(" ", "").." " end
 				self.testString = self.testString:sub(1, self.testString:len()-1)
 				self.testString = self.testString:gsub("^%w", string.upper)
 				self.period = parent.langPeriod
+				self.eml = parent.langEML
 			end,
 
-			deviate = function(self, parent, factor)
+			deviate = function(self, parent)
 				local newList = Language:new()
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
-				table.insert(newList.descentTree, {self.name.." (period "..self.period..")", self.testString})
+				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
+				table.insert(newList.descentTree, {self.name..periodString, self.testString})
 				local ops = {"OMIT", "REPLACE", "INSERT"}
 
 				local fct = 0
-				local totalFct = factor*#ENGLISH
-				local prevDone = {}
+				local totalFct = parent.langDriftConstant*self.letterCount
+				local doOp = {}
 				while fct < totalFct do
-					fct = 0
 					local op = parent:randomChoice(ops)
-					local doOp = {}
 					if op == "OMIT" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), " "}
 					elseif op == "REPLACE" then
 						local group = parent:randomChoice(self.repGroups)
 						local index = math.random(1, 2)
 						doOp = {group[index == 1 and 1 or 2], group[index == 1 and 2 or 1]}
 					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
-					local i = 1
-					while i <= #ENGLISH do
-						local eng = ENGLISH[math.random(1, #ENGLISH)]
-						local thisWord = newList.wordTable[eng] or self.wordTable[eng]
-						local spaces = {}
-						local newWord = thisWord:gsub(doOp[1], doOp[2], 1)
-						for j=1,newWord:len() do local ind = newWord:find("%s", j) if spaces[#spaces] and spaces[#spaces] ~= ind then table.insert(spaces, ind) end end
-						local check = parent:namecheck(newWord:gsub("%s", "")):lower()
-						newWord = ""
-						for j=1,#spaces do
-							if j == 1 then newWord = check:sub(1, spaces[j]-1)
-							else newWord = newWord..check:sub(spaces[j-1], spaces[j]-1).." " end
-						end
-						newWord = newWord..check:sub(spaces[#spaces] or 1, check:len())
-						while newWord:len() < thisWord:len() do newWord = newWord.." " end
-						while thisWord:len() < newWord:len() do thisWord = thisWord.." " end
-						local div = (1/newWord:len())
-						for j=1,newWord:len() do if newWord:sub(j, j) ~= thisWord:sub(j, j) then fct = fct+div end end
-						newList.wordTable[eng] = newWord
-						if fct >= totalFct then i = #ENGLISH end
-						i = i+1
+					local eng = ENGLISH[math.random(1, #ENGLISH)]
+					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
+					local spaces = {}
+					local newWord, repCount = thisWord:gsub(doOp[1], doOp[2], 1)
+					if op == "REPLACE" then repCount = repCount+math.abs(doOp[1]:len()-doOp[2]:len()) end
+					for j=1,newWord:len() do
+						local ind = newWord:find("%s", j)
+						if spaces[#spaces] and spaces[#spaces] ~= ind then table.insert(spaces, ind) end
 					end
+					local check = parent:namecheck(newWord:gsub("%s", "")):lower()
+					newWord = ""
+					for j=1,#spaces do
+						if j == 1 then newWord = check:sub(1, spaces[j]-1)
+						else newWord = newWord..check:sub(spaces[j-1], spaces[j]-1).." " end
+					end
+					newWord = newWord..check:sub(spaces[#spaces] or 1, check:len())
+					while newWord:len() < thisWord:len() do newWord = newWord.." " end
+					newList.wordTable[eng] = newWord
+					fct = fct+repCount
 				end
 
-				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] end end
+				newList.period = parent.langPeriod
+				newList.eml = parent.langEML
+				newList.letterCount = 0
+				for i=1,#ENGLISH do
+					if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3)) end
+					newList.letterCount = newList.letterCount+newList.wordTable[ENGLISH[i]]:len()
+				end
 				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..newList.wordTable[x:lower()]:gsub(" ", "").." " end
 				newList.testString = newList.testString:sub(1, newList.testString:len()-1)
 				newList.testString = newList.testString:gsub("^%w", string.upper)
-				newList.period = parent.langPeriod
 
 				return newList
 			end,

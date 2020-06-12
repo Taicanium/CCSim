@@ -547,7 +547,7 @@ return
 						for k, l in pairs(j.cities) do cCount = cCount+1 end
 						while #j.nodes < cCount do
 							local xyz = parent:randomChoice(j.cities, true)
-							if j.cities[xyz].node then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
+							if j.cities[xyz] and j.cities[xyz].node and parent.thisWorld.planet[j.cities[xyz].node] then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
 							j.cities[xyz] = nil
 						end
 					end
