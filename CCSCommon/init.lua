@@ -2542,6 +2542,7 @@ return
 				local msg = ""
 				local cLimit = 16
 				local eLimit = 6
+				local writtenLines = {}
 
 				self.thisWorld:constructVoxelPlanet(self)
 
@@ -2706,8 +2707,8 @@ return
 
 						if datin:lower() ~= "q" then
 							UI:clear(true)
-							UI:printc(msg)
 							UI:refresh()
+							UI:printc(msg)
 						end
 					end
 				end
