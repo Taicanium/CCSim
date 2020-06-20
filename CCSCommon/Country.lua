@@ -297,7 +297,7 @@ return
 				end end
 			end,
 
-			set = function(self, parent)
+			set = function(self, parent, ind)
 				parent:rseed()
 
 				self.system = math.random(1, #parent.systems)
@@ -328,7 +328,7 @@ return
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
-				if self.population <= 1 then self:setPop(parent, _DEBUG and 150 or math.random(750, 1500)) end
+				if not ind and self.population <= 1 then self:setPop(parent, _DEBUG and 150 or math.random(750, 1500)) end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 

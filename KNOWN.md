@@ -2,8 +2,6 @@
 
 There is an issue with lines of succession that causes random cousins to succeed instead of children born to the previous monarch after their succession to the throne.
 
-Populations are sometimes being created out of nothing upon independence instead of migrated from the parent country. This is a failsafe implemented on purpose, but it indicates -- well, the need for activation of the failsafe i.e. there is yet another issue with the independence event.
-
 # Possible Features
 
 Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.

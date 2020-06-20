@@ -864,7 +864,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=3,
+					chance=4,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -1016,7 +1016,7 @@ return
 							newl:event(parent, "Independence from "..c.name)
 							c:event(parent, "Granted independence to "..newl.name)
 
-							newl:set(parent)
+							newl:set(parent, true)
 							newl:setTerritory(parent)
 							newl.language = c.language
 
