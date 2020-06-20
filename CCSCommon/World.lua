@@ -76,6 +76,7 @@ return
 							if not found then table.insert(self.planet[xyz].neighbors, self.stretched[xi][yi][7]) end
 						end end end end
 					end
+					UI:printl(string.format("%.2f%% done", (i/#self.stretched)*100))
 				end
 
 				collectgarbage("collect")
@@ -291,20 +292,24 @@ return
 				local wFinished = 0
 				for i=1,planetSize do if not self.planet[self.planetdefined[i]].land then wNodes = wNodes+1 end end
 
-				for i=1,planetSize do if self.planet[self.planetdefined[i]].land then for j=1,#self.planet[self.planetdefined[i]].neighbors do
+				for i=1,planetSize do if self.planet[self.planetdefined[i]].land or self.planet[self.planetdefined[i]].archipelago ~= "" then for j=1,#self.planet[self.planetdefined[i]].neighbors do
 					local nxyz = self.planet[self.planetdefined[i]].neighbors[j]
-					if not self.planet[nxyz].land and self.planet[nxyz].waterBody == "" then
+					local dArchSea = self.planet[self.planetdefined[i]].archipelago == ""
+					local nArchSea = self.planet[nxyz].archipelago == ""
+					if not self.planet[nxyz].land and dArchSea == nArchSea and self.planet[nxyz].waterBody == "" then
 						self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 2, 2))
 						while self.waterBodies[self.planet[nxyz].waterBody] do self.planet[nxyz].waterBody = parent:demonym(parent:name(false, 2, 2)) end
 						self.waterBodies[self.planet[nxyz].waterBody] = 1
 						local waterNodesToTest = {nxyz}
 						local tested = {}
 						while #waterNodesToTest > 0 do
-							if math.fmod(wFinished, 500) == 0 then UI:printl(string.format("%.2f%% done", (wFinished/wNodes)*100)) end
+							if math.fmod(wFinished, 1000) == 0 then UI:printl(string.format("%.2f%% done", (wFinished/wNodes)*100)) end
 							if not self.planet[waterNodesToTest[1]].waterTested then
 								for j=1,#self.planet[waterNodesToTest[1]].neighbors do
 									local mxyz = self.planet[waterNodesToTest[1]].neighbors[j]
-									if not self.planet[mxyz].land and self.planet[mxyz].waterBody == "" and not self.planet[mxyz].waterTested then
+									local wArchSea = self.planet[waterNodesToTest[1]].archipelago == ""
+									local mArchSea = self.planet[mxyz].archipelago == ""
+									if not self.planet[mxyz].land and mArchSea == wArchSea and self.planet[mxyz].waterBody == "" and not self.planet[mxyz].waterTested then
 										self.planet[mxyz].waterBody = self.planet[waterNodesToTest[1]].waterBody
 										self.waterBodies[self.planet[mxyz].waterBody] = self.waterBodies[self.planet[mxyz].waterBody]+1
 										wFinished = wFinished+1
@@ -341,31 +346,11 @@ return
 				self.mapChanged = true
 			end,
 
-			denormalize = function(self, x, y, z)
-				local mag = math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))/self.planetR
-				return x*mag, y*mag, z*mag
-			end,
-
 			destroy = function(self)
 				for i, cp in pairs(self.countries) do
 					cp:destroy(parent)
 					cp = nil
 				end
-			end,
-
-			getCoordsFromNode = function(self, n)
-				local x = 0
-				local y = 0
-				local nm = n
-				while nm > math.pow(self.planetR*2+1, 2) do
-					nm = nm-math.pow(self.planetR*2+1, 2)
-					x = x+1
-				end
-				while nm > self.planetR*2+1 do
-					nm = nm-self.planetR*2+1
-					y = y+1
-				end
-				return denormalize(x-self.planetR, y-self.planetR, nm-self.planetR)
 			end,
 
 			getNodeFromCoords = function(self, x, y, z)
@@ -578,6 +563,25 @@ return
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
 					if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end
 				end
+				
+				if _DEBUG then
+					local distortionMap = {}
+					for distRow=1,columnCount do
+						local nextPix = 1
+						local lastPix = -1
+						distortionMap[distRow] = {}
+						for distColumn=1,self.planetC do
+							if self.stretched[distRow][distColumn][7] ~= lastPix then
+								nextPix = nextPix == 0 and 1 or 0
+								lastPix = self.stretched[distRow][distColumn][7]
+							end
+							
+							if nextPix == 1 then distortionMap[distRow][distColumn] = maxRGB
+							else distortionMap[distRow][distColumn] = zeroRGB end
+						end
+					end
+					parent:bmpOut("DISTORTION", distortionMap, self.planetC, columnCount)
+				end
 
 				local colSum = 2
 				local margin = self.planetC+2 -- Our legend has two pixels of horiz. padding from the map.
@@ -590,13 +594,11 @@ return
 					while cCol <= self.planetC do
 						if self.stretched[row] and self.stretched[row][accCol] then
 							extended[row][cCol] = {self.stretched[row][accCol][1], self.stretched[row][accCol][2], self.stretched[row][accCol][3]}
-							if self.stretched[row][accCol][5] ~= "" and math.fmod(row+cCol, 32) == 0 then
-								extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol]
-							end
+							if self.stretched[row][accCol][5] ~= "" and math.fmod(row+cCol, 24) == 0 then extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol] end
 							if self.stretched[row+1] and self.stretched[row+1][accCol] then
 								if self.stretched[row+1][accCol][6] ~= self.stretched[row][accCol][6] then
 									extended[row][cCol] = self.colors["\x01"..self.stretched[row][accCol][6]] or extended[row][cCol]
-								elseif self.stretched[row+1][accCol][5] ~= "" and math.fmod(row+cCol+1, 32) == 0 then
+								elseif self.stretched[row+1][accCol][5] ~= "" and math.fmod(row+cCol+1, 24) == 0 then
 									extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol]
 								elseif self.stretched[row+1][accCol][4] ~= self.stretched[row][accCol][4] then
 									extended[row][cCol] = zeroRGB
@@ -605,7 +607,7 @@ return
 							if self.stretched[row-1] and self.stretched[row-1][accCol] then
 								if self.stretched[row-1][accCol][6] ~= self.stretched[row][accCol][6] then
 									extended[row][cCol] = self.colors["\x01"..self.stretched[row][accCol][6]] or extended[row][cCol]
-								elseif self.stretched[row-1][accCol][5] ~= "" and math.fmod(row+cCol-1, 32) == 0 then
+								elseif self.stretched[row-1][accCol][5] ~= "" and math.fmod(row+cCol-1, 24) == 0 then
 									extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol]
 								elseif self.stretched[row-1][accCol][4] ~= self.stretched[row][accCol][4] then
 									extended[row][cCol] = zeroRGB
@@ -614,7 +616,7 @@ return
 							if self.stretched[row][accCol+1] then
 								if self.stretched[row][accCol+1][6] ~= self.stretched[row][accCol][6] then
 									extended[row][cCol] = self.colors["\x01"..self.stretched[row][accCol][6]] or extended[row][cCol]
-								elseif self.stretched[row][accCol+1][5] ~= "" and math.fmod(row+cCol+1, 32) == 0 then
+								elseif self.stretched[row][accCol+1][5] ~= "" and math.fmod(row+cCol+1, 24) == 0 then
 									extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol]
 								elseif self.stretched[row][accCol+1][4] ~= self.stretched[row][accCol][4] then
 									extended[row][cCol] = zeroRGB
@@ -623,7 +625,7 @@ return
 							if self.stretched[row][accCol-1] then
 								if self.stretched[row][accCol-1][6] ~= self.stretched[row][accCol][6] then
 									extended[row][cCol] = self.colors["\x01"..self.stretched[row][accCol][6]] or extended[row][cCol]
-								elseif self.stretched[row][accCol-1][5] ~= "" and math.fmod(row+cCol-1, 32) == 0 then
+								elseif self.stretched[row][accCol-1][5] ~= "" and math.fmod(row+cCol-1, 24) == 0 then
 									extended[row][cCol] = self.colors["\x02"..self.stretched[row][accCol][5]] or extended[row][cCol]
 								elseif self.stretched[row][accCol-1][4] ~= self.stretched[row][accCol][4] then
 									extended[row][cCol] = zeroRGB
@@ -652,17 +654,14 @@ return
 								local tRuler = leaders[name]
 								if name:sub(1, 1) == "\x02" and name:sub(2, 2) ~= "\x01" then
 									if self.waterBodies[name:sub(2, name:len())] > math.ceil(#self.planetdefined/5) then name = name.." OCEAN"
-									else name = name.." SEA" end
+									elseif self.waterBodies[name:sub(2, name:len())] > math.ceil(#self.planetdefined/100) then name = name.." SEA"
+									else name = name.." BAY" end
 								end
 								local nameLen = name:len()
 								local rulerLen = tRuler:len()
 								for k=margin,margin+7 do for l=top,bottom do -- Define a square of color 8 pixels wide and tall, indicating the color of this country on the map.
 									if not extended[l] then extended[l] = {} end
-									if name:sub(1, 1) ~= "\x02" or name:sub(2, 2) == "\x01" or l > top+5 then
-										extended[l][k] = {tColor[1], tColor[2], tColor[3]}
-									else
-										extended[l][k] = waterRGB
-									end
+									if name:sub(1, 1) ~= "\x02" or name:sub(2, 2) == "\x01" or l > top+5 then extended[l][k] = {tColor[1], tColor[2], tColor[3]} else extended[l][k] = waterRGB end
 								end end
 								margin = margin+10 -- Move to the right of this square, leaving 10-8=2 pixels of padding.
 								for k=1,nameLen do -- For each character...
@@ -691,11 +690,7 @@ return
 								bottom = bottom+10 -- And move one line down, leaving two pixels of space.
 								for k=margin,margin+7 do for l=top-2,bottom do -- Turn our previous square of color into a two-line-tall rectangle, for the line with this country's current ruler.
 									if not extended[l] then extended[l] = {} end
-									if name:sub(1, 1) ~= "\x02" or name:sub(2, 2) == "\x01" or l < bottom-5 then
-										extended[l][k] = {tColor[1], tColor[2], tColor[3]}
-									else
-										extended[l][k] = waterRGB
-									end
+									if name:sub(1, 1) ~= "\x02" or name:sub(2, 2) == "\x01" or l < bottom-5 then extended[l][k] = {tColor[1], tColor[2], tColor[3]} else extended[l][k] = waterRGB end
 								end end
 								margin = margin+14 -- As before, move to the right, but this time leave 6 pixels of padding for an indent.
 								for k=1,rulerLen do
@@ -706,11 +701,7 @@ return
 									-- Write out the ruler string the same way we wrote out the country's name.
 									for l=top+1,bottom-1 do
 										for m=margin,margin+5 do
-											if glyph[letterRow][letterColumn] == 1 then
-												extended[l][m] = maxRGB
-											else
-												extended[l][m] = zeroRGB
-											end
+											if glyph[letterRow][letterColumn] == 1 then extended[l][m] = maxRGB else extended[l][m] = zeroRGB end
 											letterColumn = letterColumn+1
 										end
 										letterColumn = 1
@@ -776,19 +767,17 @@ return
 						self.planet[pqr].mapWritten = true
 					end
 
-					if p == 0 and q == 0 and r == rd then finished = true
-					else
+					if p == 0 and q == 0 and r == rd then finished = true else
 						if ringDone >= math.pow(ring, 2)-math.pow(ring-2, 2) then
 							iColumn = iColumn+1
 							ringDone = 0
-							if layer == 0 then
-								ring = ring+2
+							if layer == 2 then
+								ring = ring-2
 								p = 0
-								q = q+1
-								r = -rd
+								q = math.floor(ring/2)
+								r = rd
 								pr = 1
 								qr = 0
-								if q == rd then layer = 1 end
 							elseif layer == 1 then
 								p = 0
 								q = rd
@@ -796,32 +785,33 @@ return
 								pr = 1
 								qr = 0
 								if r == rd then layer = 2 end
-							elseif layer == 2 then
-								ring = ring-2
+							elseif layer == 0 then
+								ring = ring+2
 								p = 0
-								q = q-1
-								r = rd
+								q = math.floor(ring/2)
+								r = -rd
 								pr = 1
 								qr = 0
+								if q == rd then layer = 1 end
 							end
 						else
 							p = p+pr
-							if p > math.floor(ring/2) then
+							if p > math.floor(ring/2) or p > rd then
 								p = p-1
 								pr = 0
 								qr = -1
-							elseif p < -math.floor(ring/2) then
+							elseif p < -math.floor(ring/2) or p < -rd then
 								p = p+1
 								pr = 0
 								qr = 1
 							end
 							q = q+qr
-							if q > math.floor(ring/2) then
+							if q > math.floor(ring/2) or q > rd then
 								q = q-1
 								p = p+1
 								pr = 1
 								qr = 0
-							elseif q < -math.floor(ring/2) then
+							elseif q < -math.floor(ring/2) or q < -rd then
 								q = q+1
 								p = p-1
 								pr = -1
