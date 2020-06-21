@@ -52,6 +52,8 @@ return
 				o.ruledCountry = ""
 				o.rulerName = ""
 				o.rulerTitle = ""
+				o.succIndices = {}
+				o.succTables = {}
 				o.spokenLang = {}
 				o.spouse = nil
 				o.surname = ""
@@ -63,6 +65,14 @@ return
 			destroy = function(self, parent, nl)
 				self.age = nil
 				self.cbelief = nil
+				for i, j in pairs(self.succTables) do
+					for k=1,#j do j[k].succIndices[i] = k end
+					if self.succIndices[i] > 0 then
+						table.remove(j, self.succIndices[i])
+						for k=#j,1,-1 do if not j[k] or not j[k].def or j[k].isruler then table.remove(j, k) end end
+						for k=1,#j do j[k].succIndices[i] = k end
+					end
+				end
 				self.children = nil
 				if not self.deathplace or self.deathplace == "" then
 					self.deathplace = nl.name
@@ -97,6 +107,7 @@ return
 				self.region = nil
 				self.royalSystem = nil
 				self.ruledCountry = nil
+				self.succIndex = nil
 				if self.spouse and self.spouse.def then self.spouse.spouse = nil end
 				self.spouse = nil
 				self.title = nil
@@ -224,33 +235,30 @@ return
 					nn.level = self.level-1
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
-
-				local selfSucc = math.huge
-				local spouseSucc = math.huge
-
-				if self.isRuler then selfSucc = 0
-				elseif self.inSuccession then for i=1,#nl.lineOfSuccession do if selfSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.gIndex then selfSucc = i end end end
-				if self.spouse.isRuler then spouseSucc = 0
-				elseif self.spouse.inSuccession then for i=1,#nl.lineOfSuccession do if spouseSucc == math.huge and nl.lineOfSuccession[i].gIndex == self.spouse.gIndex then spouseSucc = i end end end
-
-				if selfSucc < math.huge then for i=1,#self.children do self.children[i].inSuccession = false end end
-				if spouseSucc < math.huge then for i=1,#self.spouse.children do self.spouse.children[i].inSuccession = false end end
-
-				if selfSucc < math.huge then
-					for i=#nl.lineOfSuccession,1,-1 do
-						if nl.lineOfSuccession[i].father and nl.lineOfSuccession[i].father.gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i)
-						elseif nl.lineOfSuccession[i].mother and nl.lineOfSuccession[i].mother.gIndex == self.gIndex then table.remove(nl.lineOfSuccession, i) end
-					end
-					nl:recurseRoyalChildren(self, selfSucc)
+				
+				for i=#nl.lineOfSuccession,1,-1 do if not nl.lineOfSuccession[i] or not nl.lineOfSuccession[i].def then table.remove(nl.lineOfSuccession, i) end end
+				for i=1,#nl.lineOfSuccession do
+					nl.lineOfSuccession[i].succTables[nl.name] = nl.lineOfSuccession
+					nl.lineOfSuccession[i].succIndices[nl.name] = i
 				end
 
-				if spouseSucc < math.huge then
-					for i=#nl.lineOfSuccession,1,-1 do
-						if nl.lineOfSuccession[i].father and nl.lineOfSuccession[i].father.gIndex == self.spouse.gIndex then table.remove(nl.lineOfSuccession, i)
-						elseif nl.lineOfSuccession[i].mother and nl.lineOfSuccession[i].mother.gIndex == self.spouse.gIndex then table.remove(nl.lineOfSuccession, i) end
-					end
-					nl:recurseRoyalChildren(self.spouse, spouseSucc)
+				if self.isRuler and parent.systems[nl.system].dynastic then
+					self.succTables[nl.name] = nl.lineOfSuccession
+					self.succIndices[nl.name] = 0
+				elseif self.spouse.isRuler and parent.systems[nl.system].dynastic then
+					self.spouse.succTables[nl.name] = nl.lineOfSuccession
+					self.spouse.succIndices[nl.name] = 0
 				end
+
+				for i, j in pairs(self.succTables) do if parent.final[i] then
+					for k=#parent.final[i].lineOfSuccession,1,-1 do if not parent.final[i].lineOfSuccession[k] or not parent.final[i].lineOfSuccession[k].def then table.remove(parent.final[i].lineOfSuccession, k) end end
+					for k=1,#parent.final[i].lineOfSuccession do
+						parent.final[i].lineOfSuccession[k].succTables[i] = parent.final[i].lineOfSuccession
+						parent.final[i].lineOfSuccession[k].succIndices[i] = k
+					end
+					if self.spouse.succTables[i] and self.spouse.succIndices[i] < self.succIndices[i] then parent.final[i]:recurseRoyalChildren(self.spouse, self.spouse.succIndices[i])
+					else parent.final[i]:recurseRoyalChildren(self, self.succIndices[i]) end
+				end end
 
 				if not parent.places[nn.birthplace] then
 					parent.places[nn.birthplace] = nn.gIndex

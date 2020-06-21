@@ -563,7 +563,7 @@ return
 					for j=1,#self.stretched do if self.stretched[j][i] and self.stretched[j][i][1] == 22 and self.stretched[j][i][2] == 22 and self.stretched[j][i][3] == 170 then extCols[i] = extCols[i]+1 end end
 					if borderCol == -1 or extCols[i] > extCols[borderCol] then borderCol = i end
 				end
-				
+
 				if _DEBUG then
 					local distortionMap = {}
 					for distRow=1,columnCount do
@@ -575,7 +575,7 @@ return
 								nextPix = nextPix == 0 and 1 or 0
 								lastPix = self.stretched[distRow][distColumn][7]
 							end
-							
+
 							if nextPix == 1 then distortionMap[distRow][distColumn] = maxRGB
 							else distortionMap[distRow][distColumn] = zeroRGB end
 						end
@@ -768,7 +768,7 @@ return
 					end
 
 					if p == 0 and q == 0 and r == rd then finished = true else
-						if ringDone >= math.pow(ring, 2)-math.pow(ring-2, 2) then
+						if ringDone >= (ring == 1 and 1 or 4*(ring-1)) then
 							iColumn = iColumn+1
 							ringDone = 0
 							if layer == 2 then

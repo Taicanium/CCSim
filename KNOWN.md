@@ -1,6 +1,6 @@
 # Bugs
 
-There is an issue with lines of succession that causes random cousins to succeed instead of children born to the previous monarch after their succession to the throne.
+There is a potential issue with the planet unwrap function causing land to be omitted from maps. It has so far appeared only as an isolated issue. Examination underway.
 
 # Possible Features
 
