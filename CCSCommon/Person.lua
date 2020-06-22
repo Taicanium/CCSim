@@ -67,7 +67,7 @@ return
 				for i, j in pairs(self.succTables) do
 					if self.succIndices[i] > 0 then
 						parent.final[i]:refreshLineOfSuccession()
-						table.remove(j, self.succIndices[i])
+						SuccessionRemove(j, self.succIndices[i], i, false)
 					end
 					self.succTables[i] = nil
 					self.succIndices[i] = nil
@@ -117,11 +117,8 @@ return
 
 				if not self.spouse or not self.spouse.def then return nil end
 
-				if self.gender == "M" then if self.age < 15 or self.age > 65 then return nil end
-				elseif self.gender == "F" then if self.age < 15 or self.age > 55 then return nil end end
-
-				if self.spouse.gender == "M" then if self.spouse.age < 15 or self.spouse.age > 65 then return nil end
-				elseif self.spouse.gender == "F" then if self.spouse.age < 15 or self.spouse.age > 55 then return nil end end
+				if self.age < 15 or self.age > (self.gender == "M" and 65 or 55) then return nil end
+				if self.spouse.age < 15 or self.spouse.age > (self.spouse.gender == "M" and 65 or 55) then return nil end
 
 				local nn = Person:new()
 				local nFound = true

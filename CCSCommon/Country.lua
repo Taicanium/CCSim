@@ -154,11 +154,10 @@ return
 									local p = math.random(1, #self.people)
 									self:setRuler(parent, p, enthrone)
 								else
-									local p = table.remove(self.lineOfSuccession, 1)
+									local p = SuccessionRemove(self.lineOfSuccession, 1, self.name, true)
 									if p.def and p.rulerName == "" then
 										if p.nationality ~= self.name then self:add(parent, p) end
 										self:setRuler(parent, p.pIndex, enthrone)
-										self:refreshLineOfSuccession()
 									end
 								end
 							else
@@ -171,7 +170,12 @@ return
 			end,
 
 			cleanLineOfSuccession = function(self)
-				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i] or self.lineOfSuccession[i].isruler or not self.lineOfSuccession[i].def then table.remove(self.lineOfSuccession, i) end end
+				for i=#self.lineOfSuccession,51,-1 do
+					self.lineOfSuccession[i].succTables[self.name] = nil
+					self.lineOfSuccession[i].succIndices[self.name] = nil
+					self.lineOfSuccession[i] = nil
+				end
+				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i] or not self.lineOfSuccession[i].def or self.lineOfSuccession[i].rulerName ~= "" then SuccessionRemove(self.lineOfSuccession, i, self.name, false) end end
 				self:refreshLineOfSuccession()
 			end,
 
@@ -290,7 +294,7 @@ return
 						table.insert(childrenByAge, j, t.children[i])
 						found = true
 					end end
-					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then table.remove(self.lineOfSuccession, j) end end
+					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then SuccessionRemove(self.lineOfSuccession, j, self.name, false) end end
 				end
 
 				self:refreshLineOfSuccession()
@@ -302,7 +306,7 @@ return
 					end
 					childrenByAge[i].succTables[self.name] = self.lineOfSuccession
 					childrenByAge[i].succIndices[self.name] = t.succIndices[self.name]+1
-					table.insert(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i])
+					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end end
 				for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and childrenByAge[i].rulerName == "" then
@@ -312,7 +316,7 @@ return
 					end
 					childrenByAge[i].succTables[self.name] = self.lineOfSuccession
 					childrenByAge[i].succIndices[self.name] = t.succIndices[self.name]+1
-					table.insert(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i])
+					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end
 			end,
@@ -360,7 +364,7 @@ return
 
 				if not self.snt[parent.systems[self.system].name] or self.snt[parent.systems[self.system].name] == -1 then self.snt[parent.systems[self.system].name] = 0 end
 				self.snt[parent.systems[self.system].name] = self.snt[parent.systems[self.system].name]+1
-				if not ind and self.population <= 1 then self:setPop(parent, _DEBUG and 150 or math.random(750, 1500)) end
+				if not ind and self.population <= 1 then self:setPop(parent, _DEBUG and 150 or math.random(1000, 2500)) end
 				self:event(parent, "Establishment of the "..parent:ordinal(self.snt[parent.systems[self.system].name]).." "..self.demonym.." "..self.formalities[parent.systems[self.system].name])
 			end,
 

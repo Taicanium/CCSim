@@ -868,10 +868,10 @@ return
 
 				if parent.years > parent.startyear+1 then
 					if _DEBUG then parent.popLimit = 250 else
-						if t1 > 0.5 then
+						if t1 > 1.5 then
 							parent.popLimit = math.max(1000, math.floor(parent.popLimit-(50*(t1-0.5))))
-							if t1 > 2 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
-						else parent.popLimit = math.min(3000, math.ceil(parent.popLimit+(50*(0.5-t1)))) end
+							if t1 > 3 then parent.disabled["independence"] = true else parent.disabled["independence"] = false end
+						else parent.popLimit = math.min(5000, math.ceil(parent.popLimit+(50*(0.5-t1)))) end
 					end
 				end
 
