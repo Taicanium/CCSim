@@ -118,11 +118,11 @@ return
 							if math.fmod(largestRead, 100000) == 0 then collectgarbage("collect") end
 						end
 						reindexed = 0
+						if split[2] ~= "y" and split[2] ~= "z" and split[2] ~= "j" then
+							indi[fi] = {}
+							indi[fi].gIndex = fi
+						end
 					else reindexed = 1 end
-					if cmd ~= "y" and cmd ~= "z" and cmd ~= "j" and not indi[fi] then
-						indi[fi] = {}
-						indi[fi].gIndex = fi
-					end
 					local cmd = split[2-reindexed]
 					if cmd == "b" then indi[fi].birth = tonumber(split[3-reindexed])
 					elseif cmd == "c" then indi[fi].birthplace = plc[split[3-reindexed]]
@@ -2578,9 +2578,9 @@ return
 				while _running do
 					self.thisWorld:update(self)
 
-					for i, cp in pairs(self.thisWorld.countries) do
-						for j, k in pairs(self.final) do if k.name == cp.name then self.final[j] = nil end end
-						self.final[cp.name] = cp
+					for i, j in pairs(self.thisWorld.countries) do
+						for k, l in pairs(self.final) do if j.name == l.name then self.final[k] = nil end end
+						self.final[i] = j
 					end
 
 					local t0 = _time()
