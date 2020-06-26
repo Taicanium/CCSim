@@ -4,6 +4,8 @@ There is a potential issue with the planet unwrap function causing land to be om
 
 There is apparently a very rare issue causing a nil exception in the initial planet construction. I'm not sure what the cause could be, but it has to do with unwrapping. Perhaps related to the above?
 
+Continents are Way. Too. Round.
+
 # Possible Features
 
 Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
