@@ -359,7 +359,7 @@ return
 
 			getNodeFromCoords = function(self, x, y, z)
 				local xm, ym, zm = self:normalize(x, y, z)
-				return ((xm+self.planetR)*math.pow(self.planetR*2+1, 2))+((ym+self.planetR)*(self.planetR*2+1))+(zm+self.planetR)
+				return (xm*math.pow(self.planetR*2+1, 2))+(ym*(self.planetR*2+1))+zm
 			end,
 
 			mapOutput = function(self, parent, label)
@@ -380,11 +380,7 @@ return
 						self.cTriplets["\xFFWATER"] = {22, 22, 170}
 						while not unique do
 							unique = true
-							for k, j in pairs(self.cTriplets) do
-								local unq = math.abs(r-j[1])+math.abs(g-j[2])+math.abs(b-j[3])
-								if unq < 60 then unique = false end
-							end
-
+							for k, j in pairs(self.cTriplets) do if math.abs(r+g+b-j[1]-j[2]-j[3]) < 60 then unique = false end end
 							if r > 230 and g > 230 and b > 230 then unique = false end
 							if r < 25 and g < 25 and b < 25 then unique = false end
 
@@ -395,7 +391,6 @@ return
 							end
 						end
 						self.cTriplets["\xFFWATER"] = nil
-
 						self.cTriplets["\x03"..cp.name] = {r, g, b}
 					end
 				end
@@ -451,12 +446,9 @@ return
 									local r = math.random(0, 255)
 									local g = math.random(0, 255)
 									local b = math.random(0, 255)
-									for k, l in pairs(self.cTriplets) do
-										local unq = math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3])
-										if unq < 60 then cFound = false end
-										if r > 230 and g > 230 and b > 230 then unq = false end
-										if r < 25 and g < 25 and b < 25 then unq = false end
-									end
+									for k, l in pairs(self.cTriplets) do if math.abs(r+g+b-l[1]-l[2]-l[3]) < 60 then cFound = false end end
+									if r > 230 and g > 230 and b > 230 then cFound = false end
+									if r < 25 and g < 25 and b < 25 then cFound = false end
 									if cFound then
 										-- We cheat here a little bit to display water body names and outline colors on the map legend.
 										-- Treat them as countries with no ruler string. Also, place a non-printing character at the beginning of their index key that sorts them at the top of an alphabetic list.
@@ -478,12 +470,9 @@ return
 									local r = math.random(0, 255)
 									local g = math.random(0, 255)
 									local b = math.random(0, 255)
-									for k, l in pairs(self.cTriplets) do
-										local unq = math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3])
-										if unq < 60 then cFound = false end
-										if r > 230 and g > 230 and b > 230 then unq = false end
-										if r < 25 and g < 25 and b < 25 then unq = false end
-									end
+									for k, l in pairs(self.cTriplets) do if math.abs(r+g+b-l[1]-l[2]-l[3]) < 60 then cFound = false end end
+									if r > 230 and g > 230 and b > 230 then cFound = false end
+									if r < 25 and g < 25 and b < 25 then cFound = false end
 									if cFound then self.cTriplets["\x01"..node.continent] = {r, g, b} end
 								end
 								self.cTriplets["\xFFWATER"] = nil
@@ -744,7 +733,7 @@ return
 
 			normalize = function(self, x, y, z)
 				local mag = self.planetR/math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
-				return x*mag, y*mag, z*mag
+				return x*mag+self.planetR, y*mag+self.planetR, z*mag+self.planetR
 			end,
 
 			unwrap = function(self)
