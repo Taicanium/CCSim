@@ -118,7 +118,7 @@ return
 							if math.fmod(largestRead, 100000) == 0 then collectgarbage("collect") end
 						end
 						reindexed = 0
-						if split[2] ~= "y" and split[2] ~= "z" and split[2] ~= "j" then
+						if not indi[fi] and split[2] ~= "y" and split[2] ~= "z" and split[2] ~= "j" then
 							indi[fi] = {}
 							indi[fi].gIndex = fi
 						end
