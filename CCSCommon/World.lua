@@ -129,7 +129,7 @@ return
 					end
 					table.insert(self.landNodes, nxyz)
 					if self.planet[nxyz].waterNeighbors > 0 then table.insert(scanNodes, math.random(1, #scanNodes+1), nxyz) end
-					if math.fmod(#self.landNodes, 1000) == 0 then UI:printl(string.format("%.2f%% done.", (#self.landNodes/maxLand)*100)) end
+					if math.fmod(#self.landNodes, 1000) == 0 then UI:printl(string.format("%.2f%% done", (#self.landNodes/maxLand)*100)) end
 				end
 
 				parent:deepnil(freeNodes)
@@ -365,7 +365,6 @@ return
 			mapOutput = function(self, parent, label)
 				if label ~= "NIL" and not parent.doMaps then return end
 				local t0 = _time()
-
 				local planetSize = #self.planetdefined
 
 				for i, cp in pairs(self.countries) do
@@ -379,16 +378,13 @@ return
 						local unique = false
 						self.cTriplets["\xFFWATER"] = {22, 22, 170}
 						while not unique do
+							r = math.random(0, 255)
+							g = math.random(0, 255)
+							b = math.random(0, 255)
 							unique = true
-							for k, j in pairs(self.cTriplets) do if math.abs(r+g+b-j[1]-j[2]-j[3]) < 60 then unique = false end end
+							for k, j in pairs(self.cTriplets) do if math.abs(r-j[1])+math.abs(g-j[2])+math.abs(b-j[3]) < 60 then unique = false end end
 							if r > 230 and g > 230 and b > 230 then unique = false end
 							if r < 25 and g < 25 and b < 25 then unique = false end
-
-							if not unique then
-								r = math.random(0, 255)
-								g = math.random(0, 255)
-								b = math.random(0, 255)
-							end
 						end
 						self.cTriplets["\xFFWATER"] = nil
 						self.cTriplets["\x03"..cp.name] = {r, g, b}
@@ -403,7 +399,6 @@ return
 				self.colors = {["\x01\x01CONTINENTS"]={0, 0, 0}, ["\x02\x01BODIES OF WATER"]={0, 0, 0}, ["\x03\x01COUNTRIES"]={0, 0, 0}}
 				local leaders = {["\x01\x01CONTINENTS"]="", ["\x02\x01BODIES OF WATER"]="", ["\x03\x01COUNTRIES"]=""}
 
-				iColumn = 1
 				if self.mapChanged then
 					self.planetC = 0
 					self.stretched = {}
@@ -446,7 +441,7 @@ return
 									local r = math.random(0, 255)
 									local g = math.random(0, 255)
 									local b = math.random(0, 255)
-									for k, l in pairs(self.cTriplets) do if math.abs(r+g+b-l[1]-l[2]-l[3]) < 60 then cFound = false end end
+									for k, l in pairs(self.cTriplets) do if math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3]) < 60 then cFound = false end end
 									if r > 230 and g > 230 and b > 230 then cFound = false end
 									if r < 25 and g < 25 and b < 25 then cFound = false end
 									if cFound then
@@ -470,7 +465,7 @@ return
 									local r = math.random(0, 255)
 									local g = math.random(0, 255)
 									local b = math.random(0, 255)
-									for k, l in pairs(self.cTriplets) do if math.abs(r+g+b-l[1]-l[2]-l[3]) < 60 then cFound = false end end
+									for k, l in pairs(self.cTriplets) do if math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3]) < 60 then cFound = false end end
 									if r > 230 and g > 230 and b > 230 then cFound = false end
 									if r < 25 and g < 25 and b < 25 then cFound = false end
 									if cFound then self.cTriplets["\x01"..node.continent] = {r, g, b} end

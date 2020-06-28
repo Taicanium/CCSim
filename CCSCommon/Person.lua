@@ -520,14 +520,8 @@ return
 					if m.def and m.age > 15 and not m.spouse and self.gender ~= m.gender then
 						local found = false
 						if self.surname == m.surname then found = true end
-						if not found then for i, j in pairs(self.children) do
-							if j.gString == m.gString then found = true end
-							if j.surname == m.surname then found = true end
-						end end
-						if not found then for i, j in pairs(m.children) do
-							if j.gString == self.gString then found = true end
-							if j.surname == self.surname then found = true end
-						end end
+						if not found then for i, j in pairs(self.children) do if j.gString == m.gString or j.surname == m.surname then found = true end end end
+						if not found then for i, j in pairs(m.children) do if j.gString == self.gString or j.surname == self.surname then found = true end end end
 						if not found then
 							self.spouse = m
 							m.spouse = self
@@ -578,7 +572,7 @@ return
 					local eTotal = nl.rulerParty.efreedom-self.ebelief
 					local cTotal = nl.rulerParty.cfreedom-self.cbelief
 					local diffTotal = math.abs(pTotal)+math.abs(eTotal)+math.abs(cTotal)
-					nl.rulerPopularity = nl.rulerPopularity+(300-diffTotal)
+					nl.rulerPopularity = nl.rulerPopularity+((100-diffTotal)/#nl.people)
 				end
 
 				if self.military then

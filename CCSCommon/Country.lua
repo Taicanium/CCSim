@@ -175,7 +175,6 @@ return
 					self.lineOfSuccession[i].succIndices[self.name] = nil
 					self.lineOfSuccession[i] = nil
 				end
-				for i=#self.lineOfSuccession,1,-1 do if not self.lineOfSuccession[i] or not self.lineOfSuccession[i].def or self.lineOfSuccession[i].rulerName ~= "" then SuccessionRemove(self.lineOfSuccession, i, self.name, false) end end
 				self:refreshLineOfSuccession()
 			end,
 
@@ -287,6 +286,16 @@ return
 				end
 
 				local childrenByAge = {}
+				self:refreshLineOfSuccession()
+				if t.succIndices[self.name] and self.lineOfSuccession[t.succIndices[self.name]] and self.lineOfSuccession[t.succIndices[self.name]].def and self.lineOfSuccession[t.succIndices[self.name]].gString ~= t.gString then
+					t.succTables[self.name] = nil
+					t.succIndices[self.name] = nil
+					return
+				elseif t.succIndices[self.name] and (not self.lineOfSuccession[t.succIndices[self.name]] or not self.lineOfSuccession[t.succIndices[self.name]].def or not self.lineOfSuccession[t.succIndices[self.name]]) then
+					t.succTables[self.name] = nil
+					t.succIndices[self.name] = nil
+					return
+				end
 
 				for i=1,#t.children do
 					local found = false
@@ -294,28 +303,14 @@ return
 						table.insert(childrenByAge, j, t.children[i])
 						found = true
 					end end
-					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then SuccessionRemove(self.lineOfSuccession, j, self.name, false) end end
+					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then SuccessionRemove(self.lineOfSuccession, j, self.name, true) end end
 				end
 
-				self:refreshLineOfSuccession()
-
 				if not self.agPrim then for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and childrenByAge[i].rulerName == "" then
-					if not childrenByAge[i].succTables or not childrenByAge[i].succIndices then
-						childrenByAge[i].succTables = {}
-						childrenByAge[i].succIndices = {}
-					end
-					childrenByAge[i].succTables[self.name] = self.lineOfSuccession
-					childrenByAge[i].succIndices[self.name] = t.succIndices[self.name]+1
 					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end end
 				for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and childrenByAge[i].rulerName == "" then
-					if not childrenByAge[i].succTables or not childrenByAge[i].succIndices then
-						childrenByAge[i].succTables = {}
-						childrenByAge[i].succIndices = {}
-					end
-					childrenByAge[i].succTables[self.name] = self.lineOfSuccession
-					childrenByAge[i].succIndices[self.name] = t.succIndices[self.name]+1
 					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end
@@ -323,10 +318,11 @@ return
 
 			refreshLineOfSuccession = function(self, n)
 				local inx = n or 1
-				for j=inx,#self.lineOfSuccession do
-					self.lineOfSuccession[j].succTables[self.name] = self.lineOfSuccession
-					self.lineOfSuccession[j].succIndices[self.name] = j
+				for j=#self.lineOfSuccession,inx,-1 do
+					if self.lineOfSuccession[j].succTables then self.lineOfSuccession[j].succTables[self.name] = self.lineOfSuccession end
+					if self.lineOfSuccession[j].succIndices then self.lineOfSuccession[j].succIndices[self.name] = j end
 				end
+				for i=#self.lineOfSuccession,inx,-1 do if not self.lineOfSuccession[i] or not self.lineOfSuccession[i].def or self.lineOfSuccession[i].rulerName ~= "" then SuccessionRemove(self.lineOfSuccession, i, self.name, false) end end
 				if self.ruler then
 					self.ruler.succTables[self.name] = self.lineOfSuccession
 					self.ruler.succIndices[self.name] = 0
@@ -727,7 +723,6 @@ return
 				end
 
 				self.averageAge = self.averageAge/#self.people
-				self.rulerPopularity = self.rulerPopularity/(3*#self.people)
 
 				if #self.people == 0 then
 					self.averageAge = 100
