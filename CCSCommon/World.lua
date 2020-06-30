@@ -712,6 +712,7 @@ return
 				self.planetD = columnCount -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
 
 				parent:bmpOut(label, extended, totalC, self.planetD)
+				-- parent:tiffOut(label, extended, totalC, self.planetD)
 
 				extended = nil
 				tCols = nil
