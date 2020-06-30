@@ -1741,6 +1741,9 @@ return
 			tiffBits = {},
 			tiffDict = {},
 			tiffNextCode = 258,
+			tiffStripByteCounts = {},
+			tiffStripOffsets = {},
+			tiffStrips = {},
 			vowels = {"a", "e", "i", "o", "u", "y"},
 			writeMap = false,
 			years = 1,
@@ -3153,20 +3156,18 @@ return
 
 			tiffCodeWrite = function(self, strip, x)
 				for i=self.tiffBitness,1,-1 do table.insert(self.tiffBits, bit32.band(x, math.pow(2, i-1)) == 0 and 0 or 1) end
-				local offChange = 0
 				while #self.tiffBits >= 8 do
 					local nextChar = 0
 					for i=0,7 do if self.tiffBits[8-i] and self.tiffBits[8-i] == 1 then nextChar = nextChar+math.pow(2, i) end end
-					table.insert(strip, string.char(nextChar))
-					offChange = offChange+1
+					table.insert(self.tiffStrips[strip], string.char(nextChar))
+					self.tiffStripByteCounts[strip] = self.tiffStripByteCounts[strip]+1
 					for i=8,1,-1 do if self.tiffBits[i] then table.remove(self.tiffBits, i) end end
 				end
-				if x == 256 then self:tiffInitDict() end
-				if x >= 4090 then offChange = offChange+self:tiffCodeWrite(256) end
-				return offChange
+				if x >= 4090 then self:tiffInitDict(strip) end
 			end,
 			
-			tiffInitDict = function(self)
+			tiffInitDict = function(self, strip)
+				self:tiffCodeWrite(strip, 256)
 				self.tiffBitness = 9
 				self.tiffDict = {}
 				for i=0,255 do self.tiffDict[string.char(i)] = i end
@@ -3192,7 +3193,7 @@ return
 					0x08, 0x00, 0x08, 0x00, 0x08, 0x00
 				}
 				local tiffIFD = {
-					0x00, 0x00,
+					0x11, 0x00,
 					0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x01, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 					0x02, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
@@ -3212,13 +3213,13 @@ return
 					0x3D, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00
 				}
-				
-				local strips = {}
+
+				self.tiffStrips = {}
 				local stripIndex = 1
 				local stripWritten = 0
-				local rowsPerStrip = math.max(math.floor(2040/width), 1)
+				local rowsPerStrip = math.max(math.floor(1024/width), 1)
 				for y=1,height do for x=1,width do
-					if not strips[stripIndex] then strips[stripIndex] = {} end
+					if not self.tiffStrips[stripIndex] then self.tiffStrips[stripIndex] = {} end
 					stripWritten = stripWritten+1
 					if stripWritten >= rowsPerStrip*width then
 						stripIndex = stripIndex+1
@@ -3226,43 +3227,26 @@ return
 					end
 				end end
 
-				local stripCount = #strips
-				local dataAdjust = math.fmod(#tiffHeader+#tiffIFD+(stripCount*8), 4)
-				local tiffOff = self:tiffLittleEndian(#tiffHeader, 8)
-				local tiffHeight = self:tiffLittleEndian(height, 4)
-				local tiffWidth = self:tiffLittleEndian(width, 4)
-				local tiffTagNum = self:tiffLittleEndian(17, 4)
+				local stripCount = #self.tiffStrips
+				local dataAdjust = 4-math.fmod(#tiffHeader, 4)
+				local tiffHeight = self:tiffLittleEndian(height, 8)
+				local tiffWidth = self:tiffLittleEndian(width, 8)
 				local tiffRPS = self:tiffLittleEndian(rowsPerStrip, 8)
-				local SBCOff = self:tiffLittleEndian(#tiffHeader+#tiffIFD+dataAdjust, 4)
-				local SOOff = self:tiffLittleEndian(#tiffHeader+#tiffIFD+dataAdjust+(stripCount*4), 4)
-				local SCount = self:tiffLittleEndian(stripCount, 4)
-				for i=5,8 do tiffHeader[i] = tiffOff[i-4] or 0x00 end
-				for i=1,2 do tiffIFD[i] = tiffTagNum[i] or 0x00 end
 				for i=11,14 do tiffIFD[i] = tiffWidth[i-10] or 0x00 end
 				for i=23,26 do tiffIFD[i] = tiffHeight[i-22] or 0x00 end
 				for i=107,119 do tiffIFD[i] = tiffRPS[i-106] or 0x00 end
-				for i=67,70 do tiffIFD[i] = SCount[i-70] or 0x00 end
-				for i=71,74 do tiffIFD[i] = SOOff[i-70] or 0x00 end
-				for i=115,118 do tiffIFD[i] = SCount[i-118] or 0x00 end
-				for i=119,122 do tiffIFD[i] = SBCOff[i-118] or 0x00 end
 
-				stripOffsets = {}
-				stripByteCounts = {}
-				for i=1,stripCount do
-					stripOffsets[i] = #tiffHeader+#tiffIFD+(stripCount*8)+dataAdjust
-					stripByteCounts[i] = 0
-				end
+				self.tiffStripOffsets = {}
+				self.tiffStripByteCounts = {}
+				for i=1,stripCount do self.tiffStripByteCounts[i] = 0 end
 				local zeroRGB = {0, 0, 0}
+				local y = 1
+				local x = 1
 				for strip=1,stripCount do
 					stripWritten = 0
 					local omega = ""
 					local K = ""
-					self:tiffInitDict()
-					local offChange = self:tiffCodeWrite(strips[strip], 256)
-					stripByteCounts[strip] = stripByteCounts[strip]+offChange
-					if stripOffsets[strip+1] then stripOffsets[strip+1] = stripOffsets[strip+1]+offChange end
-					local y = 1
-					local x = 1
+					self:tiffInitDict(strip)
 					while stripWritten < rowsPerStrip*width do
 						x = x+1
 						if x > width then
@@ -3276,9 +3260,7 @@ return
 							K = string.char(pixel[p])
 							if self.tiffDict[omega..K] then omega = omega..K else
 								local nextCode = self:tiffCodeFromString(omega)
-								offChange = self:tiffCodeWrite(strips[strip], nextCode)
-								stripByteCounts[strip] = stripByteCounts[strip]+offChange
-								if stripOffsets[strip+1] then stripOffsets[strip+1] = stripOffsets[strip+1]+offChange end
+								self:tiffCodeWrite(strip, nextCode)
 								self:tiffAddString(omega..K)
 								omega = K
 							end
@@ -3286,39 +3268,57 @@ return
 						stripWritten = stripWritten+1
 					end
 					local nextCode = self:tiffCodeFromString(omega)
-					offChange = self:tiffCodeWrite(strips[strip], nextCode)
-					stripByteCounts[strip] = stripByteCounts[strip]+offChange
-					if stripOffsets[strip+1] then stripOffsets[strip+1] = stripOffsets[strip+1]+offChange end
-					offChange = self:tiffCodeWrite(strips[strip], 257)
-					stripByteCounts[strip] = stripByteCounts[strip]+offChange
-					if stripOffsets[strip+1] then stripOffsets[strip+1] = stripOffsets[strip+1]+offChange end
+					self:tiffCodeWrite(strip, nextCode)
+					self:tiffCodeWrite(strip, 257)
 					while #self.tiffBits > 0 do
 						local nextChar = 0
 						for j=0,7 do if self.tiffBits[8-j] and self.tiffBits[8-j] == 1 then nextChar = nextChar+math.pow(2, j) end end
-						table.insert(strips[strip], string.char(nextChar))
-						stripByteCounts[strip] = stripByteCounts[strip]+1
-						if stripOffsets[strip+1] then stripOffsets[strip+1] = stripOffsets[strip+1]+1 end
+						table.insert(self.tiffStrips[strip], string.char(nextChar))
+						self.tiffStripByteCounts[strip] = self.tiffStripByteCounts[strip]+1
 						for j=8,1,-1 do if self.tiffBits[j] then table.remove(self.tiffBits, j) end end
 					end
 				end
 				
 				local f = io.open(label..".tif", "w+b")
+				local bytesWritten = #tiffHeader
+				for i=1,stripCount do
+					bytesWritten = bytesWritten+(4-math.fmod(bytesWritten, 4))
+					self.tiffStripOffsets[i] = bytesWritten
+					bytesWritten = bytesWritten+#self.tiffStrips[i]
+				end
+				local IFDadjust = 4-math.fmod(bytesWritten, 4)
+				bytesWritten = bytesWritten+IFDadjust
+				local IFDOff = self:tiffLittleEndian(bytesWritten, 8)
+				bytesWritten = bytesWritten+#tiffIFD
+				local SBCOff = self:tiffLittleEndian(bytesWritten, 8)
+				bytesWritten = bytesWritten+(stripCount*4)
+				local SOOff = self:tiffLittleEndian(bytesWritten, 8)
+				local SCount = self:tiffLittleEndian(stripCount, 8)
+				for i=5,8 do tiffHeader[i] = IFDOff[i-4] or 0x00 end
+				for i=67,70 do tiffIFD[i] = SCount[i-66] or 0x00 end
+				for i=71,74 do tiffIFD[i] = SOOff[i-70] or 0x00 end
+				for i=115,118 do tiffIFD[i] = SCount[i-114] or 0x00 end
+				for i=119,122 do tiffIFD[i] = SBCOff[i-118] or 0x00 end
 				for i=1,#tiffHeader do f:write(string.char(tiffHeader[i])) end
-				for i=1,#tiffIFD do f:write(string.char(tiffIFD[i])) end
 				for i=1,dataAdjust do f:write(string.char(0)) end
 				for i=1,stripCount do
-					local SBC = self:tiffLittleEndian(stripByteCounts[i], 8)
+					for j=1,#self.tiffStrips[i] do f:write(self.tiffStrips[i][j]) end
+					for j=1,4-math.fmod(#self.tiffStrips[i], 4) do f:write(string.char(0)) end
+				end
+				for i=1,#tiffIFD do f:write(string.char(tiffIFD[i])) end
+				for i=1,stripCount do
+					local SBC = self:tiffLittleEndian(self.tiffStripByteCounts[i], 8)
 					for j=1,4 do f:write(string.char(SBC[j] or 0)) end
 				end
 				for i=1,stripCount do
-					local SO = self:tiffLittleEndian(stripOffsets[i], 8)
+					local SO = self:tiffLittleEndian(self.tiffStripOffsets[i], 8)
 					for j=1,4 do f:write(string.char(SO[j] or 0)) end
 				end
-				for i=1,#strips do for j=1,#strips[i] do f:write(strips[i][j]) end end
 				
 				f:flush()
 				f:close()
 				
+				self.tiffStrips = {}
 				self.tiffBits = {}
 				self.tiffDict = {}
 			end
