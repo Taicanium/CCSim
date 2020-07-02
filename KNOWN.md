@@ -2,7 +2,7 @@
 
 There is a potential issue with the planet unwrap function causing land to be omitted from maps. It has so far appeared only as an isolated issue. Examination underway.
 
-There is apparently a very rare issue causing a nil exception in the initial planet construction. I'm not sure what the cause could be, but it has to do with unwrapping. Perhaps related to the above?
+There is apparently an extremely rare issue causing a nil exception in the initial planet construction. I'm not sure what the cause could be, but it has to do with unwrapping. Perhaps related to the above? It seems to be more frequent in debug mode.
 
 Continents are Way. Too. Round.
 
@@ -14,8 +14,6 @@ Per the above, perhaps create an install script for CCSim that would handle dete
 
 Work on implementing an autosave feature. Earlier versions had one (which was even buggier than the rest of the program), but it was removed on account of being so buggy as to be worthless.
 
-Store event data in a temporary data file the same way we now store genealogical data. This would eliminate the last major source of memory leakage.
+Store event data in a temporary data file the same way we store genealogical data. This would eliminate the last major source of memory leakage.
 
 # To-do
-
-I have been working on learning the TIFF format with the intention of replacing BMP maps with TIFF maps. TIFF is a much more compact (and compression-friendly) file format and doesn't appear too difficult to implement. However it is still something I need to become familiar enough with to code around.
