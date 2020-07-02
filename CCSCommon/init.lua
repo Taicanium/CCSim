@@ -3143,30 +3143,35 @@ return
 
 			tiffAddString = function(self, x)
 				self.tiffDict[x] = self.tiffNextCode
-				if self.tiffNextCode >= 4096 then self.tiffBitness = math.max(self.tiffBitness, 13)
-				elseif self.tiffNextCode >= 2048 then self.tiffBitness = math.max(self.tiffBitness, 12)
-				elseif self.tiffNextCode >= 1024 then self.tiffBitness = math.max(self.tiffBitness, 11)
-				elseif self.tiffNextCode >= 512 then self.tiffBitness = math.max(self.tiffBitness, 10) end
+				if self.tiffNextCode >= 4095 then self.tiffBitness = math.max(self.tiffBitness, 13)
+				elseif self.tiffNextCode >= 2047 then self.tiffBitness = math.max(self.tiffBitness, 12)
+				elseif self.tiffNextCode >= 1023 then self.tiffBitness = math.max(self.tiffBitness, 11)
+				elseif self.tiffNextCode >= 511 then self.tiffBitness = math.max(self.tiffBitness, 10) end
 				self.tiffNextCode = self.tiffNextCode+1
 			end,
 
-			tiffCodeFromString = function(self, x)
-				return self.tiffDict[x]
+			tiffCodeWrite = function(self, strip, x)
+				for i=self.tiffBitness,1,-1 do table.insert(self.tiffBits, bit32.band(bit32.rshift(x, i-1), 1)) end
+				local thresh = (x == 257 and 1 or 8)
+				while #self.tiffBits >= thresh do
+					local nextChar = 0
+					for j=1,8 do
+						nextChar = bit32.lshift(nextChar, 1)
+						if self.tiffBits[j] and self.tiffBits[j] > 0 then nextChar = nextChar+1 end
+					end
+					table.insert(self.tiffStrips[strip], string.char(nextChar))
+					for j=8,1,-1 do if self.tiffBits[j] then table.remove(self.tiffBits, j) end end
+				end
+				if x >= 4094 then self:tiffInitDict(strip, false) end
 			end,
 
-			tiffCodeWrite = function(self, strip, x)
-				for i=self.tiffBitness,1,-1 do table.insert(self.tiffBits, bit32.band(x, math.pow(2, i-1)) == 0 and 0 or 1) end
-				while #self.tiffBits >= 8 do
-					local nextChar = 0
-					for i=0,7 do if self.tiffBits[8-i] and self.tiffBits[8-i] == 1 then nextChar = nextChar+math.pow(2, i) end end
-					table.insert(self.tiffStrips[strip], string.char(nextChar))
-					self.tiffStripByteCounts[strip] = self.tiffStripByteCounts[strip]+1
-					for i=8,1,-1 do if self.tiffBits[i] then table.remove(self.tiffBits, i) end end
+			tiffInitDict = function(self, strip, newStrip)
+				if newStrip then
+					self.tiffBitness = 9
+					self.tiffDict = {}
+					for i=0,255 do self.tiffDict[string.char(i)] = i end
+					self.tiffNextCode = 258
 				end
-				if x >= 4090 then self:tiffInitDict(strip) end
-			end,
-			
-			tiffInitDict = function(self, strip)
 				self:tiffCodeWrite(strip, 256)
 				self.tiffBitness = 9
 				self.tiffDict = {}
@@ -3181,144 +3186,231 @@ return
 				return sLE
 			end,
 
-			tiffOut = function(self, label, data, width, height)
-				local tiffHeader = {
-					0x49, 0x49,
-					0x2A, 0x00,
-					0x00, 0x00, 0x00, 0x00,
-					0x48, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x48, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x08, 0x00, 0x08, 0x00, 0x08, 0x00
-				}
+			tiffOut = function(self, label, data, w, h)
+				local tiffHeader = { 0x49, 0x49, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, }
+
 				local tiffIFD = {
-					0x11, 0x00,
-					0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x01, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x02, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
-					0x03, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00,
-					0x06, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
-					0x11, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x15, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-					0x16, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x17, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x1A, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00,
-					0x1B, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00,
-					0x1C, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x1E, 0x01, 0X05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00,
-					0x1F, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
-					0x28, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
-					0x3D, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x00
+					{ 0x00, 0x00, },
+					{ 0x00, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- ImageWidth								2
+					{ 0x01, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- ImageLength								3
+					{ 0x02, 0x01, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- BitsPerSample							4
+					{ 0x03, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, }, -- Compression = 5 (LZW)					5
+					{ 0x06, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, }, -- PhotometricInterpretation = 2 (RGB)		6
+					{ 0x11, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- StripOffsets							7
+					{ 0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, }, -- Orientation = 1 (Top left)				8
+					{ 0x15, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, }, -- SamplesPerPixel = 3						9
+					{ 0x16, 0x01, 0x04, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- RowsPerStrip							10
+					{ 0x17, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- StripByteCounts							11
+					{ 0x1A, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- XResolution								12
+					{ 0x1B, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- YResolution								13
+					{ 0x1C, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, }, -- PlanarConfiguration = 1 (Contiguous)	14
+					{ 0x1E, 0x01, 0X05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- XPosition								15
+					{ 0x1F, 0x01, 0x05, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, -- YPosition								16
+					{ 0x28, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, }, -- ResolutionUnit = 2 (Inch)				17
+					-- { 0x3D, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, }, -- Predictor = 2 (Horiz. Diff.)			18
+					{ 0x00, 0x00, 0x00, 0x00, },
 				}
 
 				self.tiffStrips = {}
-				local stripIndex = 1
 				local stripWritten = 0
-				local rowsPerStrip = math.max(math.floor(1024/width), 1)
-				for y=1,height do for x=1,width do
-					if not self.tiffStrips[stripIndex] then self.tiffStrips[stripIndex] = {} end
-					stripWritten = stripWritten+1
-					if stripWritten >= rowsPerStrip*width then
-						stripIndex = stripIndex+1
-						stripWritten = 0
-					end
-				end end
+				local rowsPerStrip = 2
 
-				local stripCount = #self.tiffStrips
-				local dataAdjust = 4-math.fmod(#tiffHeader, 4)
-				local tiffHeight = self:tiffLittleEndian(height, 8)
-				local tiffWidth = self:tiffLittleEndian(width, 8)
+				local tiffTagCount = self:tiffLittleEndian(#tiffIFD-2, 4)
+				local tiffHeight = self:tiffLittleEndian(h, 8)
+				local tiffWidth = self:tiffLittleEndian(w, 8)
 				local tiffRPS = self:tiffLittleEndian(rowsPerStrip, 8)
-				for i=11,14 do tiffIFD[i] = tiffWidth[i-10] or 0x00 end
-				for i=23,26 do tiffIFD[i] = tiffHeight[i-22] or 0x00 end
-				for i=107,119 do tiffIFD[i] = tiffRPS[i-106] or 0x00 end
+				for i=1,2 do tiffIFD[1][i] = tiffTagCount[i] or 0x00 end
+				for i=9,12 do tiffIFD[2][i] = tiffWidth[i-8] or 0x00 end
+				for i=9,12 do tiffIFD[3][i] = tiffHeight[i-8] or 0x00 end
+				for i=9,12 do tiffIFD[10][i] = tiffRPS[i-8] or 0x00 end
 
 				self.tiffStripOffsets = {}
 				self.tiffStripByteCounts = {}
-				for i=1,stripCount do self.tiffStripByteCounts[i] = 0 end
+				for i=1,#self.tiffStrips do self.tiffStripByteCounts[i] = 0 end
 				local zeroRGB = {0, 0, 0}
-				local y = 1
-				local x = 1
-				for strip=1,stripCount do
-					stripWritten = 0
-					local omega = ""
-					local K = ""
-					self:tiffInitDict(strip)
-					while stripWritten < rowsPerStrip*width do
-						x = x+1
-						if x > width then
-							x = 1
-							y = y+1
-							if y > height then break end
+				local strip = 1
+				self.tiffStrips[1] = {}
+				self:tiffInitDict(strip, true)
+				local omega = ""
+				for y=1,h do for x=1,w do
+					if not self.tiffStrips[strip] then self.tiffStrips[strip] = {} end
+					local pixel = zeroRGB
+					if data[y] and data[y][x] then pixel = data[y][x] end
+					local thisColor = false
+					for p=1,3 do
+						local K = string.char(pixel[p])
+						if pixel[p] ~= 0 then thisColor = true end
+						if self.tiffDict[omega..K] then omega = omega..K else
+							local nextCode = self.tiffDict[omega]
+							self:tiffCodeWrite(strip, nextCode)
+							self:tiffAddString(omega..K)
+							omega = K
 						end
-						local pixel = zeroRGB
-						if data[y] and data[y][x] then pixel = data[y][x] end
-						for p=1,3 do
-							K = string.char(pixel[p])
-							if self.tiffDict[omega..K] then omega = omega..K else
-								local nextCode = self:tiffCodeFromString(omega)
-								self:tiffCodeWrite(strip, nextCode)
-								self:tiffAddString(omega..K)
-								omega = K
-							end
+					end
+					stripWritten = stripWritten+1
+					if stripWritten >= rowsPerStrip*w or (y == h and x == w) then
+						if omega:len() > 0 then
+							local nextCode = self.tiffDict[omega]
+							self:tiffCodeWrite(strip, nextCode)
 						end
-						stripWritten = stripWritten+1
+						self:tiffCodeWrite(strip, 257)
+						stripWritten = 0
+						omega = ""
+						if y ~= h or x ~= w then
+							strip = strip+1
+							if not self.tiffStrips[strip] then self.tiffStrips[strip] = {} end
+							self:tiffInitDict(strip, true)
+						end
 					end
-					local nextCode = self:tiffCodeFromString(omega)
-					self:tiffCodeWrite(strip, nextCode)
-					self:tiffCodeWrite(strip, 257)
-					while #self.tiffBits > 0 do
-						local nextChar = 0
-						for j=0,7 do if self.tiffBits[8-j] and self.tiffBits[8-j] == 1 then nextChar = nextChar+math.pow(2, j) end end
-						table.insert(self.tiffStrips[strip], string.char(nextChar))
-						self.tiffStripByteCounts[strip] = self.tiffStripByteCounts[strip]+1
-						for j=8,1,-1 do if self.tiffBits[j] then table.remove(self.tiffBits, j) end end
-					end
-				end
-				
+				end end
+
 				local f = io.open(label..".tif", "w+b")
-				local bytesWritten = #tiffHeader
-				for i=1,stripCount do
-					bytesWritten = bytesWritten+(4-math.fmod(bytesWritten, 4))
-					self.tiffStripOffsets[i] = bytesWritten
-					bytesWritten = bytesWritten+#self.tiffStrips[i]
+
+				local headerOff = 0
+				local headerSize = #tiffHeader
+				local dataOff = 0
+				local dataSize = 0
+				for i=1,#self.tiffStrips do dataSize = dataSize+#self.tiffStrips[i] end
+				local IFDOff = 0
+				local IFDSize = 0
+				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do IFDSize = IFDSize+1 end end
+				local SBCOff = 0
+				local SBCSize = 0
+				for i=1,#self.tiffStrips do SBCSize = SBCSize+4 end
+				local SOOff = 0
+				local SOSize = 0
+				for i=1,#self.tiffStrips do SOSize = SOSize+4 end
+				local BPSOff = 0
+				local BPSSize = 6
+				local XPOff = 0
+				local XPSize = 8
+				local YPOff = 0
+				local YPSize = 8
+				local XROff = 0
+				local XRSize = 8
+				local YROff = 0
+				local YRSize = 8
+
+				local byteIndex = 0
+				dataOff = headerOff+headerSize
+				IFDOff = dataOff+dataSize
+				while math.fmod(IFDOff, 2) ~= 0 do IFDOff = IFDOff+1 end
+				SBCOff = IFDOff+IFDSize
+				while math.fmod(SBCOff, 2) ~= 0 do SBCOff = SBCOff+1 end
+				SOOff = SBCOff+SBCSize
+				while math.fmod(SOOff, 2) ~= 0 do SOOff = SOOff+1 end
+				BPSOff = SOOff+SOSize
+				while math.fmod(BPSOff, 2) ~= 0 do BPSOff = BPSOff+1 end
+				XPOff = BPSOff+BPSSize
+				while math.fmod(XPOff, 2) ~= 0 do XPOff = XPOff+1 end
+				YPOff = XPOff+XPSize
+				while math.fmod(YPOff, 2) ~= 0 do YPOff = YPOff+1 end
+				XROff = YPOff+YPSize
+				while math.fmod(XROff, 2) ~= 0 do XROff = XROff+1 end
+				YROff = XROff+XRSize
+				while math.fmod(YROff, 2) ~= 0 do YROff = YROff+1 end
+
+				local SCount = self:tiffLittleEndian(#self.tiffStrips, 8)
+				local LEIFD = self:tiffLittleEndian(IFDOff, 8)
+				for i=5,8 do tiffHeader[i] = LEIFD[i-4] or 0x00 end
+				local SBCIFD = self:tiffLittleEndian(SBCOff, 8)
+				for i=9,12 do tiffIFD[11][i] = SBCIFD[i-8] or 0x00 end
+				for i=5,8 do tiffIFD[11][i] = SCount[i-4] or 0x00 end
+				local SOIFD = self:tiffLittleEndian(SOOff, 8)
+				for i=9,12 do tiffIFD[7][i] = SOIFD[i-8] or 0x00 end
+				for i=5,8 do tiffIFD[7][i] = SCount[i-4] or 0x00 end
+				local BPSIFD = self:tiffLittleEndian(BPSOff, 8)
+				for i=9,12 do tiffIFD[4][i] = BPSIFD[i-8] or 0x00 end
+				local XRIFD = self:tiffLittleEndian(XROff, 8)
+				for i=9,12 do tiffIFD[12][i] = XRIFD[i-8] or 0x00 end
+				local YRIFD = self:tiffLittleEndian(YROff, 8)
+				for i=9,12 do tiffIFD[13][i] = YRIFD[i-8] or 0x00 end
+				local XPIFD = self:tiffLittleEndian(XPOff, 8)
+				for i=9,12 do tiffIFD[15][i] = XPIFD[i-8] or 0x00 end
+				local YPIFD = self:tiffLittleEndian(YPOff, 8)
+				for i=9,12 do tiffIFD[16][i] = YPIFD[i-8] or 0x00 end
+
+				for i=1,#tiffHeader do
+					f:write(string.char(tiffHeader[i] or 0x00))
+					byteIndex = byteIndex+1
 				end
-				local IFDadjust = 4-math.fmod(bytesWritten, 4)
-				bytesWritten = bytesWritten+IFDadjust
-				local IFDOff = self:tiffLittleEndian(bytesWritten, 8)
-				bytesWritten = bytesWritten+#tiffIFD
-				local SBCOff = self:tiffLittleEndian(bytesWritten, 8)
-				bytesWritten = bytesWritten+(stripCount*4)
-				local SOOff = self:tiffLittleEndian(bytesWritten, 8)
-				local SCount = self:tiffLittleEndian(stripCount, 8)
-				for i=5,8 do tiffHeader[i] = IFDOff[i-4] or 0x00 end
-				for i=67,70 do tiffIFD[i] = SCount[i-66] or 0x00 end
-				for i=71,74 do tiffIFD[i] = SOOff[i-70] or 0x00 end
-				for i=115,118 do tiffIFD[i] = SCount[i-114] or 0x00 end
-				for i=119,122 do tiffIFD[i] = SBCOff[i-118] or 0x00 end
-				for i=1,#tiffHeader do f:write(string.char(tiffHeader[i])) end
-				for i=1,dataAdjust do f:write(string.char(0)) end
-				for i=1,stripCount do
-					for j=1,#self.tiffStrips[i] do f:write(self.tiffStrips[i][j]) end
-					for j=1,4-math.fmod(#self.tiffStrips[i], 4) do f:write(string.char(0)) end
+
+				for i=1,#self.tiffStrips do
+					self.tiffStripOffsets[i] = byteIndex
+					self.tiffStripByteCounts[i] = #self.tiffStrips[i]
+					for j=1,#self.tiffStrips[i] do
+						f:write(self.tiffStrips[i][j] or 0x00)
+						byteIndex = byteIndex+1
+					end
 				end
-				for i=1,#tiffIFD do f:write(string.char(tiffIFD[i])) end
-				for i=1,stripCount do
+
+				while byteIndex < IFDOff do
+					f:write(string.char(0))
+					byteIndex = byteIndex+1
+				end
+
+				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do
+					f:write(string.char(tiffIFD[i][j] or 0x00))
+					byteIndex = byteIndex+1
+				end end
+
+				while byteIndex < SBCOff do
+					f:write(string.char(0))
+					byteIndex = byteIndex+1
+				end
+
+				for i=1,#self.tiffStrips do
 					local SBC = self:tiffLittleEndian(self.tiffStripByteCounts[i], 8)
-					for j=1,4 do f:write(string.char(SBC[j] or 0)) end
+					for j=1,4 do
+						f:write(string.char(SBC[j] or 0x00))
+						byteIndex = byteIndex+1
+					end
 				end
-				for i=1,stripCount do
+
+				while byteIndex < SOOff do
+					f:write(string.char(0))
+					byteIndex = byteIndex+1
+				end
+
+				for i=1,#self.tiffStrips do
 					local SO = self:tiffLittleEndian(self.tiffStripOffsets[i], 8)
-					for j=1,4 do f:write(string.char(SO[j] or 0)) end
+					for j=1,4 do
+						f:write(string.char(SO[j] or 0x00))
+						byteIndex = byteIndex+1
+					end
 				end
-				
+
+				while byteIndex < BPSOff do
+					f:write(string.char(0))
+					byteIndex = byteIndex+1
+				end
+
+				for i=1,3 do
+					f:write(string.char(0x08))
+					f:write(string.char(0x00))
+					byteIndex = byteIndex+2
+				end
+
+				while byteIndex < XPOff do
+					f:write(string.char(0))
+					byteIndex = byteIndex+1
+				end
+
+				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
+				byteIndex = byteIndex+8
+				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
+				byteIndex = byteIndex+8
+				f:write(string.char(0x40)..string.char(0x19)..string.char(0x01)..string.char(0x00)..string.char(0xE8)..string.char(0x03)..string.char(0x00)..string.char(0x00))
+				byteIndex = byteIndex+8
+				f:write(string.char(0x40)..string.char(0x19)..string.char(0x01)..string.char(0x00)..string.char(0xE8)..string.char(0x03)..string.char(0x00)..string.char(0x00))
+				byteIndex = byteIndex+8
+
 				f:flush()
 				f:close()
-				
+
 				self.tiffStrips = {}
+				self.tiffStripByteCounts = {}
+				self.tiffStripOffsets = {}
 				self.tiffBits = {}
 				self.tiffDict = {}
 			end

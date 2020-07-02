@@ -568,7 +568,7 @@ return
 							else distortionMap[distRow][distColumn] = zeroRGB end
 						end
 					end
-					parent:bmpOut("DISTORTION", distortionMap, self.planetC, columnCount)
+					parent:tiffOut("DISTORTION", distortionMap, self.planetC, columnCount)
 				end
 
 				local colSum = 2
@@ -711,8 +711,8 @@ return
 				local totalC = margin -- Account for the addition of the legend in our bitmap dimensions.
 				self.planetD = columnCount -- Whereas the planet's circumference defines our map's width, its diameter will define its height (since we haven't distorted the height while unwrapping).
 
-				parent:bmpOut(label, extended, totalC, self.planetD)
-				-- parent:tiffOut(label, extended, totalC, self.planetD)
+				-- parent:bmpOut(label, extended, totalC, self.planetD)
+				parent:tiffOut(label, extended, totalC, self.planetD)
 
 				extended = nil
 				tCols = nil
