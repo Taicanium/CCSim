@@ -6,6 +6,8 @@ There is apparently an extremely rare issue causing a nil exception in the initi
 
 Continents are Way. Too. Round.
 
+Over much longer simulations (> 5,000 years), lines of succession become mixed up and out of order.
+
 # Possible Features
 
 Package Curses with the program to save the user the energy of installing LuaRocks? Would need to include versions specific to various OSes, though.
