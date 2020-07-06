@@ -3397,13 +3397,9 @@ return
 				end
 
 				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
-				byteIndex = byteIndex+8
 				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
-				byteIndex = byteIndex+8
 				f:write(string.char(0x40)..string.char(0x19)..string.char(0x01)..string.char(0x00)..string.char(0xE8)..string.char(0x03)..string.char(0x00)..string.char(0x00))
-				byteIndex = byteIndex+8
 				f:write(string.char(0x40)..string.char(0x19)..string.char(0x01)..string.char(0x00)..string.char(0xE8)..string.char(0x03)..string.char(0x00)..string.char(0x00))
-				byteIndex = byteIndex+8
 
 				f:flush()
 				f:close()
