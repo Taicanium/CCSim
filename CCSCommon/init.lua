@@ -321,7 +321,7 @@ return
 								relString = "the "..(indi[rel1].gender == "M" and rems.."nephew" or (indi[rel1].gender == "F" and rems.."niece" or rems.."sibling's child")).." of"
 							else
 								local rems = tostring(math.abs(rels2[i2Order]-rels1[i1Order])).." times removed "
-								relString = "the "..CCSCommon:ordinal(math.min(rels1[i1Order], rels2[i2Order])).." cousin "..(rems:gsub("0 times removed ", ""):gsub("^1 times", "once"):gsub("^2 times", "twice")).."of"
+								relString = "the "..CCSCommon:ordinal(math.min(rels1[i1Order], rels2[i2Order])).." cousin "..(rems:gsub("^0 times removed ", ""):gsub("^1 times", "once"):gsub("^2 times", "twice")).."of"
 							end
 						end
 						UI:printf(string.format("\n%s\n%s\n\n%s is %s %s.\n", i1Name.." ("..i1Birt.." - "..i1Deat..")", i2Name.." ("..i2Birt.." - "..i2Deat..")", i1Name, relString, i2Name))
