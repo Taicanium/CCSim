@@ -301,7 +301,6 @@ return
 							if not rels1[i1Order] or rels1[q] < rels1[i1Order] then i1Order = q end
 							if not rels2[i2Order] or rels2[q] < rels2[i2Order] then i2Order = q end
 						end end
-						print(rels1[i1Order], rels2[i2Order])
 						if rels1[i1Order] and rels2[i2Order] then
 							if rels1[i1Order] == 0 and rels2[i2Order] ~= 0 then relString = "the "..CCSCommon:generationString(-rels2[i2Order], indi[rel1].gender).." of"
 							elseif rels2[i2Order] == 0 and rels1[i1Order] ~= 0 then relString = "the "..CCSCommon:generationString(rels1[i1Order], indi[rel1].gender).." of"
