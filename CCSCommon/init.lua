@@ -93,6 +93,10 @@ return
 			local plc = {}
 			local dms = {}
 			local lgs = {}
+			local rel1 = -1
+			local rel2 = -1
+			local rels1 = {}
+			local rels2 = {}
 			UI:printf("Counting objects...")
 			local l = f:read("*l")
 			while l and l ~= "" do
@@ -247,7 +251,10 @@ return
 
 				UI:printc("\n")
 				if #matches > 0 then UI:printc(string.format("\nViewing match %d/%d.", mi, #matches)) end
-				UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
+				UI:printc("\nEnter an individual number or a name to search by, or:\nB to return to the previous menu.")
+				if not rel1 or rel1 == -1 then UI:printc("\nC to select this person for a relationship calculation.")
+				elseif not rel2 or rel2 == -1 then UI:printc("\nC to calculate the relationship between this person and the selection ("..tostring(rel1)..")\nD to cancel the relationship calculation.") end
+				UI:printc("\nF to move to the selected individual's father.\nM to move to the selected individual's mother.\n")
 				if #matches > 0 then
 					if mi < #matches then UI:printc("N to move to the next match.\n") end
 					if mi > 1 then UI:printc("P to move to the previous match.\n") end
@@ -258,6 +265,78 @@ return
 				local datin = UI:readl()
 				local oldFI = fi
 				if datin:lower() == "b" then matches = {} _REVIEWING = false
+				elseif datin:lower() == "c" then
+					if not rel1 or rel1 == -1 then rel1 = fi
+					elseif not rel2 or rel2 == -1 then
+						rel2 = fi
+						local recurseAnc = function(func, i, t, s, o)
+							local n = indi[i] or i
+							if not n or type(n) ~= "table" then return end
+							if t[n] and t[n] <= o then return end
+							t[n] = o
+							if n.moth and indi[n.moth] then t[n.moth] = t[n.moth] or math.huge end
+							if n.fath and indi[n.fath] then t[n.fath] = t[n.fath] or math.huge end
+							if n.moth and indi[n.moth] then func(func, n.moth, t, s, o+1) end
+							if n.fath and indi[n.fath] then func(func, n.fath, t, s, o+1) end
+						end
+						recurseAnc(recurseAnc, rel1, rels1, "", 0)
+						recurseAnc(recurseAnc, rel2, rels2, "", 0)
+						local i1Birt = indi[rel1].birt or tostring(indi[rel1].birth):gsub("nil", "?")
+						local i1Deat = indi[rel1].deat or tostring(indi[rel1].death):gsub("nil", "?")
+						local i2Birt = indi[rel2].birt or tostring(indi[rel2].birth):gsub("nil", "?")
+						local i2Deat = indi[rel2].deat or tostring(indi[rel2].death):gsub("nil", "?")
+						local i1Name = (indi[rel1].givn and indi[rel1].givn or "").." "..(indi[rel1].surn and indi[rel1].surn or "")
+						local i2Name = (indi[rel2].givn and indi[rel2].givn or "").." "..(indi[rel2].surn and indi[rel2].surn or "")
+						if i1Name == " " then i1Name = "<Unknown>" end
+						if i2Name == " " then i2Name = "<Unknown>" end
+						UI:clear()
+						local relString = "not known to be related to"
+						local i1Order = math.huge
+						local i2Order = math.huge
+						for q, r in pairs(rels1) do if rels2[q] then
+							if not rels1[i1Order] or rels1[q] < rels1[i1Order] then i1Order = q end
+							if not rels2[i2Order] or rels2[q] < rels2[i2Order] then i2Order = q end
+						end end
+						for q, r in pairs(rels2) do if rels1[q] then
+							if not rels1[i1Order] or rels1[q] < rels1[i1Order] then i1Order = q end
+							if not rels2[i2Order] or rels2[q] < rels2[i2Order] then i2Order = q end
+						end end
+						print(rels1[i1Order], rels2[i2Order])
+						if rels1[i1Order] and rels2[i2Order] then
+							if rels1[i1Order] == 0 and rels2[i2Order] ~= 0 then relString = "the "..CCSCommon:generationString(-rels2[i2Order], indi[rel1].gender).." of"
+							elseif rels2[i2Order] == 0 and rels1[i1Order] ~= 0 then relString = "the "..CCSCommon:generationString(rels1[i1Order], indi[rel1].gender).." of"
+							elseif rels2[i2Order] == 1 and rels1[i1Order] == 1 then relString = "the "..(indi[rel1].gender == "M" and "brother" or (indi[rel1].gender == "F" and "sister" or "sibling")).." of"
+							elseif rels1[i1Order] == 1 and rels2[i2Order] >= 2 then
+								local rems = rels2[i2Order]-2
+								if rems <= 0 then rems = ""
+								elseif rems == 1 then rems = "great "
+								elseif rems == 2 then rems = "great-great "
+								else rems = tostring(rems).."-times-great " end
+								relString = "the "..(indi[rel1].gender == "M" and rems.."uncle" or (indi[rel1].gender == "F" and rems.."aunt" or rems.."parent's sibling")).." of"
+							elseif rels2[i2Order] == 1 and rels1[i1Order] >= 2 then
+								local rems = rels1[i1Order]-2
+								if rems <= 0 then rems = ""
+								elseif rems == 1 then rems = "great "
+								elseif rems == 2 then rems = "great-great "
+								else rems = tostring(rems).."-times-great " end
+								relString = "the "..(indi[rel1].gender == "M" and rems.."nephew" or (indi[rel1].gender == "F" and rems.."niece" or rems.."sibling's child")).." of"
+							else
+								local rems = tostring(math.abs(rels2[i2Order]-rels1[i1Order])).." times removed "
+								relString = "the "..CCSCommon:ordinal(math.min(rels1[i1Order], rels2[i2Order])).." cousin "..(rems:gsub("0 times removed ", ""):gsub("^1 times", "once"):gsub("^2 times", "twice")).."of"
+							end
+						end
+						UI:printf(string.format("\n%s\n%s\n\n%s is %s %s.\n", i1Name.." ("..i1Birt.." - "..i1Deat..")", i2Name.." ("..i2Birt.." - "..i2Deat..")", i1Name, relString, i2Name))
+						UI:readl()
+						rel1 = -1
+						rel2 = -1
+						rels1 = {}
+						rels2 = {}
+					end
+				elseif datin:lower() == "d" then
+					rel1 = -1
+					rel2 = -1
+					rels1 = {}
+					rels2 = {}
 				elseif datin:lower() == "f" and famc then fi = fami[famc].husb or oldFI
 				elseif datin:lower() == "m" and famc then fi = fami[famc].wife or oldFI
 				elseif datin:lower() == "n" then
@@ -2380,16 +2459,30 @@ return
 			generationString = function(self, n, gender)
 				local msgout = ""
 
-				if n > 1 then
-					if n > 2 then
-						if n > 3 then
-							if n > 4 then msgout = tostring(n-2).."-times-great-grand"
-							else msgout = "great-great-grand" end
-						else msgout = "great-grand" end
-					else msgout = "grand" end
-				end
+				if n > 0 then
+					if n > 1 then
+						if n > 2 then
+							if n > 3 then
+								if n > 4 then msgout = tostring(n-2).."-times-great-grand"
+								else msgout = "great-great-grand" end
+							else msgout = "great-grand" end
+						else msgout = "grand" end
+					end
 
-				if gender == "M" then msgout = msgout.."son" else msgout = msgout.."daughter" end
+					if gender == "M" then msgout = msgout.."son" elseif gender == "F" then msgout = msgout.."daughter" else msgout = msgout.."child" end
+				elseif n < 0 then
+					if n < -1 then
+						if n < -2 then
+							if n < -3 then
+								if n < -4 then msgout = tostring(math.abs(n+2)).."-times-great-grand"
+								else msgout = "great-great-grand" end
+							else msgout = "great-grand" end
+						else msgout = "grand" end
+					end
+
+					if gender == "M" then msgout = msgout.."father" elseif gender == "F" then msgout = msgout.."mother" else msgout = msgout.."parent" end
+				end
+				
 				return msgout
 			end,
 
