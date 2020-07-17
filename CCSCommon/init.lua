@@ -272,12 +272,14 @@ return
 						local recurseAnc = function(func, i, t, s, o)
 							local n = indi[i] or i
 							if not n or type(n) ~= "table" then return end
-							if t[n] and t[n] <= o then return end
-							t[n] = o
-							if n.moth and indi[n.moth] then t[n.moth] = t[n.moth] or math.huge end
-							if n.fath and indi[n.fath] then t[n.fath] = t[n.fath] or math.huge end
-							if n.moth and indi[n.moth] then func(func, n.moth, t, s, o+1) end
-							if n.fath and indi[n.fath] then func(func, n.fath, t, s, o+1) end
+							if t[n] and t[n][1] <= o then return end
+							local iName = (n.givn and n.givn.." " or "")..(n.surn and n.surn.." " or "")
+							local iBirt = n.birt or tostring(n.birth):gsub("nil", "?")
+							local iDeat = n.deat or tostring(n.death):gsub("nil", "?")
+							local sn = s.."\n"..iName.." ("..iBirt.." - "..iDeat..")"
+							t[n] = {o, sn}
+							if n.moth and indi[n.moth] then func(func, n.moth, t, sn, o+1) end
+							if n.fath and indi[n.fath] then func(func, n.fath, t, sn, o+1) end
 						end
 						recurseAnc(recurseAnc, rel1, rels1, "", 0)
 						recurseAnc(recurseAnc, rel2, rels2, "", 0)
@@ -294,37 +296,57 @@ return
 						local i1Order = math.huge
 						local i2Order = math.huge
 						for q, r in pairs(rels1) do if rels2[q] then
-							if not rels1[i1Order] or rels1[q] < rels1[i1Order] then i1Order = q end
-							if not rels2[i2Order] or rels2[q] < rels2[i2Order] then i2Order = q end
+							local rem1 = rels1[q][1]
+							local rem2 = rels2[q][1]
+							if not rels1[i1Order] or not rels2[i2Order] or (rem1 <= rels1[i1Order][1] and rem2 <= rels2[i2Order][1]) then
+								i1Order = q
+								i2Order = q
+							end
 						end end
-						for q, r in pairs(rels2) do if rels1[q] then
-							if not rels1[i1Order] or rels1[q] < rels1[i1Order] then i1Order = q end
-							if not rels2[i2Order] or rels2[q] < rels2[i2Order] then i2Order = q end
-						end end
+						local related = false
 						if rels1[i1Order] and rels2[i2Order] then
-							if rels1[i1Order] == 0 and rels2[i2Order] ~= 0 then relString = "the "..CCSCommon:generationString(-rels2[i2Order], indi[rel1].gender).." of"
-							elseif rels2[i2Order] == 0 and rels1[i1Order] ~= 0 then relString = "the "..CCSCommon:generationString(rels1[i1Order], indi[rel1].gender).." of"
-							elseif rels2[i2Order] == 1 and rels1[i1Order] == 1 then relString = "the "..(indi[rel1].gender == "M" and "brother" or (indi[rel1].gender == "F" and "sister" or "sibling")).." of"
-							elseif rels1[i1Order] == 1 and rels2[i2Order] >= 2 then
+							if rels1[i1Order][1] == 0 and rels2[i2Order][1] ~= 0 then relString = "the "..CCSCommon:generationString(-rels2[i2Order][1], indi[rel1].gender).." of"
+							elseif rels2[i2Order][1] == 0 and rels1[i1Order][1] ~= 0 then relString = "the "..CCSCommon:generationString(rels1[i1Order][1], indi[rel1].gender).." of"
+							elseif rels2[i2Order][1] == 1 and rels1[i1Order][1] == 1 then relString = "the "..(indi[rel1].gender == "M" and "brother" or (indi[rel1].gender == "F" and "sister" or "sibling")).." of"
+							elseif rels1[i1Order][1] == 1 and rels2[i2Order][1] >= 2 then
 								local rems = rels2[i2Order]-2
 								if rems <= 0 then rems = ""
 								elseif rems == 1 then rems = "great "
 								elseif rems == 2 then rems = "great-great "
 								else rems = tostring(rems).."-times-great " end
 								relString = "the "..(indi[rel1].gender == "M" and rems.."uncle" or (indi[rel1].gender == "F" and rems.."aunt" or rems.."parent's sibling")).." of"
-							elseif rels2[i2Order] == 1 and rels1[i1Order] >= 2 then
-								local rems = rels1[i1Order]-2
+							elseif rels2[i2Order][1] == 1 and rels1[i1Order][1] >= 2 then
+								local rems = rels1[i1Order][1]-2
 								if rems <= 0 then rems = ""
 								elseif rems == 1 then rems = "great "
 								elseif rems == 2 then rems = "great-great "
 								else rems = tostring(rems).."-times-great " end
 								relString = "the "..(indi[rel1].gender == "M" and rems.."nephew" or (indi[rel1].gender == "F" and rems.."niece" or rems.."sibling's child")).." of"
 							else
-								local rems = tostring(math.abs(rels2[i2Order]-rels1[i1Order])).." times removed "
-								relString = "the "..CCSCommon:ordinal(math.min(rels1[i1Order], rels2[i2Order])).." cousin "..(rems:gsub("^0 times removed ", ""):gsub("^1 times", "once"):gsub("^2 times", "twice")).."of"
+								local rems = tostring(math.abs(rels2[i2Order][1]-rels1[i1Order][1])).." times removed "
+								relString = "the "..CCSCommon:ordinal(math.min(rels1[i1Order][1], rels2[i2Order][1])).." cousin "..(rems:gsub("^0 times removed ", ""):gsub("^1 times", "once"):gsub("^2 times", "twice")).."of"
 							end
+							related = true
+							local rf = io.open("relation.txt", "w+")
+							local r1List = {}
+							local r2List = {}
+							local rMax = 0
+							for x in rels1[i1Order][2]:gmatch("%C+") do table.insert(r1List, x) end
+							for x in rels2[i2Order][2]:gmatch("%C+") do table.insert(r2List, x) end
+							local list1Max = 0
+							for rIndex=1,#r1List do list1Max = math.max(list1Max, r1List[rIndex]:len()+1) end
+							rMax = math.max(#r1List, #r2List)
+							for rIndex=1,rMax do
+								rf:write(string.format("%s%s%s", r1List[rIndex] or "", string.rep(" ", list1Max-(r1List[rIndex] or ""):len()), r2List[rIndex] or ""))
+								rf:write("\n")
+							end
+							rf:write(string.format("\n%s is %s %s.", i1Name, relString, i2Name))
+							rf:flush()
+							rf:close()
+							rf = nil
 						end
 						UI:printf(string.format("\n%s\n%s\n\n%s is %s %s.\n", i1Name.." ("..i1Birt.." - "..i1Deat..")", i2Name.." ("..i2Birt.." - "..i2Deat..")", i1Name, relString, i2Name))
+						if related then UI:printf("See 'relation.txt' for the full relationship listing.") end
 						UI:readl()
 						rel1 = -1
 						rel2 = -1

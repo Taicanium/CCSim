@@ -365,7 +365,7 @@ return
 			end,
 
 			setPop = function(self, parent, u)
-				if u < 100 then return end
+				if u < 50 then return end
 
 				while #self.people > u do
 					local r = math.random(1, #self.people)
