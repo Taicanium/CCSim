@@ -278,8 +278,8 @@ return
 							local iDeat = n.deat or tostring(n.death):gsub("nil", "?")
 							local sn = s.."\n"..iName.." ("..iBirt.." - "..iDeat..")"
 							t[n] = {o, sn}
-							if n.moth and indi[n.moth] then func(func, n.moth, t, sn, o+1) end
 							if n.fath and indi[n.fath] then func(func, n.fath, t, sn, o+1) end
+							if n.moth and indi[n.moth] then func(func, n.moth, t, sn, o+1) end
 						end
 						recurseAnc(recurseAnc, rel1, rels1, "", 0)
 						recurseAnc(recurseAnc, rel2, rels2, "", 0)
@@ -2503,7 +2503,7 @@ return
 
 					if gender == "M" then msgout = msgout.."father" elseif gender == "F" then msgout = msgout.."mother" else msgout = msgout.."parent" end
 				end
-				
+
 				return msgout
 			end,
 
@@ -3350,10 +3350,8 @@ return
 					if not self.tiffStrips[strip] then self.tiffStrips[strip] = {} end
 					local pixel = zeroRGB
 					if data[y] and data[y][x] then pixel = data[y][x] end
-					local thisColor = false
 					for p=1,3 do
 						local K = string.char(pixel[p])
-						if pixel[p] ~= 0 then thisColor = true end
 						if self.tiffDict[omega..K] then omega = omega..K else
 							local nextCode = self.tiffDict[omega]
 							self:tiffCodeWrite(strip, nextCode)
@@ -3384,16 +3382,12 @@ return
 				local headerSize = #tiffHeader
 				local dataOff = 0
 				local dataSize = 0
-				for i=1,#self.tiffStrips do dataSize = dataSize+#self.tiffStrips[i] end
 				local IFDOff = 0
 				local IFDSize = 0
-				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do IFDSize = IFDSize+1 end end
 				local SBCOff = 0
 				local SBCSize = 0
-				for i=1,#self.tiffStrips do SBCSize = SBCSize+4 end
 				local SOOff = 0
 				local SOSize = 0
-				for i=1,#self.tiffStrips do SOSize = SOSize+4 end
 				local BPSOff = 0
 				local BPSSize = 6
 				local XPOff = 0
@@ -3404,45 +3398,52 @@ return
 				local XRSize = 8
 				local YROff = 0
 				local YRSize = 8
+				for i=1,#self.tiffStrips do dataSize = dataSize+#self.tiffStrips[i] end
+				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do IFDSize = IFDSize+1 end end
+				for i=1,#self.tiffStrips do SBCSize = SBCSize+4 end
+				for i=1,#self.tiffStrips do SOSize = SOSize+4 end
 
 				local byteIndex = 0
 				dataOff = headerOff+headerSize
-				IFDOff = dataOff+dataSize
-				while math.fmod(IFDOff, 2) ~= 0 do IFDOff = IFDOff+1 end
-				SBCOff = IFDOff+IFDSize
-				while math.fmod(SBCOff, 2) ~= 0 do SBCOff = SBCOff+1 end
-				SOOff = SBCOff+SBCSize
-				while math.fmod(SOOff, 2) ~= 0 do SOOff = SOOff+1 end
-				BPSOff = SOOff+SOSize
-				while math.fmod(BPSOff, 2) ~= 0 do BPSOff = BPSOff+1 end
-				XPOff = BPSOff+BPSSize
-				while math.fmod(XPOff, 2) ~= 0 do XPOff = XPOff+1 end
-				YPOff = XPOff+XPSize
-				while math.fmod(YPOff, 2) ~= 0 do YPOff = YPOff+1 end
-				XROff = YPOff+YPSize
-				while math.fmod(XROff, 2) ~= 0 do XROff = XROff+1 end
-				YROff = XROff+XRSize
-				while math.fmod(YROff, 2) ~= 0 do YROff = YROff+1 end
+				IFDOff = dataOff+dataSize+math.fmod(dataOff+dataSize, 2)
+				SBCOff = IFDOff+IFDSize+math.fmod(IFDOff+IFDSize, 2)
+				SOOff = SBCOff+SBCSize+math.fmod(SBCOff+SBCSize, 2)
+				BPSOff = SOOff+SOSize+math.fmod(SOOff+SOSize, 2)
+				XPOff = BPSOff+BPSSize+math.fmod(BPSOff+BPSSize, 2)
+				YPOff = XPOff+XPSize+math.fmod(XPOff+XPSize, 2)
+				XROff = YPOff+YPSize+math.fmod(YPOff+YPSize, 2)
+				YROff = XROff+XRSize+math.fmod(XROff+XRSize, 2)
 
 				local SCount = self:tiffLittleEndian(#self.tiffStrips, 8)
 				local LEIFD = self:tiffLittleEndian(IFDOff, 8)
-				for i=5,8 do tiffHeader[i] = LEIFD[i-4] or 0x00 end
 				local SBCIFD = self:tiffLittleEndian(SBCOff, 8)
-				for i=9,12 do tiffIFD[11][i] = SBCIFD[i-8] or 0x00 end
-				for i=5,8 do tiffIFD[11][i] = SCount[i-4] or 0x00 end
 				local SOIFD = self:tiffLittleEndian(SOOff, 8)
-				for i=9,12 do tiffIFD[7][i] = SOIFD[i-8] or 0x00 end
-				for i=5,8 do tiffIFD[7][i] = SCount[i-4] or 0x00 end
 				local BPSIFD = self:tiffLittleEndian(BPSOff, 8)
-				for i=9,12 do tiffIFD[4][i] = BPSIFD[i-8] or 0x00 end
 				local XRIFD = self:tiffLittleEndian(XROff, 8)
-				for i=9,12 do tiffIFD[12][i] = XRIFD[i-8] or 0x00 end
 				local YRIFD = self:tiffLittleEndian(YROff, 8)
-				for i=9,12 do tiffIFD[13][i] = YRIFD[i-8] or 0x00 end
 				local XPIFD = self:tiffLittleEndian(XPOff, 8)
-				for i=9,12 do tiffIFD[15][i] = XPIFD[i-8] or 0x00 end
 				local YPIFD = self:tiffLittleEndian(YPOff, 8)
-				for i=9,12 do tiffIFD[16][i] = YPIFD[i-8] or 0x00 end
+				for i=9,12 do
+					tiffHeader[i-4] = LEIFD[i-8] or 0x00
+					tiffIFD[4][i] = BPSIFD[i-8] or 0x00
+					tiffIFD[7][i-4] = SCount[i-8] or 0x00
+					tiffIFD[7][i] = SOIFD[i-8] or 0x00
+					tiffIFD[11][i-4] = SCount[i-8] or 0x00
+					tiffIFD[11][i] = SBCIFD[i-8] or 0x00
+					tiffIFD[12][i] = XRIFD[i-8] or 0x00
+					tiffIFD[13][i] = YRIFD[i-8] or 0x00
+					tiffIFD[15][i] = XPIFD[i-8] or 0x00
+					tiffIFD[16][i] = YPIFD[i-8] or 0x00
+				end
+
+				local alignIndex = function(bI, off, fn)
+					local bIN = bI
+					while bIN < off do
+						fn:write(string.char(0))
+						bIN = bIN+1
+					end
+					return bIN
+				end
 
 				for i=1,#tiffHeader do
 					f:write(string.char(tiffHeader[i] or 0x00))
@@ -3457,22 +3458,12 @@ return
 						byteIndex = byteIndex+1
 					end
 				end
-
-				while byteIndex < IFDOff do
-					f:write(string.char(0))
-					byteIndex = byteIndex+1
-				end
-
+				byteIndex = alignIndex(byteIndex, IFDOff, f)
 				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do
 					f:write(string.char(tiffIFD[i][j] or 0x00))
 					byteIndex = byteIndex+1
 				end end
-
-				while byteIndex < SBCOff do
-					f:write(string.char(0))
-					byteIndex = byteIndex+1
-				end
-
+				byteIndex = alignIndex(byteIndex, SBCOff, f)
 				for i=1,#self.tiffStrips do
 					local SBC = self:tiffLittleEndian(self.tiffStripByteCounts[i], 8)
 					for j=1,4 do
@@ -3480,12 +3471,7 @@ return
 						byteIndex = byteIndex+1
 					end
 				end
-
-				while byteIndex < SOOff do
-					f:write(string.char(0))
-					byteIndex = byteIndex+1
-				end
-
+				byteIndex = alignIndex(byteIndex, SOOff, f)
 				for i=1,#self.tiffStrips do
 					local SO = self:tiffLittleEndian(self.tiffStripOffsets[i], 8)
 					for j=1,4 do
@@ -3493,23 +3479,13 @@ return
 						byteIndex = byteIndex+1
 					end
 				end
-
-				while byteIndex < BPSOff do
-					f:write(string.char(0))
-					byteIndex = byteIndex+1
-				end
-
+				byteIndex = alignIndex(byteIndex, BPSOff, f)
 				for i=1,3 do
 					f:write(string.char(0x08))
 					f:write(string.char(0x00))
 					byteIndex = byteIndex+2
 				end
-
-				while byteIndex < XPOff do
-					f:write(string.char(0))
-					byteIndex = byteIndex+1
-				end
-
+				byteIndex = alignIndex(byteIndex, XPOff, f)
 				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
 				f:write(string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x00)..string.char(0x01)..string.char(0x00)..string.char(0x00)..string.char(0x00))
 				f:write(string.char(0x40)..string.char(0x19)..string.char(0x01)..string.char(0x00)..string.char(0xE8)..string.char(0x03)..string.char(0x00)..string.char(0x00))
