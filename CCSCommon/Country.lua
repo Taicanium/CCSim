@@ -565,15 +565,15 @@ return
 			end,
 			
 			successionAdd = function(self, parent, t, n)
-				self.locIndices[t.gString] = n
 				table.insert(self.lineOfSuccession, n, t)
-				for i, j in pairs(self.locIndices) do if self.locIndices[i] > self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]+1 end end
+				for i, j in pairs(self.locIndices) do if self.locIndices[i] >= n then self.locIndices[i] = self.locIndices[i]+1 end end
+				self.locIndices[t.gString] = n
 			end,
 			
 			successionRemove = function(self, parent, t)
 				if self.locIndices[t.gString] then
 					table.remove(self.lineOfSuccession, self.locIndices[t.gString])
-					for i, j in pairs(self.locIndices) do if self.locIndices[i] > self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]-1 end end
+					for i, j in pairs(self.locIndices) do if self.locIndices[i] >= self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]-1 end end
 					self.locIndices[t.gString] = nil
 				end
 			end,
