@@ -15,27 +15,6 @@ table.contains = function(t, n)
 	return false
 end
 
-SuccessionAdd = function(t, n, x, id)
-	table.insert(t, n, x)
-	for i=n,#t do
-		if not t[i].succTables then t[i].succTables = {} end
-		if not t[i].succIndices then t[i].succIndices = {} end
-		t[i].succTables[id] = t
-		t[i].succIndices[id] = i
-	end
-end
-
-SuccessionRemove = function(t, n, id, upd)
-	local x = table.remove(t, n)
-	if upd then for i=n,#t do
-		if not t[i].succTables then t[i].succTables = {} end
-		if not t[i].succIndices then t[i].succIndices = {} end
-		t[i].succTables[id] = t
-		t[i].succIndices[id] = i
-	end end
-	return x
-end
-
 _time = os.clock
 _stamp = os.time
 if _time() > 15 then _time = os.time end

@@ -31,6 +31,7 @@ return
 				o.isRuler = false
 				o.LastRoyalAncestor = ""
 				o.level = 2
+				o.lines = {}
 				o.maternalLineTimes = math.huge
 				o.military = false
 				o.militaryTraining = 0
@@ -51,8 +52,6 @@ return
 				o.ruledCountry = ""
 				o.rulerName = ""
 				o.rulerTitle = ""
-				o.succIndices = {}
-				o.succTables = {}
 				o.spokenLang = {}
 				o.spouse = nil
 				o.surname = ""
@@ -64,14 +63,6 @@ return
 			destroy = function(self, parent, nl)
 				self.age = nil
 				self.cbelief = nil
-				for i, j in pairs(self.succTables) do
-					if self.succIndices[i] > 0 then
-						parent.final[i]:refreshLineOfSuccession()
-						SuccessionRemove(j, self.succIndices[i], i, false)
-					end
-					self.succTables[i] = nil
-					self.succIndices[i] = nil
-				end
 				self.children = nil
 				if not self.deathplace or self.deathplace == "" then
 					self.deathplace = nl.name
@@ -94,6 +85,7 @@ return
 				self.father = nil
 				self.isRuler = nil
 				self.level = nil
+				self.lines = nil
 				self.military = nil
 				self.militaryTraining = nil
 				self.mother = nil
@@ -106,7 +98,6 @@ return
 				self.region = nil
 				self.royalSystem = nil
 				self.ruledCountry = nil
-				self.succIndex = nil
 				if self.spouse and self.spouse.def then self.spouse.spouse = nil end
 				self.spouse = nil
 				self.title = nil
@@ -232,17 +223,9 @@ return
 					nn.parentRuler = true
 				elseif self.level > self.spouse.level then nn.level = self.level else nn.level = self.spouse.level end
 
-				if self.isRuler and parent.systems[nl.system].dynastic then
-					self.succTables[nl.name] = nl.lineOfSuccession
-					self.succIndices[nl.name] = 0
-				elseif self.spouse.isRuler and parent.systems[nl.system].dynastic then
-					self.spouse.succTables[nl.name] = nl.lineOfSuccession
-					self.spouse.succIndices[nl.name] = 0
-				end
-
-				for i, j in pairs(self.succTables) do if parent.final[i] then
-					if self.spouse.succTables[i] and self.spouse.succIndices[i] < self.succIndices[i] then parent.final[i]:recurseRoyalChildren(self.spouse)
-					else parent.final[i]:recurseRoyalChildren(self) end
+				for i, j in pairs(self.lines) do if parent.final[j] and parent.final[j].locIndices[self.gString] then
+					if self.spouse.lines[i] and parent.final[j].locIndices[self.spouse.gString] and parent.final[j].locIndices[self.spouse.gString] < parent.final[j].locIndices[self.gString] then parent.final[j]:recurseRoyalChildren(self.spouse)
+					else parent.final[j]:recurseRoyalChildren(self) end
 				end end
 
 				if not parent.places[nn.birthplace] then

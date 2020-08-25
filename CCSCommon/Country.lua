@@ -24,6 +24,7 @@ return
 				o.hasRuler = -1
 				o.language = nil
 				o.lineOfSuccession = {}
+				o.locIndices = {}
 				o.majority = ""
 				o.military = 0
 				o.milThreshold = 5
@@ -137,8 +138,6 @@ return
 
 			checkRuler = function(self, parent, enthrone)
 				if self.hasRuler == -1 then
-					self:cleanLineOfSuccession()
-
 					self.ruler = nil
 					if #self.rulers > 0 and tostring(self.rulers[#self.rulers].To) == "Current" and self.rulers[#self.rulers].Country == self.name then self.rulers[#self.rulers].To = parent.years end
 
@@ -154,7 +153,8 @@ return
 									local p = math.random(1, #self.people)
 									self:setRuler(parent, p, enthrone)
 								else
-									local p = SuccessionRemove(self.lineOfSuccession, 1, self.name, true)
+									local p = table.remove(self.lineOfSuccession, 1)
+									for i, j in pairs(self.locIndices) do self.locIndices[i] = self.locIndices[i]-1 end
 									if p.def and p.rulerName == "" then
 										if p.nationality ~= self.name then self:add(parent, p) end
 										self:setRuler(parent, p.pIndex, enthrone)
@@ -167,15 +167,6 @@ return
 						end
 					end
 				end
-			end,
-
-			cleanLineOfSuccession = function(self)
-				for i=#self.lineOfSuccession,51,-1 do
-					self.lineOfSuccession[i].succTables[self.name] = nil
-					self.lineOfSuccession[i].succIndices[self.name] = nil
-					self.lineOfSuccession[i] = nil
-				end
-				self:refreshLineOfSuccession()
 			end,
 
 			delete = function(self, parent, y)
@@ -280,53 +271,25 @@ return
 			end,
 
 			recurseRoyalChildren = function(self, t)
-				if not t.children or #t.children == 0 then
-					self:refreshLineOfSuccession()
-					return
-				end
-
+				if not t or not t.children or #t.children == 0 then return end
 				local childrenByAge = {}
-				self:refreshLineOfSuccession()
-				if t.succIndices[self.name] and self.lineOfSuccession[t.succIndices[self.name]] and self.lineOfSuccession[t.succIndices[self.name]].def and self.lineOfSuccession[t.succIndices[self.name]].gString ~= t.gString then
-					t.succTables[self.name] = nil
-					t.succIndices[self.name] = nil
-					return
-				elseif t.succIndices[self.name] and (not self.lineOfSuccession[t.succIndices[self.name]] or not self.lineOfSuccession[t.succIndices[self.name]].def or not self.lineOfSuccession[t.succIndices[self.name]]) then
-					t.succTables[self.name] = nil
-					t.succIndices[self.name] = nil
-					return
-				end
-
 				for i=1,#t.children do
 					local found = false
 					for j=1,#childrenByAge+1 do if not found and ((not childrenByAge[j]) or t.children[i].birth < childrenByAge[j].birth) then
 						table.insert(childrenByAge, j, t.children[i])
 						found = true
 					end end
-					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then SuccessionRemove(self.lineOfSuccession, j, self.name, true) end end
+					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then self:successionRemove(parent, t.children[i]) end end
 				end
 
 				if not self.agPrim then for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and childrenByAge[i].rulerName == "" then
-					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
+					self:successionAdd(parent, childrenByAge[i], self.locIndices[t.gString]+1)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end end
 				for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "M" and childrenByAge[i].rulerName == "" then
-					SuccessionAdd(self.lineOfSuccession, t.succIndices[self.name]+1, childrenByAge[i], self.name)
+					self:successionAdd(parent, childrenByAge[i], self.locIndices[t.gString]+1)
 					self:recurseRoyalChildren(childrenByAge[i])
 				end end
-			end,
-
-			refreshLineOfSuccession = function(self, n)
-				local inx = n or 1
-				for j=#self.lineOfSuccession,inx,-1 do
-					if self.lineOfSuccession[j].succTables then self.lineOfSuccession[j].succTables[self.name] = self.lineOfSuccession end
-					if self.lineOfSuccession[j].succIndices then self.lineOfSuccession[j].succIndices[self.name] = j end
-				end
-				for i=#self.lineOfSuccession,inx,-1 do if not self.lineOfSuccession[i] or not self.lineOfSuccession[i].def or self.lineOfSuccession[i].rulerName ~= "" then SuccessionRemove(self.lineOfSuccession, i, self.name, false) end end
-				if self.ruler then
-					self.ruler.succTables[self.name] = self.lineOfSuccession
-					self.ruler.succIndices[self.name] = 0
-				end
 			end,
 
 			set = function(self, parent, ind)
@@ -448,9 +411,8 @@ return
 					self.people[newRuler].royalGenerations = 0
 					self.people[newRuler].LastRoyalAncestor = ""
 					self.people[newRuler].gString = self.people[newRuler].gender.." "..self.people[newRuler].name.." "..self.people[newRuler].surname.." "..self.people[newRuler].birth.." "..self.people[newRuler].birthplace
-					self.people[newRuler].succTables[self.name] = self.lineOfSuccession
-					self.people[newRuler].succIndices[self.name] = 0
-
+					self.locIndices[self.people[newRuler].gString] = 0
+					table.insert(self.people[newRuler].lines, self.name)
 					self:recurseRoyalChildren(self.people[newRuler])
 
 					table.insert(self.rulers, {dynastic=true, name=self.people[newRuler].rulerName, title=self.people[newRuler].rulerTitle, surname=self.people[newRuler].surname, number=tostring(self.people[newRuler].number), children=self.people[newRuler].children, From=parent.years, To="Current", Country=self.name, Party=self.people[newRuler].party})
@@ -600,6 +562,20 @@ return
 						parent.thisWorld.planet[l.node].city = l.name
 					end
 				end end
+			end,
+			
+			successionAdd = function(self, parent, t, n)
+				self.locIndices[t.gString] = n
+				table.insert(self.lineOfSuccession, n, t)
+				for i, j in pairs(self.locIndices) do if self.locIndices[i] > self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]+1 end end
+			end,
+			
+			successionRemove = function(self, parent, t)
+				if self.locIndices[t.gString] then
+					table.remove(self.lineOfSuccession, self.locIndices[t.gString])
+					for i, j in pairs(self.locIndices) do if self.locIndices[i] > self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]-1 end end
+					self.locIndices[t.gString] = nil
+				end
 			end,
 
 			triggerEvent = function(self, parent, i, r, o)
