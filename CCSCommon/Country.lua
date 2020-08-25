@@ -271,7 +271,8 @@ return
 			end,
 
 			recurseRoyalChildren = function(self, t)
-				if not t or not t.children or #t.children == 0 then return end
+				if t and self.ruler and self.ruler.gString == t.gString then self.locIndices[t.gString] = 0 end
+				if not t or not t.children or #t.children == 0 or not self.locIndices[t.gString] then return end
 				local childrenByAge = {}
 				for i=1,#t.children do
 					local found = false
@@ -572,9 +573,16 @@ return
 			
 			successionRemove = function(self, parent, t)
 				if self.locIndices[t.gString] then
-					table.remove(self.lineOfSuccession, self.locIndices[t.gString])
-					for i, j in pairs(self.locIndices) do if self.locIndices[i] >= self.locIndices[t.gString] then self.locIndices[i] = self.locIndices[i]-1 end end
+					if self.lineOfSuccession[self.locIndices[t.gString]] then table.remove(self.lineOfSuccession, self.locIndices[t.gString]) end
+					local oldIndex = self.locIndices[t.gString]
 					self.locIndices[t.gString] = nil
+					for i, j in pairs(self.locIndices) do 
+						if self.locIndices[i] >= oldIndex then self.locIndices[i] = self.locIndices[i]-1 end
+						if self.locIndices[i] < 0 then
+							self.lineOfSuccession[self.locIndices[i]] = nil
+							self.locIndices[i] = nil
+						end
+					end
 				end
 			end,
 
