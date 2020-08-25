@@ -504,7 +504,6 @@ return
 					if not found then
 						local pd = parent:randomChoice(self.nodes)
 						while parent.thisWorld.planet[pd].region and parent.thisWorld.planet[pd].region ~= "" and parent.thisWorld.planet[pd].region ~= j.name do
-							UI:printl(string.format("%d %d %s %s %s%s", #self.nodes, pd, parent.thisWorld.planet[pd].region, j.name, self.name, string.rep(" ", 20)))
 							pd = parent:randomChoice(self.nodes)
 						end
 
