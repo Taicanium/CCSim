@@ -280,7 +280,7 @@ return
 						table.insert(childrenByAge, j, t.children[i])
 						found = true
 					end end
-					for j=#self.lineOfSuccession,1,-1 do if self.lineOfSuccession[j].gString == t.children[i].gString then self:successionRemove(parent, t.children[i]) end end
+					if self.locIndices[t.children[i].gString] then self:successionRemove(parent, t.children[i]) end
 				end
 
 				if not self.agPrim then for i=#childrenByAge,1,-1 do if childrenByAge[i].gender == "F" and childrenByAge[i].rulerName == "" then
@@ -565,24 +565,16 @@ return
 				end end
 			end,
 			
-			successionAdd = function(self, parent, t, n)
-				table.insert(self.lineOfSuccession, n, t)
-				for i, j in pairs(self.locIndices) do if self.locIndices[i] >= n then self.locIndices[i] = self.locIndices[i]+1 end end
-				self.locIndices[t.gString] = n
+			successionAdd = function(self, parent, tn, n)
+				table.insert(self.lineOfSuccession, n, tn)
+				for i=n-1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
 			end,
-			
-			successionRemove = function(self, parent, t)
-				if self.locIndices[t.gString] then
-					if self.lineOfSuccession[self.locIndices[t.gString]] then table.remove(self.lineOfSuccession, self.locIndices[t.gString]) end
-					local oldIndex = self.locIndices[t.gString]
-					self.locIndices[t.gString] = nil
-					for i, j in pairs(self.locIndices) do 
-						if self.locIndices[i] >= oldIndex then self.locIndices[i] = self.locIndices[i]-1 end
-						if self.locIndices[i] < 0 then
-							self.lineOfSuccession[self.locIndices[i]] = nil
-							self.locIndices[i] = nil
-						end
-					end
+
+			successionRemove = function(self, parent, tn)
+				if self.locIndices[tn.gString] then
+					if self.lineOfSuccession[self.locIndices[tn.gString]] then table.remove(self.lineOfSuccession, self.locIndices[tn.gString]) end
+					for i=self.locIndices[tn.gString]-1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
+					self.locIndices[tn.gString] = nil
 				end
 			end,
 
