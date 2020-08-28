@@ -69,7 +69,10 @@ return
 					if self.region and self.region.cities then self.deathplace = self.region.name..", "..self.deathplace end
 					if self.city then self.deathplace = self.city.name..", "..self.deathplace end
 				end
-				for i, j in pairs(self.lines) do if parent.final[j] and parent.final[j].locIndices[self.gString] and parent.final[j].lineOfSuccession[parent.final[j].locIndices[self.gString]] and parent.final[j].lineOfSuccession[parent.final[j].locIndices[self.gString]].gString == self.gString then parent.final[j]:successionRemove(parent, self) end end
+				for i, j in pairs(self.lines) do if parent.final[j] and parent.final[j].locIndices[self.gString] then
+					if parent.final[j].lineOfSuccession[parent.final[j].locIndices[self.gString]] and parent.final[j].lineOfSuccession[parent.final[j].locIndices[self.gString]].gString == self.gString then parent.final[j]:successionRemove(parent, self) end
+					parent.final[j].locIndices[self.gString] = nil
+				end end
 				self.city = nil
 				self.death = parent.years
 				if not parent.places[self.deathplace] then
