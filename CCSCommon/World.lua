@@ -889,7 +889,7 @@ return
 					collectgarbage("collect")
 				end
 				--[[ if math.fmod(parent.years, 100) == 0 then
-					UI:printl("Autosaving...")
+					UI:printl("Autosaving..."..string.rep(" ", 12))
 					local fb = io.open(parent:directory({parent.stamp, "autosave.dat"}), "w+b")
 					if fb then
 						local w_ = 0
@@ -976,7 +976,7 @@ return
 								writeInd(tC)
 								for i, j in pairs(t) do if i ~= "planet" and i ~= "autosaveWritten" then
 									w_ = w_+1
-									if math.fmod(w_, 1000) == 0 then
+									if math.fmod(w_, 2500) == 0 then
 										UI:printl(string.format("Autosaving... %.2f%% done (%d/%d)", (w_/measW_)*100, w_, measW_))
 										if math.fmod(w_, 500000) == 0 then collectgarbage("collect") end
 									end
