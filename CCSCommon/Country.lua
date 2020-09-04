@@ -272,6 +272,7 @@ return
 
 			recurseRoyalChildren = function(self, t)
 				if t and self.ruler and self.ruler.gString == t.gString then self.locIndices[t.gString] = 0 end
+				self:successionClean()
 				if not t or not t.children or #t.children == 0 or not self.locIndices[t.gString] then return end
 				local childrenByAge = {}
 				for i=1,#t.children do
@@ -568,6 +569,12 @@ return
 			successionAdd = function(self, parent, tn, n)
 				table.insert(self.lineOfSuccession, n, tn)
 				for i=n-1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
+			end,
+			
+			successionClean = function(self, parent)
+				for i=1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
+				for i, j in pairs(self.locIndices) do if not self.lineOfSuccession[j] or self.lineOfSuccession[j].gString ~= i then self.locIndices[i] = nil end end
+				self.locIndices[self.ruler.gString] = 0
 			end,
 
 			successionRemove = function(self, parent, tn)
