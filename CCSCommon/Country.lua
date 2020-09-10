@@ -565,12 +565,12 @@ return
 					end
 				end end
 			end,
-			
+
 			successionAdd = function(self, parent, tn, n)
 				table.insert(self.lineOfSuccession, n, tn)
 				for i=n-1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
 			end,
-			
+
 			successionClean = function(self, parent)
 				for i=1,#self.lineOfSuccession do if self.lineOfSuccession[i] then self.locIndices[self.lineOfSuccession[i].gString] = i end end
 				for i, j in pairs(self.locIndices) do if not self.lineOfSuccession[j] or self.lineOfSuccession[j].gString ~= i then self.locIndices[i] = nil end end
