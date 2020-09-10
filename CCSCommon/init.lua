@@ -2299,13 +2299,11 @@ return
 
 						for j=1,self.years do
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) == "Revolution" then of:write(cp.events[k].Year..": "..cp.events[k].Event.."\n") end end
-
 							for k=1,#cp.rulers do if tonumber(cp.rulers[k].From) == j and cp.rulers[k].Country == cp.name and not rDone[self:getRulerString(cp.rulers[k])] then
 								of:write(rWritten..". "..self:getRulerString(cp.rulers[k]).."\n")
 								rWritten = rWritten+1
 								rDone[self:getRulerString(cp.rulers[k])] = true
 							end end
-
 							for k=1,#cp.events do if tonumber(cp.events[k].Year) == j and cp.events[k].Event:sub(1, 10) ~= "Revolution" then of:write(cp.events[k].Year..": "..cp.events[k].Event.."\n") end end
 						end
 
@@ -2464,37 +2462,26 @@ return
 
 			generationString = function(self, n, gender)
 				local msgout = ""
+				local mag = math.abs(n)
 
-				if n > 0 then
-					if n > 1 then
-						if n > 2 then
-							if n > 3 then
-								if n > 4 then msgout = tostring(n-2).."-times-great-grand"
-								else msgout = "great-great-grand" end
-							else msgout = "great-grand" end
-						else msgout = "grand" end
-					end
-
-					if gender == "M" then msgout = msgout.."son" elseif gender == "F" then msgout = msgout.."daughter" else msgout = msgout.."child" end
-				elseif n < 0 then
-					if n < -1 then
-						if n < -2 then
-							if n < -3 then
-								if n < -4 then msgout = tostring(math.abs(n+2)).."-times-great-grand"
-								else msgout = "great-great-grand" end
-							else msgout = "great-grand" end
-						else msgout = "grand" end
-					end
-
-					if gender == "M" then msgout = msgout.."father" elseif gender == "F" then msgout = msgout.."mother" else msgout = msgout.."parent" end
+				if mag > 1 then
+					if mag > 2 then
+						if mag > 3 then
+							if mag > 4 then msgout = tostring(mag-2).."-times-great-grand"
+							else msgout = "great-great-grand" end
+						else msgout = "great-grand" end
+					else msgout = "grand" end
 				end
+
+				if n > 0 then if gender == "M" then msgout = msgout.."son" elseif gender == "F" then msgout = msgout.."daughter" else msgout = msgout.."child" end
+				elseif n < 0 then if gender == "M" then msgout = msgout.."father" elseif gender == "F" then msgout = msgout.."mother" else msgout = msgout.."parent" end end
 
 				return msgout
 			end,
 
 			getAllyOngoing = function(self, country, target, event)
-				if not country.alliances then return {} end
 				local acOut = {}
+				if not country.alliances then return acOut end
 				for i=1,#country.alliances do
 					local c3 = nil
 					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
@@ -2508,8 +2495,8 @@ return
 				local data = t or self.thisWorld.countries
 				local cKeys = {}
 				for i, cp in pairs(data) do
+					local found = false
 					if #cKeys ~= 0 then
-						local found = false
 						for j=1,#cKeys do if not found then
 							local ind = 1
 							local chr1 = string.byte(tostring(cKeys[j]):sub(ind, ind):lower())
@@ -2522,16 +2509,13 @@ return
 							if not chr1 then
 								table.insert(cKeys, j+1, i)
 								found = true
-							elseif not chr2 then
-								table.insert(cKeys, j, i)
-								found = true
-							elseif chr2 < chr1 then
+							elseif not chr2 or chr2 < chr1 then
 								table.insert(cKeys, j, i)
 								found = true
 							end
 						end end
-						if not found then table.insert(cKeys, i) end
-					else table.insert(cKeys, i) end
+					end
+					if not found then table.insert(cKeys, i) end
 				end
 
 				if not t then self.alpha = cKeys end
@@ -2575,7 +2559,6 @@ return
 				local rString = ""
 				if data then
 					rString = data.title
-
 					if data.rulerName and data.rulerName ~= "" then rString = rString.." "..data.rulerName else rString = rString.." "..data.name end
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
@@ -2594,7 +2577,6 @@ return
 				local rString = ""
 				if data then
 					rString = data.title
-
 					if data.rulerName and data.rulerName ~= "" then rString = rString.." "..data.rulerName else rString = rString.." "..data.name end
 
 					if tonumber(data.number) and tonumber(data.number) ~= 0 then
@@ -3147,71 +3129,14 @@ return
 			roman = function(self, n)
 				local tmp = tonumber(n)
 				if not tmp then return n end
+				local values = {{"M", 1000}, {"CM", 900}, {"D", 500}, {"CD", 400}, {"C", 100}, {"XC", 90}, {"L", 50}, {"XL", 40}, {"X", 10}, {"IX", 9}, {"V", 5}, {"IV", 4}, {"I", 1}}
 				local fin = ""
 
-				while tmp-1000 > -1 do
-					fin = fin.."M"
-					tmp = tmp-1000
-				end
-
-				while tmp-900 > -1 do
-					fin = fin.."CM"
-					tmp = tmp-900
-				end
-
-				while tmp-500 > -1 do
-					fin = fin.."D"
-					tmp = tmp-500
-				end
-
-				while tmp-400 > -1 do
-					fin = fin.."CD"
-					tmp = tmp-400
-				end
-
-				while tmp-100 > -1 do
-					fin = fin.."C"
-					tmp = tmp-100
-				end
-
-				while tmp-90 > -1 do
-					fin = fin.."XC"
-					tmp = tmp-90
-				end
-
-				while tmp-50 > -1 do
-					fin = fin.."L"
-					tmp = tmp-50
-				end
-
-				while tmp-40 > -1 do
-					fin = fin.."XL"
-					tmp = tmp-40
-				end
-
-				while tmp-10 > -1 do
-					fin = fin.."X"
-					tmp = tmp-10
-				end
-
-				while tmp-9 > -1 do
-					fin = fin.."IX"
-					tmp = tmp-9
-				end
-
-				while tmp-5 > -1 do
-					fin = fin.."V"
-					tmp = tmp-5
-				end
-
-				while tmp-4 > -1 do
-					fin = fin.."IV"
-					tmp = tmp-4
-				end
-
-				while tmp-1 > -1 do
-					fin = fin.."I"
-					tmp = tmp-1
+				for i=1,#values do
+					while tmp-values[i][2] > -1 do
+						fin = fin..values[i][1]
+						tmp = tmp-values[i][2]
+					end
 				end
 
 				return fin
@@ -3235,9 +3160,8 @@ return
 				if c.rulerParty then pop = c.rulerPopularity-50 end
 				local involved = 0
 				for i=1,self.maxConflicts do if self.conflicts[i] then for j=1,#self.conflicts[i] do if self.conflicts[i][j] == c.name then involved = involved+1 end end end end
-				if involved == 0 then involved = 1 end
-				involved = (involved == 1 and 1 or (involved*0.75))
-				return (pop+(c.stability-50)+((((c.military/#c.people)*100)-50)))/involved
+				involved = math.max(involved*0.75, 1)
+				return (pop+c.stability+((c.military/#c.people)*100)-100)/involved
 			end,
 
 			tiffAddString = function(self, x)
