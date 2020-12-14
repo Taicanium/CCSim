@@ -45,12 +45,12 @@ return
 				for x=-self.planetR,self.planetR do
 					for y=-self.planetR,self.planetR do
 						local z = self.planetR
-						self.planet[self:getNodeFromCoords(x, y, -z)] = self.planet[self:getNodeFromCoords(x, y, -z)] or { x=x, y=y, z=-z, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, y, z)] = self.planet[self:getNodeFromCoords(x, y, z)] or { x=x, y=y, z=z, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, -z, y)] = self.planet[self:getNodeFromCoords(x, -z, y)] or { x=x, y=-z, z=y, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, z, y)] = self.planet[self:getNodeFromCoords(x, z, y)] or { x=x, y=z, z=y, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(-z, x, y)] = self.planet[self:getNodeFromCoords(-z, x, y)] or { x=-z, y=x, z=y, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(z, x, y)] = self.planet[self:getNodeFromCoords(z, x, y)] or { x=z, y=x, z=y, height=0, continent="", country="", countrySet=false, countryDone=false, region="", regionSet=false, regionDone=false, city="", land=false, waterNeighbors=0, mapWritten=false, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(x, y, -z)] = self.planet[self:getNodeFromCoords(x, y, -z)] or { x=x, y=y, z=-z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(x, y, z)] = self.planet[self:getNodeFromCoords(x, y, z)] or { x=x, y=y, z=z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(x, -z, y)] = self.planet[self:getNodeFromCoords(x, -z, y)] or { x=x, y=-z, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(x, z, y)] = self.planet[self:getNodeFromCoords(x, z, y)] or { x=x, y=z, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(-z, x, y)] = self.planet[self:getNodeFromCoords(-z, x, y)] or { x=-z, y=x, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+						self.planet[self:getNodeFromCoords(z, x, y)] = self.planet[self:getNodeFromCoords(z, x, y)] or { x=z, y=x, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
 						rdone = rdone+6
 					end
 					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
@@ -79,7 +79,7 @@ return
 							end
 						end end end end
 					end
-					if math.fmod(i, 5) == 0 then UI:printl(string.format("%.2f%% done", (i/#self.stretched)*100)) end
+					if math.fmod(i, 10) == 0 then UI:printl(string.format("%.2f%% done", (i/#self.stretched)*100)) end
 				end
 
 				collectgarbage("collect")
@@ -888,161 +888,23 @@ return
 					UI:printl("Collecting garbage...")
 					collectgarbage("collect")
 				end
+				local t3 = _time()
 				--[[ if math.fmod(parent.years, 100) == 0 then
 					UI:printl("Autosaving..."..string.rep(" ", 12))
 					local fb = io.open(parent:directory({parent.stamp, "autosave.dat"}), "w+b")
 					if fb then
-						local w_ = 0
-						local measW_ = 0
-						local ti_ = nil
-						local s_ = nil
-						local si_ = nil
-						local tC = 0
-						local tL = 0
-						local tI = ""
-						local tD = ""
-						local tCS = ""
-						local tLL = 0
-						local tDL = 0
-						local tIL = 0
-						local tDLL = 0
-						local tILL = 0
-						local iT = 0
-						local nL = 0
-						local findNumberByteLength = function(n)
-							nL = 1
-							iT = tonumber(n)
-							while math.abs(iT) > 255 do
-								iT = iT/255
-								nL = nL+1
-							end
-							return nL
-						end
-						local writeInd = function(i)
-							local i_ = tostring(i)
-							tL = i_:len()
-							if type(i) == "number" and i_:match("[%-%d]+%.%d+") and tL > 7 then
-								tI = i_:match("([%-%d]+)%.%d+")
-								tD = i_:match("[%-%d]+%.(%d+)")
-								tIL = findNumberByteLength(tI)
-								tDL = findNumberByteLength(tD)
-								tILL = findNumberByteLength(tIL)
-								tDLL = findNumberByteLength(tDL)
-								tCS = string.format("%.2x", tILL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								tCS = string.format(string.format("%%.%dx", tILL*2), tIL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								tCS = string.format(string.format("%%.%dx", tIL*2), math.abs(i))
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-							elseif type(i) == "number" and i_:match("[%-%d]+") and tL > 3 then
-								tL = findNumberByteLength(i)
-								tLL = findNumberByteLength(tL)
-								tCS = string.format("%.2x", tLL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								tCS = string.format(string.format("%%.%dx", tLL*2), tL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								tCS = string.format(string.format("%%.%dx", tL*2), math.abs(i))
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-							else
-								tLL = findNumberByteLength(tL)
-								tCS = string.format("%.2x", tLL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								tCS = string.format(string.format("%%.%dx", tLL*2), tL)
-								for x in tCS:gmatch("%w%w") do fb:write(string.char(tonumber(x, 16))) end
-								fb:write(i_)
-							end
-						end
-						local recurseTable = function(xk, t, meas, res)
-							if res then
-								t.autosaveWritten = nil
-								for i, j in pairs(t) do if type(j) == "table" and j.autosaveWritten then xk(xk, j, meas, res) end end
-							elseif meas then
-								for i, j in pairs(t) do
-									if i ~= "planet" and i ~= "autosaveWritten" and type(j) == "table" and not j.autosaveWritten then
-										j.autosaveWritten = true
-										xk(xk, j, meas, res)
-									else measW_ = measW_+1 end
-								end
-							else
-								if not ti_ then
-									fb:write("t"..string.char(0)..string.char(0)..string.char(0)..string.char(9).."CCSCommon")
-									ti_ = 0
-									s_ = {}
-									si_ = 0
-								end
-								tC = 0
-								for i, j in pairs(t) do if i ~= "planet" and i ~= "autosaveWritten" then tC = tC+1 end end
-								writeInd(findNumberByteLength(tC))
-								writeInd(tC)
-								for i, j in pairs(t) do if i ~= "planet" and i ~= "autosaveWritten" then
-									w_ = w_+1
-									if math.fmod(w_, 2500) == 0 then
-										UI:printl(string.format("Autosaving... %.2f%% done (%d/%d)", (w_/measW_)*100, w_, measW_))
-										if math.fmod(w_, 500000) == 0 then collectgarbage("collect") end
-									end
-									local jT = type(j)
-									if jT ~= "function" and jT ~= "userdata" then
-										if tostring(i):len() > 4 then
-											if not s_[i] then
-												si_ = si_+1
-												s_[i] = si_
-												fb:write("s")
-												writeInd(i)
-											else
-												fb:write("i")
-												writeInd(s_[i])
-											end
-										else
-											fb:write("s")
-											writeInd(i)
-										end
-										if jT == "table" then
-											if not j.autosaveWritten then
-												ti_ = ti_+1
-												j.autosaveWritten = ti_
-												fb:write("t")
-												xk(xk, j, meas, res)
-											else
-												fb:write("r")
-												writeInd(j.autosaveWritten)
-											end
-										elseif jT == "number" then if tostring(j):match("[%-%d]+%.%d+") and tostring(j):len() > 7 then if j < 0 then fb:write("e") else fb:write("d") end else if j < 0 then fb:write("o") else fb:write("n") end end
-										elseif jT == "boolean" then
-											fb:write("b"..(j == false and string.char(0) or string.char(1)))
-										elseif jT == "string" then
-											if j:len() > 4 then
-												if not s_[j] then
-													si_ = si_+1
-													s_[j] = si_
-													fb:write("s")
-													writeInd(j)
-												else
-													fb:write("i")
-													writeInd(s_[j])
-												end
-											else
-												fb:write("s")
-												writeInd(j)
-											end
-										elseif jT == "nil" then fb:write("z") end
-										if jT ~= "table" and jT ~= "string" and jT ~= "boolean" and jT ~= "nil" then if jT == "number" and j == math.huge then writeInd("H") elseif jT == "number" and j == -math.huge then writeInd("S") else writeInd(j) end end
-									end 
-								end end
-							end
-						end
-						recurseTable(recurseTable, parent, true)
-						recurseTable(recurseTable, parent, nil, true)
-						recurseTable(recurseTable, parent)
-						recurseTable(recurseTable, parent, nil, true)
+						
 						fb:flush()
 						fb:close()
 						fb = nil
 					end
 				end ]]
-				local t3 = _time()
+				local t4 = _time()
 				if _DEBUG then
 					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
 					debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t3-t2
+					if not debugTimes["AUTOSAVE"] then debugTimes["AUTOSAVE"] = 0 end
+					debugTimes["AUTOSAVE"] = debugTimes["AUTOSAVE"]+t4-t3
 				end
 			end
 		}

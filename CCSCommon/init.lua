@@ -59,6 +59,21 @@ return
 				for x in l:gmatch("%S+") do table.insert(split, x) end
 			end
 		end ]]
+		
+		function soundex(n, s)
+			local sTab = {b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6"}
+			local nOut = (n:sub(1, 1)):upper()
+			for x=2,n:len() do nOut = nOut..(sTab[(n:sub(x, x)):lower()] or "0") end
+			if s then nOut = nOut:gsub("0", "") end
+			local oln = 0
+			while oln ~= nOut:len() do
+				oln = nOut:len()
+				for x=nOut:len()-1,1,-1 do if nOut:sub(x, x) == nOut:sub(x+1, x+1) then nOut = nOut:sub(1, x)..(x < nOut:len()-1 and nOut:sub(x+2, nOut:len()) or "") end end
+			end
+			if nOut:len() < 4 then nOut = nOut.."000" end
+			
+			return s and nOut or nOut:sub(1, 4)
+		end
 
 		function gedReview(f)
 			local _REVIEWING = true
@@ -364,6 +379,8 @@ return
 					UI:printc("\n\n")
 					if not i.rulerName and not i.ethn and not i.spokeLang and not i.natLang then UI:printf("This individual has no notes.") end
 					if i.rulerName then UI:printf("\nBirth name: "..givn.." "..surn) end
+					UI:printf("\nSoundex: "..soundex(i.rulerName and i.rulerName or givn).." "..soundex(surn))
+					if i.rulerName then UI:printf("Birth soundex: "..soundex(givn).." "..soundex(surn)) end
 					if i.natLang or i.spokeLang then UI:printc("\n") end
 					if i.natLang then
 						UI:printc("Native language")
@@ -1777,7 +1794,7 @@ return
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
 				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Unionist", "Revivalist", "Monarchist", "Nationalist", "Reformist", "Public", "Patriotic", "Loyalist"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Centrism", "Democracy", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Union", "Unionist", "Revival", "Revivalist", "Labor", "Monarchy", "Monarchist", "Nationalist", "Reform", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Centrism", "Democracy", "Democratic", "Republican", "Economical", "Economic", "Moral", "Morality", "Ethical", "Union", "Unionist", "Revival", "Revivalist", "Labor", "Monarchy", "Monarchist", "Nationalist", "Reform", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty"},
 				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum", "Bureau", "Association"},
 			},
 			places = {},
@@ -1895,6 +1912,71 @@ return
 				hArr = nil
 				rArr = nil
 				bmpArr = nil
+			end,
+			
+			byteString = function(self, x)
+				if x == nil or type(x) == "userdata" then return "z" end
+				local sOut = type(x):sub(1, 1)
+				if sOut == "s" then
+					local sIn = tostring(x)
+					local lelen = string.format("%08x", sIn:len())
+					local nullTerm = false
+					for i=4,1,-1 do if not nullTerm then
+						local llSub = lelen:sub(i*2-1, i*2)
+						sOut = sOut..string.char(tonumber(llSub, 16))
+						if llSub == "00" then nullTerm = true end
+					end end
+					return sOut..sIn
+				elseif sOut == "f" then
+					local sIn = string.dump(x)
+					local lelen = string.format("%08x", sIn:len())
+					local nullTerm = false
+					for i=4,1,-1 do if not nullTerm then
+						local llSub = lelen:sub(i*2-1, i*2)
+						sOut = sOut..string.char(tonumber(llSub, 16))
+						if llSub == "00" then nullTerm = true end
+					end end
+					return sOut..sIn
+				elseif sOut == "n" then
+					if x == math.huge then return "n"..string.char(1)..string.char(0)..string.char(255) elseif x == -math.huge then return "n"..string.char(1)..string.char(0)..string.char(0) elseif n ~= n then return "n"..string.char(1)..string.char(0)..string.char(127) end
+					if math.fmod(x, 1) ~= 0 then
+						sOut = sOut..string.char(2)
+						local y = math.fmod(x, 1)
+						while math.fmod(y, 1) ~= 0 do y = y*10 end
+						local z = math.floor(x)
+						local sTmp = z
+						local sIn = 1
+						while sTmp >= 256 do
+							sTmp = sTmp/256
+							sIn = sIn+1
+						end
+						sOut = sOut..string.char(sIn)
+						local sForm = string.format("%0"..tostring(sIn*2).."x", z)
+						for i=sIn,1,-1 do sOut = sOut..string.char(tonumber(sForm:sub(i*2-1, i*2), 16)) end
+						sTmp = y
+						sIn = 1
+						while sTmp >= 256 do
+							sTmp = sTmp/256
+							sIn = sIn+1
+						end
+						sOut = sOut..string.char(sIn)
+						sForm = string.format("%0"..tostring(sIn*2).."x", z)
+						for i=sIn,1,-1 do sOut = sOut..string.char(tonumber(sForm:sub(i*2-1, i*2), 16)) end
+						return sOut
+					else
+						sOut = sOut..string.char(1)
+						local sTmp = x
+						local sIn = 1
+						while sTmp >= 256 do
+							sTmp = sTmp/256
+							sIn = sIn+1
+						end
+						sOut = sOut..string.char(sIn)
+						local sForm = string.format("%0"..tostring(sIn*2).."x", x)
+						for i=sIn,1,-1 do sOut = sOut..string.char(tonumber(sForm:sub(i*2-1, i*2), 16)) end
+						return sOut
+					end
+				end
 			end,
 
 			checkDirectory = function(self, str, dir)
@@ -3243,9 +3325,11 @@ return
 				local tiffWidth = self:tiffLittleEndian(w, 8)
 				local tiffRPS = self:tiffLittleEndian(rowsPerStrip, 8)
 				for i=1,2 do tiffIFD[1][i] = tiffTagCount[i] or 0x00 end
-				for i=9,12 do tiffIFD[2][i] = tiffWidth[i-8] or 0x00 end
-				for i=9,12 do tiffIFD[3][i] = tiffHeight[i-8] or 0x00 end
-				for i=9,12 do tiffIFD[10][i] = tiffRPS[i-8] or 0x00 end
+				for i=9,12 do
+					tiffIFD[2][i] = tiffWidth[i-8] or 0x00
+					tiffIFD[3][i] = tiffHeight[i-8] or 0x00
+					tiffIFD[10][i] = tiffRPS[i-8] or 0x00
+				end
 
 				self.tiffStripOffsets = {}
 				self.tiffStripByteCounts = {}

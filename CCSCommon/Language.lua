@@ -47,8 +47,8 @@ return
 					if op == "OMIT" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), " "}
 					elseif op == "REPLACE" then
 						local group = parent:randomChoice(self.repGroups)
-						local index = math.random(1, 2)
-						doOp = {group[index == 1 and 1 or 2], group[index == 1 and 2 or 1]}
+						local index = math.random(1, 2) == 1
+						doOp = {group[index and 1 or 2], group[index and 2 or 1]}
 					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
 					local eng = ENGLISH[math.random(1, #ENGLISH)]
 					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
