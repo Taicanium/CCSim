@@ -59,21 +59,6 @@ return
 				for x in l:gmatch("%S+") do table.insert(split, x) end
 			end
 		end ]]
-		
-		function soundex(n, s)
-			local sTab = {b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6"}
-			local nOut = (n:sub(1, 1)):upper()
-			for x=2,n:len() do nOut = nOut..(sTab[(n:sub(x, x)):lower()] or "0") end
-			if s then nOut = nOut:gsub("0", "") end
-			local oln = 0
-			while oln ~= nOut:len() do
-				oln = nOut:len()
-				for x=nOut:len()-1,1,-1 do if nOut:sub(x, x) == nOut:sub(x+1, x+1) then nOut = nOut:sub(1, x)..(x < nOut:len()-1 and nOut:sub(x+2, nOut:len()) or "") end end
-			end
-			if nOut:len() < 4 then nOut = nOut.."000" end
-			
-			return s and nOut or nOut:sub(1, 4)
-		end
 
 		function gedReview(f)
 			local _REVIEWING = true
@@ -379,8 +364,8 @@ return
 					UI:printc("\n\n")
 					if not i.rulerName and not i.ethn and not i.spokeLang and not i.natLang then UI:printf("This individual has no notes.") end
 					if i.rulerName then UI:printf("\nBirth name: "..givn.." "..surn) end
-					UI:printf("\nSoundex: "..soundex(i.rulerName and i.rulerName or givn).." "..soundex(surn))
-					if i.rulerName then UI:printf("Birth soundex: "..soundex(givn).." "..soundex(surn)) end
+					UI:printf("\nSoundex: "..Language:soundex(i.rulerName and i.rulerName or givn).." "..Language:soundex(surn))
+					if i.rulerName then UI:printf("Birth soundex: "..Language:soundex(givn).." "..Language:soundex(surn)) end
 					if i.natLang or i.spokeLang then UI:printc("\n") end
 					if i.natLang then
 						UI:printc("Native language")
@@ -1913,7 +1898,7 @@ return
 				rArr = nil
 				bmpArr = nil
 			end,
-			
+
 			byteString = function(self, x)
 				if x == nil or type(x) == "userdata" then return "z" end
 				local sOut = type(x):sub(1, 1)

@@ -893,7 +893,7 @@ return
 					UI:printl("Autosaving..."..string.rep(" ", 12))
 					local fb = io.open(parent:directory({parent.stamp, "autosave.dat"}), "w+b")
 					if fb then
-						
+
 						fb:flush()
 						fb:close()
 						fb = nil

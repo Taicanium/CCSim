@@ -20,4 +20,4 @@ Store event data in a temporary data file the same way we store genealogical dat
 
 Work on implementing an autosave feature. Earlier versions had one (which was even buggier than the rest of the program), but it was removed on account of being so buggy as to be worthless.
 
-Modify language mutation to make use of Soundex, as a more realistic and probably much more efficient alternative to the current method. Note: Soundex digits should not be able to change, and initial letter can change, but for any given mutation, *either* the initial letter may change *or* one of the Soundex groups can mutate.
+Organize languages in the respective review screen according to actual descended language family, not by the major language of the occupant country; this would make it far easier to differentiate close relatives from non-relatives and serve to clean things up significantly.

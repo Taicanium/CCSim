@@ -37,38 +37,41 @@ return
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
 				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
 				table.insert(newList.descentTree, {self.name..periodString, self.testString})
-				local ops = {"OMIT", "REPLACE", "INSERT"}
+				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
 
 				local fct = 0
-				local totalFct = parent.langDriftConstant*self.letterCount
+				local totalFct = math.random(parent.langDriftConstant*0.8, parent.langDriftConstant*1.2)*self.letterCount
 				local doOp = {}
+				local op = parent:randomChoice(ops)
+				local mod = nil
+				if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
+				elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
+				elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+				local repCount = 0
 				while fct < totalFct do
-					local op = parent:randomChoice(ops)
-					if op == "OMIT" then doOp = {parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels})), " "}
-					elseif op == "REPLACE" then
-						local group = parent:randomChoice(self.repGroups)
-						local index = math.random(1, 2) == 1
-						doOp = {group[index and 1 or 2], group[index and 2 or 1]}
-					elseif op == "INSERT" then doOp = {" ", parent:randomChoice(parent:randomChoice({parent.consonants, parent.vowels}))} end
 					local eng = ENGLISH[math.random(1, #ENGLISH)]
 					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
-					local spaces = {}
-					local newWord, repCount = thisWord:gsub(doOp[1], doOp[2], 1)
-					if op == "REPLACE" then repCount = repCount+math.abs(doOp[1]:len()-doOp[2]:len()) end
-					for j=1,newWord:len() do
-						local ind = newWord:find("%s", j)
-						if spaces[#spaces] and spaces[#spaces] ~= ind then table.insert(spaces, ind) end
-					end
-					local check = parent:namecheck(newWord:gsub("%s", "")):lower()
-					newWord = ""
-					for j=1,#spaces do
-						if j == 1 then newWord = check:sub(1, spaces[j]-1)
-						else newWord = newWord..check:sub(spaces[j-1], spaces[j]-1).." " end
-					end
-					newWord = newWord..check:sub(spaces[#spaces] or 1, check:len())
-					while newWord:len() < thisWord:len() do newWord = newWord.." " end
+					local newWord = thisWord
+					local fin = false
+					for q=1,thisWord:len() do if not fin and self.sTab[thisWord:sub(q, q):lower()] == mod[1] then
+						newWord = thisWord:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
+						if q < thisWord:len() then newWord = newWord..thisWord:sub(q+1, thisWord:len()) end
+						if newWord:sub(q, q) == " " and q > 1 and q < newWord:len() and newWord:sub(q-1, q-1):lower() == newWord:sub(q+1, q+1):lower() and self.sTab[newWord:sub(q-1, q-1):lower()] == "0" then
+							newWord = newWord:sub(1, q).." "..(q < newWord:len()-1 and newWord:sub(q+2, newWord:len()) or "")
+							fct = fct+1
+						end
+						fin = true
+					end end
 					newList.wordTable[eng] = newWord
-					fct = fct+repCount
+					repCount = repCount+1
+					if repCount >= #ENGLISH*0.15 then
+						op = parent:randomChoice(ops)
+						if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
+						elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
+						elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+						repCount = 0
+					end
+					fct = fct+1
 				end
 
 				newList.period = parent.langPeriod
@@ -99,9 +102,21 @@ return
 				return factor
 			end,
 
-			repGroups = {
-				{"o", "au"}, {"o", "ou"}, {"a", "e"}, {"u", "o"}, {"th", "t"}, {"th", "f"}, {"th", "s"}, {"ng", "n"}, {"b", "p"}, {"d", "t"}, {"sh", "s"}, {"sh", "th"}, {"v", "f"}, {"c", "g"}, {"z", "s"}, {"h", ""}, {"ch", "sh"}, {"th", "s"}, {"m", "n"}, {"e", "i"}, {"o", "oa"}, {"y", "i"}, {"s", "f"}, {"v", "b"},
-			},
+			soundex = function(self, n, s)
+				local nOut = (s and self.sTab[(n:sub(1, 1)):lower()] or (n:sub(1, 1)):upper())
+				for x=2,n:len() do nOut = nOut..(self.sTab[(n:sub(x, x)):lower()] or "0") end
+				if not s then nOut = nOut:gsub("0", "") end
+				local oln = 0
+				while oln ~= nOut:len() do
+					oln = nOut:len()
+					if nOut:len() > 1 then for x=nOut:len()-1,1,-1 do if nOut:sub(x, x) == nOut:sub(x+1, x+1) then nOut = nOut:sub(1, x)..(x < nOut:len()-1 and nOut:sub(x+2, nOut:len()) or "") end end end
+				end
+				if nOut:len() < 4 then nOut = (s and nOut.."777" or nOut.."000") end
+
+				return s and nOut or nOut:sub(1, 4)
+			end,
+
+			sTab = {["0"]={"a", "e", "i", "o", "u", "y", "w", "h"}, ["1"]={"b", "f", "p", "v"}, ["2"]={"c", "g", "j", "k", "q", "s", "x", "z"}, ["3"]={"d", "t"}, ["4"]={"l"}, ["5"]={"m", "n"}, ["6"]={"r"}, ["7"]={" "}, b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6", [" "]="7"},
 		}
 
 		Language.__index = Language
