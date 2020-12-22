@@ -93,7 +93,7 @@ return
 			l = f:read("*l")
 			while l and l ~= "" do
 				local split = {}
-				for x in l:gmatch("[%w%-%.,%']+") do table.insert(split, x) end
+				for x in l:gmatch("[%w%-%.,%'%(%)]+") do table.insert(split, x) end
 				if #split > 0 then
 					if tonumber(split[1]) then
 						fi = tonumber(split[1])
@@ -1767,7 +1767,7 @@ return
 			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
 			iSCount = 0,
 			iSIndex = 0,
-			langDriftConstant = 0.18,
+			langDriftConstant = 0.16,
 			langEML = 1, -- 1 for Early, 2 for Middle, 3 for Late.
 			langPeriod = 1,
 			langTestString = "The quick brown vixen and its master the mouse",
@@ -1981,16 +1981,25 @@ return
 				local _GLOSSARY = false
 				local _DESCENT = nil
 				local oldDescent = nil
+				local families = {}
+				for i=1,#self.languages do
+					local family = self.languages[i].name
+					for j=1,#self.languages[i].descentTree do
+						local mt = self.languages[i].descentTree[j][1]:match("%S+")
+						if mt ~= self.languages[i].name then family = mt end
+					end
+					if not families[family] then families[family] = {} end
+					families[family][self.languages[i].name] = self.languages[i]
+				end
+
+				local fKeys = self:getAlphabetical(families)
 
 				while _REVIEWING do
-					local cArr = {}
-					local regs = {}
-					local wCount = 0
 					local screens = {{}}
 					local screenIndex = 1
 					local lnCount = 0
 					local lnCorrect = 0
-					local lastCountry = ""
+					local lastFamily = ""
 					local screen = screens[screenIndex]
 					local screenMargins = {}
 
@@ -2029,74 +2038,59 @@ return
 						end
 
 						if not _DESCENT then
-							local alreadyMatched = {}
-
-							for i, j in pairs(self.thisWorld.countries) do
-								regs[j.name.."!".."Standard "..j.demonym] = j.name.."!".."Standard "..j.demonym
-								for k, l in pairs(j.regions) do regs[j.name.."!"..l.name] = j.name.."!"..l.name end
-							end
-							local rKeys = self:getAlphabetical(regs)
-
-							for i=1,#rKeys do
-								local key = regs[rKeys[i]]
-								local country = self.thisWorld.countries[key:match("(%w+)!")]
-								if country then
-									local region = country.regions[key:match("!(%w+)")]
-									if region and region.language and not alreadyMatched[region.language.name] then
-										table.insert(cArr, {country.demonym, region.language, false})
-										alreadyMatched[region.language.name] = true
-									elseif key:match("Standard") and not alreadyMatched[country.language.name] then
-										table.insert(cArr, {country.demonym, country.language, true})
-										alreadyMatched[country.language.name] = true
+							for i=1,#fKeys do
+								local fam = families[fKeys[i]]
+								local lAlph = self:getAlphabetical(fam)
+								for j=1,#lAlph do
+									local lang = fam[lAlph[j]]
+									if lang then
+										local trueName = (fKeys[i] == lang.name and "Standard "..lang.name or lang.name)
+										if not writeOut then if (fKeys[i] ~= lastFamily and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
+											lnCount = 0
+											lnCorrect = 0
+											lastFamily = ""
+											screenIndex = screenIndex+1
+										end end
+										if fKeys[i] ~= lastFamily then
+											lastFamily = fKeys[i]
+											lnCorrect = lnCorrect+1
+										end
+										if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
+										screenMargins[screenIndex] = math.max(screenMargins[screenIndex], trueName:len()+1)
+										lnCount = lnCount+1
 									end
-								end
-							end
-
-							for i=1,#cArr do
-								local lang = cArr[i][2]
-								if lang then
-									local trueName = (cArr[i][3] and "Standard "..lang.name or lang.name)
-									if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
-										lnCount = 0
-										lnCorrect = 0
-										lastCountry = ""
-										screenIndex = screenIndex+1
-									end end
-									if cArr[i][1] ~= lastCountry then
-										lastCountry = cArr[i][1]
-										lnCorrect = lnCorrect+1
-									end
-									if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
-									screenMargins[screenIndex] = math.max(screenMargins[screenIndex], trueName:len()+1)
-									lnCount = lnCount+1
 								end
 							end
 
 							screenIndex = 1
 							lnCount = 0
 							lnCorrect = 0
-							lastCountry = ""
+							lastFamily = ""
 							local decimalMargin = (tostring(getLineTolerance(8))):len()
 
-							for i=1,#cArr do
-								local lang = cArr[i][2]
-								if lang then
-									local trueName = (cArr[i][3] and "Standard "..lang.name or lang.name)
-									if not writeOut then if (cArr[i][1] ~= lastCountry and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
-										lnCount = 0
-										lnCorrect = 0
-										lastCountry = ""
-										screenIndex = screenIndex+1
-										screens[screenIndex] = {}
-										screen = screens[screenIndex]
-									end end
-									if cArr[i][1] ~= lastCountry then
-										table.insert(screen, cArr[i][1])
-										lastCountry = cArr[i][1]
-										lnCorrect = lnCorrect+1
+							for i=1,#fKeys do
+								local fam = families[fKeys[i]]
+								local lAlph = self:getAlphabetical(fam)
+								for j=1,#lAlph do
+									local lang = fam[lAlph[j]]
+									if lang then
+										local trueName = (fKeys[i] == lang.name and "Standard "..lang.name or lang.name)
+										if not writeOut then if (fKeys[i] ~= lastFamily and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
+											lnCount = 0
+											lnCorrect = 0
+											lastFamily = ""
+											screenIndex = screenIndex+1
+											screens[screenIndex] = {}
+											screen = screens[screenIndex]
+										end end
+										if fKeys[i] ~= lastFamily then
+											table.insert(screen, fKeys[i])
+											lastFamily = fKeys[i]
+											lnCorrect = lnCorrect+1
+										end
+										if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
+										lnCount = lnCount+1
 									end
-									if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
-									lnCount = lnCount+1
 								end
 							end
 						end
@@ -2156,7 +2150,7 @@ return
 							if lnCount+lnCorrect >= getLineTolerance(8) then
 								lnCount = 0
 								lnCorrect = 0
-								lastCountry = ""
+								lastFamily = ""
 								screenIndex = screenIndex+1
 							end
 							if not key:match("period") then key = key.." (current period)" end
@@ -2168,7 +2162,7 @@ return
 						screenIndex = 1
 						lnCount = 0
 						lnCorrect = 0
-						lastCountry = ""
+						lastFamily = ""
 						local decimalMargin = (tostring(getLineTolerance(8))):len()
 
 						for i=1,#alphaLangs do
@@ -2177,7 +2171,7 @@ return
 							if lnCount+lnCorrect >= getLineTolerance(8) then
 								lnCount = 0
 								lnCorrect = 0
-								lastCountry = ""
+								lastFamily = ""
 								screenIndex = screenIndex+1
 								screens[screenIndex] = {}
 								screen = screens[screenIndex]

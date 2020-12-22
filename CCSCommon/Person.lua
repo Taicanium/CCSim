@@ -311,7 +311,7 @@ return
 						local lCount = 0
 						for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 						parent.fileLangs[self.region.language.name] = lCount+1
-						parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+						parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")\n")
 					end
 					table.insert(self.nativeLang, self.region.language)
 					parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[self.region.language.name]).."\n")
@@ -331,7 +331,7 @@ return
 									local lCount = 0
 									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 									parent.fileLangs[choice.name] = lCount+1
-									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.."\n")
+									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.." ("..(choice.eml == 1 and "E." or (choice.eml == 2 and "M." or "L.")).."P. "..tostring(choice.period)..")\n")
 								end
 								parent.gedFile:write("h "..tostring(parent.fileLangs[choice.name]).."\n")
 								maxNatLangs = maxNatLangs-1
@@ -342,7 +342,7 @@ return
 									local lCount = 0
 									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 									parent.fileLangs[choice.name] = lCount+1
-									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.."\n")
+									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.." ("..(choice.eml == 1 and "E." or (choice.eml == 2 and "M." or "L.")).."P. "..tostring(choice.period)..")\n")
 								end
 								parent.gedFile:write("i "..tostring(parent.fileLangs[choice.name]).."\n")
 								natLang[choice.name] = nil
@@ -365,7 +365,7 @@ return
 									local lCount = 0
 									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 									parent.fileLangs[choice.name] = lCount+1
-									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.."\n")
+									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.." ("..(choice.eml == 1 and "E." or (choice.eml == 2 and "M." or "L.")).."P. "..tostring(choice.period)..")\n")
 								end
 								parent.gedFile:write("i "..tostring(parent.fileLangs[choice.name]).."\n")
 								maxSpokenLangs = maxSpokenLangs-1
@@ -376,7 +376,7 @@ return
 									local lCount = 0
 									for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 									parent.fileLangs[choice.name] = lCount+1
-									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.."\n")
+									parent.gedFile:write("j "..tostring(parent.fileLangs[choice.name]).." "..choice.name.." ("..(choice.eml == 1 and "E." or (choice.eml == 2 and "M." or "L.")).."P. "..tostring(choice.period)..")\n")
 								end
 								parent.gedFile:write("h "..tostring(parent.fileLangs[choice.name]).."\n")
 								spokeLang[choice.name] = nil
@@ -448,7 +448,7 @@ return
 						local lCount = 0
 						for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 						parent.fileLangs[self.region.language.name] = lCount+1
-						parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+						parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")\n")
 					end
 					parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[self.region.language.name]).."\n")
 				end end
@@ -465,7 +465,7 @@ return
 								local lCount = 0
 								for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
 								parent.fileLangs[self.region.language.name] = lCount+1
-								parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.."\n")
+								parent.gedFile:write("j "..tostring(parent.fileLangs[self.region.language.name]).." "..self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")\n")
 							end
 							parent.gedFile:write(tostring(self.gIndex).." h "..tostring(parent.fileLangs[self.region.language.name]).."\n")
 						end

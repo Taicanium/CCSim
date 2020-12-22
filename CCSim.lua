@@ -1,3 +1,4 @@
+_BUILD = "1608595200"
 _DEBUG = false
 _RUNNING = true
 
@@ -15,7 +16,7 @@ end
 
 while _RUNNING do
 	UI:clear()
-	UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n")
+	UI:printf("\n\n\tCCSIM : Compact Country Simulator\n\n\tBuild ".._BUILD.."\n\n\n")
 	if _DEBUG then UI:printf("\t-- DEBUG MODE ENABLED --\n\n") end
 	UI:printf("MAIN MENU\n\n1\t-\tBegin a new simulation.")
 	UI:printf("2\t-\tReview the output of a previous simulation.")

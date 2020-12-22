@@ -19,5 +19,3 @@ Store event data in a temporary data file the same way we store genealogical dat
 # To-do
 
 Work on implementing an autosave feature. Earlier versions had one (which was even buggier than the rest of the program), but it was removed on account of being so buggy as to be worthless.
-
-Organize languages in the respective review screen according to actual descended language family, not by the major language of the occupant country; this would make it far easier to differentiate close relatives from non-relatives and serve to clean things up significantly.
