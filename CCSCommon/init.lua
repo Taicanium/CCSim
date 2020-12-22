@@ -1785,7 +1785,7 @@ return
 			places = {},
 			popCount = 0,
 			popLimit = 2000,
-			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"hh", "h"}, {"yy", "y"}},
+			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"hh", "h"}, {"yy", "y"}, {"esish", "ish"}},
 			showinfo = 0,
 			stamp = nil,
 			startyear = 1,
@@ -2204,6 +2204,9 @@ return
 						end
 					end
 				end
+				
+				fKeys = nil
+				families = nil
 			end,
 
 			deepcopy = function(self, obj)

@@ -56,7 +56,10 @@ return
 					for q=1,thisWord:len() do if not fin and self.sTab[thisWord:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[thisWord:sub(q-1, q-1):lower()] == "0") or (q < thisWord:len() and self.sTab[thisWord:sub(q+1, q+1):lower()] == "0"))) then
 						newWord = thisWord:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
 						if q < thisWord:len() then newWord = newWord..thisWord:sub(q+1, thisWord:len()) end
-						for z=1,#self.sTab["0"] do newWord = newWord:gsub(self.sTab["0"][z]..self.sTab["0"][z], self.sTab["0"][z].." ") end
+						for z=1,#self.sTab["0"] do
+							for s=3,1,-1 do newWord = newWord:gsub(self.sTab["0"][z]..string.rep(" ", s)..self.sTab["0"][z], self.sTab["0"][z]..string.rep(" ", s+1)) end
+							newWord = newWord:gsub(self.sTab["0"][z]..self.sTab["0"][z], self.sTab["0"][z].." ")
+						end
 						fin = true
 					end end
 					newList.wordTable[eng] = newWord
@@ -113,7 +116,7 @@ return
 				return s and nOut or nOut:sub(1, 4)
 			end,
 
-			sTab = {["0"]={"a", "e", "i", "o", "u", "y", "w", "h"}, ["1"]={"b", "f", "p", "v"}, ["2"]={"c", "g", "j", "k", "q", "s", "x", "z"}, ["3"]={"d", "t"}, ["4"]={"l"}, ["5"]={"m", "n"}, ["6"]={"r"}, ["7"]={" "}, a="0", e="0", i="0", o="0", u="0", y="0", w="0", h="0", b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6", [" "]="7"},
+			sTab = {["0"]={"a", "e", "i", "o", "u", "y"}, ["1"]={"b", "f", "p", "v", "h", "w"}, ["2"]={"c", "g", "j", "k", "q", "s", "x", "z"}, ["3"]={"d", "t"}, ["4"]={"l"}, ["5"]={"m", "n"}, ["6"]={"r"}, ["7"]={" "}, a="0", e="0", i="0", o="0", u="0", y="0", w="0", h="0", b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6", [" "]="7"},
 		}
 
 		Language.__index = Language

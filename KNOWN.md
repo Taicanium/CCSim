@@ -14,8 +14,6 @@ Package Curses with the program to save the user the energy of installing LuaRoc
 
 Per the above, perhaps create an install script for CCSim that would handle determining the resident OS and downloading the dependencies accordingly.
 
-Store event data in a temporary data file the same way we store genealogical data. This would eliminate the last major source of memory leakage.
-
 # To-do
 
 Work on implementing an autosave feature. Earlier versions had one (which was even buggier than the rest of the program), but it was removed on account of being so buggy as to be worthless.
