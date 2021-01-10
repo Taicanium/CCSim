@@ -1,5 +1,5 @@
-_BUILD = "1608595200"
-_DEBUG = false
+_BUILD = "1610236800"
+_DEBUG = true
 _RUNNING = true
 
 CCSMStatus, CCSModule = pcall(require, "CCSCommon")

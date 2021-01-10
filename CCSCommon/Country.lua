@@ -266,7 +266,7 @@ return
 
 				for i=1,#parent.systems do
 					self.formalities[parent.systems[i].name] = parent:randomChoice(parent.systems[i].formalities)
-					self.dfif[parent.systems[i].name] = parent:randomChoice({true, false})
+					self.dfif[parent.systems[i].name] = parent:randomChoice{true, false}
 				end
 			end,
 
@@ -299,7 +299,7 @@ return
 
 				self.system = math.random(1, #parent.systems)
 				self:makename(parent)
-				self.agPrim = parent:randomChoice({true, false})
+				self.agPrim = parent:randomChoice{true, false}
 				if not self.language then
 					self.language = parent:getLanguage(self, self)
 					self.language.name = self.demonym
@@ -338,7 +338,7 @@ return
 					self:delete(parent, r)
 				end
 
-				if not parent.gedFile then parent.gedFile = io.open(parent:directory({parent.stamp, "ged.dat"}), "a+") end
+				if not parent.gedFile then parent.gedFile = io.open(parent:directory{parent.stamp, "ged.dat"}, "a+") end
 
 				for i=1,u-#self.people do
 					local n = Person:new()

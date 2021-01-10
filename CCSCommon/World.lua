@@ -34,11 +34,9 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin = _DEBUG and 100 or 190
-				local rMax = _DEBUG and 105 or 235
+				local rMin, rMax = _DEBUG and 100 or 275, _DEBUG and 105 or 315
 				self.planetR = math.floor(math.random(rMin, rMax))
-				local gridVol = (math.pow((self.planetR*2)+1, 2)*6)/100
-				local rdone = 0
+				local gridVol, rdone = (math.pow((self.planetR*2)+1, 2)*6)/100, 0
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
 
@@ -53,7 +51,7 @@ return
 						self.planet[self:getNodeFromCoords(z, x, y)] = self.planet[self:getNodeFromCoords(z, x, y)] or { x=z, y=x, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
 						rdone = rdone+6
 					end
-					UI:printl(string.format("%.2f%% done", (rdone/gridVol)))
+					UI:printl(string.format("%.2f%% done", rdone/gridVol))
 				end
 
 				UI:printf("Unwrapping planet to data matrix...")
@@ -67,11 +65,9 @@ return
 					for j=1,#self.stretched[i] do
 						local xyz = self.stretched[i][j][7]
 						for k=-1,1 do for l=-1,1 do if k ~= 0 or l ~= 0 then if self.stretched[i-k] then
-							local xi = i-k
-							local yi = j-l
+							local xi, yi, found = i-k, j-l
 							if yi < 1 then yi = yi+#self.stretched[xi] end
 							if yi > #self.stretched[xi] then yi = yi-#self.stretched[xi] end
-							local found = false
 							for m=1,#self.planet[xyz].neighbors do if not found and self.planet[xyz].neighbors[m] == self.stretched[xi][yi][7] then found = true end end
 							if not found then
 								table.insert(self.planet[xyz].neighbors, self.stretched[xi][yi][7])
@@ -79,23 +75,18 @@ return
 							end
 						end end end end
 					end
-					if math.fmod(i, 10) == 0 then UI:printl(string.format("%.2f%% done", (i/#self.stretched)*100)) end
+					if math.fmod(i, 10) == 0 then UI:printl(string.format("%.2f%% done", i*100/#self.stretched)) end
 				end
 
 				collectgarbage("collect")
 				UI:printf("Defining land masses...")
 				local planetSize = #self.planetdefined
-
-				local maxLand = math.random(math.floor(planetSize/3.25), math.ceil(planetSize/2.4))
-				local continents = math.random(5, 9)
-				local scanNodes = {}
+				local maxLand, continents, scanNodes = math.random(math.floor(planetSize/3.25), math.ceil(planetSize/2.4)), math.random(5, 9), {}
 				for i=1,continents do
-					local located = true
-					local cSeed = parent:randomChoice(self.planetdefined)
+					local located, cSeed = true, parent:randomChoice(self.planetdefined)
 					while self.planet[cSeed].land do cSeed = parent:randomChoice(self.planetdefined) end
 
-					self.planet[cSeed].land = true
-					self.planet[cSeed].continent = parent:name(true, 2, 2)
+					self.planet[cSeed].land, self.planet[cSeed].continent = true, parent:name(true, 2, 2)
 					for i=1,#self.planet[cSeed].neighbors do self.planet[self.planet[cSeed].neighbors[i]].waterNeighbors = self.planet[self.planet[cSeed].neighbors[i]].waterNeighbors-1 end
 					table.insert(self.landNodes, cSeed)
 					table.insert(scanNodes, cSeed)
@@ -107,11 +98,9 @@ return
 						if scanNodes[xyz] then table.remove(scanNodes, xyz) end
 						xyz = math.random(1, #scanNodes)
 					end
-					local nxyz = self.planet[scanNodes[xyz]].neighbors[math.random(1, #self.planet[scanNodes[xyz]].neighbors)]
-					local iters = 0
+					local nxyz, iters = self.planet[scanNodes[xyz]].neighbors[math.random(1, #self.planet[scanNodes[xyz]].neighbors)], 0
 					while self.planet[nxyz].land do
-						nxyz = self.planet[scanNodes[xyz]].neighbors[math.random(1, #self.planet[scanNodes[xyz]].neighbors)]
-						iters = iters+1
+						nxyz, iters = self.planet[scanNodes[xyz]].neighbors[math.random(1, #self.planet[scanNodes[xyz]].neighbors)], iters+1
 						if iters > #self.planet[scanNodes[xyz]].neighbors*4 then
 							self.planet[scanNodes[xyz]].waterNeighbors = 0
 							table.remove(scanNodes, xyz)
@@ -153,16 +142,12 @@ return
 
 				UI:printf("Setting territories...")
 
-				local allDefined = false
-				local totalDefined = #defined
-				local prevDefined = #defined
+				local allDefined, totalDefined, prevDefined = false, #defined, #defined
 				ci = 1
 
 				while not allDefined do
 					for i=#defined,1,-1 do
-						local xyz = defined[i]
-						local nDefined = true
-
+						local xyz, nDefined = defined[i], true
 						if self.planet[xyz].land and self.planet[xyz].country ~= "" and not self.planet[xyz].countrySet and not self.planet[xyz].countryDone then
 							for j=1,#self.planet[xyz].neighbors do
 								local neighbor = self.planet[xyz].neighbors[j]
@@ -176,15 +161,9 @@ return
 							end
 							self.planet[xyz].countryDone = true
 						end
-
 						if nDefined then table.remove(defined, i) end
 					end
-
-					for i=1,#defined do
-						local xyz = defined[i]
-						self.planet[xyz].countrySet = false
-					end
-
+					for i=1,#defined do self.planet[defined[i]].countrySet = false end
 					if totalDefined == prevDefined then
 						allDefined = true
 						for i=1,planetSize do if allDefined then
@@ -412,8 +391,7 @@ return
 				for i=1,columnCount do
 					local column = self.unwrapped[i]
 					local pixelsPerUnit = math.floor(self.planetC/#column)
-					local deviation = math.fmod(self.planetC/#column, 1)
-					local deviated = 0
+					local deviation, deviated = math.fmod(self.planetC/#column, 1), 0
 					for j=1,#column do
 						local exyz = column[j]
 						local node = self.planet[exyz]
@@ -438,9 +416,7 @@ return
 								self.cTriplets["\xFFWATER"] = {22, 22, 170}
 								while not cFound do
 									cFound = true
-									local r = math.random(0, 255)
-									local g = math.random(0, 255)
-									local b = math.random(0, 255)
+									local r, g, b = math.random(0, 255), math.random(0, 255), math.random(0, 255)
 									for k, l in pairs(self.cTriplets) do if math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3]) < 60 then cFound = false end end
 									if r > 230 and g > 230 and b > 230 then cFound = false end
 									if r < 25 and g < 25 and b < 25 then cFound = false end
@@ -462,9 +438,7 @@ return
 								self.cTriplets["\xFFWATER"] = {22, 22, 170}
 								while not cFound do
 									cFound = true
-									local r = math.random(0, 255)
-									local g = math.random(0, 255)
-									local b = math.random(0, 255)
+									local r, g, b = math.random(0, 255), math.random(0, 255), math.random(0, 255)
 									for k, l in pairs(self.cTriplets) do if math.abs(r-l[1])+math.abs(g-l[2])+math.abs(b-l[3]) < 60 then cFound = false end end
 									if r > 230 and g > 230 and b > 230 then cFound = false end
 									if r < 25 and g < 25 and b < 25 then cFound = false end
@@ -500,8 +474,7 @@ return
 						local sCol = #self.stretched[i]
 						local diff = sCol-self.planetC
 						while diff > 1 do
-							local ratio = sCol/diff
-							local rate = 0
+							local ratio, rate = sCol/diff, 0
 							for j=#self.stretched[i],1,-1 do
 								rate = rate+1
 								if rate >= ratio then
@@ -541,9 +514,7 @@ return
 					tColWidths[tColCount] = math.max(tColWidths[tColCount], nameLen+1, rulerLen+1)
 				end
 
-				local borderCol = -1
-				local extCols = {}
-				local extRows = {}
+				local borderCol, extCols = -1, {}
 
 				-- Here, we determine the column and row of the map with the most water pixels; we will start writing the map to file at this point, so that there is minimal 'wrapping' of land masses across the edges.
 				for i=1,self.planetC do
@@ -619,16 +590,12 @@ return
 									extended[row][cCol] = zeroRGB
 								end
 							end
-						else
-							extended[row][cCol] = zeroRGB
-						end
+						else extended[row][cCol] = zeroRGB end
 						cCol = cCol+1
 						accCol = accCol+1
 						if accCol > self.planetC then accCol = 1 end
 					end
-					for j=self.planetC+1,self.planetC+colSum do
-						extended[row][j] = zeroRGB
-					end
+					for j=self.planetC+1,self.planetC+colSum do extended[row][j] = zeroRGB end
 				end
 
 				for i=1,tColCount do -- For every column of text in the legend...
@@ -891,7 +858,7 @@ return
 				local t3 = _time()
 				--[[ if math.fmod(parent.years, 100) == 0 then
 					UI:printl("Autosaving..."..string.rep(" ", 12))
-					local fb = io.open(parent:directory({parent.stamp, "autosave.dat"}), "w+b")
+					local fb = io.open(parent:directory{parent.stamp, "autosave.dat"}, "w+b")
 					if fb then
 
 						fb:flush()

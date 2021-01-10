@@ -39,7 +39,7 @@ return
 			local tmpF = true
 			while tmpF do
 				UI:printp("\n Debug line > ")
-				datin = UI:readl()
+				local datin = UI:readl()
 				if datin == "" then tmpF = false else
 					tmpF = loadstring(datin)
 					if tmpF then
@@ -62,26 +62,13 @@ return
 
 		function gedReview(f)
 			local _REVIEWING = true
-			local indi = {}
-			local fam = {}
-			local fami = {}
-			local iCount = 0
-			local fi = 0
-			local reindexed = 1
-			local matches = {}
-			local plc = {}
-			local dms = {}
-			local lgs = {}
-			local rel1 = -1
-			local rel2 = -1
-			local rels1 = {}
-			local rels2 = {}
-			local strs1 = {}
-			local strs2 = {}
+			local indi, fam, fami, matches, plc, dms, lgs, rels1, rels2, strs1, strs2 = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+			local iCount, fi, reindexed, rel1, rel2 = 0, 0, 1, -1, -1
+			local split, l, cmd, inx, loc, i, j, nextInd, fInd, famStr, index
 			UI:printf("Counting objects...")
-			local l = f:read("*l")
+			l = f:read("*l")
 			while l and l ~= "" do
-				local index = l:gmatch("[%w%-]+")()
+				index = l:gmatch("[%w%-]+")()
 				if tonumber(index) then iCount = math.max(iCount, tonumber(index)) end
 				if math.fmod(iCount, 10000) == 0 then UI:printl(string.format("%d people", iCount)) end
 				l = f:read("*l")
@@ -92,7 +79,7 @@ return
 			local largestRead = 0
 			l = f:read("*l")
 			while l and l ~= "" do
-				local split = {}
+				split = {}
 				for x in l:gmatch("[%w%-%.,%'%(%)]+") do table.insert(split, x) end
 				if #split > 0 then
 					if tonumber(split[1]) then
@@ -108,7 +95,7 @@ return
 							indi[fi].gIndex = fi
 						end
 					else reindexed = 1 end
-					local cmd = split[2-reindexed]
+					cmd = split[2-reindexed]
 					if cmd == "b" then indi[fi].birth = tonumber(split[3-reindexed])
 					elseif cmd == "c" then indi[fi].birthplace = plc[split[3-reindexed]]
 					elseif cmd == "g" then indi[fi].gender = split[3-reindexed]
@@ -133,18 +120,18 @@ return
 						if not indi[fi].ethn then indi[fi].ethn = {} end
 						table.insert(indi[fi].ethn, split[3-reindexed].."% "..dms[split[4-reindexed]])
 					elseif cmd == "y" then
-						local inx = split[3-reindexed]
-						local loc = split[4-reindexed]
+						inx = split[3-reindexed]
+						loc = split[4-reindexed]
 						for q=5-reindexed,#split do loc = loc.." "..split[q] end
 						plc[inx] = loc
 					elseif cmd == "z" then
-						local inx = split[3-reindexed]
-						local loc = split[4-reindexed]
+						inx = split[3-reindexed]
+						loc = split[4-reindexed]
 						for q=5-reindexed,#split do loc = loc.." "..split[q] end
 						dms[inx] = loc
 					elseif cmd == "j" then
-						local inx = split[3-reindexed]
-						local loc = split[4-reindexed]
+						inx = split[3-reindexed]
+						loc = split[4-reindexed]
 						for q=5-reindexed,#split do loc = loc.." "..split[q] end
 						lgs[inx] = loc
 					end
@@ -154,17 +141,17 @@ return
 
 			UI:printl(string.format("%d/%d people", largestRead, iCount))
 			UI:printf("\nLinking family records...")
-			local nextInd = 1
+			nextInd = 1
 
 			for i=1,#indi do
-				local j = indi[i]
+				j = indi[i]
 				if math.fmod(i, 10000) == 0 then
 					UI:printl(string.format("%d/%d people", i, iCount))
 					if math.fmod(i, 100000) == 0 then collectgarbage("collect") end
 				end
 				if j.moth and j.fath then
-					local fInd = 0
-					local famStr = tostring(j.moth).."-"..tostring(j.fath)
+					fInd = 0
+					famStr = tostring(j.moth).."-"..tostring(j.fath)
 					if not fam[famStr] then
 						fInd = nextInd
 						fam[famStr] = fInd
@@ -189,12 +176,8 @@ return
 			while _REVIEWING do
 				UI:clear()
 				local i = indi[fi]
-				local gender = i.gender or i.gend
-				local title = i.rulerTitle or i.title
-				local givn = i.givn or i.name
-				local surn = i.surn or i.surname
-				local famc = i.famc
-				local fams = i.fams
+				local gender, title, givn, surn = i.gender or i.gend, i.rulerTitle or i.title, i.givn or i.name, i.surn or i.surname
+				local famc, fams = i.famc, i.fams
 				if givn and title then givn = givn:gsub(title.." ", ""):gsub(title, "") end
 				if i.rulerName and title then i.rulerName = i.rulerName:gsub(title.." ", ""):gsub(title, "") end
 				if famc and fami[famc] then
@@ -599,7 +582,7 @@ return
 						datin = UI:readl()
 						if datin:lower() == "b" then _SELECTED = false elseif tonumber(datin) and ops[tonumber(datin)] then
 							local op = ops[tonumber(datin)]
-							local f = io.open(CCSCommon:directory({dirStamp, op}))
+							local f = io.open(CCSCommon:directory{dirStamp, op})
 							if f then
 								-- if op == "events.txt" then eventReview(f) end
 								if op == "ged.dat" then gedReview(f) end
@@ -1973,7 +1956,7 @@ return
 					count = count+1
 					if x:lower():match(dir) then found = true end
 				end
-				if not found then os.execute("mkdir "..self:directory({str, dir})) end
+				if not found then os.execute("mkdir "..self:directory{str, dir}) end
 			end,
 
 			compLangs = function(self, writeOut)
@@ -2102,7 +2085,7 @@ return
 							screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
 							screen = screens[screenIndex]
 							if writeOut then
-								local f = io.open(self:directory({self.stamp, "langs_"..self.years..".txt"}), "a+")
+								local f = io.open(self:directory{self.stamp, "langs_"..self.years..".txt"}, "a+")
 								for i=1,#screen do f:write(screen[i].."\n") end
 								f:flush()
 								f:close()
@@ -2329,7 +2312,7 @@ return
 				if destroy then UI:clear() end
 
 				UI:printf("\nPrinting result...")
-				local of = io.open(self:directory({self.stamp, "events.txt"}), "w+")
+				local of = io.open(self:directory{self.stamp, "events.txt"}, "w+")
 
 				local cKeys = self:getAlphabetical(self.final)
 				for i=1,#cKeys do
@@ -2672,13 +2655,13 @@ return
 
 				self.thisWorld:constructVoxelPlanet(self)
 
-				local stampDir = self:directory({self.stamp})
+				local stampDir = self:directory{self.stamp}
 				self:checkDirectory(stampDir, "maps")
-				self.thisWorld:mapOutput(self, self:directory({stampDir, "maps", "initial"}))
+				self.thisWorld:mapOutput(self, self:directory{stampDir, "maps", "initial"})
 
 				collectgarbage("collect")
 
-				self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
+				self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 
 				while _running do
 					self.thisWorld:update(self)
@@ -2775,7 +2758,7 @@ return
 					local t1 = _time()
 
 					if self.writeMap then
-						self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "Year "..tostring(self.years)}))
+						self.thisWorld:mapOutput(self, self:directory{self.stamp, "maps", "Year "..tostring(self.years)})
 						local t2 = _time()
 						collectgarbage("collect")
 						local t3 = _time()
@@ -2817,10 +2800,10 @@ return
 						local datin = UI:readl()
 						if tonumber(datin) then
 							remainingYears = tonumber(datin)
-							self.gedFile = io.open(self:directory({self.stamp, "ged.dat"}), "a+")
+							self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 						elseif datin:lower() == "e" and _DEBUG then debugLine()
 						elseif datin:lower() == "g" then
-							local gf = io.open(self:directory({self.stamp, "ged.dat"}), "r")
+							local gf = io.open(self:directory{self.stamp, "ged.dat"}, "r")
 							gedReview(gf)
 							gf:close()
 							gf = nil
@@ -2839,7 +2822,7 @@ return
 					end
 				end
 
-				self.thisWorld:mapOutput(self, self:directory({self.stamp, "maps", "final"}))
+				self.thisWorld:mapOutput(self, self:directory{self.stamp, "maps", "final"})
 				self:finish(true)
 
 				UI:printf("\nEnd Simulation!")
@@ -3002,7 +2985,7 @@ return
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 
-					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice({self.consonants, self.vowels}))) end
+					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice{self.consonants, self.vowels})) end
 
 					for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
 
