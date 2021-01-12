@@ -21,11 +21,11 @@ return
 			define = function(self, parent)
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
 					local ln = math.ceil(ENGLISH[i]:len()/3)
-					local word = parent:name(true, ln, ln)
+					local word = parent:name(true, ln, ln, true)
 					self.wordTable[ENGLISH[i]] = word:lower()
 					self.letterCount = self.letterCount+word:len()
 				end end
-				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..self.wordTable[x:lower()]:gsub(" ", "").." " end
+				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..string.stripDiphs(self.wordTable[x:lower()]:gsub(" ", "")).." " end
 				self.testString = self.testString:sub(1, self.testString:len()-1)
 				self.testString = self.testString:gsub("^%w", string.upper)
 				self.period = parent.langPeriod
@@ -56,9 +56,9 @@ return
 					for q=1,thisWord:len() do if not fin and self.sTab[thisWord:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[thisWord:sub(q-1, q-1):lower()] == "0") or (q < thisWord:len() and self.sTab[thisWord:sub(q+1, q+1):lower()] == "0"))) then
 						newWord = thisWord:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
 						if q < thisWord:len() then newWord = newWord..thisWord:sub(q+1, thisWord:len()) end
-						for z=1,#self.sTab["0"] do
-							for s=4,1,-1 do newWord = newWord:gsub(self.sTab["0"][z]..string.rep(" ", s)..self.sTab["0"][z], self.sTab["0"][z]..string.rep(" ", s+1)) end
-							newWord = newWord:gsub(self.sTab["0"][z]..self.sTab["0"][z], self.sTab["0"][z].." ")
+						for z, n in pairs(self.sTab["0"]) do
+							for s=4,1,-1 do newWord = newWord:gsub(n..string.rep(" ", s)..n, n..string.rep(" ", s+1)) end
+							newWord = newWord:gsub(n..n, n.." ")
 						end
 						fin = true
 					end end
@@ -78,10 +78,10 @@ return
 				newList.eml = parent.langEML
 				newList.letterCount = 0
 				for i=1,#ENGLISH do
-					if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3)) end
+					if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3), true) end
 					newList.letterCount = newList.letterCount+newList.wordTable[ENGLISH[i]]:len()
 				end
-				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..newList.wordTable[x:lower()]:gsub(" ", "").." " end
+				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..string.stripDiphs(newList.wordTable[x:lower()]:gsub(" ", "")).." " end
 				newList.testString = newList.testString:sub(1, newList.testString:len()-1)
 				newList.testString = newList.testString:gsub("^%w", string.upper)
 
@@ -115,8 +115,38 @@ return
 
 				return s and nOut or nOut:sub(1, 4)
 			end,
+			
+			translate = function(self, s)
+				local thisText = s
+				for x in s:gmatch("%w+") do thisText = thisText:gsub(x, function(n)
+					if not self.wordTable[n:lower()] then
+						local ln = math.ceil(ENGLISH[i]:len()/3)
+						local word = parent:name(true, ln, ln, true)
+						self.wordTable[n:lower()] = word:lower()
+						-- We intentionally do not count this word as part of Language.letterCount, as deviation only takes into account the words located in the ENGLISH array.
+					end
+					return string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", ""))
+				end) end
+				return thisText
+			end,
 
-			sTab = {["0"]={"a", "e", "o", "u", "y", "i"}, ["1"]={"b", "p", "f", "v", "w", "h"}, ["2"]={"c", "k", "g", "j", "z", "s"}, ["3"]={"d", "t"}, ["4"]={"l"}, ["5"]={"m", "n"}, ["6"]={"r"}, ["7"]={" "}, a="0", e="0", i="0", o="0", u="0", y="0", w="0", h="0", b="1", f="1", p="1", v="1", c="2", g="2", j="2", k="2", q="2", s="2", x="2", z="2", d="3", t="3", l="4", m="5", n="5", r="6", [" "]="7"},
+			sTab = {
+				["0"]={"a", "e", "o", "u", "y", "i"},
+				["1"]={"b", "p", "f", "\xef", "v", "w", "h"},
+				["2"]={"c", "k", "g", "j", "\xee", "z", "s", "\xed"},
+				["3"]={"d", "t"},
+				["4"]={"l"},
+				["5"]={"m", "n", "\xec"},
+				["6"]={"r"},
+				["7"]={" "},
+				a="0", e="0", i="0", o="0", u="0", y="0",
+				w="1", h="1", b="1", f="1", ["\xef"]="1", p="1", v="1",
+				c="2", g="2", j="2", k="2", ["\xee"]="2", z="2", s="2", ["\xed"]="2",
+				d="3", t="3",
+				l="4",
+				m="5", n="5", ["\xec"]="5",
+				r="6",
+				[" "]="7"},
 		}
 
 		Language.__index = Language

@@ -15,6 +15,13 @@ table.contains = function(t, n)
 	return false
 end
 
+string.diphs = {["\xef"]="th", ["\xee"]="zh", ["\xed"]="sh", ["\xec"]="ng"}
+string.stripDiphs = function(s)
+	local thisWord, nextWord = s
+	for x in s:gmatch("[%c%C]") do _, nextWord = pcall(string.gsub, thisWord, x, function(n) return string.diphs[n] or n end) if _ then thisWord = nextWord end end
+	return thisWord
+end
+
 _time = os.clock
 _stamp = os.time
 if _time() > 15 then _time = os.time end
@@ -1457,7 +1464,7 @@ return
 			},
 			clrcmd = "",
 			conflicts = {},
-			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "y", "z"},
+			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "\xec", "p", "r", "s", "\xed", "t", "\xef", "v", "w", "y", "z", "\xee"},
 			demonyms = {},
 			dirSeparator = "/",
 			disabled = {},
@@ -1631,11 +1638,11 @@ return
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0}},
 				["0"]={{0, 0, 0, 0, 0, 0},
+					{0, 0, 1, 1, 0, 0},
+					{0, 1, 0, 1, 1, 0},
 					{0, 1, 1, 1, 1, 0},
-					{0, 1, 0, 0, 1, 0},
-					{0, 1, 0, 0, 1, 0},
-					{0, 1, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 1, 1, 0, 1, 0},
+					{0, 0, 1, 1, 0, 0}},
 				["1"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 1, 1, 0, 0},
 					{0, 1, 1, 1, 0, 0},
@@ -1747,7 +1754,7 @@ return
 			},
 			indi = {},
 			indiCount = 0,
-			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "Sh", "Ta", "Te", "Ti", "To", "Tu", "Tr", "Th", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "Zh", "Tha", "Thu", "The", "Thi", "Tho"},
+			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "\xed", "Ta", "Te", "Ti", "To", "Tu", "Tr", "\xef", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "\xee", "\xefa", "\xefu", "\xefe", "\xefi", "\xefo"},
 			iSCount = 0,
 			iSIndex = 0,
 			langDriftConstant = 0.16,
@@ -1756,7 +1763,7 @@ return
 			langTestString = "The quick brown vixen and its master the mouse",
 			languages = {},
 			maxConflicts = 1,
-			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "the", "thal", "cri", "ma", "na", "sa", "mit", "nit", "shi", "ssa", "ssi", "ret", "thu", "thus", "thar", "then", "min", "ni", "ius", "us", "es", "ta", "dos", "tho", "tha", "do", "to", "tri", "zi", "za", "zar", "zen", "tar", "la", "li", "len", "lor", "lir"},
+			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "\xefe", "\xefal", "cri", "ma", "na", "sa", "mit", "nit", "\xedi", "ssa", "ssi", "ret", "\xefu", "\xefus", "\xefar", "\xefen", "min", "ni", "ius", "us", "es", "ta", "dos", "\xefo", "\xefa", "do", "to", "tri", "zi", "za", "zar", "zen", "tar", "la", "li", "len", "lor", "lir"},
 			nextPerson = 1,
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
@@ -1768,7 +1775,7 @@ return
 			places = {},
 			popCount = 0,
 			popLimit = 2000,
-			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"hh", "h"}, {"yy", "y"}, {"esish", "ish"}},
+			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"hh", "h"}, {"yy", "y"}, {"esi\xed", "i\xed"}, {"esish", "ish"}},
 			showinfo = 0,
 			stamp = nil,
 			startyear = 1,
@@ -2546,12 +2553,12 @@ return
 					if #cKeys ~= 0 then
 						for j=1,#cKeys do if not found then
 							local ind = 1
-							local chr1 = string.byte(tostring(cKeys[j]):sub(ind, ind):lower())
-							local chr2 = string.byte(tostring(i):sub(ind, ind):lower())
+							local chr1 = string.byte(string.stripDiphs(tostring(cKeys[j])):sub(ind, ind):lower())
+							local chr2 = string.byte(string.stripDiphs(tostring(i)):sub(ind, ind):lower())
 							while chr1 and chr2 and chr2 == chr1 do
 								ind = ind+1
-								chr1 = string.byte(tostring(cKeys[j]):sub(ind, ind):lower())
-								chr2 = string.byte(tostring(i):sub(ind, ind):lower())
+								chr1 = string.byte(string.stripDiphs(tostring(cKeys[j])):sub(ind, ind):lower())
+								chr2 = string.byte(string.stripDiphs(tostring(i)):sub(ind, ind):lower())
 							end
 							if not chr1 then
 								table.insert(cKeys, j+1, i)
@@ -2828,7 +2835,7 @@ return
 				UI:printf("\nEnd Simulation!")
 			end,
 
-			name = function(self, personal, l, m)
+			name = function(self, personal, l, m, preserve)
 				local t0 = _time()
 
 				local nom = ""
@@ -2878,6 +2885,8 @@ return
 					nom = nom..ending:lower()
 					for i=1,2 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end end
 				end
+				
+				if not preserve then nom = (string.stripDiphs(nom)):gsub("^%S", string.upper) end
 
 				if _DEBUG then
 					if not debugTimes["CCSCommon.name"] then debugTimes["CCSCommon.name"] = 0 end
@@ -2909,20 +2918,7 @@ return
 						if i < nomlower:len()-1 then
 							local hasvowel = false
 
-							for j=i,i+2 do
-								for k=1,#self.vowels do if nomlower:sub(j, j) == self.vowels[k] then hasvowel = true end end
-
-								if j > 1 and nomlower:sub(j-1, j-1) == 't' and nomlower:sub(j, j) == 'h' then -- Make an exception for the 'th' group, but only if there's a vowel close by.
-									local prev = ""
-									local fore = ""
-									if j > 2 then prev = nomlower:sub(j-2, j-2) end
-									if j < nomlower:len() then fore = nomlower:sub(j+1, j+1) end
-									for k=1,#self.vowels do if fore == self.vowels[k] or prev == self.vowels[k] then
-										hasvowel = true
-										k = #self.vowels
-									end end
-								end
-							end
+							for j=i,i+2 do for k=1,#self.vowels do if nomlower:sub(j, j) == self.vowels[k] then hasvowel = true end end end
 
 							if not hasvowel then
 								local newnom = nomlower:sub(1, i+1)..self:randomChoice(self.vowels)..nomlower:sub(i+3, nomlower:len())
@@ -2973,11 +2969,11 @@ return
 							elseif n2 == "m" then nomlower = nomlower:sub(1, nomlower:len()-1)
 							elseif n2 == "n" then nomlower = nomlower:sub(1, nomlower:len()-1)
 							elseif n2 == "p" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif n2 == "s" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif n2 == "t" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "s" then nomlower = nomlower:sub(1, nomlower:len()-1)
+							elseif n2 == "t" then nomlower = nomlower:sub(1, nomlower:len()-1)
 							elseif n2 == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
 							elseif n2 == "w" then nomlower = nomlower:sub(1, nomlower:len()-1)
-							elseif n2 == "z" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1) end
+							elseif n2 == "z" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 						end
 					end
 
