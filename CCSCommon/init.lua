@@ -21,6 +21,11 @@ string.stripDiphs = function(s)
 	for x in s:gmatch("[%c%C]") do _, nextWord = pcall(string.gsub, thisWord, x, function(n) return string.diphs[n] or n end) if _ then thisWord = nextWord end end
 	return thisWord
 end
+string.stripSpecs = function(s)
+	local thisWord, nextWord = s
+	for x in s:gmatch("[%$%w]+") do _, nextWord = pcall(string.gsub, thisWord, x, function(n) return ENG_SPECIAL[n] or n end) if _ then thisWord = nextWord end end
+	return thisWord
+end
 
 _time = os.clock
 _stamp = os.time
@@ -45,13 +50,13 @@ return
 		function debugLine()
 			local tmpF = true
 			while tmpF do
-				UI:printp("\n Debug line > ")
+				UI:printp("D > ")
 				local datin = UI:readl()
 				if datin == "" then tmpF = false else
 					tmpF = loadstring(datin)
 					if tmpF then
 						local stat, err = pcall(tmpF)
-						if not stat then UI:printf(err) else UI:printf(stat) end
+						if not stat then UI:printf(err) end
 					end
 				end
 			end
@@ -495,14 +500,14 @@ return
 
 					CCSCommon:rseed()
 
-					CCSCommon.thisWorld = World:new()
+					CCSCommon.world = World:new()
 					local numCountries = math.random(6, 10)
 
 					for j=1,numCountries do
 						UI:printl(string.format("Country %d/%d", j, numCountries))
 						local nl = Country:new()
 						nl:set(CCSCommon)
-						CCSCommon.thisWorld:add(nl)
+						CCSCommon.world:add(nl)
 					end
 
 					CCSCommon:getAlphabetical()
@@ -751,11 +756,11 @@ return
 								for k, l in pairs(j.cities) do newr.cities[k] = l end
 							end
 
-							for i=1,#parent.thisWorld.planetdefined do
-								local xyz = parent.thisWorld.planetdefined[i]
-								if parent.thisWorld.planet[xyz].country == c2.name then
-									parent.thisWorld.planet[xyz].country = c1.name
-									parent.thisWorld.planet[xyz].region = c2.name
+							for i=1,#parent.world.planetdefined do
+								local xyz = parent.world.planetdefined[i]
+								if parent.world.planet[xyz].country == c2.name then
+									parent.world.planet[xyz].country = c1.name
+									parent.world.planet[xyz].region = c2.name
 								end
 							end
 
@@ -763,7 +768,7 @@ return
 							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 							c1.regions[newr.name] = newr
-							parent.thisWorld:delete(parent, c2)
+							parent.world:delete(parent, c2)
 						end
 
 						return -1
@@ -837,7 +842,7 @@ return
 						self.govIntervened = {}
 					end,
 					doStep=function(self, parent, c)
-						for i, cp in pairs(parent.thisWorld.countries) do
+						for i, cp in pairs(parent.world.countries) do
 							if cp.name ~= c.name then
 								local interv = false
 								for j=1,#self.opIntervened do if self.opIntervened[j] == cp.name then interv = true end end
@@ -863,7 +868,7 @@ return
 						local varistab = parent:strengthFactor(c)
 
 						for i=1,#self.govIntervened do
-							local cp = parent.thisWorld.countries[self.govIntervened[i]]
+							local cp = parent.world.countries[self.govIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
 								if extFactor > 0 then varistab = varistab+(extFactor/10) end
@@ -871,7 +876,7 @@ return
 						end
 
 						for i=1,#self.opIntervened do
-							local cp = parent.thisWorld.countries[self.opIntervened[i]]
+							local cp = parent.world.countries[self.opIntervened[i]]
 							if cp then
 								local extFactor = parent:strengthFactor(cp)
 								if extFactor < 0 then varistab = varistab-(extFactor/10) end
@@ -895,28 +900,28 @@ return
 						if self.status >= 100 then -- Government victory
 							c:event(parent, "End of "..parent:ordinal(c.civilWars).." civil war; victory for "..c.rulers[#c.rulers].title.." "..c.rulers[#c.rulers].name.." "..parent:roman(c.rulers[#c.rulers].number).." of "..c.rulers[#c.rulers].Country)
 							for i=1,#self.govIntervened do
-								local opC = parent.thisWorld.countries[self.govIntervened[i]]
+								local opC = parent.world.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Victory with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 							for i=1,#self.opIntervened do
-								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								local opC = parent.world.countries[self.opIntervened[i]]
 								if opC then opC:event(parent, "Defeat with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 						else -- Opposition victory
 							if math.random(1, 100) < 51 then -- Executed
 								for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 							else -- Exiled
-								local newC = parent:randomChoice(parent.thisWorld.countries)
-								if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+								local newC = parent:randomChoice(parent.world.countries)
+								if parent.world.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.world.countries) end end
 								for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 							end
 
 							for i=1,#self.govIntervened do
-								local opC = parent.thisWorld.countries[self.govIntervened[i]]
+								local opC = parent.world.countries[self.govIntervened[i]]
 								if opC then opC:event(parent, "Defeat with government forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 							for i=1,#self.opIntervened do
-								local opC = parent.thisWorld.countries[self.opIntervened[i]]
+								local opC = parent.world.countries[self.opIntervened[i]]
 								if opC then opC:event(parent, "Victory with opposition forces in the "..parent:ordinal(c.civilWars).." "..c.demonym.." civil war") end
 							end
 
@@ -990,11 +995,11 @@ return
 								for k, l in pairs(j.cities) do newr.cities[k] = l end
 							end
 
-							for i=1,#parent.thisWorld.planetdefined do
-								local xyz = parent.thisWorld.planetdefined[i]
-								if parent.thisWorld.planet[xyz].country == c2.name then
-									parent.thisWorld.planet[xyz].country = c1.name
-									parent.thisWorld.planet[xyz].region = c2.name
+							for i=1,#parent.world.planetdefined do
+								local xyz = parent.world.planetdefined[i]
+								if parent.world.planet[xyz].country == c2.name then
+									parent.world.planet[xyz].country = c1.name
+									parent.world.planet[xyz].region = c2.name
 								end
 							end
 
@@ -1002,7 +1007,7 @@ return
 							if #c2.rulers > 0 then c2.rulers[#c2.rulers].To = parent.years end
 
 							c1.regions[c2.name] = newr
-							parent.thisWorld:delete(parent, c2)
+							parent.world:delete(parent, c2)
 						end
 
 						return -1
@@ -1022,14 +1027,13 @@ return
 						if math.random(1, 100) < 26 then -- Executed
 							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 						else -- Exiled
-							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							local newC = parent:randomChoice(parent.world.countries)
+							if parent.world.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.world.countries) end end
 							for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 						end
 
 						c.hasRuler = -1
 						c:checkRuler(parent, true)
-
 						c.stability = math.max(1, c.stability-5)
 
 						return -1
@@ -1061,7 +1065,7 @@ return
 								end
 								if type(ni) == "number" then table.remove(np, ni) else np[ni] = nil end
 							end
-							for i, j in pairs(parent.thisWorld.countries) do if j.name == nc.name then return -1 end end
+							for i, j in pairs(parent.world.countries) do if j.name == nc.name then return -1 end end
 
 							newl.name = nc.name
 							if doSub > 250 then c.regions[nc.name] = nil end
@@ -1076,7 +1080,7 @@ return
 							for i=1,#c.frulernames do table.insert(newl.frulernames, c.frulernames[i]) end
 							table.remove(newl.frulernames, math.random(1, #newl.frulernames))
 							table.insert(newl.frulernames, parent:name(true))
-							for i, xyz in pairs(parent.thisWorld.planetdefined) do if parent.thisWorld.planet[xyz].region == newl.name then parent.thisWorld.planet[xyz].country = newl.name end end
+							for i, xyz in pairs(parent.world.planetdefined) do if parent.world.planet[xyz].region == newl.name then parent.world.planet[xyz].country = newl.name end end
 							local retrieved = false
 
 							for i, j in pairs(parent.final) do
@@ -1108,7 +1112,7 @@ return
 
 							for i, j in pairs(newl.regions) do for k=1,#j.nodes do
 								local xyz = j.nodes[k]
-								if parent.thisWorld.planet[xyz].region == newl.name then parent.thisWorld.planet[xyz].region = j.name end
+								if parent.world.planet[xyz].region == newl.name then parent.world.planet[xyz].region = j.name end
 							end end
 
 							newl:event(parent, "Independence from "..c.name)
@@ -1126,8 +1130,8 @@ return
 									nC:makename(newl, parent)
 									nC.nl = newl.name
 									nC.node = nil
-									while not nC.node or parent.thisWorld.planet[nC.node].region ~= j.name do nC.node = parent:randomChoice(parent.thisWorld.planetdefined) end
-									parent.thisWorld.planet[nC.node].city = nC.name
+									while not nC.node or parent.world.planet[nC.node].region ~= j.name do nC.node = parent:randomChoice(parent.world.planetdefined) end
+									parent.world.planet[nC.node].city = nC.name
 									j.cities[nC.name] = nC
 								end
 							end
@@ -1135,7 +1139,7 @@ return
 							local nCities = {}
 							for i, j in pairs(newl.regions) do for k, l in pairs(j.cities) do table.insert(nCities, k) end end
 
-							parent.thisWorld:add(newl)
+							parent.world:add(newl)
 
 							for i=1,math.floor(#c.people/5) do
 								local p = parent:randomChoice(c.people)
@@ -1167,8 +1171,7 @@ return
 
 							c:checkCapital(parent)
 							parent.writeMap = true
-							parent.thisWorld.mapChanged = true
-
+							parent.world.mapChanged = true
 							nc.subregions = nil
 							nc.cities = nil
 
@@ -1262,8 +1265,8 @@ return
 						if math.random(1, 100) < 51 then -- Executed
 							for q=#c.people,1,-1 do if c.people[q] and c.people[q].def and c.people[q].isRuler then c:delete(parent, q) end end
 						else -- Exiled
-							local newC = parent:randomChoice(parent.thisWorld.countries)
-							if parent.thisWorld.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.thisWorld.countries) end end
+							local newC = parent:randomChoice(parent.world.countries)
+							if parent.world.numCountries > 1 then while newC.name == c.name do newC = parent:randomChoice(parent.world.countries) end end
 							for q, r in pairs(c.people) do if r.isRuler then newC:add(parent, r) end end
 						end
 
@@ -1317,7 +1320,7 @@ return
 
 						for i=1,#ac do
 							local c3 = nil
-							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
+							for j, cp in pairs(parent.world.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 								table.insert(c3.allyOngoing, self.name.."?"..c1.name..":"..self.target.name)
 								table.insert(parent.conflicts[self.conIndex], c3.name)
@@ -1332,7 +1335,7 @@ return
 
 						for i=1,#ac do
 							local c3 = nil
-							for j, cp in pairs(parent.thisWorld.countries) do if cp.name == ac[i] then c3 = cp end end
+							for j, cp in pairs(parent.world.countries) do if cp.name == ac[i] then c3 = cp end end
 							if c3 and not table.contains(ao1, c3) and not table.contains(ao2, c3) and math.random(1, 25) == 10 then
 								table.insert(c3.allyOngoing, self.name.."?"..self.target.name..":"..c1.name)
 								table.insert(parent.conflicts[self.conIndex], c3.name)
@@ -1488,11 +1491,11 @@ return
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 1, 1, 0, 0}},
 				c={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 1, 0},
 					{0, 1, 0, 0, 0, 0},
 					{0, 1, 0, 0, 0, 0},
 					{0, 1, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 0, 1, 1, 1, 0}},
 				d={{0, 0, 0, 0, 0, 0},
 					{0, 1, 1, 1, 0, 0},
 					{0, 1, 0, 0, 1, 0},
@@ -1554,7 +1557,7 @@ return
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 0, 0, 1, 0}},
 				n={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 0, 0, 1, 0},
@@ -1624,7 +1627,7 @@ return
 					{0, 1, 0, 0, 1, 0},
 					{0, 0, 1, 1, 1, 0},
 					{0, 0, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 1, 1, 1, 0, 0}},
 				z={{0, 0, 0, 0, 0, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 0, 0, 0, 1, 0},
@@ -1674,29 +1677,29 @@ return
 					{0, 0, 0, 0, 1, 0},
 					{0, 1, 1, 1, 0, 0}},
 				["6"]={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 1, 0},
 					{0, 1, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
-					{0, 1, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 1, 0, 1, 1, 0},
+					{0, 1, 1, 0, 1, 0},
+					{0, 0, 1, 1, 0, 0}},
 				["7"]={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 1, 1, 1, 0, 0},
 					{0, 0, 0, 0, 1, 0},
 					{0, 0, 0, 0, 1, 0},
 					{0, 0, 0, 0, 1, 0},
 					{0, 0, 0, 0, 1, 0}},
 				["8"]={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 0, 0, 1, 0},
 					{0, 1, 1, 1, 1, 0},
 					{0, 1, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 0, 1, 1, 0, 0}},
 				["9"]={{0, 0, 0, 0, 0, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 0, 0},
 					{0, 1, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0},
+					{0, 0, 1, 1, 1, 0},
 					{0, 0, 0, 0, 1, 0},
-					{0, 1, 1, 1, 1, 0}},
+					{0, 1, 1, 1, 0, 0}},
 				["-"]={{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
 					{0, 0, 0, 0, 0, 0},
@@ -1760,7 +1763,7 @@ return
 			langDriftConstant = 0.16,
 			langEML = 1, -- 1 for Early, 2 for Middle, 3 for Late.
 			langPeriod = 1,
-			langTestString = "The quick brown vixen and its master the mouse",
+			langTestString = "$da quick brown vixen and $3spnp master $da mouse",
 			languages = {},
 			maxConflicts = 1,
 			middlegroups = {"gar", "rit", "er", "ar", "ir", "ra", "rin", "bri", "o", "em", "nor", "nar", "mar", "mor", "an", "at", "et", "\xefe", "\xefal", "cri", "ma", "na", "sa", "mit", "nit", "\xedi", "ssa", "ssi", "ret", "\xefu", "\xefus", "\xefar", "\xefen", "min", "ni", "ius", "us", "es", "ta", "dos", "\xefo", "\xefa", "do", "to", "tri", "zi", "za", "zar", "zen", "tar", "la", "li", "len", "lor", "lir"},
@@ -1775,6 +1778,7 @@ return
 			places = {},
 			popCount = 0,
 			popLimit = 2000,
+			pronouns = {"$1sdmp", "$1sdm^", "$1sdm$", "$1sdfp", "$1sdf^", "$1sdf$", "$1sdnp", "$1sdn^", "$1sdn$", "$1spmp", "$1spm^", "$1spm$", "$1spfp", "$1spf^", "$1spf$", "$1spnp", "$1spn^", "$1spn$", "$1samp", "$1sam^", "$1sam$", "$1safp", "$1saf^", "$1saf$", "$1sanp", "$1san^", "$1san$", "$1ddmp", "$1ddm^", "$1ddm$", "$1ddfp", "$1ddf^", "$1ddf$", "$1ddnp", "$1ddn^", "$1ddn$", "$1dpmp", "$1dpm^", "$1dpm$", "$1dpfp", "$1dpf^", "$1dpf$", "$1dpnp", "$1dpn^", "$1dpn$", "$1damp", "$1dam^", "$1dam$", "$1dafp", "$1daf^", "$1daf$", "$1danp", "$1dan^", "$1dan$", "$1pdmp", "$1pdm^", "$1pdm$", "$1pdfp", "$1pdf^", "$1pdf$", "$1pdnp", "$1pdn^", "$1pdn$", "$1ppmp", "$1ppm^", "$1ppm$", "$1ppfp", "$1ppf^", "$1ppf$", "$1ppnp", "$1ppn^", "$1ppn$", "$1pamp", "$1pam^", "$1pam$", "$1pafp", "$1paf^", "$1paf$", "$1panp", "$1pan^", "$1pan$", "$2sdmp", "$2sdm^", "$2sdm$", "$2sdfp", "$2sdf^", "$2sdf$", "$2sdnp", "$2sdn^", "$2sdn$", "$2spmp", "$2spm^", "$2spm$", "$2spfp", "$2spf^", "$2spf$", "$2spnp", "$2spn^", "$2spn$", "$2samp", "$2sam^", "$2sam$", "$2safp", "$2saf^", "$2saf$", "$2sanp", "$2san^", "$2san$", "$2ddmp", "$2ddm^", "$2ddm$", "$2ddfp", "$2ddf^", "$2ddf$", "$2ddnp", "$2ddn^", "$2ddn$", "$2dpmp", "$2dpm^", "$2dpm$", "$2dpfp", "$2dpf^", "$2dpf$", "$2dpnp", "$2dpn^", "$2dpn$", "$2damp", "$2dam^", "$2dam$", "$2dafp", "$2daf^", "$2daf$", "$2danp", "$2dan^", "$2dan$", "$2pdmp", "$2pdm^", "$2pdm$", "$2pdfp", "$2pdf^", "$2pdf$", "$2pdnp", "$2pdn^", "$2pdn$", "$2ppmp", "$2ppm^", "$2ppm$", "$2ppfp", "$2ppf^", "$2ppf$", "$2ppnp", "$2ppn^", "$2ppn$", "$2pamp", "$2pam^", "$2pam$", "$2pafp", "$2paf^", "$2paf$", "$2panp", "$2pan^", "$2pan$", "$3sdmp", "$3sdm^", "$3sdm$", "$3sdfp", "$3sdf^", "$3sdf$", "$3sdnp", "$3sdn^", "$3sdn$", "$3spmp", "$3spm^", "$3spm$", "$3spfp", "$3spf^", "$3spf$", "$3spnp", "$3spn^", "$3spn$", "$3samp", "$3sam^", "$3sam$", "$3safp", "$3saf^", "$3saf$", "$3sanp", "$3san^", "$3san$", "$3ddmp", "$3ddm^", "$3ddm$", "$3ddfp", "$3ddf^", "$3ddf$", "$3ddnp", "$3ddn^", "$3ddn$", "$3dpmp", "$3dpm^", "$3dpm$", "$3dpfp", "$3dpf^", "$3dpf$", "$3dpnp", "$3dpn^", "$3dpn$", "$3damp", "$3dam^", "$3dam$", "$3dafp", "$3daf^", "$3daf$", "$3danp", "$3dan^", "$3dan$", "$3pdmp", "$3pdm^", "$3pdm$", "$3pdfp", "$3pdf^", "$3pdf$", "$3pdnp", "$3pdn^", "$3pdn$", "$3ppmp", "$3ppm^", "$3ppm$", "$3ppfp", "$3ppf^", "$3ppf$", "$3ppnp", "$3ppn^", "$3ppn$", "$3pamp", "$3pam^", "$3pam$", "$3pafp", "$3paf^", "$3paf$", "$3panp", "$3pan^", "$3pan$"},
 			repGroups = {{"aium", "ium"}, {"iusy", "ia"}, {"oium", "ium"}, {"tyan", "tan"}, {"uium", "ium"}, {"aia", "ia"}, {"aie", "a"}, {"aio", "io"}, {"aiu", "a"}, {"ccc", "cc"}, {"dby", "dy"}, {"eia", "ia"}, {"eie", "e"}, {"eio", "io"}, {"eiu", "e"}, {"oia", "ia"}, {"oie", "o"}, {"oio", "io"}, {"oiu", "o"}, {"uia", "ia"}, {"uie", "u"}, {"uio", "io"}, {"uiu", "u"}, {"aa", "a"}, {"ae", "a"}, {"bd", "d"}, {"bp", "b"}, {"bt", "b"}, {"cd", "d"}, {"cg", "c"}, {"cj", "c"}, {"cp", "c"}, {"db", "b"}, {"df", "d"}, {"dj", "j"}, {"dk", "d"}, {"dl", "l"}, {"dt", "t"}, {"ee", "i"}, {"ei", "i"}, {"eu", "e"}, {"fd", "d"}, {"fh", "f"}, {"fj", "f"}, {"fv", "v"}, {"gc", "g"}, {"gd", "d"}, {"gj", "g"}, {"gk", "g"}, {"gl", "l"}, {"gt", "t"}, {"hc", "c"}, {"hg", "g"}, {"hj", "h"}, {"ie", "i"}, {"ii", "i"}, {"iy", "y"}, {"jb", "b"}, {"jc", "j"}, {"jd", "j"}, {"jg", "j"}, {"jr", "dr"}, {"js", "j"}, {"jt", "t"}, {"jz", "j"}, {"kc", "c"}, {"kd", "d"}, {"kg", "g"}, {"ki", "ci"}, {"kj", "k"}, {"lt", "l"}, {"mj", "m"}, {"mt", "m"}, {"nj", "ng"}, {"oa", "a"}, {"oe", "e"}, {"oi", "i"}, {"oo", "u"}, {"ou", "o"}, {"pb", "b"}, {"pg", "g"}, {"pj", "p"}, {"sj", "s"}, {"sz", "s"}, {"tb", "t"}, {"tc", "t"}, {"td", "t"}, {"tg", "t"}, {"tj", "t"}, {"tl", "l"}, {"tm", "t"}, {"tn", "t"}, {"tp", "t"}, {"tv", "t"}, {"ua", "a"}, {"ue", "e"}, {"ui", "i"}, {"uo", "o"}, {"uu", "u"}, {"vd", "v"}, {"vf", "f"}, {"vh", "v"}, {"vj", "v"}, {"vt", "t"}, {"wj", "w"}, {"yi", "y"}, {"zs", "z"}, {"zt", "t"}, {"hh", "h"}, {"yy", "y"}, {"esi\xed", "i\xed"}, {"esish", "ish"}},
 			showinfo = 0,
 			stamp = nil,
@@ -1813,7 +1817,7 @@ return
 					dynastic=false
 				}
 			},
-			thisWorld = {},
+			world = {},
 			tiffBitness = 9,
 			tiffBits = {},
 			tiffDict = {},
@@ -2104,7 +2108,7 @@ return
 								end
 							else
 								UI:clear()
-								UI:printf(string.format("Translating the text \"%s.\"\n", self.langTestString))
+								UI:printf(string.format("Translating the text \"%s.\"\n", string.gsub(string.stripSpecs(self.langTestString), "^[%w]", string.upper)))
 								for i=1,#screen do UI:printf(screen[i]) end
 								UI:printf("\nEnter B to return to the previous menu.")
 								if not _DESCENT then UI:printf("Enter G to view a list of all languages, historical and living.") end
@@ -2177,7 +2181,7 @@ return
 							screenIndex = screenIndex > 0 and (screenIndex <= #screens and screenIndex or #screens) or 1
 							screen = screens[screenIndex]
 							UI:clear()
-							UI:printf(string.format("Translating the text \"%s.\"\n", self.langTestString))
+							UI:printf(string.format("Translating the text \"%s.\"\n", string.gsub(string.stripSpecs(self.langTestString), "^[%w]", string.upper)))
 							for i=1,#screen do UI:printf(screen[i]) end
 							UI:printf("\nEnter B to return to the previous menu.")
 							UI:printf("Enter G to return to viewing living languages only.")
@@ -2392,7 +2396,7 @@ return
 				local fc = nil
 				local fr = nil
 				local sysChange = true
-				self.thisWorld = World:new()
+				self.world = World:new()
 
 				UI:printf("Reading data file...")
 
@@ -2415,7 +2419,7 @@ return
 							for q=3,#mat do nl.name = nl.name.." "..mat[q] end
 							for q=1,#self.systems do nl.snt[self.systems[q].name] = 0 end
 							nl.system = -1
-							self.thisWorld:add(nl)
+							self.world:add(nl)
 							fc = nl
 						elseif mat[1] == "R" then
 							local r = Region:new()
@@ -2484,11 +2488,11 @@ return
 				self:getAlphabetical()
 
 				UI:printf("Constructing initial populations...\n")
-				self.thisWorld.numCountries = 0
+				self.world.numCountries = 0
 				local cDone = 0
 
-				for i, cp in pairs(self.thisWorld.countries) do if cp then self.thisWorld.numCountries = self.thisWorld.numCountries+1 end end
-				for i, cp in pairs(self.thisWorld.countries) do
+				for i, cp in pairs(self.world.countries) do if cp then self.world.numCountries = self.world.numCountries+1 end end
+				for i, cp in pairs(self.world.countries) do
 					if cp then
 						if #cp.rulers > 0 then
 							cp.founded = tonumber(cp.rulers[1].From)
@@ -2507,11 +2511,11 @@ return
 					end
 
 					cDone = cDone+1
-					UI:printl(string.format("Country %d/%d", cDone, self.thisWorld.numCountries))
+					UI:printl(string.format("Country %d/%d", cDone, self.world.numCountries))
 				end
 
-				self.thisWorld.initialState = false
-				self.thisWorld.fromFile = true
+				self.world.initialState = false
+				self.world.fromFile = true
 			end,
 
 			generationString = function(self, n, gender)
@@ -2538,7 +2542,7 @@ return
 				if not country.alliances then return acOut end
 				for i=1,#country.alliances do
 					local c3 = nil
-					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
+					for j, cp in pairs(self.world.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.insert(acOut, c3) end end end
 				end
 
@@ -2546,7 +2550,7 @@ return
 			end,
 
 			getAlphabetical = function(self, t)
-				local data = t or self.thisWorld.countries
+				local data = t or self.world.countries
 				local cKeys = {}
 				for i, cp in pairs(data) do
 					local found = false
@@ -2660,26 +2664,26 @@ return
 				local eLimit = 6
 				local writtenLines = {}
 
-				self.thisWorld:constructVoxelPlanet(self)
+				self.world:constructVoxelPlanet(self)
 
 				local stampDir = self:directory{self.stamp}
 				self:checkDirectory(stampDir, "maps")
-				self.thisWorld:mapOutput(self, self:directory{stampDir, "maps", "initial"})
+				self.world:mapOutput(self, self:directory{stampDir, "maps", "initial"})
 
 				collectgarbage("collect")
 
 				self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 
 				while _running do
-					self.thisWorld:update(self)
+					self.world:update(self)
 
-					for i, j in pairs(self.thisWorld.countries) do
+					for i, j in pairs(self.world.countries) do
 						for k, l in pairs(self.final) do if j.name == l.name then self.final[k] = nil end end
 						self.final[i] = j
 					end
 
 					local t0 = _time()
-					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.thisWorld.numCountries, self.thisWorld.gPop, self.popCount, collectgarbage("count")/1024)
+					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.world.numCountries, self.world.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
 						local currentEvents = {}
@@ -2694,7 +2698,7 @@ return
 						local rulers = {}
 
 						for i=#self.alpha,1,-1 do
-							local cp = self.thisWorld.countries[self.alpha[i]]
+							local cp = self.world.countries[self.alpha[i]]
 							if not cp or not cp.ongoing then table.remove(self.alpha, i)
 							else for j=1,#cp.ongoing do if cp.ongoing[j].eString then table.insert(currentEvents, cp.ongoing[j].eString) end end end
 						end
@@ -2705,8 +2709,8 @@ return
 						eLimit = getLineTolerance(cLimit+5)
 
 						for i=1,#self.alpha do
-							local cp = self.thisWorld.countries[self.alpha[i]]
-							if cCount < cLimit or cCount == self.thisWorld.numCountries then
+							local cp = self.world.countries[self.alpha[i]]
+							if cCount < cLimit or cCount == self.world.numCountries then
 								local name = ""
 								if cp.snt[self.systems[cp.system].name] > 1 then name = name..("%s "):format(self:ordinal(cp.snt[self.systems[cp.system].name])) end
 								local sysName = self.systems[cp.system].name
@@ -2740,7 +2744,7 @@ return
 							msg = msg..rulers[i]
 						end
 
-						if cCount < self.thisWorld.numCountries then msg = msg..("[+%d more]\n"):format(self.thisWorld.numCountries-cCount) end
+						if cCount < self.world.numCountries then msg = msg..("[+%d more]\n"):format(self.world.numCountries-cCount) end
 
 						msg = msg.."\nOngoing events:"
 
@@ -2765,7 +2769,7 @@ return
 					local t1 = _time()
 
 					if self.writeMap then
-						self.thisWorld:mapOutput(self, self:directory{self.stamp, "maps", "Year "..tostring(self.years)})
+						self.world:mapOutput(self, self:directory{self.stamp, "maps", "Year "..tostring(self.years)})
 						local t2 = _time()
 						collectgarbage("collect")
 						local t3 = _time()
@@ -2775,7 +2779,7 @@ return
 						end
 					end
 					self.writeMap = false
-					self.thisWorld.mapChanged = false
+					self.world.mapChanged = false
 
 					if _DEBUG then
 						msg = msg.."\n"
@@ -2829,7 +2833,7 @@ return
 					end
 				end
 
-				self.thisWorld:mapOutput(self, self:directory{self.stamp, "maps", "final"})
+				self.world:mapOutput(self, self:directory{self.stamp, "maps", "final"})
 				self:finish(true)
 
 				UI:printf("\nEnd Simulation!")
@@ -3060,12 +3064,12 @@ return
 							if not c2.people[i].isRuler then c1:add(self, c2.people[i]) end
 						end end
 
-						for i=1,#self.thisWorld.planetdefined do
-							local xyz = self.thisWorld.planetdefined[i]
+						for i=1,#self.world.planetdefined do
+							local xyz = self.world.planetdefined[i]
 
-							if self.thisWorld.planet[xyz].country == c2.name and self.thisWorld.planet[xyz].region == rn.name then
-								self.thisWorld.planet[xyz].country = c1.name
-								self.thisWorld.planet[xyz].region = rn.name
+							if self.world.planet[xyz].country == c2.name and self.world.planet[xyz].region == rn.name then
+								self.world.planet[xyz].country = c1.name
+								self.world.planet[xyz].region = rn.name
 							end
 						end
 
@@ -3155,7 +3159,7 @@ return
 						c2:event(self, lossMsg)
 
 						self.writeMap = true
-						self.thisWorld.mapChanged = true
+						self.world.mapChanged = true
 					end
 				end
 			end,
@@ -3164,7 +3168,7 @@ return
 				local ac = #country.alliances
 				for i=1,ac do
 					local c3 = nil
-					for j, cp in pairs(self.thisWorld.countries) do if cp.name == country.alliances[i] then c3 = cp end end
+					for j, cp in pairs(self.world.countries) do if cp.name == country.alliances[i] then c3 = cp end end
 					if c3 then for j=#c3.allyOngoing,1,-1 do if c3.allyOngoing[j] == event.."?"..country.name..":"..target.name then table.remove(c3.allyOngoing, j) end end end
 				end
 			end,

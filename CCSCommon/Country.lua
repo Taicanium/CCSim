@@ -52,11 +52,11 @@ return
 			add = function(self, parent, n)
 				if not n then return end
 
-				if parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality] and parent.thisWorld.countries[n.nationality].people then
-					for i=1,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+				if parent.world.countries[n.nationality] and parent.world.countries[n.nationality] and parent.world.countries[n.nationality].people then
+					for i=1,#parent.world.countries[n.nationality].people do parent.world.countries[n.nationality].people[i].pIndex = i end
 					if n.pIndex > 0 then
-						table.remove(parent.thisWorld.countries[n.nationality].people, n.pIndex)
-						for i=n.pIndex,#parent.thisWorld.countries[n.nationality].people do parent.thisWorld.countries[n.nationality].people[i].pIndex = i end
+						table.remove(parent.world.countries[n.nationality].people, n.pIndex)
+						for i=n.pIndex,#parent.world.countries[n.nationality].people do parent.world.countries[n.nationality].people[i].pIndex = i end
 					end
 				end
 				n.nationality = self.name
@@ -68,10 +68,10 @@ return
 				n.isRuler = false
 				n.parentRuler = false
 				if n.spouse then
-					if parent.thisWorld.countries[n.spouse.nationality] and parent.thisWorld.countries[n.spouse.nationality].people and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.thisWorld.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
+					if parent.world.countries[n.spouse.nationality] and parent.world.countries[n.spouse.nationality].people and parent.world.countries[n.spouse.nationality].people[n.spouse.pIndex] and parent.world.countries[n.spouse.nationality].people[n.spouse.pIndex].gString == n.spouse.gString then
 						if n.spouse.pIndex > 0 then
-							table.remove(parent.thisWorld.countries[n.spouse.nationality].people, n.spouse.pIndex)
-							for i=n.spouse.pIndex,#parent.thisWorld.countries[n.spouse.nationality].people do parent.thisWorld.countries[n.spouse.nationality].people[i].pIndex = i end
+							table.remove(parent.world.countries[n.spouse.nationality].people, n.spouse.pIndex)
+							for i=n.spouse.pIndex,#parent.world.countries[n.spouse.nationality].people do parent.world.countries[n.spouse.nationality].people[i].pIndex = i end
 						end
 					end
 					n.spouse.nationality = self.name
@@ -99,22 +99,22 @@ return
 
 				for i=1,#self.nodes do
 					local xyz = self.nodes[i]
-					if parent.thisWorld.planet[xyz].country == self.name then
-						for j=1,#parent.thisWorld.planet[xyz].neighbors do
-							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz][otherItem] == other.name then return 1
-							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then selfWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+					if parent.world.planet[xyz].country == self.name then
+						for j=1,#parent.world.planet[xyz].neighbors do
+							local nxyz = parent.world.planet[xyz].neighbors[j]
+							if parent.world.planet[nxyz].land and parent.world.planet[nxyz][otherItem] == other.name then return 1
+							elseif not parent.world.planet[nxyz].land and parent.world.planet[nxyz].waterBody and parent.world.planet[nxyz].waterBody ~= "" then selfWater[parent.world.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
 
 				for i=1,#other.nodes do
 					local xyz = other.nodes[i]
-					if parent.thisWorld.planet[xyz][otherItem] == other.name then
-						for j=1,#parent.thisWorld.planet[xyz].neighbors do
-							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name then return 1
-							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then otherWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+					if parent.world.planet[xyz][otherItem] == other.name then
+						for j=1,#parent.world.planet[xyz].neighbors do
+							local nxyz = parent.world.planet[xyz].neighbors[j]
+							if parent.world.planet[nxyz].land and parent.world.planet[nxyz].country == self.name then return 1
+							elseif not parent.world.planet[nxyz].land and parent.world.planet[nxyz].waterBody and parent.world.planet[nxyz].waterBody ~= "" then otherWater[parent.world.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
@@ -219,7 +219,7 @@ return
 				if not self.ongoing then self.ongoing = {} end
 				if not self.relations then
 					self.relations = {}
-					for i, j in pairs(parent.thisWorld.countries) do if j.name ~= self.name then self.relations[j.name] = 50 end end
+					for i, j in pairs(parent.world.countries) do if j.name ~= self.name then self.relations[j.name] = 50 end end
 				end
 
 				for i=#self.ongoing,1,-1 do if not self.ongoing[i] or not self.ongoing[i].doStep or self.ongoing[i]:doStep(parent, self) == -1 then table.remove(self.ongoing, i) end end
@@ -248,7 +248,7 @@ return
 						if self.name == self.demonym then found = true end
 						if self.name == "" or self.demonym == "" then found = true end
 						for i, j in pairs(parent.final) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
-						for i, j in pairs(parent.thisWorld.countries) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
+						for i, j in pairs(parent.world.countries) do if j.name == self.name or j.name:gsub("h", "") == self.name or j.name == self.name:gsub("h", "") or parent:demonym(j.name) == parent:demonym(self.name) then found = true end end
 					end
 				end
 
@@ -430,13 +430,13 @@ return
 			setTerritory = function(self, parent)
 				self.nodes = {}
 
-				for i=1,#parent.thisWorld.planetdefined do
-					local xyz = parent.thisWorld.planetdefined[i]
-					if parent.thisWorld.planet[xyz].country == self.name then
+				for i=1,#parent.world.planetdefined do
+					local xyz = parent.world.planetdefined[i]
+					if parent.world.planet[xyz].country == self.name then
 						table.insert(self.nodes, xyz)
-						parent.thisWorld.planet[xyz].region = ""
-						parent.thisWorld.planet[xyz].regionSet = false
-						parent.thisWorld.planet[xyz].regionDone = false
+						parent.world.planet[xyz].region = ""
+						parent.world.planet[xyz].regionSet = false
+						parent.world.planet[xyz].regionDone = false
 					end
 				end
 
@@ -457,7 +457,7 @@ return
 					local found = false
 					for k=1,#self.nodes do
 						local xyz = self.nodes[k]
-						if parent.thisWorld.planet[xyz].region == j.name then
+						if parent.world.planet[xyz].region == j.name then
 							found = true
 							table.insert(defined, xyz)
 							table.insert(j.nodes, xyz)
@@ -467,17 +467,17 @@ return
 
 					if not found then
 						local pd = parent:randomChoice(self.nodes)
-						while parent.thisWorld.planet[pd].region and parent.thisWorld.planet[pd].region ~= "" and parent.thisWorld.planet[pd].region ~= j.name do
+						while parent.world.planet[pd].region and parent.world.planet[pd].region ~= "" and parent.world.planet[pd].region ~= j.name do
 							pd = parent:randomChoice(self.nodes)
 						end
 
-						parent.thisWorld.planet[pd].region = j.name
+						parent.world.planet[pd].region = j.name
 						table.insert(defined, pd)
 						table.insert(j.nodes, pd)
 					end
 				elseif j.nodes and #j.nodes > 0 then for k=#j.nodes,1,-1 do
 					local xyz = j.nodes[k]
-					if parent.thisWorld.planet[xyz].country == self.name then parent.thisWorld.planet[xyz].region = j.name else table.remove(j.nodes, k) end
+					if parent.world.planet[xyz].country == self.name then parent.world.planet[xyz].region = j.name else table.remove(j.nodes, k) end
 				end end end
 
 				local allDefined = false
@@ -489,19 +489,19 @@ return
 						local xyz = defined[i]
 						local nDefined = true
 
-						if parent.thisWorld.planet[xyz].region ~= "" and not parent.thisWorld.planet[xyz].regionSet and not parent.thisWorld.planet[xyz].regionDone then
-							for j=1,#parent.thisWorld.planet[xyz].neighbors do
-								local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-								if parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+						if parent.world.planet[xyz].region ~= "" and not parent.world.planet[xyz].regionSet and not parent.world.planet[xyz].regionDone then
+							for j=1,#parent.world.planet[xyz].neighbors do
+								local nxyz = parent.world.planet[xyz].neighbors[j]
+								if parent.world.planet[nxyz].country == self.name and parent.world.planet[nxyz].region == "" then
 									nDefined = false
-									parent.thisWorld.planet[nxyz].region = parent.thisWorld.planet[xyz].region
-									parent.thisWorld.planet[nxyz].regionSet = true
+									parent.world.planet[nxyz].region = parent.world.planet[xyz].region
+									parent.world.planet[nxyz].regionSet = true
 									table.insert(defined, nxyz)
-									table.insert(self.regions[parent.thisWorld.planet[nxyz].region].nodes, nxyz)
+									table.insert(self.regions[parent.world.planet[nxyz].region].nodes, nxyz)
 									totalDefined = totalDefined+1
 								end
 							end
-							parent.thisWorld.planet[xyz].regionDone = true
+							parent.world.planet[xyz].regionDone = true
 						end
 
 						if nDefined then table.remove(defined, i) end
@@ -511,15 +511,15 @@ return
 						allDefined = true
 						for i=1,#self.nodes do if allDefined then
 							local nxyz = self.nodes[i]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].country == self.name and parent.thisWorld.planet[nxyz].region == "" then
+							if parent.world.planet[nxyz].land and parent.world.planet[nxyz].country == self.name and parent.world.planet[nxyz].region == "" then
 								allDefined = false
 								local nr = Region:new()
 								nr:makename(self, parent)
 								nr.nl = self.name
 								nr.language = self.language
 								self.regions[nr.name] = nr
-								parent.thisWorld.planet[nxyz].region = nr.name
-								parent.thisWorld.planet[nxyz].regionSet = true
+								parent.world.planet[nxyz].region = nr.name
+								parent.world.planet[nxyz].regionSet = true
 								table.insert(defined, nxyz)
 								table.insert(nr.nodes, nxyz)
 								totalDefined = totalDefined+1
@@ -529,7 +529,7 @@ return
 
 					for i=1,#self.nodes do
 						local xyz = self.nodes[i]
-						parent.thisWorld.planet[xyz].regionSet = false
+						parent.world.planet[xyz].regionSet = false
 					end
 
 					prevDefined = totalDefined
@@ -541,7 +541,7 @@ return
 					while #j.nodes < cCount do
 						local xyz = parent:randomChoice(j.cities, true)
 						if xyz then
-							if j.cities[xyz] and j.cities[xyz].node and parent.thisWorld.planet[j.cities[xyz].node] then parent.thisWorld.planet[j.cities[xyz].node].city = "" end
+							if j.cities[xyz] and j.cities[xyz].node and parent.world.planet[j.cities[xyz].node] then parent.world.planet[j.cities[xyz].node].city = "" end
 							j.cities[xyz] = nil
 							cCount = cCount-1
 						end
@@ -558,10 +558,10 @@ return
 					for k, l in pairs(j.cities) do
 						while not l.node do
 							local pd = parent:randomChoice(j.nodes)
-							if parent.thisWorld.planet[pd].city == "" or parent.thisWorld.planet[pd].city == l.name then l.node = pd end
+							if parent.world.planet[pd].city == "" or parent.world.planet[pd].city == l.name then l.node = pd end
 						end
 
-						parent.thisWorld.planet[l.node].city = l.name
+						parent.world.planet[l.node].city = l.name
 					end
 				end end
 			end,
@@ -592,11 +592,11 @@ return
 				if parent.c_events[i].args == 1 then
 					if not newE.performEvent or newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 					else newE:beginEvent(parent, self) end
-				elseif parent.c_events[i].args == 2 and parent.thisWorld.numCountries > 1 then
+				elseif parent.c_events[i].args == 2 and parent.world.numCountries > 1 then
 					local other = nil
 					if r then other = o else
-						other = parent:randomChoice(parent.thisWorld.countries)
-						while other.name == self.name do other = parent:randomChoice(parent.thisWorld.countries) end
+						other = parent:randomChoice(parent.world.countries)
+						while other.name == self.name do other = parent:randomChoice(parent.world.countries) end
 					end
 
 					if self.ongoing then
@@ -638,7 +638,7 @@ return
 					local found = false
 					local ar = self.alliances[i]
 
-					for j, cp in pairs(parent.thisWorld.countries) do if not found then
+					for j, cp in pairs(parent.world.countries) do if not found then
 						local nr = cp.name
 						if ar:len() >= nr:len() and ar:sub(1, #nr) == nr then found = true end
 					end end
@@ -646,7 +646,7 @@ return
 					if not found then table.remove(self.alliances, i) end
 				end
 
-				for i, cp in pairs(parent.thisWorld.countries) do if cp.name ~= self.name then
+				for i, cp in pairs(parent.world.countries) do if cp.name ~= self.name then
 					if not self.relations then self.relations = {} end
 					if not self.relations[cp.name] then self.relations[cp.name] = 50 end
 					self.relations[cp.name] = math.min(100, math.max(1, self.relations[cp.name]+math.random(-3, 3)))
@@ -664,7 +664,7 @@ return
 				self:checkCapital(parent)
 
 				self.milThreshold = 5
-				for i, j in pairs(parent.thisWorld.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
+				for i, j in pairs(parent.world.countries) do for k=1,#j.ongoing do if j.ongoing[k].name == "War" then
 					if table.contains(j.ongoing[k], self) then self.milThreshold = 25 else
 						local ao = parent:getAllyOngoing(j, j.ongoing[k].target, j.ongoing[k].name)
 						if table.contains(ao, self) then self.milThreshold = 25 end
@@ -681,8 +681,8 @@ return
 					end
 
 					if not chn and not self.people[i].isRuler and math.random(1, self.people[i].age < 35 and 6500 or 9500) == 3799 then
-						local cp = parent:randomChoice(parent.thisWorld.countries)
-						if parent.thisWorld.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.thisWorld.countries) end end
+						local cp = parent:randomChoice(parent.world.countries)
+						if parent.world.numCountries > 1 then while cp.name == self.name do cp = parent:randomChoice(parent.world.countries) end end
 						cp:add(parent, self.people[i])
 						chn = true
 					end

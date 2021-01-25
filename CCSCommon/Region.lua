@@ -25,22 +25,22 @@ return
 
 				for i=1,#self.nodes do
 					local xyz = self.nodes[i]
-					if parent.thisWorld.planet[xyz].region == self.name then
-						for j=1,#parent.thisWorld.planet[xyz].neighbors do
-							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz][otherItem] == other.name then return 1
-							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then selfWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+					if parent.world.planet[xyz].region == self.name then
+						for j=1,#parent.world.planet[xyz].neighbors do
+							local nxyz = parent.world.planet[xyz].neighbors[j]
+							if parent.world.planet[nxyz].land and parent.world.planet[nxyz][otherItem] == other.name then return 1
+							elseif not parent.world.planet[nxyz].land and parent.world.planet[nxyz].waterBody and parent.world.planet[nxyz].waterBody ~= "" then selfWater[parent.world.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
 
 				for i=1,#other.nodes do
 					local xyz = other.nodes[i]
-					if parent.thisWorld.planet[xyz][otherItem] == other.name then
-						for j=1,#parent.thisWorld.planet[xyz].neighbors do
-							local nxyz = parent.thisWorld.planet[xyz].neighbors[j]
-							if parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].region == self.name then return 1
-							elseif not parent.thisWorld.planet[nxyz].land and parent.thisWorld.planet[nxyz].waterBody and parent.thisWorld.planet[nxyz].waterBody ~= "" then otherWater[parent.thisWorld.planet[nxyz].waterBody] = true end
+					if parent.world.planet[xyz][otherItem] == other.name then
+						for j=1,#parent.world.planet[xyz].neighbors do
+							local nxyz = parent.world.planet[xyz].neighbors[j]
+							if parent.world.planet[nxyz].land and parent.world.planet[nxyz].region == self.name then return 1
+							elseif not parent.world.planet[nxyz].land and parent.world.planet[nxyz].waterBody and parent.world.planet[nxyz].waterBody ~= "" then otherWater[parent.world.planet[nxyz].waterBody] = true end
 						end
 					end
 				end
@@ -66,7 +66,7 @@ return
 					self.name = parent:name(false, 2, 2)
 					dup = false
 					for i, j in pairs(parent.final) do if self.name == j.name then dup = true end end
-					for i, j in pairs(parent.thisWorld.countries) do if not dup then for k, l in pairs(j.regions) do if j.name == self.name then dup = true end end end end
+					for i, j in pairs(parent.world.countries) do if not dup then for k, l in pairs(j.regions) do if j.name == self.name then dup = true end end end end
 				end
 
 				local cCount = 0

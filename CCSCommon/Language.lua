@@ -12,6 +12,7 @@ return
 				o.letterCount = 0
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
 				o.period = 1
+				o.specials = {}
 				o.testString = ""
 				o.wordTable = {}
 
@@ -25,11 +26,29 @@ return
 					self.wordTable[ENGLISH[i]] = word:lower()
 					self.letterCount = self.letterCount+word:len()
 				end end
-				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..string.stripDiphs(self.wordTable[x:lower()]:gsub(" ", "")).." " end
+				self:defineSpecials(parent)
+				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..string.stripDiphs((self.wordTable[x:lower()]):gsub(" ", "")).." " end
 				self.testString = self.testString:sub(1, self.testString:len()-1)
 				self.testString = self.testString:gsub("^%w", string.upper)
 				self.period = parent.langPeriod
 				self.eml = parent.langEML
+			end,
+			
+			defineSpecials = function(self, parent)
+				-- This is *remarkably* unintuitive...
+				-- Essentially, the vast majority of natural languages don't have 405 unique pronouns -- and, yes, I counted -- so, work here to combine a few.
+				-- Somehow.
+				for i=1,#parent.pronouns do self.specials[parent.pronouns[i]] = string.lower(parent:name(true, 1, 1)) end
+				local i1 = math.random(1, 5)
+				local i2 = math.random(1, 5) while i2 == i1 do i2 = math.random(1, 5) end
+				local i3 = math.random(1, 5) while i3 == i2 or i3 == i1 do i3 = math.random(1, 5) end
+				for i, j in pairs(self.specials) do for k, l in pairs(self.specials) do if i:sub(i1, i1) == k:sub(i1, i1) and i:sub(i2, i2) == k:sub(i2, i2) and i:sub(i3, i3) == k:sub(i3, i3) then self.specials[k] = self.specials[i] end end end
+				self.specials["$rss"] = string.lower(parent:name(true, 2, 1)) -- Reflexive singular suffix. (Eng: 'self')
+				self.specials["$rsp"] = string.lower(parent:name(true, 2, 1)) -- Reflexive plural suffix. (Eng: 'selves')
+				self.specials["$es"] = string.lower(parent:name(true, 1, 1)) -- Determinant suffix. (Eng: 's', as in 'theirs' or 'hers')
+				self.specials["$da"] = string.lower(parent:name(true, 1, 1)) -- Definite article. (Eng: 'the')
+				for i, j in pairs(self.specials) do self.wordTable[i] = self.wordTable[i] or j self.specials[i] = nil end
+				self.specials = nil
 			end,
 
 			deviate = function(self, parent)
@@ -48,6 +67,11 @@ return
 				elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
 				elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
 				local repCount = 0
+				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(parent:name(true, 1, 1)) end
+				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(parent:name(true, 2, 1))
+				newList.wordTable["$rsp"] = self.wordTable["$rsp"] or string.lower(parent:name(true, 2, 1))
+				newList.wordTable["$es"] = self.wordTable["$es"] or string.lower(parent:name(true, 1, 1))
+				newList.wordTable["$da"] = self.wordTable["$da"] or string.lower(parent:name(true, 1, 1))
 				while fct < totalFct do
 					local eng = ENGLISH[math.random(1, #ENGLISH)]
 					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
@@ -147,6 +171,14 @@ return
 				m="5", n="5", ["\xec"]="5",
 				r="6",
 				[" "]="7"},
+			
+			allMods = {
+				{"1", "2", "3"}, -- Person. First, second, third.
+				{"s", "d", "p"}, -- Number. Singular, dual, plural.
+				{"d", "p", "a"}, -- Function. Demonstrative, possessive, dative. (Reflexive and determinant also handled, but exclusively as suffixes; see RSS, RSP, and ES.)
+				{"m", "f", "n"}, -- Gender. Male, female, neuter.
+				{"p", "^", "$"}, -- Form. Particle, prefix, suffix.
+			},
 		}
 
 		Language.__index = Language

@@ -299,7 +299,7 @@ return
 										table.insert(waterNodesToTest, mxyz)
 									end
 								end
-								parent.thisWorld.planet[waterNodesToTest[1]].waterTested = true
+								self.planet[waterNodesToTest[1]].waterTested = true
 							end
 							table.insert(tested, table.remove(waterNodesToTest, 1))
 						end
