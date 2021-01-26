@@ -586,6 +586,15 @@ return
 				end
 
 				nl.ethnicities[lEth] = nl.ethnicities[lEth]+1
+				
+				for i, j in pairs(self.nativeLang) do
+					j.l1Speakers = j.l1Speakers+1
+					for k=1,#parent.languages do if parent.languages[k].name == j.name and parent.languages[k].eml ~= j.eml then parent.languages[k].l1Speakers = parent.languages[k].l1Speakers+1 end end
+				end
+				for i, j in pairs(self.spokenLang) do
+					j.l2Speakers = j.l2Speakers+1
+					for k=1,#parent.languages do if parent.languages[k].name == j.name and parent.languages[k].eml ~= j.eml then parent.languages[k].l2Speakers = parent.languages[k].l2Speakers+1 end end
+				end
 
 				if _DEBUG then
 					if not debugTimes["Person.update"] then debugTimes["Person.update"] = 0 end

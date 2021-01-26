@@ -791,6 +791,10 @@ return
 				for i, j in pairs(self.countries) do self.numCountries = self.numCountries+1 end
 
 				self.gPop = 0
+				for i, j in pairs(parent.languages) do
+					j.l1Speakers = 0
+					j.l2Speakers = 0
+				end
 
 				if self.initialState then
 					parent.iSCount = self.numCountries
@@ -832,7 +836,7 @@ return
 				end
 
 				local t2 = _time()
-				if math.fmod(parent.years, 35) == 0 then
+				if math.fmod(parent.years, 40) == 0 then
 					UI:printl("Deviating languages...")
 					parent.langEML = parent.langEML+1
 					if parent.langEML == 4 then
@@ -849,6 +853,7 @@ return
 						end
 					end
 					for i=#parent.languages-1,1,-1 do for j=#parent.languages,i+1,-1 do if i ~= j and parent.languages[i] and parent.languages[j] and parent.languages[i].name == parent.languages[j].name then table.remove(parent.languages, j) end end end
+					parent:updateLangFamilies()
 					if _DEBUG then parent:compLangs(true) end
 				end
 				if math.fmod(parent.years, 20) == 0 then

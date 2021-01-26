@@ -510,6 +510,7 @@ return
 						CCSCommon.world:add(nl)
 					end
 
+					CCSCommon:updateLangFamilies()
 					CCSCommon:getAlphabetical()
 				else
 					local i, j = pcall(CCSCommon.fromFile, CCSCommon, datin)
@@ -1762,6 +1763,7 @@ return
 			iSIndex = 0,
 			langDriftConstant = 0.16,
 			langEML = 1, -- 1 for Early, 2 for Middle, 3 for Late.
+			langFamilies = {},
 			langPeriod = 1,
 			langTestString = "$da quick brown vixen and $3spnp master $da mouse",
 			languages = {},
@@ -1975,18 +1977,8 @@ return
 				local _GLOSSARY = false
 				local _DESCENT = nil
 				local oldDescent = nil
-				local families = {}
-				for i=1,#self.languages do
-					local family = self.languages[i].name
-					for j=1,#self.languages[i].descentTree do
-						local mt = self.languages[i].descentTree[j][1]:match("%S+")
-						if mt ~= self.languages[i].name then family = mt end
-					end
-					if not families[family] then families[family] = {} end
-					families[family][self.languages[i].name] = self.languages[i]
-				end
-
-				local fKeys = self:getAlphabetical(families)
+				self:updateLangFamilies()
+				local fKeys = self:getAlphabetical(self.langFamilies)
 
 				while _REVIEWING do
 					local screens = {{}}
@@ -2033,7 +2025,7 @@ return
 
 						if not _DESCENT then
 							for i=1,#fKeys do
-								local fam = families[fKeys[i]]
+								local fam = self.langFamilies[fKeys[i]]
 								local lAlph = self:getAlphabetical(fam)
 								for j=1,#lAlph do
 									local lang = fam[lAlph[j]]
@@ -2063,12 +2055,13 @@ return
 							local decimalMargin = (tostring(getLineTolerance(8))):len()
 
 							for i=1,#fKeys do
-								local fam = families[fKeys[i]]
+								local fam = self.langFamilies[fKeys[i]]
 								local lAlph = self:getAlphabetical(fam)
 								for j=1,#lAlph do
 									local lang = fam[lAlph[j]]
+									local skip = false
 									if lang then
-										local trueName = (fKeys[i] == lang.name and "Standard "..lang.name or lang.name)
+										local trueName = ((fKeys[i] == lang.name and #lAlph > 1) and "Standard "..lang.name or lang.name)
 										if not writeOut then if (fKeys[i] ~= lastFamily and lnCount+lnCorrect+1 >= getLineTolerance(8)) or lnCount+lnCorrect >= getLineTolerance(8) then
 											lnCount = 0
 											lnCorrect = 0
@@ -2078,11 +2071,20 @@ return
 											screen = screens[screenIndex]
 										end end
 										if fKeys[i] ~= lastFamily then
-											table.insert(screen, fKeys[i])
-											lastFamily = fKeys[i]
-											lnCorrect = lnCorrect+1
+											if not writeOut then
+												local l1C, l2C = 0, 0
+												for k, l in pairs(fam) do
+													l1C = l1C+l.l1Speakers
+													l2C = l2C+l.l2Speakers
+												end
+												if l1C == 0 and l2C == 0 then skip = true else table.insert(screen, fKeys[i].." (L1: "..tostring(l1C)..", L2: "..tostring(l2C)..")") end
+											else table.insert(screen, fKeys[i]) end
+											if not skip then
+												lastFamily = fKeys[i]
+												lnCorrect = lnCorrect+1
+											end
 										end
-										if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang:translate(self, self.langTestString))) end
+										if (writeOut or lnCount+lnCorrect < getLineTolerance(8)) and not skip then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang:translate(self, self.langTestString))) end
 										lnCount = lnCount+1
 									end
 								end
@@ -2200,7 +2202,6 @@ return
 				end
 
 				fKeys = nil
-				families = nil
 			end,
 
 			deepcopy = function(self, obj)
@@ -3457,7 +3458,41 @@ return
 				self.tiffStripOffsets = {}
 				self.tiffBits = {}
 				self.tiffDict = {}
-			end
+			end,
+			
+			updateLangFamilies = function(self)
+				for i, j in pairs(self.langFamilies) do self.langFamilies[i] = nil end
+				self.langFamilies = {}
+				for i=1,#self.languages do
+					local family = self.languages[i].name
+					for j=1,#self.languages[i].descentTree do
+						local mt = self.languages[i].descentTree[j][1]:match("%S+")
+						if mt ~= self.languages[i].name then family = mt end
+						-- When a language sustains 25% deviation or greater from its parent, it is considered sufficiently removed as to no longer be of the same family.
+						local removal = 0
+						local nearest = -1
+						for k=1,#self.languages do if self.languages[k].name == family then removal = self.languages[k]:diff(self.languages[i]) end end
+						if removal >= 0.25 then
+							if self.langFamilies[family] then self.langFamilies[family][self.languages[i].name] = nil end
+							nearest = i
+						end
+						if nearest ~= -1 then
+							for k=1,#self.languages do if i ~= k then
+								local nR = self.languages[k]:diff(self.languages[i])
+								if nR < math.min(0.25, removal) then
+									removal = nR
+									nearest = k
+								end
+							end end
+							family = self.languages[nearest].name
+							self.langFamilies[family] = self.langFamilies[family] or {}
+							self.langFamilies[family][family] = self.languages[nearest]
+						end
+					end
+					self.langFamilies[family] = self.langFamilies[family] or {}
+					self.langFamilies[family][self.languages[i].name] = self.languages[i]
+				end
+			end,
 		}
 
 		return CCSCommon

@@ -12,6 +12,8 @@ return
 				o.letterCount = 0
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
 				o.period = 1
+				o.l1Speakers = 0
+				o.l2Speakers = 0
 				o.specials = {}
 				o.wordTable = {}
 
