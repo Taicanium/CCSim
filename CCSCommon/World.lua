@@ -34,7 +34,7 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin, rMax = _DEBUG and 100 or 275, _DEBUG and 105 or 315
+				local rMin, rMax = _DEBUG and 100 or 185, _DEBUG and 105 or 225
 				self.planetR = math.floor(math.random(rMin, rMax))
 				local gridVol, rdone = (math.pow((self.planetR*2)+1, 2)*6)/100, 0
 

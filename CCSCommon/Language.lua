@@ -140,13 +140,13 @@ return
 				return s and nOut or nOut:sub(1, 4)
 			end,
 			
-			translate = function(self, s)
+			translate = function(self, parent, s)
 				local thisText = s
-				for x in s:gmatch("%w+") do thisText = thisText:gsub(x, function(n)
+				for x in s:gmatch("%S+") do thisText = thisText:gsub(x, function(n)
 					if not self.wordTable[n:lower()] then
-						local ln = math.ceil(ENGLISH[i]:len()/3)
+						local ln = math.ceil(n:len()/3)
 						local word = parent:name(true, ln, ln, true)
-						self.wordTable[n:lower()] = word:lower()
+						self.wordTable[n:lower()] = "["..word:lower().."]"
 						-- We intentionally do not count this word as part of Language.letterCount, as deviation only takes into account the words located in the ENGLISH array.
 					end
 					return string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", ""))
