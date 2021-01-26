@@ -2016,7 +2016,7 @@ return
 
 								lnCount = 0
 								screenIndex = 1
-								table.insert(screen, string.format("%s:%s\"%s.\"", mainLang.name, string.rep(" ", screenMargins[screenIndex]-mainLang.name:len()), mainLang.testString))
+								table.insert(screen, string.format("%s:%s\"%s.\"", mainLang.name, string.rep(" ", screenMargins[screenIndex]-mainLang.name:len()), mainLang:translate(self, self.langTestString)))
 
 								for i=#mainLang.descentTree,1,-1 do
 									if lnCount >= getLineTolerance(8) then
@@ -2082,7 +2082,7 @@ return
 											lastFamily = fKeys[i]
 											lnCorrect = lnCorrect+1
 										end
-										if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang.testString)) end
+										if writeOut or lnCount+lnCorrect < getLineTolerance(8) then table.insert(screen, string.format("\t%d.%s%s:%s\"%s.\"", #screen+1-lnCorrect, string.rep(" ", decimalMargin), trueName, string.rep(" ", screenMargins[screenIndex]-trueName:len()), lang:translate(self, self.langTestString))) end
 										lnCount = lnCount+1
 									end
 								end
@@ -2134,7 +2134,7 @@ return
 					else
 						local allLanguages = {}
 						for i=1,#self.languages do
-							if not allLanguages[self.languages[i].name] then allLanguages[self.languages[i].name] = self.languages[i].testString end
+							if not allLanguages[self.languages[i].name] then allLanguages[self.languages[i].name] = self.languages[i]:translate(self, self.langTestString) end
 							for j=1,#self.languages[i].descentTree do if not allLanguages[self.languages[i].descentTree[j][1]] then allLanguages[self.languages[i].descentTree[j][1]] = self.languages[i].descentTree[j][2] end end
 						end
 						local alphaLangs = self:getAlphabetical(allLanguages)
@@ -2198,7 +2198,7 @@ return
 						end
 					end
 				end
-				
+
 				fKeys = nil
 				families = nil
 			end,
@@ -2802,7 +2802,7 @@ return
 							self.gedFile = nil
 						end
 						UI:printf("\nEnter a number of years to continue, or:")
-						if _DEBUG then UI:printf("E to execute a line of Lua code.") end
+						UI:printf("E to execute a line of Lua code.")
 						UI:printf("G to review family links and genealogical data.")
 						UI:printf("L to compare the languages of this world.")
 						UI:printf("R to record the event data at this point.")
@@ -2812,7 +2812,7 @@ return
 						if tonumber(datin) then
 							remainingYears = tonumber(datin)
 							self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
-						elseif datin:lower() == "e" and _DEBUG then debugLine()
+						elseif datin:lower() == "e" then debugLine()
 						elseif datin:lower() == "g" then
 							local gf = io.open(self:directory{self.stamp, "ged.dat"}, "r")
 							gedReview(gf)
@@ -2889,7 +2889,7 @@ return
 					nom = nom..ending:lower()
 					for i=1,2 do for j, k in pairs(self.repGroups) do nom = nom:gsub(k[1], k[2]) end end
 				end
-				
+
 				if not preserve then nom = (string.stripDiphs(nom)):gsub("^%S", string.upper) end
 
 				if _DEBUG then

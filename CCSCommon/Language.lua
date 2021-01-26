@@ -13,7 +13,6 @@ return
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
 				o.period = 1
 				o.specials = {}
-				o.testString = ""
 				o.wordTable = {}
 
 				return o
@@ -27,13 +26,10 @@ return
 					self.letterCount = self.letterCount+word:len()
 				end end
 				self:defineSpecials(parent)
-				for x in parent.langTestString:gmatch("%S+") do self.testString = self.testString..string.stripDiphs((self.wordTable[x:lower()]):gsub(" ", "")).." " end
-				self.testString = self.testString:sub(1, self.testString:len()-1)
-				self.testString = self.testString:gsub("^%w", string.upper)
 				self.period = parent.langPeriod
 				self.eml = parent.langEML
 			end,
-			
+
 			defineSpecials = function(self, parent)
 				-- This is *remarkably* unintuitive...
 				-- Essentially, the vast majority of natural languages don't have 405 unique pronouns -- and, yes, I counted -- so, work here to combine a few.
@@ -55,7 +51,7 @@ return
 				local newList = Language:new()
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
 				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
-				table.insert(newList.descentTree, {self.name..periodString, self.testString})
+				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
 				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
 
 				local fct = 0
@@ -105,9 +101,6 @@ return
 					if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3), true) end
 					newList.letterCount = newList.letterCount+newList.wordTable[ENGLISH[i]]:len()
 				end
-				for x in parent.langTestString:gmatch("%S+") do newList.testString = newList.testString..string.stripDiphs(newList.wordTable[x:lower()]:gsub(" ", "")).." " end
-				newList.testString = newList.testString:sub(1, newList.testString:len()-1)
-				newList.testString = newList.testString:gsub("^%w", string.upper)
 
 				return newList
 			end,
@@ -139,24 +132,35 @@ return
 
 				return s and nOut or nOut:sub(1, 4)
 			end,
-			
+
 			translate = function(self, parent, s)
 				local thisText = s
-				for x in s:gmatch("%S+") do thisText = thisText:gsub(x, function(n)
+				for x in s:gmatch("%S+") do thisText = thisText:gsub(x:gsub("%$", "%%$"):gsub("%^", "%%^"), function(n)
 					if not self.wordTable[n:lower()] then
 						local ln = math.ceil(n:len()/3)
 						local word = parent:name(true, ln, ln, true)
-						self.wordTable[n:lower()] = "["..word:lower().."]"
-						-- We intentionally do not count this word as part of Language.letterCount, as deviation only takes into account the words located in the ENGLISH array.
+						self.wordTable[n:lower()] = word:lower()
+						self.letterCount = self.letterCount+word:len()
+						if not table.contains(ENGLISH, n:lower()) then table.insert(ENGLISH, n:lower()) end
 					end
-					return string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", ""))
+					if n:match("%$rss") or n:match("%$es") or n:match("%$$") then return "$"..(string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", "")))
+					elseif n:match("%$rsp") or n:match("%^$") then return string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", "")).."^"
+					else return string.stripDiphs(self.wordTable[n:lower()]:gsub(" ", "")) end
 				end) end
-				return thisText
+				return thisText:gsub(" %$", ""):gsub("%^ ", ""):gsub("^%S", string.upper)
 			end,
+
+			allMods = {
+				{"1", "2", "3"}, -- Person. First, second, third.
+				{"s", "d", "p"}, -- Number. Singular, dual, plural.
+				{"d", "p", "a"}, -- Function. Demonstrative, possessive, dative. (Reflexive and determinant also handled, but exclusively as suffixes; see RSS, RSP, and ES.)
+				{"m", "f", "n"}, -- Gender. Male, female, neuter.
+				{"p", "^", "$"}, -- Form. Particle, prefix, suffix.
+			},
 
 			sTab = {
 				["0"]={"a", "e", "o", "u", "y", "i"},
-				["1"]={"b", "p", "f", "\xef", "v", "w", "h"},
+				["1"]={"p", "b", "f", "\xef", "v", "w", "h"},
 				["2"]={"c", "k", "g", "j", "\xee", "z", "s", "\xed"},
 				["3"]={"d", "t"},
 				["4"]={"l"},
@@ -170,14 +174,7 @@ return
 				l="4",
 				m="5", n="5", ["\xec"]="5",
 				r="6",
-				[" "]="7"},
-			
-			allMods = {
-				{"1", "2", "3"}, -- Person. First, second, third.
-				{"s", "d", "p"}, -- Number. Singular, dual, plural.
-				{"d", "p", "a"}, -- Function. Demonstrative, possessive, dative. (Reflexive and determinant also handled, but exclusively as suffixes; see RSS, RSP, and ES.)
-				{"m", "f", "n"}, -- Gender. Male, female, neuter.
-				{"p", "^", "$"}, -- Form. Particle, prefix, suffix.
+				[" "]="7",
 			},
 		}
 
