@@ -56,15 +56,12 @@ return
 				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
 				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
 
-				local fct = 0
+				local fct, doOp, repCount, gsCount, mod = 0, {}, 0, 0
 				local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
-				local doOp = {}
 				local op = parent:randomChoice(ops)
-				local mod = nil
 				if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
 				elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
 				elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
-				local repCount = 0
 				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(parent:name(true, 1, 1)) end
 				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(parent:name(true, 2, 1))
 				newList.wordTable["$rsp"] = self.wordTable["$rsp"] or string.lower(parent:name(true, 2, 1))
@@ -73,8 +70,7 @@ return
 				while fct < totalFct do
 					local eng = ENGLISH[math.random(1, #ENGLISH)]
 					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
-					local newWord = thisWord
-					local fin = false
+					local newWord, fin = thisWord
 					for q=1,thisWord:len() do if not fin and self.sTab[thisWord:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[thisWord:sub(q-1, q-1):lower()] == "0") or (q < thisWord:len() and self.sTab[thisWord:sub(q+1, q+1):lower()] == "0"))) then
 						newWord = thisWord:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
 						if q < thisWord:len() then newWord = newWord..thisWord:sub(q+1, thisWord:len()) end
@@ -112,7 +108,8 @@ return
 				for i=1,#ENGLISH do
 					local wrd1 = self.wordTable[ENGLISH[i]]
 					local wrd2 = other.wordTable[ENGLISH[i]]
-					for j=wrd1:len()+1,wrd2:len() do wrd1 = wrd1.." " end
+					for j=wrd1:len()+1,wrd2:len() do wrd1 = wrd1.."*" end
+					for j=wrd2:len()+1,wrd1:len() do wrd2 = wrd2.."*" end
 
 					local div = 1/wrd1:len()
 					for j=1,wrd1:len() do if wrd2:len() < j or wrd1:sub(j, j) ~= wrd2:sub(j, j) then if self.sTab[wrd1:sub(j, j)] == self.sTab[wrd2:sub(j, j)] then factor = factor+(div/3) else factor = factor+div end end end
@@ -182,6 +179,12 @@ return
 
 		Language.__index = Language
 		Language.__call = function() return Language:new() end
+		Language.__tostring = function(self)
+			local sOut, brk = "<Language", 0
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
+			sOut = sOut..(brk > 0 and "\n" or "")..">"
+			return sOut
+		end
 
 		return Language
 	end

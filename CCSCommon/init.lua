@@ -18,12 +18,12 @@ end
 string.diphs = {["\xef"]="th", ["\xee"]="zh", ["\xed"]="sh", ["\xec"]="ng"}
 string.stripDiphs = function(s)
 	local thisWord, nextWord = s
-	for x in s:gmatch("[%c%C]") do _, nextWord = pcall(string.gsub, thisWord, x, function(n) return string.diphs[n] or n end) if _ then thisWord = nextWord end end
+	for x in s:gmatch("[%c%C]") do _, nextWord = pcall(string.gsub, thisWord, x, string.diphs[x] or x) if _ then thisWord = nextWord end end
 	return thisWord
 end
 string.stripSpecs = function(s)
 	local thisWord, nextWord = s
-	for x in s:gmatch("[%$%w]+") do _, nextWord = pcall(string.gsub, thisWord, x, function(n) return ENG_SPECIAL[n] or n end) if _ then thisWord = nextWord end end
+	for x in s:gmatch("[%^%$%w]+") do _, nextWord = pcall(string.gsub, thisWord, x, ENG_SPECIAL[x] or x) if _ then thisWord = nextWord end end
 	return thisWord
 end
 
@@ -968,7 +968,7 @@ return
 				},
 				{
 					name="Conquer",
-					chance=4,
+					chance=3,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -1207,7 +1207,7 @@ return
 				},
 				{
 					name="Invasion",
-					chance=4,
+					chance=3,
 					target=nil,
 					args=2,
 					inverse=true,
@@ -3468,20 +3468,22 @@ return
 					for j=1,#self.languages[i].descentTree do
 						local mt = self.languages[i].descentTree[j][1]:match("%S+")
 						if mt ~= self.languages[i].name then family = mt end
+					end
+					if family ~= self.languages[i].name then
 						-- When a language sustains 25% deviation or greater from its parent, it is considered sufficiently removed as to no longer be of the same family.
 						local removal = 0
 						local nearest = -1
-						for k=1,#self.languages do if self.languages[k].name == family then removal = self.languages[k]:diff(self.languages[i]) end end
-						if removal >= 0.25 then
-							if self.langFamilies[family] then self.langFamilies[family][self.languages[i].name] = nil end
-							nearest = i
-						end
+						for j=1,#self.languages do if self.languages[j].name == family then
+							removal = self.languages[j]:diff(self.languages[i])
+							nearest = j
+						end end
+						if removal >= 0.25 and self.langFamilies[family] then self.langFamilies[family][self.languages[i].name] = nil end
 						if nearest ~= -1 then
-							for k=1,#self.languages do if i ~= k then
-								local nR = self.languages[k]:diff(self.languages[i])
+							for j=1,#self.languages do if i ~= j then
+								local nR = self.languages[j]:diff(self.languages[i])
 								if nR < math.min(0.25, removal) then
 									removal = nR
-									nearest = k
+									nearest = j
 								end
 							end end
 							family = self.languages[nearest].name
