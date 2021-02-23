@@ -18,28 +18,11 @@ return
 				parent:rseed()
 				local fin = false
 				while not fin do
-					if math.random(1, 4) == 1 then
-						local v = parent:randomChoice(parent.partynames[1])
+					for q=1,4 do if math.random(1, 4) == q then
+						local v = parent:randomChoice(parent.partynames[q])
+						while self.name:match(v) do v = parent:randomChoice(parent.partynames[q]) end
 						self.name = self.name..v.." "
-					end
-
-					if math.random(1, 4) == 2 then
-						local v = parent:randomChoice(parent.partynames[2])
-						while self.name:match(v) do v = parent:randomChoice(parent.partynames[2]) end
-						self.name = self.name..v.." "
-					end
-
-					if math.random(1, 4) == 3 then
-						local v = parent:randomChoice(parent.partynames[3])
-						while self.name:match(v) do v = parent:randomChoice(parent.partynames[3]) end
-						self.name = self.name..v.." "
-					end
-
-					if math.random(1, 4) == 4 then
-						local v = parent:randomChoice(parent.partynames[4])
-						while self.name:match(v) do v = parent:randomChoice(parent.partynames[4]) end
-						self.name = self.name..v.." "
-					end
+					end end
 
 					if self.name == "" then
 						local v = parent:randomChoice(parent.partynames[math.random(1, 4)])

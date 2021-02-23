@@ -423,7 +423,7 @@ return
 									if cFound then
 										-- We cheat here a little bit to display water body names and outline colors on the map legend.
 										-- Treat them as countries with no ruler string. Also, place a non-printing character at the beginning of their index key that sorts them at the top of an alphabetic list.
-										-- We will also assign a similar hidden character to each country, specifically \x03 which will sort them after; and we will also assign \x01 to continents, which will sort them before water bodies.
+										-- We will also assign a similar hidden character to each country, specifically \x03 which will sort them after water bodies; and we will also assign \x01 to continents, which will sort them before.
 										self.cTriplets["\x02"..node.waterBody] = {r, g, b}
 									end
 								end
@@ -703,16 +703,9 @@ return
 				local t0 = _time()
 
 				local rd = self.planetR
-				local p = 0
-				local q = 0
-				local r = -rd
-				local iColumn = 1
 				local finished = false
-				local ring = 1
-				local ringDone = 0
-				local layer = 0
-				local pr = 1
-				local qr = 0
+				local p, q, r, iColumn = 0, 0, -rd, 1
+				local ring, ringDone, layer, pr, qr = 1, 0, 0, 1, 0
 				while not finished do
 					local pqr = self:getNodeFromCoords(p, q, r)
 					ringDone = ringDone+1

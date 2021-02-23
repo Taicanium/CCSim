@@ -33,9 +33,9 @@ return
 			end,
 
 			defineSpecials = function(self, parent)
-				-- This is *remarkably* unintuitive...
+				-- This is *remarkably* unintuitive... even as far as other sections of this program go.
 				-- Essentially, the vast majority of natural languages don't have 405 unique pronouns -- and, yes, I counted -- so, work here to combine a few.
-				-- Somehow.
+				-- Somehow. Through some process.
 				for i=1,#parent.pronouns do self.specials[parent.pronouns[i]] = string.lower(parent:name(true, 1, 1)) end
 				local i1 = math.random(1, 5)
 				local i2 = math.random(1, 5) while i2 == i1 do i2 = math.random(1, 5) end
@@ -56,7 +56,7 @@ return
 				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
 				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
 
-				local fct, doOp, repCount, gsCount, mod = 0, {}, 0, 0
+				local fct, doOp, repCount, mod = 0, {}, 0
 				local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
 				local op = parent:randomChoice(ops)
 				if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
@@ -119,10 +119,9 @@ return
 			end,
 
 			soundex = function(self, n, s)
-				local nOut = (s and self.sTab[(n:sub(1, 1)):lower()] or (n:sub(1, 1)):upper())
+				local nOut, oln = (s and self.sTab[(n:sub(1, 1)):lower()] or (n:sub(1, 1)):upper())
 				for x=2,n:len() do nOut = nOut..(self.sTab[(n:sub(x, x)):lower()] or "0") end
 				if not s then nOut = nOut:gsub("0", "") end
-				local oln = 0
 				while oln ~= nOut:len() do
 					oln = nOut:len()
 					if nOut:len() > 1 then for x=nOut:len()-1,1,-1 do if nOut:sub(x, x) == nOut:sub(x+1, x+1) then nOut = nOut:sub(1, x)..(x < nOut:len()-1 and nOut:sub(x+2, nOut:len()) or "") end end end

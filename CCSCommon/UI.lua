@@ -90,8 +90,8 @@ return
 			end,
 
 			readn = function(self)
+				local x
 				if not self.ready then self:init() end
-				local x = ""
 				if self.stdscr then x = self.stdscr:getstr() else x = io.read() end
 				return tonumber(x)
 			end,

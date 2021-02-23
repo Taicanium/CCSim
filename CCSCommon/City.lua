@@ -27,6 +27,6 @@ return
 			sOut = sOut..(brk > 0 and "\n" or "")..">"
 			return sOut
 		end
-		
+
 		return City
 	end

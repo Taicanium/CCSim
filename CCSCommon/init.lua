@@ -3459,7 +3459,7 @@ return
 				self.tiffBits = {}
 				self.tiffDict = {}
 			end,
-			
+
 			updateLangFamilies = function(self)
 				for i, j in pairs(self.langFamilies) do self.langFamilies[i] = nil end
 				self.langFamilies = {}
