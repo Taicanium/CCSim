@@ -45,7 +45,11 @@ return
 				self.specials["$rsp"] = string.lower(parent:name(true, 2, 1)) -- Reflexive plural suffix. (Eng: 'selves')
 				self.specials["$es"] = string.lower(parent:name(true, 1, 1)) -- Determinant suffix. (Eng: 's', as in 'theirs' or 'hers')
 				self.specials["$da"] = string.lower(parent:name(true, 1, 1)) -- Definite article. (Eng: 'the')
-				for i, j in pairs(self.specials) do self.wordTable[i] = self.wordTable[i] or j self.specials[i] = nil end
+				for i, j in pairs(self.specials) do
+					self.wordTable[i] = self.wordTable[i] or j
+					self.letterCount = self.letterCount+j:len()
+					self.specials[i] = nil
+				end
 				self.specials = nil
 			end,
 
@@ -68,21 +72,11 @@ return
 				newList.wordTable["$es"] = self.wordTable["$es"] or string.lower(parent:name(true, 1, 1))
 				newList.wordTable["$da"] = self.wordTable["$da"] or string.lower(parent:name(true, 1, 1))
 				while fct < totalFct do
-					local eng = ENGLISH[math.random(1, #ENGLISH)]
+					local eng = parent:randomChoice(self.wordTable, true)
 					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
-					local newWord, fin = thisWord
-					for q=1,thisWord:len() do if not fin and self.sTab[thisWord:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[thisWord:sub(q-1, q-1):lower()] == "0") or (q < thisWord:len() and self.sTab[thisWord:sub(q+1, q+1):lower()] == "0"))) then
-						newWord = thisWord:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
-						if q < thisWord:len() then newWord = newWord..thisWord:sub(q+1, thisWord:len()) end
-						for z, n in pairs(self.sTab["0"]) do
-							for s=4,1,-1 do newWord = newWord:gsub(n..string.rep(" ", s)..n, n..string.rep(" ", s+1)) end
-							newWord = newWord:gsub(n..n, n.." ")
-						end
-						fin = true
-					end end
-					newList.wordTable[eng] = newWord
-					repCount = repCount+1
-					if repCount >= #ENGLISH*0.15 then
+					newList.wordTable[eng] = self:modWord(parent, thisWord, mod)
+					repCount = repCount+newList.wordTable[eng]:len()
+					if repCount >= newList.letterCount*0.7125 then
 						op = parent:randomChoice(ops)
 						if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
 						elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
@@ -95,10 +89,8 @@ return
 				newList.period = parent.langPeriod
 				newList.eml = parent.langEML
 				newList.letterCount = 0
-				for i=1,#ENGLISH do
-					if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3), true) end
-					newList.letterCount = newList.letterCount+newList.wordTable[ENGLISH[i]]:len()
-				end
+				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or parent:name(true, math.ceil(ENGLISH[i]:len()/3), math.ceil(ENGLISH[i]:len()/3), true) end end
+				for i, j in pairs(newList.wordTable) do newList.letterCount = newList.letterCount+j:len() end
 
 				return newList
 			end,
@@ -116,6 +108,20 @@ return
 				end
 				factor = factor/#ENGLISH
 				return factor
+			end,
+			
+			modWord = function(self, parent, n, mod)
+				local newWord, fin = n
+				for q=1,n:len() do if not fin and self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
+					newWord = n:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
+					if q < n:len() then newWord = newWord..n:sub(q+1, n:len()) end
+					for z, n in pairs(self.sTab["0"]) do
+						for s=4,1,-1 do newWord = newWord:gsub(n..string.rep(" ", s)..n, n..string.rep(" ", s+1)) end
+						newWord = newWord:gsub(n..n, n.." ")
+					end
+					fin = true
+				end end
+				return newWord
 			end,
 
 			soundex = function(self, n, s)
