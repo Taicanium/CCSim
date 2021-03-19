@@ -170,7 +170,7 @@ return
 					for x in nn.surname:gmatch("%a+") do table.insert(segments, parent:namecheck(x:gsub(op[o1], op[o2], 1))) end
 					nn.surname = ""
 					for x=1,#segments-1 do nn.surname = nn.surname..segments[x].."-" end
-					nn.surname = nn.surname..segments[#segments]
+					nn.surname = string.stripDiphs(nn.surname..segments[#segments])
 				end
 
 				if self.royalGenerations < math.huge or self.spouse.royalGenerations < math.huge then
