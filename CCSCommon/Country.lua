@@ -41,7 +41,7 @@ return
 				o.rulerParty = nil
 				o.rulerPopularity = 0
 				o.rulers = {}
-				o.snt = {} -- System, number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
+				o.snt = {} -- System, Number of Times; i.e. 'snt["Monarchy"] = 1' indicates the country has been a monarchy once, or is presently in its first monarchy.
 				o.stability = 50
 				o.strength = 0
 				o.system = 0
@@ -94,8 +94,7 @@ return
 				if not other or not other.nodes or type(other.nodes) ~= "table" then return 0 end
 				local otherItem = "country"
 				if oRegion then otherItem = "region" end
-				local selfWater = {}
-				local otherWater = {}
+				local selfWater, otherWater = {}, {}
 
 				for i=1,#self.nodes do
 					local xyz = self.nodes[i]
@@ -129,8 +128,7 @@ return
 				local oldreg = self.capitalregion
 
 				if not self.capitalregion or not self.capitalcity or self.capitalcity.nl ~= self.name then while not self.capitalregion or not self.capitalregion.cities do
-					self.capitalregion = parent:randomChoice(self.regions)
-					self.capitalcity = nil
+					self.capitalregion, self.capitalcity = parent:randomChoice(self.regions)
 				end end
 
 				while not self.capitalcity do self.capitalcity = parent:randomChoice(self.capitalregion.cities) end
@@ -173,8 +171,7 @@ return
 				if self.people and #self.people > 0 and self.people[y] then
 					local z = table.remove(self.people, y)
 					z:destroy(parent, self)
-					z = nil
-					self.population = self.population-1
+					self.population, z = self.population-1
 				end
 			end,
 
@@ -467,9 +464,7 @@ return
 
 					if not found then
 						local pd = parent:randomChoice(self.nodes)
-						while parent.world.planet[pd].region and parent.world.planet[pd].region ~= "" and parent.world.planet[pd].region ~= j.name do
-							pd = parent:randomChoice(self.nodes)
-						end
+						while parent.world.planet[pd].region and parent.world.planet[pd].region ~= "" and parent.world.planet[pd].region ~= j.name do pd = parent:randomChoice(self.nodes) end
 
 						parent.world.planet[pd].region = j.name
 						table.insert(defined, pd)
@@ -527,11 +522,7 @@ return
 						end end
 					end
 
-					for i=1,#self.nodes do
-						local xyz = self.nodes[i]
-						parent.world.planet[xyz].regionSet = false
-					end
-
+					for i=1,#self.nodes do parent.world.planet[self.nodes[i]].regionSet = false end
 					prevDefined = totalDefined
 				end
 
@@ -593,18 +584,13 @@ return
 					if not newE.performEvent or newE:performEvent(parent, self) == -1 then table.remove(self.ongoing, #self.ongoing)
 					else newE:beginEvent(parent, self) end
 				elseif parent.c_events[i].args == 2 and parent.world.numCountries > 1 then
-					local other = nil
-					if r then other = o else
-						other = parent:randomChoice(parent.world.countries)
-						while other.name == self.name do other = parent:randomChoice(parent.world.countries) end
-					end
+					local other = r and o or parent:randomChoice(parent.world.countries)
+					while other.name == self.name do other = parent:randomChoice(parent.world.countries) end
 
 					if self.ongoing then
-						local res = -1
-						if newE.performEvent then res = newE:performEvent(parent, self, other, r) end
+						local res = newE.performEvent and newE:performEvent(parent, self, other, r) or -1
 						if not self.ongoing then return end
-						if res == -1 then table.remove(self.ongoing, #self.ongoing)
-						else newE:beginEvent(parent, self, other) end
+						if res == -1 then table.remove(self.ongoing, #self.ongoing) else newE:beginEvent(parent, self, other) end
 					end
 				end
 			end,
