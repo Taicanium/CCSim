@@ -147,36 +147,14 @@ return
 				if self.royalGenerations < 8 and self.spouse.royalGenerations < 8 and self.surname ~= self.spouse.surname then
 					local surnames = {}
 
-					--[[ if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
+					if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 					elseif self.royalGenerations > self.spouse.royalGenerations then surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()}
 					else
 						if self.gender == "M" then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
 						else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 					end
 
-					if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end ]]
-					
-					if self.royalGenerations < self.spouse.royalGenerations then
-						for x in self.surname:gmatch("%a+") do table.insert(surnames, x) end
-						for x in self.spouse.surname:gmatch("%a+") do table.insert(surnames, x) end
-					elseif self.royalGenerations > self.spouse.royalGenerations then
-						for x in self.spouse.surname:gmatch("%a+") do table.insert(surnames, x) end
-						for x in self.surname:gmatch("%a+") do table.insert(surnames, x) end
-					else
-						if self.gender == "M" then
-							for x in self.surname:gmatch("%a+") do table.insert(surnames, x) end
-							for x in self.spouse.surname:gmatch("%a+") do table.insert(surnames, x) end
-						else
-							for x in self.spouse.surname:gmatch("%a+") do table.insert(surnames, x) end
-							for x in self.surname:gmatch("%a+") do table.insert(surnames, x) end
-						end
-					end
-					
-					for x=#surnames-1,1,-1 do for y=#surnames,x+1,-1 do if surnames[x] == surnames[y] then table.remove(surnames, y) end end end
-					
-					nn.surname = ""
-					for x=1,#surnames-1 do nn.surname = nn.surname..surnames[x].."-" end
-					nn.surname = nn.surname..surnames[#surnames]
+					if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
 				end
 
 				local modChance = math.random(1, 50000)
