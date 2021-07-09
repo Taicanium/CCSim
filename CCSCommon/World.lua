@@ -141,7 +141,6 @@ return
 				end
 
 				UI:printf("Setting territories...")
-
 				local allDefined, totalDefined, prevDefined = false, #defined, #defined
 				ci = 1
 
@@ -349,11 +348,9 @@ return
 				for i, cp in pairs(self.countries) do
 					if not self.cTriplets["\x03"..cp.name] then
 						self.cTriplets["\x03"..cp.name] = nil
-
 						local r = 0
 						local g = 0
 						local b = 0
-
 						local unique = false
 						self.cTriplets["\xFFWATER"] = {22, 22, 170}
 						while not unique do
@@ -373,7 +370,6 @@ return
 				local zeroRGB = {0, 0, 0}
 				local maxRGB = {255, 255, 255}
 				local waterRGB = {22, 22, 170}
-
 				local columnCount = #self.unwrapped
 				self.colors = {["\x01\x01CONTINENTS"]={0, 0, 0}, ["\x02\x01BODIES OF WATER"]={0, 0, 0}, ["\x03\x01COUNTRIES"]={0, 0, 0}}
 				local leaders = {["\x01\x01CONTINENTS"]="", ["\x02\x01BODIES OF WATER"]="", ["\x03\x01COUNTRIES"]=""}
@@ -534,7 +530,6 @@ return
 								nextPix = nextPix == 0 and 1 or 0
 								lastPix = self.stretched[distRow][distColumn][7]
 							end
-
 							if nextPix == 1 then distortionMap[distRow][distColumn] = maxRGB
 							else distortionMap[distRow][distColumn] = zeroRGB end
 						end
@@ -701,7 +696,6 @@ return
 
 			unwrap = function(self)
 				local t0 = _time()
-
 				local rd = self.planetR
 				local finished = false
 				local p, q, r, iColumn = 0, 0, -rd, 1
@@ -864,8 +858,8 @@ return
 						fb = nil
 					end
 				end ]]
-				local t4 = _time()
 				if _DEBUG then
+					local t4 = _time()
 					if not debugTimes["GARBAGE"] then debugTimes["GARBAGE"] = 0 end
 					debugTimes["GARBAGE"] = debugTimes["GARBAGE"]+t3-t2
 					if not debugTimes["AUTOSAVE"] then debugTimes["AUTOSAVE"] = 0 end
@@ -878,9 +872,7 @@ return
 		World.__call = function() return World:new() end
 		World.__tostring = function(self)
 			local sOut, brk = "<World", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
-			sOut = sOut..(brk > 0 and "\n" or "")..">"
-			return sOut
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
 		end
 
 		return World

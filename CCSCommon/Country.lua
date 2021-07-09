@@ -22,6 +22,8 @@ return
 				o.founded = 0
 				o.frulernames = {}
 				o.hasRuler = -1
+				o.income = {}
+				o.incomeLevels = {}
 				o.language = nil
 				o.lineOfSuccession = {}
 				o.locIndices = {}
@@ -30,6 +32,8 @@ return
 				o.milThreshold = 5
 				o.name = ""
 				o.nodes = {}
+				o.oldIncome = {}
+				o.oldIncomeLevels = {}
 				o.ongoing = {}
 				o.parties = {}
 				o.people = {}
@@ -45,6 +49,7 @@ return
 				o.stability = 50
 				o.strength = 0
 				o.system = 0
+				o.taxRate = 0.1
 
 				return o
 			end,
@@ -210,8 +215,8 @@ return
 					return
 				end
 
-				local v = math.max(1, math.ceil(math.random(30, 90)*self.stability))
-				local vi = math.max(1, math.ceil(math.random(30, 90)*(101-self.stability)))
+				local v = math.max(1, math.ceil(math.random(30, 80)*self.stability))
+				local vi = math.max(1, math.ceil(math.random(30, 80)*(101-self.stability)))
 
 				if not self.ongoing then self.ongoing = {} end
 				if not self.relations then
@@ -316,6 +321,7 @@ return
 				end
 
 				if self.founded == 0 then self.founded = parent.years end
+				self.taxRate = math.random(5, 35)/100
 
 				self.capitalregion = parent:randomChoice(self.regions)
 				self.capitalcity = parent:randomChoice(self.capitalregion.cities)
@@ -394,6 +400,7 @@ return
 
 				self.hasRuler = 0
 				self.ruler = self.people[newRuler]
+				self.taxRate = math.random(5, 35)/100
 				self.people[newRuler].isRuler = true
 				self.people[newRuler].ruledCountry = self.name
 				self.people[newRuler].rulerTitle = self.people[newRuler].title
@@ -657,6 +664,11 @@ return
 					end
 				end end end
 
+				for i, j in pairs(self.income) do self.oldIncome[i] = j end
+				for i, j in pairs(self.incomeLevels) do self.oldIncomeLevels[i] = j end
+				self.income = {}
+				self.incomeLevels = {}
+
 				for i=#self.people,1,-1 do
 					local chn = false
 					if self.people[i] and self.people[i].def then self.people[i]:update(parent, self) else chn = true end
@@ -690,11 +702,12 @@ return
 					end
 				end
 
-				self.averageAge = self.averageAge/#self.people
-
 				if #self.people == 0 then
-					self.averageAge = 100
+					self.averageAge = 0
 					self.rulerPopularity = 100
+				else
+					self.averageAge = self.averageAge/#self.people
+					self.rulerPopularity = math.min(math.max(self.rulerPopularity+((self.taxRate*100-5)*4/3)-20, 0), 100)
 				end
 
 				self:checkRuler(parent, false)
@@ -721,9 +734,7 @@ return
 		Country.__call = function() return Country:new() end
 		Country.__tostring = function(self)
 			local sOut, brk = "<Country", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
-			sOut = sOut..(brk > 0 and "\n" or "")..">"
-			return sOut
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
 		end
 
 		return Country

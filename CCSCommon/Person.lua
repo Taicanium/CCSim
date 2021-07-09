@@ -25,9 +25,11 @@ return
 				o.famc = ""
 				o.fams = {}
 				o.father = nil
+				o.frugality = math.random(5, 85)/100
 				o.gender = ""
 				o.gIndex = 0
 				o.gString = ""
+				o.income = 0
 				o.isRuler = false
 				o.LastRoyalAncestor = ""
 				o.level = 2
@@ -56,6 +58,7 @@ return
 				o.spouse = nil
 				o.surname = ""
 				o.title = "Citizen"
+				o.wealth = 0
 
 				return o
 			end,
@@ -63,6 +66,10 @@ return
 			destroy = function(self, parent, nl)
 				self.age = nil
 				self.cbelief = nil
+				local chilCount = 0
+				for i, j in pairs(self.children) do if j and j.def then chilCount = chilCount+1 end end
+				for i, j in pairs(self.children) do if j and j.def then j.wealth = j.wealth+(self.wealth/chilCount) end end
+				chilCount = nil
 				self.children = nil
 				if not self.deathplace or self.deathplace == "" then
 					self.deathplace = nl.name
@@ -81,12 +88,15 @@ return
 				end
 				parent.gedFile:write(tostring(self.gIndex).." d "..tostring(self.death).."\n")
 				parent.gedFile:write("e "..tostring(parent.places[self.deathplace]).."\n")
+				parent.gedFile:write("w "..tostring(math.floor(self.wealth*1000)).."\n")
 				parent.gedFile:flush()
 				self.city = nil
 				self.def = nil -- See above.
 				self.ebelief = nil
 				parent:deepnil(self.ethnicity)
 				self.father = nil
+				self.frugality = nil
+				self.income = nil
 				self.isRuler = nil
 				self.level = nil
 				self.lines = nil
@@ -105,6 +115,7 @@ return
 				if self.spouse and self.spouse.def then self.spouse.spouse = nil end
 				self.spouse = nil
 				self.title = nil
+				self.wealth = nil
 			end,
 
 			dobirth = function(self, parent, nl)
@@ -487,7 +498,7 @@ return
 
 				if self.title and self.level then
 					if self.level < #ranks-rankLim then
-						local x = math.random(-100, 100)
+						local x = math.random(-100+#ranks-self.level, 100-self.level)
 						if x < -85 then
 							self.prevtitle = self.title
 							self.level = self.level-1
@@ -504,6 +515,11 @@ return
 				else self.level = 2 end
 
 				self.title = ranks[self.level]
+				self.income = (self.level == 1 and 0 or 0.1*(self.level-1))+((nl.oldIncome[self.level-1] or 0)/(nl.oldIncomeLevels[self.level] or 1))
+				self.income = self.income*math.random(0.7, 1.3)
+				self.wealth = (self.wealth+self.income*(1-nl.taxRate))*self.frugality
+				nl.income[self.level] = (nl.income[self.level] or 0)+self.income*nl.taxRate
+				nl.incomeLevels[self.level] = (nl.incomeLevels[self.level] or 0)+1
 
 				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
@@ -612,9 +628,7 @@ return
 		Person.__call = function() return Person:new() end
 		Person.__tostring = function(self)
 			local sOut, brk = "<Person", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
-			sOut = sOut..(brk > 0 and "\n" or "")..">"
-			return sOut
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
 		end
 
 		return Person

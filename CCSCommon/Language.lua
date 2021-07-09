@@ -109,7 +109,7 @@ return
 				factor = factor/#ENGLISH
 				return factor
 			end,
-			
+
 			modWord = function(self, parent, n, mod)
 				local newWord, fin = n
 				for q=1,n:len() do if not fin and self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
@@ -186,9 +186,7 @@ return
 		Language.__call = function() return Language:new() end
 		Language.__tostring = function(self)
 			local sOut, brk = "<Language", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
-			sOut = sOut..(brk > 0 and "\n" or "")..">"
-			return sOut
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
 		end
 
 		return Language

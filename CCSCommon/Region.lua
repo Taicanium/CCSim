@@ -90,9 +90,7 @@ return
 		Region.__call = function() return Region:new() end
 		Region.__tostring = function(self)
 			local sOut, brk = "<Region", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) elseif brk == 4 then sOut = sOut.."\n\t..." end end
-			sOut = sOut..(brk > 0 and "\n" or "")..">"
-			return sOut
+			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
 		end
 
 		return Region

@@ -128,6 +128,7 @@ return
 					elseif cmd == "e" then indi[fi].deathplace = plc[split[3-reindexed]]
 					elseif cmd == "m" then indi[fi].moth = tonumber(split[3-reindexed])
 					elseif cmd == "f" then indi[fi].fath = tonumber(split[3-reindexed])
+					elseif cmd == "w" then indi[fi].wealth = split[3-reindexed]
 					elseif cmd == "l" then
 						if not indi[fi].ethn then indi[fi].ethn = {} end
 						table.insert(indi[fi].ethn, split[3-reindexed].."% "..dms[split[4-reindexed]])
@@ -361,6 +362,7 @@ return
 					if i.rulerName then UI:printf("\nBirth name: "..givn.." "..surn) end
 					UI:printf("\nSoundex: "..Language:soundex(i.rulerName and i.rulerName or givn).." "..Language:soundex(surn))
 					if i.rulerName then UI:printf("Birth soundex: "..Language:soundex(givn).." "..Language:soundex(surn)) end
+					if i.wealth then UI:printc("\nWealth at time of death: "..i.wealth) end
 					if i.natLang or i.spokeLang then UI:printc("\n") end
 					if i.natLang then
 						UI:printc("Native language")
