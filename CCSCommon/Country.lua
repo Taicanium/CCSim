@@ -732,10 +732,6 @@ return
 
 		Country.__index = Country
 		Country.__call = function() return Country:new() end
-		Country.__tostring = function(self)
-			local sOut, brk = "<Country", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
-		end
 
 		return Country
 	end

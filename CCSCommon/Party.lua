@@ -43,10 +43,6 @@ return
 
 		Party.__index = Party
 		Party.__call = function() return Party:new() end
-		Party.__tostring = function(self)
-			local sOut, brk = "<Party", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
-		end
 
 		return Party
 	end

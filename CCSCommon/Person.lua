@@ -626,10 +626,6 @@ return
 
 		Person.__index = Person
 		Person.__call = function() return Person:new() end
-		Person.__tostring = function(self)
-			local sOut, brk = "<Person", 0
-			for i, j in pairs(self) do brk = brk+1 if brk < 4 then sOut = sOut.."\n\t"..tostring(i)..": "..tostring(j) else return sOut.."\n\t...>" end end
-		end
 
 		return Person
 	end
