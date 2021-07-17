@@ -7,11 +7,14 @@ return
 				local o = {}
 				setmetatable(o, self)
 
+				o.allClusters = {}
 				o.cClusters = {}
 				o.consonants = {}
 				o.cvClusters = {}
 				o.descentTree = {}
 				o.eml = 1
+				o.finalClusters = {}
+				o.initialClusters = {}
 				o.letterCount = 0
 				o.name = tostring(math.random(0, math.pow(2, 24)-1))
 				o.period = 1
@@ -35,6 +38,9 @@ return
 					self.vClusters = {}
 					self.cvClusters = {}
 					self.vcClusters = {}
+					self.allClusters = {}
+					self.finalClusters = {}
+					self.initialClusters = {}
 
 					tmpArr = {}
 					for i=1,#Language.consonants do table.insert(tmpArr, Language.consonants[i]) end
@@ -58,7 +64,13 @@ return
 						local c2 = Language.cClusters[i]:sub(2, 2)
 						local cf = 0
 						for j=1,#self.consonants do if self.consonants[j] == c1 or self.consonants[j] == c2 then cf = cf+1 end end
-						if cf >= 2 then table.insert(self.cClusters, Language.cClusters[i]) end
+						if cf >= 2 then
+							table.insert(self.cClusters, Language.cClusters[i])
+							local cRep = Language.cClusters[i]:gsub("%*", ""):gsub("%^", "")
+							table.insert(self.allClusters, cRep)
+							if Language.cClusters[i]:match("%*") then table.insert(self.initialClusters, cRep) end
+							if Language.cClusters[i]:match("%^") then table.insert(self.finalClusters, cRep) end
+						end
 					end
 
 					for i=1,#Language.vClusters do
@@ -66,7 +78,12 @@ return
 						local v2 = Language.vClusters[i]:sub(2, 2)
 						local vf = 0
 						for j=1,#self.vowels do if self.vowels[j] == v1 or self.vowels[j] == v2 then vf = vf+1 end end
-						if vf >= 2 then table.insert(self.vClusters, Language.vClusters[i]) end
+						if vf >= 2 then
+							table.insert(self.vClusters, Language.vClusters[i])
+							table.insert(self.allClusters, Language.vClusters[i])
+							table.insert(self.initialClusters, Language.vClusters[i])
+							table.insert(self.finalClusters, Language.vClusters[i])
+						end
 					end
 
 					for i=1,#Language.cvClusters do
@@ -75,7 +92,12 @@ return
 						local cvf = 0
 						for j=1,#self.consonants do if self.consonants[j] == c1 then cvf = cvf+1 end end
 						for j=1,#self.vowels do if self.vowels[j] == v2 then cvf = cvf+1 end end
-						if cvf >= 2 then table.insert(self.cvClusters, Language.cvClusters[i]) end
+						if cvf >= 2 then
+							table.insert(self.cvClusters, Language.cvClusters[i])
+							table.insert(self.allClusters, Language.cvClusters[i])
+							table.insert(self.initialClusters, Language.cvClusters[i])
+							table.insert(self.finalClusters, Language.cvClusters[i])
+						end
 					end
 
 					for i=1,#Language.vcClusters do
@@ -84,11 +106,16 @@ return
 						local vcf = 0
 						for j=1,#self.vowels do if self.vowels[j] == v1 then vcf = vcf+1 end end
 						for j=1,#self.consonants do if self.consonants[j] == c2 then vcf = vcf+1 end end
-						if vcf >= 2 then table.insert(self.vcClusters, Language.vcClusters[i]) end
+						if vcf >= 2 then
+							table.insert(self.vcClusters, Language.vcClusters[i])
+							table.insert(self.allClusters, Language.vcClusters[i])
+							table.insert(self.initialClusters, Language.vcClusters[i])
+							table.insert(self.finalClusters, Language.vcClusters[i])
+						end
 					end
 
 					--reset = false
-					--if #self.consonants == 0 or self.vowels == 0 or self.cClusters == 0 or self.cClusters == 0 or self.cClusters == 0 or self.cClusters == 0
+					--if #self.consonants == 0 or #self.vowels == 0 or #self.cClusters == 0 or #self.vClusters == 0 or #self.cvClusters == 0 or #self.vcClusters == 0 then reset = true end
 				--end
 
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
@@ -125,6 +152,8 @@ return
 			end,
 
 			deviate = function(self, parent)
+				local t0 = _time()
+			
 				local newList = Language:new()
 				for i=1,#self.consonants do table.insert(newList.consonants, self.consonants[i]) end
 				for i=1,#self.vowels do table.insert(newList.vowels, self.vowels[i]) end
@@ -132,6 +161,9 @@ return
 				for i=1,#self.vClusters do table.insert(newList.vClusters, self.vClusters[i]) end
 				for i=1,#self.cvClusters do table.insert(newList.cvClusters, self.cvClusters[i]) end
 				for i=1,#self.vcClusters do table.insert(newList.vcClusters, self.vcClusters[i]) end
+				for i=1,#self.allClusters do table.insert(newList.allClusters, self.allClusters[i]) end
+				for i=1,#self.initialClusters do table.insert(newList.initialClusters, self.initialClusters[i]) end
+				for i=1,#self.finalClusters do table.insert(newList.finalClusters, self.finalClusters[i]) end
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
 				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(self:makeWord(2, 4)) end
 				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(self:makeWord(2, 4))
@@ -172,6 +204,11 @@ return
 				newList.letterCount = 0
 				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or self:makeWord(ENGLISH[i]:len() > 1 and ENGLISH[i]:len()-1 or 1, ENGLISH[i]:len()+1) end end
 				for i, j in pairs(newList.wordTable) do newList.letterCount = newList.letterCount+j:len() end
+				
+				if _DEBUG then
+					if not debugTimes["Language.deviate"] then debugTimes["Language.deviate"] = 0 end
+					debugTimes["Language.deviate"] = debugTimes["Language.deviate"]+_time()-t0
+				end
 
 				return newList
 			end,
@@ -244,17 +281,20 @@ return
 			end,
 
 			modWord = function(self, parent, n, mod)
-				local choices, newWord = {}
+				local choices, choice, newWord = {}
 				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == "0" and self.vowels or self.consonants, j) then table.insert(choices, j) end end
 				if #choices == 0 then return n end
 				for q=1,n:len() do if self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
-					newWord = n:sub(1, q-1)..parent:randomChoice(choices)
-					if q < n:len() then newWord = newWord..n:sub(q+1, n:len()) end
-					for z, l in pairs(self.sTab["0"]) do
-						for s=4,1,-1 do newWord = newWord:gsub(l..string.rep(" ", s)..l, l..string.rep(" ", s+1)) end
-						newWord = newWord:gsub(l..l, l.." ")
+					choice = parent:randomChoice(choices)
+					if (q > 2 and q < n:len()-1 and table.contains(self.allClusters, choice..n:sub(q+1, q+1))) or (q > 2 and q < n:len()-1 and table.contains(self.allClusters, n:sub(q-1, q-1)..choice)) or (q < n:len() and table.contains(self.finalClusters, choice..n:sub(q+1, q+1))) or (q > 1 and table.contains(self.initialClusters, n:sub(q-1, q-1)..choice)) then
+						newWord = n:sub(1, q-1)..choice
+						if q < n:len() then newWord = newWord..n:sub(q+1, n:len()) end
+						for z, l in pairs(self.sTab["0"]) do
+							for s=4,1,-1 do newWord = newWord:gsub(l..string.rep(" ", s)..l, l..string.rep(" ", s+1)) end
+							newWord = newWord:gsub(l..l, l.." ")
+						end
+						return newWord
 					end
-					return newWord
 				end end
 				return n
 			end,
