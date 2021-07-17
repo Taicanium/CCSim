@@ -126,6 +126,12 @@ return
 
 			deviate = function(self, parent)
 				local newList = Language:new()
+				for i=1,#self.consonants do table.insert(newList.consonants, self.consonants[i]) end
+				for i=1,#self.vowels do table.insert(newList.vowels, self.vowels[i]) end
+				for i=1,#self.cClusters do table.insert(newList.cClusters, self.cClusters[i]) end
+				for i=1,#self.vClusters do table.insert(newList.vClusters, self.vClusters[i]) end
+				for i=1,#self.cvClusters do table.insert(newList.cvClusters, self.cvClusters[i]) end
+				for i=1,#self.vcClusters do table.insert(newList.vcClusters, self.vcClusters[i]) end
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
 				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
 				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
@@ -234,17 +240,17 @@ return
 			end,
 
 			modWord = function(self, parent, n, mod)
-				local newWord, fin = n
-				for q=1,n:len() do if not fin and self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
-					newWord = n:sub(1, q-1)..parent:randomChoice(self.sTab[mod[2]])
+				local choices, newWord = {}
+				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == 0 and self.vowels or self.consonants, j) then table.insert(choices, j) end end
+				for q=1,n:len() do if self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
+					newWord = n:sub(1, q-1)..parent:randomChoice(choices)
 					if q < n:len() then newWord = newWord..n:sub(q+1, n:len()) end
-					for z, n in pairs(self.sTab["0"]) do
-						for s=4,1,-1 do newWord = newWord:gsub(n..string.rep(" ", s)..n, n..string.rep(" ", s+1)) end
-						newWord = newWord:gsub(n..n, n.." ")
+					for z, l in pairs(self.sTab["0"]) do
+						for s=4,1,-1 do newWord = newWord:gsub(l..string.rep(" ", s)..l, l..string.rep(" ", s+1)) end
+						newWord = newWord:gsub(l..l, l.." ")
 					end
-					fin = true
+					return newWord
 				end end
-				return newWord
 			end,
 
 			soundex = function(self, n, s)
