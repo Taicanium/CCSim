@@ -86,7 +86,7 @@ return
 						for j=1,#self.consonants do if self.consonants[j] == c2 then vcf = vcf+1 end end
 						if vcf >= 2 then table.insert(self.vcClusters, Language.vcClusters[i]) end
 					end
-					
+
 					--reset = false
 					--if #self.consonants == 0 or self.vowels == 0 or self.cClusters == 0 or self.cClusters == 0 or self.cClusters == 0 or self.cClusters == 0
 				--end
@@ -133,38 +133,42 @@ return
 				for i=1,#self.cvClusters do table.insert(newList.cvClusters, self.cvClusters[i]) end
 				for i=1,#self.vcClusters do table.insert(newList.vcClusters, self.vcClusters[i]) end
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
-				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
-				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
-				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
-
-				local fct, doOp, repCount, mod = 0, {}, 0
-				local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
-				local op = parent:randomChoice(ops)
-				if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
-				elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
-				elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
 				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(self:makeWord(2, 4)) end
 				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(self:makeWord(2, 4))
 				newList.wordTable["$rsp"] = self.wordTable["$rsp"] or string.lower(self:makeWord(2, 4))
 				newList.wordTable["$es"] = self.wordTable["$es"] or string.lower(self:makeWord(2, 4))
 				newList.wordTable["$da"] = self.wordTable["$da"] or string.lower(self:makeWord(2, 4))
-				while fct < totalFct do
-					local eng = parent:randomChoice(self.wordTable, true)
-					local thisWord = newList.wordTable[eng] or self.wordTable[eng]
-					newList.wordTable[eng] = self:modWord(parent, thisWord, mod)
-					repCount = repCount+newList.wordTable[eng]:len()
-					if repCount >= newList.letterCount*0.7125 then
-						op = parent:randomChoice(ops)
-						if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
-						elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
-						elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
-						repCount = 0
-					end
-					fct = fct+1
-				end
-
 				newList.period = parent.langPeriod
 				newList.eml = parent.langEML
+				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
+				table.insert(newList.descentTree, {self.name..periodString, self:translate(parent, parent.langTestString)})
+
+				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
+
+				if self.l1Speakers > 0 then
+					local fct, doOp, repCount, mod = 0, {}, 0
+					local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
+					local op = parent:randomChoice(ops)
+					if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
+					elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
+					elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+					while fct < totalFct do
+						local eng = parent:randomChoice(self.wordTable, true)
+						local thisWord = newList.wordTable[eng] or self.wordTable[eng]
+						thisWord = self:modWord(parent, thisWord, mod)
+						repCount = repCount+thisWord:len()
+						if repCount >= self.letterCount*0.7125 then
+							op = parent:randomChoice(ops)
+							if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
+							elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
+							elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+							repCount = 0
+						end
+						newList.wordTable[eng] = thisWord
+						fct = fct+1
+					end
+				end
+
 				newList.letterCount = 0
 				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or self:makeWord(ENGLISH[i]:len() > 1 and ENGLISH[i]:len()-1 or 1, ENGLISH[i]:len()+1) end end
 				for i, j in pairs(newList.wordTable) do newList.letterCount = newList.letterCount+j:len() end
@@ -241,7 +245,8 @@ return
 
 			modWord = function(self, parent, n, mod)
 				local choices, newWord = {}
-				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == 0 and self.vowels or self.consonants, j) then table.insert(choices, j) end end
+				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == "0" and self.vowels or self.consonants, j) then table.insert(choices, j) end end
+				if #choices == 0 then return n end
 				for q=1,n:len() do if self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
 					newWord = n:sub(1, q-1)..parent:randomChoice(choices)
 					if q < n:len() then newWord = newWord..n:sub(q+1, n:len()) end
@@ -251,6 +256,7 @@ return
 					end
 					return newWord
 				end end
+				return n
 			end,
 
 			soundex = function(self, n, s)

@@ -75,7 +75,7 @@ return
 		function gedReview(f)
 			local _REVIEWING = true
 			local indi, fam, fami, matches, plc, dms, lgs, rels1, rels2, strs1, strs2 = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-			local iCount, fi, reindexed, rel1, rel2 = 0, 0, 1, -1, -1
+			local iCount, fi, reindexed, rel1, rel2, mi = 0, 0, 1, -1, -1, 0
 			local split, l, cmd, inx, loc, i, j, nextInd, fInd, famStr, index
 			UI:printf("Counting objects...")
 			l = f:read("*l")
@@ -341,12 +341,12 @@ return
 					rels2 = {}
 				elseif datin:lower() == "f" and famc then fi = fami[famc].husb or oldFI
 				elseif datin:lower() == "m" and famc then fi = fami[famc].wife or oldFI
-				elseif datin:lower() == "n" then
+				elseif datin:lower() == "n" and #matches > 0 then
 					mi = mi+1
 					mi = math.min(mi, #matches)
 					if mi == 0 then mi = 1 end
 					fi = matches[mi]
-				elseif datin:lower() == "p" then
+				elseif datin:lower() == "p" and #matches > 0 then
 					mi = mi-1
 					mi = math.max(mi, 1)
 					fi = matches[mi]
