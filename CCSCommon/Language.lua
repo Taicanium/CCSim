@@ -229,7 +229,6 @@ return
 					nom = nom..endingGrp
 				end
 
-				nom = nom:gsub("\xef", "th"):gsub("\xee", "zh"):gsub("\xed", "sh"):gsub("\xec", "ng")
 				nom = nom:gsub("^%S", string.upper):gsub("%*", ""):gsub("%^", "")
 				return nom
 			end,
