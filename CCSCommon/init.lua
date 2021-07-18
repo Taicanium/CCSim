@@ -46,6 +46,7 @@ return
 		World = require("CCSCommon.World")()
 
 		debugTimes = {}
+		priorDebugTimes = {}
 
 		function debugLine()
 			local tmpF = true
@@ -2678,6 +2679,7 @@ return
 				self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 
 				while _running do
+					local t0 = _time()
 					self.world:update(self)
 
 					for i, j in pairs(self.world.countries) do
@@ -2685,7 +2687,6 @@ return
 						self.final[i] = j
 					end
 
-					local t0 = _time()
 					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.world.numCountries, self.world.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
@@ -2788,7 +2789,7 @@ return
 						msg = msg.."\n"
 						debugTimes["PRINT"] = t1-t0
 						debugTimes["TOTAL"] = _time()-t0
-						for ln, j in pairs(self:getAlphabetical(debugTimes)) do msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end
+						for ln, j in pairs(self:getAlphabetical(debugTimes)) do if debugTimes[j] == 0 and priorDebugTimes[j] then msg = msg..("%s: %.3f*\n"):format(j, priorDebugTimes[j]) else msg = msg..("%s: %.3f\n"):format(j, debugTimes[j]) end end
 					end
 
 					UI:clear(true)

@@ -231,49 +231,21 @@ return
 			makeWord = function(self, min, max)
 				local nom = ""
 				local length = math.random(min or 1, max or 5)
-				local grp, oldGrp
-				local consFinal = false
-
-				init = math.random(1000, 6000)
-				if init < 2000 then grp = self.vowels consFinal = false
-				elseif init < 3000 and length > 2 then grp = self.cClusters consFinal = true
-				elseif init < 4000 then grp = self.vClusters consFinal = false
-				elseif init < 5000 then grp = self.cvClusters consFinal = false
-				elseif length > 2 then grp = self.vcClusters consFinal = true
-				else grp = self.cvClusters consFinal = false end
-				nom = grp[math.random(1, #grp)]
-				if tostring(grp) == tostring(self.cClusters) then while not nom:match("%*") do nom = grp[math.random(1, #grp)] end end
+				local consFinal, grp = false
+				nom = self.initialClusters[math.random(1, #self.initialClusters)]
 				local letters = nom:len()
+				if nom:match("[aeyiou]$") then consFinal = false else consFinal = true end
 				while letters < length-1 do
-					oldGrp = grp
-					while tostring(grp) == tostring(oldGrp) do
-						mid = math.random(1000, 6000)
-						if mid < 2000 and consFinal then grp = self.vowels consFinal = false
-						elseif mid < 3000 and not consFinal then grp = self.cClusters consFinal = true
-						elseif mid < 4000 and consFinal then grp = self.vClusters consFinal = false
-						elseif mid < 5000 and not consFinal then grp = self.cvClusters consFinal = false
-						elseif consFinal then grp = self.vcClusters consFinal = true
-						else grp = self.cvClusters consFinal = false end
-					end
-					local midGrp = grp[math.random(1, #grp)]
-
-					nom = nom..midGrp
-					letters = letters+midGrp:len()
+					grp = self.allClusters[math.random(1, #self.allClusters)]
+					if not consFinal then while grp:match("^[aeyiou]") do grp = self.allClusters[math.random(1, #self.allClusters)] end else while not grp:match("^[aeyiou]") do grp = self.allClusters[math.random(1, #self.allClusters)] end end
+					nom = nom..grp
+					letters = letters+grp:len()
+					if grp:match("[aeyiou]$") then consFinal = false else consFinal = true end
 				end
 				if length > 2 then
-					oldGrp = grp
-					while tostring(grp) == tostring(oldGrp) do
-						ending = math.random(1000, 6000)
-						if ending < 2000 and consFinal then grp = self.vowels consFinal = false
-						elseif ending < 3000 and not consFinal then grp = self.cClusters consFinal = true
-						elseif ending < 4000 and consFinal then grp = self.vClusters consFinal = false
-						elseif ending < 5000 and not consFinal then grp = self.cvClusters consFinal = false
-						elseif consFinal then grp = self.vcClusters consFinal = true
-						else grp = self.cvClusters consFinal = false end
-					end
-					local endingGrp = grp[math.random(1, #grp)]
-					if tostring(grp) == tostring(self.cClusters) then while not endingGrp:match("%^") do endingGrp = grp[math.random(1, #grp)] end end
-					nom = nom..endingGrp
+					grp = self.finalClusters[math.random(1, #self.finalClusters)]
+					if not consFinal then while grp:match("^[aeyiou]") do grp = self.finalClusters[math.random(1, #self.finalClusters)] end else while not grp:match("^[aeyiou]") do grp = self.finalClusters[math.random(1, #self.finalClusters)] end end
+					nom = nom..grp
 				end
 
 				nom = nom:gsub("^%S", string.upper):gsub("%*", ""):gsub("%^", "")

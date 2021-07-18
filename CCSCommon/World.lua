@@ -771,7 +771,10 @@ return
 			end,
 
 			update = function(self, parent)
-				for i, j in pairs(debugTimes) do debugTimes[i] = 0 end
+				for i, j in pairs(debugTimes) do
+					if j > 0 then priorDebugTimes[i] = j end
+					debugTimes[i] = 0
+				end
 				local t0 = _time()
 
 				self.numCountries = 0
