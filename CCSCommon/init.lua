@@ -1471,7 +1471,6 @@ return
 			},
 			clrcmd = "",
 			conflicts = {},
-			consonants = {"b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "\xec", "p", "r", "s", "\xed", "t", "\xef", "v", "w", "y", "z", "\xee"},
 			demonyms = {},
 			dirSeparator = "/",
 			disabled = {},
@@ -1830,7 +1829,6 @@ return
 			tiffStripByteCounts = {},
 			tiffStripOffsets = {},
 			tiffStrips = {},
-			vowels = {"a", "e", "i", "o", "u", "y"},
 			writeMap = false,
 			years = 1,
 			yearstorun = 0,
@@ -2872,16 +2870,16 @@ return
 						if lc == fc then nom = nom:sub(1, nom:len()-1) end
 						if ending == "y" then
 							lc = nom:sub(nom:len(), nom:len())
-							for i=1,#self.vowels do if lc == self.vowels[i] then ending = "ny" end end
+							for i=1,#Language.vowels do if lc == Language.vowels[i] then ending = "ny" end end
 						elseif ending == "es" then
 							lc = nom:sub(nom:len(), nom:len())
-							for i=1,#self.vowels do if lc == self.vowels[i] then ending = "nes" end end
+							for i=1,#Language.vowels do if lc == Language.vowels[i] then ending = "nes" end end
 						elseif ending == "tria" then
 							lc = nom:sub(nom:len(), nom:len())
-							for i=1,#self.consonants do if lc == self.consonants[i] then ending = "itria" end end
+							for i=1,#Language.consonants do if lc == Language.consonants[i] then ending = "itria" end end
 						elseif ending == "tra" then
 							lc = nom:sub(nom:len(), nom:len())
-							for i=1,#self.consonants do if lc == self.consonants[i] then ending = "itra" end end
+							for i=1,#Language.consonants do if lc == Language.consonants[i] then ending = "itra" end end
 						end
 						fin = true
 						if oldnom ~= nom or oldend ~= ending then
@@ -2926,10 +2924,10 @@ return
 						if i < nomlower:len()-1 then
 							local hasvowel = false
 
-							for j=i,i+2 do for k=1,#self.vowels do if nomlower:sub(j, j) == self.vowels[k] then hasvowel = true end end end
+							for j=i,i+2 do for k=1,#Language.vowels do if nomlower:sub(j, j) == Language.vowels[k] then hasvowel = true end end end
 
 							if not hasvowel then
-								local newnom = nomlower:sub(1, i+1)..self:randomChoice(self.vowels)..nomlower:sub(i+3, nomlower:len())
+								local newnom = nomlower:sub(1, i+1)..self:randomChoice(Language.vowels)..nomlower:sub(i+3, nomlower:len())
 								nomlower = newnom
 							end
 						end
@@ -2945,8 +2943,8 @@ return
 						end
 					end
 
-					for j=1,#self.consonants do
-						if nomlower:sub(1, 1) == self.consonants[j] then
+					for j=1,#Language.consonants do
+						if nomlower:sub(1, 1) == Language.consonants[j] then
 							local n2 = nomlower:sub(2, 2)
 							if n2 == "b" then nomlower = nomlower:sub(2, nomlower:len())
 							elseif n2 == "c" then nomlower = nomlower:sub(2, nomlower:len())
@@ -2964,7 +2962,7 @@ return
 							elseif n2 == "z" then nomlower = nomlower:sub(2, nomlower:len()) end
 						end
 
-						if nomlower:sub(nomlower:len(), nomlower:len()) == self.consonants[j] then
+						if nomlower:sub(nomlower:len(), nomlower:len()) == Language.consonants[j] then
 							local n2 = nomlower:sub(nomlower:len(), nomlower:len())
 							if n2 == "b" then nomlower = nomlower:sub(1, nomlower:len()-1)
 							elseif n2 == "c" and nomlower:sub(nomlower:len(), nomlower:len()) ~= "h" then nomlower = nomlower:sub(1, nomlower:len()-1)
@@ -2989,7 +2987,7 @@ return
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "v" then nomlower = nomlower:sub(1, nomlower:len()-1)
 					elseif nomlower:sub(nomlower:len(), nomlower:len()) == "w" then nomlower = nomlower:sub(1, nomlower:len()-1) end
 
-					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice{self.consonants, self.vowels})) end
+					while nomlower:len() < 3 do nomlower = nomlower..string.lower(self:randomChoice(self:randomChoice{Language.consonants, Language.vowels})) end
 
 					for j, k in pairs(self.repGroups) do nomlower = nomlower:gsub(k[1], k[2]) end
 

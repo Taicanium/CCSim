@@ -9,7 +9,7 @@ return
 
 				o.allClusters = {}
 				o.cClusters = {}
-				o.consonants = {}
+				o.localConsonants = {}
 				o.cvClusters = {}
 				o.descentTree = {}
 				o.eml = 1
@@ -23,7 +23,7 @@ return
 				o.specials = {}
 				o.vcClusters = {}
 				o.vClusters = {}
-				o.vowels = {}
+				o.localVowels = {}
 				o.wordTable = {}
 
 				return o
@@ -32,8 +32,8 @@ return
 			define = function(self, parent)
 				--local reset = true
 				--while reset do
-					self.consonants = {}
-					self.vowels = {}
+					self.localConsonants = {}
+					self.localVowels = {}
 					self.cClusters = {}
 					self.vClusters = {}
 					self.cvClusters = {}
@@ -42,20 +42,21 @@ return
 					self.finalClusters = {}
 					self.initialClusters = {}
 
-					tmpArr = {}
+					local tmpArr = {}
+					local cCount = math.random(#Language.consonants*0.5, #Language.consonants)
 					for i=1,#Language.consonants do table.insert(tmpArr, Language.consonants[i]) end
-					while #self.consonants < #Language.consonants*0.7 do
+					while #self.localConsonants < cCount do
 						ran = math.random(1, #tmpArr)
-						table.insert(self.consonants, tmpArr[ran])
+						table.insert(self.localConsonants, tmpArr[ran])
 						table.remove(tmpArr, ran)
 					end
 
 					tmpArr = {}
 					for i=1,#Language.vowels do table.insert(tmpArr, Language.vowels[i]) end
 					local vCount = math.random(3, 6)
-					while #self.vowels < vCount do
+					while #self.localVowels < vCount do
 						ran = math.random(1, #tmpArr)
-						table.insert(self.vowels, tmpArr[ran])
+						table.insert(self.localVowels, tmpArr[ran])
 						table.remove(tmpArr, ran)
 					end
 
@@ -63,7 +64,7 @@ return
 						local c1 = Language.cClusters[i]:sub(1, 1)
 						local c2 = Language.cClusters[i]:sub(2, 2)
 						local cf = 0
-						for j=1,#self.consonants do if self.consonants[j] == c1 or self.consonants[j] == c2 then cf = cf+1 end end
+						for j=1,#self.localConsonants do if self.localConsonants[j] == c1 or self.localConsonants[j] == c2 then cf = cf+1 end end
 						if cf >= 2 then
 							table.insert(self.cClusters, Language.cClusters[i])
 							local cRep = Language.cClusters[i]:gsub("%*", ""):gsub("%^", "")
@@ -77,7 +78,7 @@ return
 						local v1 = Language.vClusters[i]:sub(1, 1)
 						local v2 = Language.vClusters[i]:sub(2, 2)
 						local vf = 0
-						for j=1,#self.vowels do if self.vowels[j] == v1 or self.vowels[j] == v2 then vf = vf+1 end end
+						for j=1,#self.localVowels do if self.localVowels[j] == v1 or self.localVowels[j] == v2 then vf = vf+1 end end
 						if vf >= 2 then
 							table.insert(self.vClusters, Language.vClusters[i])
 							table.insert(self.allClusters, Language.vClusters[i])
@@ -90,8 +91,8 @@ return
 						local c1 = Language.cvClusters[i]:sub(1, 1)
 						local v2 = Language.cvClusters[i]:sub(2, 2)
 						local cvf = 0
-						for j=1,#self.consonants do if self.consonants[j] == c1 then cvf = cvf+1 end end
-						for j=1,#self.vowels do if self.vowels[j] == v2 then cvf = cvf+1 end end
+						for j=1,#self.localConsonants do if self.localConsonants[j] == c1 then cvf = cvf+1 end end
+						for j=1,#self.localVowels do if self.localVowels[j] == v2 then cvf = cvf+1 end end
 						if cvf >= 2 then
 							table.insert(self.cvClusters, Language.cvClusters[i])
 							table.insert(self.allClusters, Language.cvClusters[i])
@@ -104,8 +105,8 @@ return
 						local v1 = Language.vcClusters[i]:sub(1, 1)
 						local c2 = Language.vcClusters[i]:sub(2, 2)
 						local vcf = 0
-						for j=1,#self.vowels do if self.vowels[j] == v1 then vcf = vcf+1 end end
-						for j=1,#self.consonants do if self.consonants[j] == c2 then vcf = vcf+1 end end
+						for j=1,#self.localVowels do if self.localVowels[j] == v1 then vcf = vcf+1 end end
+						for j=1,#self.localConsonants do if self.localConsonants[j] == c2 then vcf = vcf+1 end end
 						if vcf >= 2 then
 							table.insert(self.vcClusters, Language.vcClusters[i])
 							table.insert(self.allClusters, Language.vcClusters[i])
@@ -115,7 +116,7 @@ return
 					end
 
 					--reset = false
-					--if #self.consonants == 0 or #self.vowels == 0 or #self.cClusters == 0 or #self.vClusters == 0 or #self.cvClusters == 0 or #self.vcClusters == 0 then reset = true end
+					--if #self.localConsonants == 0 or #self.localVowels == 0 or #self.cClusters == 0 or #self.vClusters == 0 or #self.cvClusters == 0 or #self.vcClusters == 0 then reset = true end
 				--end
 
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
@@ -155,8 +156,8 @@ return
 				local t0 = _time()
 			
 				local newList = Language:new()
-				for i=1,#self.consonants do table.insert(newList.consonants, self.consonants[i]) end
-				for i=1,#self.vowels do table.insert(newList.vowels, self.vowels[i]) end
+				for i=1,#self.localConsonants do table.insert(newList.consonants, self.localConsonants[i]) end
+				for i=1,#self.localVowels do table.insert(newList.vowels, self.localVowels[i]) end
 				for i=1,#self.cClusters do table.insert(newList.cClusters, self.cClusters[i]) end
 				for i=1,#self.vClusters do table.insert(newList.vClusters, self.vClusters[i]) end
 				for i=1,#self.cvClusters do table.insert(newList.cvClusters, self.cvClusters[i]) end
@@ -254,7 +255,7 @@ return
 
 			modWord = function(self, parent, n, mod)
 				local choices, choice, newWord = {}
-				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == "0" and self.vowels or self.consonants, j) then table.insert(choices, j) end end
+				for i, j in pairs(self.sTab[mod[2]]) do if table.contains(mod[2] == "0" and self.localVowels or self.localConsonants, j) then table.insert(choices, j) end end
 				if #choices == 0 then return n end
 				for q=1,n:len() do if self.sTab[n:sub(q, q):lower()] == mod[1] and ((mod[1] ~= "0" or mod[2] == "0") or ((q > 1 and self.sTab[n:sub(q-1, q-1):lower()] == "0") or (q < n:len() and self.sTab[n:sub(q+1, q+1):lower()] == "0"))) then
 					choice = parent:randomChoice(choices)

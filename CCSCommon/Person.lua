@@ -170,7 +170,7 @@ return
 
 				local modChance = math.random(1, 50000)
 				if modChance > 1024 and modChance < 1206 then
-					local op = parent:randomChoice{parent.consonants, parent.vowels}
+					local op = parent:randomChoice{Language.consonants, Language.vowels}
 					local o1 = -1
 					local o2 = -1
 					while o1 == o2 do
