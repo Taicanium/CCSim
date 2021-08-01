@@ -316,7 +316,6 @@ return
 				"fb", "fc", "fd", "ff^", "fg", "fh*^", "fj", "fk", "fl*", "fm", "fn", "fp", "fr*", "fs^", "ft^", "fw*", "fy*^", "fz^^",
 				"gb", "gd^", "gf", "gg^", "gh*", "gj", "gl*", "gm", "gn", "gp", "gr*", "gs^", "gt^", "gv", "gw*", "gy*^", "gz",
 				"hb^", "hc^", "hd^", "hf", "hg", "hj", "hk^", "hl", "hm^", "hn^", "hp", "hr", "hs^", "ht", "hv", "hw*", "hy^", "hz^",
-				"jb", "jc", "jd^", "jf", "jg", "jh", "jk", "jl", "jm", "jn", "jp", "jr", "js", "jt", "jv", "jw", "jy^", "jz",
 				"kb", "kd^", "kf", "kh*^", "kj", "kk^", "kl*", "km", "kn", "kp", "kr*", "ks^", "kt^", "kv", "kw*", "ky^", "kz^",
 				"lb^", "lc", "ld", "lf", "lg", "lh*", "lj", "lk", "ll^", "lm", "ln", "lp^", "lr", "ls^", "lt^", "lv^", "lw", "ly^", "lz^",
 				"mb^", "mc", "md^", "mf", "mg", "mh*", "mj", "mk^", "ml", "mm^", "mn", "mp", "mr", "ms", "mt", "mv", "mw*", "my*^", "mz^",

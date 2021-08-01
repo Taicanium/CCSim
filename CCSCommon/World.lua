@@ -20,6 +20,7 @@ return
 				o.planetD = 0
 				o.planetR = 0
 				o.stretched = {}
+				o.tUnit = 0
 				o.unwrapped = {}
 				o.waterBodies = {}
 
@@ -34,28 +35,33 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin, rMax = _DEBUG and 100 or 185, _DEBUG and 105 or 225
+				local rMin, rMax = _DEBUG and 165 or 235, _DEBUG and 175 or 275
 				self.planetR = math.floor(math.random(rMin, rMax))
-				local gridVol, rdone = (math.pow((self.planetR*2)+1, 2)*6)/100, 0
+				self.planetD = self.planetR*2+1
+				self.tUnit = math.pi/self.planetD
+				self.unwrapped = {}
 
 				UI:printf(string.format("Constructing voxel planet with radius of %d units...", self.planetR))
 
-				for x=-self.planetR,self.planetR do
-					for y=-self.planetR,self.planetR do
-						local z = self.planetR
-						self.planet[self:getNodeFromCoords(x, y, -z)] = self.planet[self:getNodeFromCoords(x, y, -z)] or { x=x, y=y, z=-z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, y, z)] = self.planet[self:getNodeFromCoords(x, y, z)] or { x=x, y=y, z=z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, -z, y)] = self.planet[self:getNodeFromCoords(x, -z, y)] or { x=x, y=-z, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(x, z, y)] = self.planet[self:getNodeFromCoords(x, z, y)] or { x=x, y=z, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(-z, x, y)] = self.planet[self:getNodeFromCoords(-z, x, y)] or { x=-z, y=x, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						self.planet[self:getNodeFromCoords(z, x, y)] = self.planet[self:getNodeFromCoords(z, x, y)] or { x=z, y=x, z=y, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
-						rdone = rdone+6
+				for theta=0.0,math.pi,self.tUnit do
+					table.insert(self.unwrapped, {})
+					local tf = math.sin(theta)*self.planetD
+					tf = tf < 1 and 1 or tf
+					for i=0,tf do
+						local phi = 2.0*math.pi*(i/tf)
+						local x, y, z = self.planetR*math.sin(theta)*math.cos(phi), self.planetR*math.sin(theta)*math.sin(phi), self.planetR*math.cos(theta)
+						local coords = self:getNodeFromCoords(x, y, z)
+						if not self.planet[coords] then
+							self.planet[coords] = { theta=theta, phi=phi, x=x, y=y, z=z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
+							table.insert(self.unwrapped[#self.unwrapped], coords)
+							table.insert(self.planetdefined, coords)
+						end
 					end
-					UI:printl(string.format("%.2f%% done", rdone/gridVol))
+					UI:printl(string.format("%.2f%% done", theta/math.pi*100))
 				end
 
-				UI:printf("Unwrapping planet to data matrix...")
-				self:unwrap()
+				-- UI:printf("Unwrapping planet to data matrix...")
+				-- self:unwrap()
 
 				UI:printf("Distorting data matrix into flat projection...")
 				self:mapOutput(parent, "NIL")
@@ -337,7 +343,7 @@ return
 
 			getNodeFromCoords = function(self, x, y, z)
 				local xm, ym, zm = self:normalize(x, y, z)
-				return (xm*math.pow(self.planetR*2+1, 2))+(ym*(self.planetR*2+1))+zm
+				return xm*math.pow(self.planetD, 2)+ym*self.planetD+zm
 			end,
 
 			mapOutput = function(self, parent, label)
