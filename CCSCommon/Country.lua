@@ -623,8 +623,7 @@ return
 				self.language.name = self.demonym
 				self.age = parent.years-self.founded
 				if self.founded < 1 then self.age = self.age-1 end
-				if self.population < parent.popLimit then self.birthrate = 3
-				else self.birthrate = 40 end
+				if self.population < parent.popLimit then self.birthrate = 3 else self.birthrate = 40 end
 				for i, j in pairs(self.ethnicities) do self.ethnicities[i] = 0 end
 
 				for i=#self.alliances,1,-1 do

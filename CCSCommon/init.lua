@@ -1798,7 +1798,7 @@ return
 					name="Empire",
 					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
 					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
-					formalities={"Empire", "Emirate", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
+					formalities={"Empire", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
 					dynastic=true
 				},
 				{
@@ -1821,7 +1821,6 @@ return
 					dynastic=false
 				}
 			},
-			world = {},
 			tiffBitness = 9,
 			tiffBits = {},
 			tiffDict = {},
@@ -1829,6 +1828,7 @@ return
 			tiffStripByteCounts = {},
 			tiffStripOffsets = {},
 			tiffStrips = {},
+			world = {},
 			writeMap = false,
 			years = 1,
 			yearstorun = 0,
@@ -1836,14 +1836,8 @@ return
 			bmpOut = function(self, label, data, w, h)
 				local bf = io.open(label..".bmp", "w+b")
 				local bmpArr = { 0x42, 0x4D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x13, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-				local hStringLE = string.format("%.8x", h or 600)
-				local wStringLE = string.format("%.8x", w or 800)
-				local rStringLE = ""
-				local sStringLE = ""
-				local hArr = {}
-				local wArr = {}
-				local rArr = {}
-				local sArr = {}
+				local hStringLE, wStringLE, rStringLE, sStringLE = string.format("%.8x", h or 600), string.format("%.8x", w or 800), "", ""
+				local hArr, wArr, rArr, sArr = {}, {}, {}, {}
 				for x in hStringLE:gmatch("%w%w") do table.insert(hArr, tonumber(x, 16)) end
 				for x in wStringLE:gmatch("%w%w") do table.insert(wArr, tonumber(x, 16)) end
 
@@ -1859,10 +1853,12 @@ return
 				for x in rStringLE:gmatch("%w%w") do table.insert(rArr, tonumber(x, 16)) end
 				for x in sStringLE:gmatch("%w%w") do table.insert(sArr, tonumber(x, 16)) end
 
-				for i=1,4 do bmpArr[i+2] = sArr[5-i] end
-				for i=1,4 do bmpArr[i+18] = wArr[5-i] end
-				for i=1,4 do bmpArr[i+22] = hArr[5-i] end
-				for i=1,4 do bmpArr[i+34] = rArr[5-i] end
+				for i=1,4 do
+					bmpArr[i+2] = sArr[5-i]
+					bmpArr[i+18] = wArr[5-i]
+					bmpArr[i+22] = hArr[5-i]
+					bmpArr[i+34] = rArr[5-i]
+				end
 				for i=1,#bmpArr do bf:write(string.char(bmpArr[i])) end
 
 				for y=h,1,-1 do -- Bottom-to-top, as required by the BMP format.
@@ -2332,8 +2328,7 @@ return
 					local cp = nil
 					for j, k in pairs(self.final) do if k.name == cKeys[i] then cp = k end end
 					if cp then
-						local newc = false
-						local pr = 1
+						local newc, pr = false, 1
 						of:write("Country: "..cp.name.."\nFounded: "..cp.founded..", survived for "..tostring(cp.age).." years\n\n")
 
 						local rWritten = 1
@@ -2688,16 +2683,9 @@ return
 					msg = ("Year %d: %d countries - Global Population %d, Cumulative Total %d - Memory Usage (MB): %d\n\n"):format(self.years, self.world.numCountries, self.world.gPop, self.popCount, collectgarbage("count")/1024)
 
 					if self.showinfo == 1 then
-						local currentEvents = {}
-						local cCount = 0
-						local eCount = 0
-						local names = {}
-						local longestName = -1
-						local longestNameN = -1
-						local stats = {}
-						local longestStat = -1
-						local longestStatN = -1
-						local rulers = {}
+						local currentEvents, names, stats, rulers = {}, {}, {}, {}
+						local cCount, eCount = 0, 0
+						local longestName, longestNameN, longestStat, longestStatN = -1, -1, -1, -1
 
 						for i=#self.alpha,1,-1 do
 							local cp = self.world.countries[self.alpha[i]]
@@ -3338,32 +3326,12 @@ return
 
 				local f = io.open(label..".tif", "w+b")
 
-				local headerOff = 0
-				local headerSize = #tiffHeader
-				local dataOff = 0
-				local dataSize = 0
-				local IFDOff = 0
-				local IFDSize = 0
-				local SBCOff = 0
-				local SBCSize = 0
-				local SOOff = 0
-				local SOSize = 0
-				local BPSOff = 0
-				local BPSSize = 6
-				local XPOff = 0
-				local XPSize = 8
-				local YPOff = 0
-				local YPSize = 8
-				local XROff = 0
-				local XRSize = 8
-				local YROff = 0
-				local YRSize = 8
+				local headerOff, headerSize, dataOff, dataSize, IFDOff, IFDSize, SBCOff, SBCSize, SOOff, SOSize, BPSOff, BPSSize, XPOff, XPSize, YPOff, YPSize, XROff, XRSize, YROff, YRSize, byteIndex = 0, #tiffHeader, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 8, 0, 8, 0, 8, 0, 8, 0
 				for i=1,#self.tiffStrips do dataSize = dataSize+#self.tiffStrips[i] end
 				for i=1,#tiffIFD do for j=1,#tiffIFD[i] do IFDSize = IFDSize+1 end end
 				for i=1,#self.tiffStrips do SBCSize = SBCSize+4 end
 				for i=1,#self.tiffStrips do SOSize = SOSize+4 end
 
-				local byteIndex = 0
 				dataOff = headerOff+headerSize
 				IFDOff = dataOff+dataSize+math.fmod(dataOff+dataSize, 2)
 				SBCOff = IFDOff+IFDSize+math.fmod(IFDOff+IFDSize, 2)
@@ -3374,15 +3342,7 @@ return
 				XROff = YPOff+YPSize+math.fmod(YPOff+YPSize, 2)
 				YROff = XROff+XRSize+math.fmod(XROff+XRSize, 2)
 
-				local SCount = self:tiffLittleEndian(#self.tiffStrips, 8)
-				local LEIFD = self:tiffLittleEndian(IFDOff, 8)
-				local SBCIFD = self:tiffLittleEndian(SBCOff, 8)
-				local SOIFD = self:tiffLittleEndian(SOOff, 8)
-				local BPSIFD = self:tiffLittleEndian(BPSOff, 8)
-				local XRIFD = self:tiffLittleEndian(XROff, 8)
-				local YRIFD = self:tiffLittleEndian(YROff, 8)
-				local XPIFD = self:tiffLittleEndian(XPOff, 8)
-				local YPIFD = self:tiffLittleEndian(YPOff, 8)
+				local SCount, LEIFD, SBCIFD, SOIFD, BPSIFD, XRIFD, YRIFD, XPIFD, YPIFD = self:tiffLittleEndian(#self.tiffStrips, 8), self:tiffLittleEndian(IFDOff, 8), self:tiffLittleEndian(SBCOff, 8), self:tiffLittleEndian(SOOff, 8), self:tiffLittleEndian(BPSOff, 8), self:tiffLittleEndian(XROff, 8), self:tiffLittleEndian(YROff, 8), self:tiffLittleEndian(XPOff, 8), self:tiffLittleEndian(YPOff, 8)
 				for i=9,12 do
 					tiffHeader[i-4] = LEIFD[i-8] or 0x00
 					tiffIFD[4][i] = BPSIFD[i-8] or 0x00

@@ -35,9 +35,11 @@ return
 			constructVoxelPlanet = function(self, parent)
 				parent:rseed()
 				local t0 = _time()
-				local rMin, rMax = _DEBUG and 165 or 235, _DEBUG and 175 or 275
+				-- local rMin, rMax = _DEBUG and 165 or 235, _DEBUG and 175 or 275
+				local rMin, rMax = 235, 275
+				local twoPi = 2.0*math.pi
 				self.planetR = math.floor(math.random(rMin, rMax))
-				self.planetD = self.planetR*2+1
+				self.planetD = self.planetR*2
 				self.tUnit = math.pi/self.planetD
 				self.unwrapped = {}
 
@@ -45,11 +47,12 @@ return
 
 				for theta=0.0,math.pi,self.tUnit do
 					table.insert(self.unwrapped, {})
-					local tf = math.sin(theta)*self.planetD
+					local ts, tc = math.sin(theta), math.cos(theta)
+					local tf, z = ts*math.pi*self.planetD, tc*self.planetR
 					tf = tf < 1 and 1 or tf
 					for i=0,tf do
-						local phi = 2.0*math.pi*(i/tf)
-						local x, y, z = self.planetR*math.sin(theta)*math.cos(phi), self.planetR*math.sin(theta)*math.sin(phi), self.planetR*math.cos(theta)
+						local phi = twoPi*i/tf
+						local x, y = self.planetR*ts*math.cos(phi), self.planetR*ts*math.sin(phi)
 						local coords = self:getNodeFromCoords(x, y, z)
 						if not self.planet[coords] then
 							self.planet[coords] = { theta=theta, phi=phi, x=x, y=y, z=z, height=0, continent="", country="", region="", city="", waterNeighbors=0, neighbors={}, waterBody = "", archipelago = "" }
@@ -85,7 +88,7 @@ return
 				end
 
 				collectgarbage("collect")
-				UI:printf("Defining land masses...")
+				UI:printf("Generating land masses...")
 				local planetSize = #self.planetdefined
 				local maxLand, continents, scanNodes = math.random(math.floor(planetSize/3.25), math.ceil(planetSize/2.4)), math.random(5, 9), {}
 				for i=1,continents do
