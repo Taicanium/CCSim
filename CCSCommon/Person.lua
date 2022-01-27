@@ -155,7 +155,7 @@ return
 					nn.city = self.spouse.city
 				end
 
-				if self.royalGenerations < 8 and self.spouse.royalGenerations < 8 and self.surname ~= self.spouse.surname then
+				if self.royalGenerations < 6 and self.spouse.royalGenerations < 6 and self.surname ~= self.spouse.surname and self.ancName ~= self.spouse.ancName then
 					local surnames = {}
 
 					if self.royalGenerations < self.spouse.royalGenerations then surnames = {self.surname:gmatch("%a+")(), self.spouse.surname:gmatch("%a+")()}
@@ -165,7 +165,7 @@ return
 						else surnames = {self.spouse.surname:gmatch("%a+")(), self.surname:gmatch("%a+")()} end
 					end
 
-					if surnames[1] ~= surnames[2] and self.ancName ~= self.spouse.ancName then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
+					if surnames[1] ~= surnames[2] then nn.surname = surnames[1].."-"..surnames[2] else nn.surname = surnames[1] end
 				end
 
 				local modChance = math.random(1, 50000)

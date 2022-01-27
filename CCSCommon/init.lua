@@ -1864,14 +1864,10 @@ return
 				for y=h,1,-1 do -- Bottom-to-top, as required by the BMP format.
 					local btWritten = 0
 					for x=1,w do
-						if data[y] and data[y][x] and data[y][x][3] and data[y][x][2] and data[y][x][1] then
-							bf:write(string.char(data[y][x][3]))
-							bf:write(string.char(data[y][x][2]))
-							bf:write(string.char(data[y][x][1]))
-						else
-							bf:write(string.char(0))
-							bf:write(string.char(0))
-							bf:write(string.char(0))
+						if data[y] and data[y][x] then
+							bf:write(string.char(data[y][x][3] or 0))
+							bf:write(string.char(data[y][x][2] or 0))
+							bf:write(string.char(data[y][x][1] or 0))
 						end
 						btWritten = btWritten+3
 					end
@@ -1958,10 +1954,8 @@ return
 			end,
 
 			checkDirectory = function(self, str, dir)
-				local dirDotCmd = "dir "..str.." /b /ad"
-				if UI.clrcmd == "clear" then dirDotCmd = "dir -1 "..str end
-				local found = false
-				local count = 0
+				local dirDotCmd = UI.clrcmd == "clear" and "dir -1 "..str or "dir "..str.." /b /ad"
+				local found, count = false, 0
 				for x in io.popen(dirDotCmd):lines() do
 					count = count+1
 					if x:lower():match(dir) then found = true end
@@ -1970,25 +1964,22 @@ return
 			end,
 
 			compLangs = function(self, writeOut)
-				local _REVIEWING = true
-				local _GLOSSARY = false
-				local _DESCENT = nil
-				local oldDescent = nil
+				local _REVIEWING, _GLOSSARY, _DESCENT, oldDescent, screens, screenIndex, lnCount, lnCorrect, lastFamily, screen, screenMargins, mainLang = true, false
 				self:updateLangFamilies()
 				local fKeys = self:getAlphabetical(self.langFamilies)
 
 				while _REVIEWING do
-					local screens = {{}}
-					local screenIndex = 1
-					local lnCount = 0
-					local lnCorrect = 0
-					local lastFamily = ""
-					local screen = screens[screenIndex]
-					local screenMargins = {}
+					screens = {{}}
+					screenIndex = 1
+					lnCount = 0
+					lnCorrect = 0
+					lastFamily = ""
+					screen = screens[screenIndex]
+					screenMargins = {}
 
 					if not _GLOSSARY then
 						if _DESCENT then
-							local mainLang = nil
+							mainLang = nil
 							for i=1,#self.languages do if self.languages[i].name == _DESCENT then mainLang = self.languages[i] end end
 							if not mainLang then _DESCENT = nil else
 								if not screenMargins[screenIndex] then screenMargins[screenIndex] = 1 end
@@ -2310,9 +2301,7 @@ return
 				local strOut = ""
 				if UI.clrcmd == "cls" then self.dirSeparator = "\\" else self.dirSeparator = "/" end
 				if UI.clrcmd == "clear" then strOut = "."..self.dirSeparator end
-				for i=1,#names-1 do
-					strOut = strOut..names[i]..self.dirSeparator
-				end
+				for i=1,#names-1 do strOut = strOut..names[i]..self.dirSeparator end
 				strOut = strOut..names[#names]
 				return strOut
 			end,
@@ -2654,21 +2643,12 @@ return
 			end,
 
 			loop = function(self)
-				local _running = true
-				local remainingYears = 1
-				local msg = ""
-				local cLimit = 16
-				local eLimit = 6
-				local writtenLines = {}
+				local _running, remainingYears, msg, cLimit, eLimit, writtenLines, stampDir = true, 1, "", 16, 6, {}, self:directory{self.stamp}
 
 				self.world:constructVoxelPlanet(self)
-
-				local stampDir = self:directory{self.stamp}
 				self:checkDirectory(stampDir, "maps")
 				self.world:mapOutput(self, self:directory{stampDir, "maps", "initial"})
-
 				collectgarbage("collect")
-
 				self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 
 				while _running do
@@ -2829,18 +2809,16 @@ return
 				UI:printf("\nEnd Simulation!")
 			end,
 
+			magnitude = function(self, x, y, z, w)
+				x, y, z, w = x or 0, y or 0, z or 0, w or 0
+				return math.sqrt(x*x+y*y+z*z+w*w)
+			end,
+
 			name = function(self, personal, l, m, preserve)
-				local t0 = _time()
+				local t0, nom, length, groups, mid = _time(), self:randomChoice(self.initialgroups), math.random(m or 1, l or 3), 1
 
-				local nom = ""
-				local length = 0
-				length = math.random(m or 1, l or 3)
-
-				nom = self:randomChoice(self.initialgroups)
-				local groups = 1
 				while groups < length do
-					local mid = self:randomChoice(self.middlegroups)
-
+					mid = self:randomChoice(self.middlegroups)
 					nom = nom..mid:lower()
 					groups = groups+1
 				end
@@ -2848,13 +2826,9 @@ return
 				nom = self:namecheck(nom)
 
 				if not personal then
-					local ending = self:randomChoice(self.endgroups)
-					local oldnom = nom
-					local oldend = ending
-					local fin = false
+					local ending, oldnom, oldend, fin = self:randomChoice(self.endgroups), nom, ending
 					while not fin do
-						local lc = nom:sub(nom:len(), nom:len())
-						local fc = ending:sub(1, 1)
+						local lc, fc = nom:sub(nom:len(), nom:len()), ending:sub(1, 1)
 						if lc == fc then nom = nom:sub(1, nom:len()-1) end
 						if ending == "y" then
 							lc = nom:sub(nom:len(), nom:len())
@@ -3000,9 +2974,7 @@ return
 
 			ordinal = function(self, n)
 				if not tonumber(n) then return n end
-				local fin = ""
-
-				local ts = tostring(n)
+				local fin, ts = "", tostring(n)
 				if ts:sub(ts:len()-1, ts:len()-1) == "1" then fin = ts.."th" else
 					if ts:sub(ts:len(), ts:len()) == "1" then fin = ts.."st"
 					elseif ts:sub(ts:len(), ts:len()) == "2" then fin = ts.."nd"
@@ -3033,11 +3005,8 @@ return
 
 			regionTransfer = function(self, c1, c2, r, conq)
 				if c1 and c2 then
-					local rCount = 0
+					local rCount, cCount, lim = 0, 0, conq and 0 or 1
 					for i, j in pairs(c2.regions) do rCount = rCount+1 end
-
-					local lim = 1
-					if conq then lim = 0 end
 
 					if rCount > lim and c2.regions[r] then
 						local rn = c2.regions[r]
@@ -3076,77 +3045,40 @@ return
 							c2:event(self, msg)
 						end
 
-						local gainMsg = "Gained the "..rn.name.." region "
-						local lossMsg = "Loss of the "..rn.name.." region "
+						local baseMsg = " the "..rn.name.." region "
 
-						local cCount = 0
+						cCount = 0
 						for i, j in pairs(rn.cities) do cCount = cCount+1 end
 						if cCount > 0 then
-							gainMsg = gainMsg.."(including the "
-							lossMsg = lossMsg.."(including the "
+							baseMsg = baseMsg.."(including the "
 
 							if cCount > 1 then
+								baseMsg = baseMsg.."cities of "
+								local index = 1
 								if cCount == 2 then
-									gainMsg = gainMsg.."cities of "
-									lossMsg = lossMsg.."cities of "
-									local index = 1
 									for i, j in pairs(rn.cities) do
-										if index ~= cCount then
-											gainMsg = gainMsg..j.name.." "
-											lossMsg = lossMsg..j.name.." "
-										end
-										index = index+1
-									end
-									index = 1
-									for i, j in pairs(rn.cities) do
-										if index == cCount then
-											gainMsg = gainMsg.."and "..j.name
-											lossMsg = lossMsg.."and "..j.name
-										end
+										if index < cCount then baseMsg = baseMsg..j.name.." " end
 										index = index+1
 									end
 								else
-									gainMsg = gainMsg.."cities of "
-									lossMsg = lossMsg.."cities of "
-									local index = 1
 									for i, j in pairs(rn.cities) do
-										if index < cCount-1 then
-											gainMsg = gainMsg..j.name..", "
-											lossMsg = lossMsg..j.name..", "
-										end
-										index = index+1
-									end
-									index = 1
-									for i, j in pairs(rn.cities) do
-										if index == cCount-1 then
-											gainMsg = gainMsg..j.name.." "
-											lossMsg = lossMsg..j.name.." "
-										end
-										index = index+1
-									end
-									index = 1
-									for i, j in pairs(rn.cities) do
-										if index == cCount then
-											gainMsg = gainMsg.."and "..j.name
-											lossMsg = lossMsg.."and "..j.name
-										end
+										if index < cCount-1 then baseMsg = baseMsg..j.name..", "
+										elseif index == cCount-1 then baseMsg = baseMsg..j.name.." " end
 										index = index+1
 									end
 								end
-							else for i, j in pairs(rn.cities) do
-								gainMsg = gainMsg.."city of "..j.name
-								lossMsg = lossMsg.."city of "..j.name
-							end end
+								index = 1
+								for i, j in pairs(rn.cities) do
+									if index >= cCount then baseMsg = baseMsg.."and "..j.name end
+									index = index+1
+								end
+							else for i, j in pairs(rn.cities) do baseMsg = baseMsg.."city of "..j.name end end
 
-							gainMsg = gainMsg..") "
-							lossMsg = lossMsg..") "
+							baseMsg = baseMsg..") "
 						end
 
-						gainMsg = gainMsg.."from "..c2.name
-						lossMsg = lossMsg.."to "..c1.name
-
-						c1:event(self, gainMsg)
-						c2:event(self, lossMsg)
+						c1:event(self, "Gained"..baseMsg.."from "..c2.name)
+						c2:event(self, "Loss of the"..baseMsg.."to "..c1.name)
 
 						self.writeMap = true
 						self.world.mapChanged = true
@@ -3193,9 +3125,8 @@ return
 
 			strengthFactor = function(self, c)
 				if not c then return 0 end
-				local pop = 0
+				local pop, involved = 0, 0
 				if c.rulerParty then pop = c.rulerPopularity-50 end
-				local involved = 0
 				for i=1,self.maxConflicts do if self.conflicts[i] then for j=1,#self.conflicts[i] do if self.conflicts[i][j] == c.name then involved = involved+1 end end end end
 				involved = math.max(involved*0.75, 1)
 				return (pop+c.stability+((c.military/#c.people)*100)-100)/involved
@@ -3240,8 +3171,7 @@ return
 			end,
 
 			tiffLittleEndian = function(self, x, n)
-				local sBE = string.format("%."..n.."x", x)
-				local sLE = {}
+				local sBE, sLE = string.format("%."..n.."x", x), {}
 				for q in sBE:gmatch("%w%w") do table.insert(sLE, 1, tonumber(q, 16)) end
 				return sLE
 			end,

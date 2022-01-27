@@ -43,7 +43,10 @@ return
 					self.initialClusters = {}
 
 					local tmpArr = {}
-					local cCount = math.random(#Language.consonants*0.5, #Language.consonants)
+					-- The average consonant count across all UPSID languages is 22.5; we'll take a range around that.
+					-- math.min comes into play here in case I program more consonant sounds later and forget about this line.
+					-- Guarantee I would. Has anyone seen my tablet pen?
+					local cCount = math.random(17, math.min(28, #Language.consonants))
 					for i=1,#Language.consonants do table.insert(tmpArr, Language.consonants[i]) end
 					while #self.localConsonants < cCount do
 						ran = math.random(1, #tmpArr)
@@ -53,7 +56,12 @@ return
 
 					tmpArr = {}
 					for i=1,#Language.vowels do table.insert(tmpArr, Language.vowels[i]) end
-					local vCount = math.random(3, 6)
+					-- Vowels are trickier because UPSID's average of 8.5 doesn't distinguish diphthongs from monophthongs...
+					-- However, there are never more diphthongs than monophthongs (in any language that I know of).
+					-- So, we can assume that the number of monophthongs is always equal to or greater than the number of diphthongs.
+					-- TODO: Program diphthongs.
+					-- Also interesting to note that if the average is 8.5, then English's 20 is quite the gross outlier!
+					local vCount = math.random(4, 6)
 					while #self.localVowels < vCount do
 						ran = math.random(1, #tmpArr)
 						table.insert(self.localVowels, tmpArr[ran])
@@ -154,7 +162,7 @@ return
 
 			deviate = function(self, parent)
 				local t0 = _time()
-			
+
 				local newList = Language:new()
 				for i=1,#self.localConsonants do table.insert(newList.consonants, self.localConsonants[i]) end
 				for i=1,#self.localVowels do table.insert(newList.vowels, self.localVowels[i]) end
@@ -205,7 +213,7 @@ return
 				newList.letterCount = 0
 				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or self:makeWord(ENGLISH[i]:len() > 1 and ENGLISH[i]:len()-1 or 1, ENGLISH[i]:len()+1) end end
 				for i, j in pairs(newList.wordTable) do newList.letterCount = newList.letterCount+j:len() end
-				
+
 				if _DEBUG then
 					if not debugTimes["Language.deviate"] then debugTimes["Language.deviate"] = 0 end
 					debugTimes["Language.deviate"] = debugTimes["Language.deviate"]+_time()-t0
