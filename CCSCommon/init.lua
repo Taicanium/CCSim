@@ -3078,7 +3078,7 @@ return
 						end
 
 						c1:event(self, "Gained"..baseMsg.."from "..c2.name)
-						c2:event(self, "Loss of the"..baseMsg.."to "..c1.name)
+						c2:event(self, "Loss of"..baseMsg.."to "..c1.name)
 
 						self.writeMap = true
 						self.world.mapChanged = true
