@@ -187,22 +187,26 @@ return
 				local ops = {"OMIT", "REPLACE", "REPLACE", "INSERT"} -- Replacement is intentionally twice as likely as either omission or insertion.
 
 				if self.l1Speakers > 0 then
-					local fct, doOp, repCount, mod = 0, {}, 0
+					local fct, doOp, repCount, mod, modRand1, modRand2, eng, thisWord = 0, {}, 0, nil, tostring(math.random(0, 6)), tostring(math.random(0, 6))
+					local mod1, mod2, mod3 = {modRand1, "7"}, {modRand1, modRand2}, {"7", modRand2}
 					local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
 					local op = parent:randomChoice(ops)
-					if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
-					elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
-					elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+					if op == "OMIT" then mod = mod1
+					elseif op == "REPLACE" then mod = mod2
+					elseif op == "INSERT" then mod = mod3 end
 					while fct < totalFct do
-						local eng = parent:randomChoice(self.wordTable, true)
-						local thisWord = newList.wordTable[eng] or self.wordTable[eng]
+						eng = parent:randomChoice(self.wordTable, true)
+						thisWord = newList.wordTable[eng] or self.wordTable[eng]
 						thisWord = self:modWord(parent, thisWord, mod)
 						repCount = repCount+thisWord:len()
 						if repCount >= self.letterCount*0.7125 then
+							modRand1, modRand2 = tostring(math.random(0, 6)), tostring(math.random(0, 6))
+							mod1[1], mod2[1] = modRand1, modRand1
+							mod2[2], mod3[2] = modRand2, modRand2
 							op = parent:randomChoice(ops)
-							if op == "OMIT" then mod = {tostring(math.random(0, 6)), "7"}
-							elseif op == "REPLACE" then mod = tostring(math.random(0, 6)) mod = {mod, mod}
-							elseif op == "INSERT" then mod = {"7", tostring(math.random(0, 6))} end
+							if op == "OMIT" then mod = mod1
+							elseif op == "REPLACE" then mod = mod2
+							elseif op == "INSERT" then mod = mod3 end
 							repCount = 0
 						end
 						newList.wordTable[eng] = thisWord

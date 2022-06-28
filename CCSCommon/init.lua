@@ -1828,6 +1828,7 @@ return
 			tiffStripByteCounts = {},
 			tiffStripOffsets = {},
 			tiffStrips = {},
+			twoPi = 2.0*math.pi,
 			world = {},
 			writeMap = false,
 			years = 1,
@@ -2812,6 +2813,10 @@ return
 			magnitude = function(self, x, y, z, w)
 				x, y, z, w = x or 0, y or 0, z or 0, w or 0
 				return math.sqrt(x*x+y*y+z*z+w*w)
+			end,
+			
+			mspRange = function(self, n, min1, max1, min2, max2)
+				return ((n-min1)/(max1-min1))*(max2-min2)+min2
 			end,
 
 			name = function(self, personal, l, m, preserve)

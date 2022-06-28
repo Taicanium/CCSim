@@ -37,7 +37,6 @@ return
 				local t0 = _time()
 				-- local rMin, rMax = _DEBUG and 165 or 235, _DEBUG and 175 or 275
 				local rMin, rMax = 235, 275
-				local twoPi = 2.0*math.pi
 				self.planetR = math.floor(math.random(rMin, rMax))
 				self.planetD = self.planetR*2
 				self.tUnit = math.pi/self.planetD
@@ -51,7 +50,7 @@ return
 					local tf, z = ts*math.pi*self.planetD, tc*self.planetR
 					tf = tf < 1 and 1 or tf
 					for i=0,tf do
-						local phi = twoPi*i/tf
+						local phi = parent.twoPi*i/tf
 						local x, y = self.planetR*ts*math.cos(phi), self.planetR*ts*math.sin(phi)
 						local coords = self:getNodeFromCoords(x, y, z)
 						if not self.planet[coords] then
