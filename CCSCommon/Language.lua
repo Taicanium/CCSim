@@ -393,11 +393,11 @@ return
 
 			vcClusters = {
 				"ab", "ac", "ad", "af", "ag", "ah", "aj", "ak", "al", "am", "an", "a\xec", "ap", "ar", "as", "a\xed", "at", "a\xef", "av", "aw", "az", "a\xee",
-				"eb", "ec", "ed", "ef", "eg", "eh", "ej", "ek", "el", "em", "en", "e\xec", "ep", "er", "es", "a\xed", "et", "a\xef", "ev", "ew", "ez", "a\xee",
-				"yb", "yc", "yd", "yf", "yg", "yh", "yj", "yk", "yl", "ym", "yn", "y\xec", "yp", "yr", "ys", "a\xed", "yt", "a\xef", "yv", "yw", "yz", "a\xee",
-				"ib", "ic", "id", "if", "ig", "ih", "ij", "ik", "il", "im", "in", "i\xec", "ip", "ir", "is", "a\xed", "it", "a\xef", "iv", "iw", "iz", "a\xee",
-				"ob", "oc", "od", "of", "og", "oh", "oj", "ok", "ol", "om", "on", "o\xec", "op", "or", "os", "a\xed", "ot", "a\xef", "ov", "ow", "oz", "a\xee",
-				"ub", "uc", "ud", "uf", "ug", "uh", "uj", "uk", "ul", "um", "un", "u\xec", "up", "ur", "us", "a\xed", "ut", "a\xef", "uv", "uw", "uz", "a\xee",
+				"eb", "ec", "ed", "ef", "eg", "eh", "ej", "ek", "el", "em", "en", "e\xec", "ep", "er", "es", "e\xed", "et", "e\xef", "ev", "ew", "ez", "e\xee",
+				"yb", "yc", "yd", "yf", "yg", "yh", "yj", "yk", "yl", "ym", "yn", "y\xec", "yp", "yr", "ys", "y\xed", "yt", "y\xef", "yv", "yz", "y\xee",
+				"ib", "ic", "id", "if", "ig", "ih", "ij", "ik", "il", "im", "in", "i\xec", "ip", "ir", "is", "i\xed", "it", "i\xef", "iv", "iz", "i\xee",
+				"ob", "oc", "od", "of", "og", "oh", "oj", "ok", "ol", "om", "on", "o\xec", "op", "or", "os", "o\xed", "ot", "o\xef", "ov", "ow", "oz", "o\xee",
+				"ub", "uc", "ud", "uf", "ug", "uh", "uj", "uk", "ul", "um", "un", "u\xec", "up", "ur", "us", "u\xed", "ut", "u\xef", "uv", "uz", "u\xee",
 			},
 
 			vClusters = {"a", "e", "i", "o", "u", "ae", "ai", "ao", "au", "ea", "ei", "eo", "eu", "ya", "ye", "yi", "yo", "yu", "ia", "ie", "io", "iu", "oa", "oe", "oi", "ou", "ua", "ue", "ui", "uo"},
