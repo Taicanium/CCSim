@@ -835,15 +835,21 @@ return
 
 				local t2 = _time()
 				if math.fmod(parent.years, 40) == 0 then
-					UI:printl("Deviating languages...")
+					UI:printl("Deviating languages...\n")
 					parent.langEML = parent.langEML+1
 					if parent.langEML == 4 then
 						parent.langEML = 1
 						parent.langPeriod = parent.langPeriod+1
 					end
+					local lCount, lIndex = 0, 1
+					for i, j in pairs(self.countries) do for k, l in pairs(j.regions) do lCount = lCount+1 end end
 					for i, j in pairs(self.countries) do
 						if j.language.name ~= j.demonym then j.language = parent:getLanguage(j, j) else
-							for k, l in pairs(j.regions) do l:deviateDialects(j, parent) end
+							for k, l in pairs(j.regions) do
+								l:deviateDialects(j, parent)
+								UI:printl(string.format("%d/%d complete", lIndex, lCount))
+								lIndex = lIndex+1
+							end
 							local newLang = j.language:deviate(parent)
 							j.language = newLang
 							j.language.name = j.demonym

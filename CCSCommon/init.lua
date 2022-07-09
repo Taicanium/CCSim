@@ -1966,6 +1966,7 @@ return
 
 			compLangs = function(self, writeOut)
 				local _REVIEWING, _GLOSSARY, _DESCENT, oldDescent, screens, screenIndex, lnCount, lnCorrect, lastFamily, screen, screenMargins, mainLang = true, false
+				UI:printf("Updating language families...\n")
 				self:updateLangFamilies()
 				local fKeys = self:getAlphabetical(self.langFamilies)
 
@@ -3389,6 +3390,7 @@ return
 					end
 					self.langFamilies[family] = self.langFamilies[family] or {}
 					self.langFamilies[family][self.languages[i].name] = self.languages[i]
+					UI:printl(string.format("%d/%d complete", i, #self.languages))
 				end
 			end,
 		}
