@@ -27,10 +27,8 @@ string.stripSpecs = function(s)
 	return thisWord
 end
 
-_time = os.clock
-_stamp = os.time
-if _time() > 15 then _time = os.time end
-if _stamp() < 15 then _stamp = os.clock end
+_time = os.clock() > 15 and os.time or os.clock
+_stamp = os.time () < 15 and os.clock or os.time
 
 return
 	function()
@@ -1775,9 +1773,9 @@ return
 			partynames = {
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
 				{"National", "United", "Citizens'", "General", "People's", "Joint", "Workers'", "Free", "New", "Traditional", "Grand", "All", "Loyal"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Democratic", "Republican", "Economical", "Moral", "Ethical", "Unionist", "Revivalist", "Monarchist", "Nationalist", "Reformist", "Public", "Patriotic", "Loyalist"},
-				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Centrism", "Democracy", "Democratic", "Republican", "Economical", "Economic", "Moral", "Morality", "Ethical", "Union", "Unionist", "Revival", "Revivalist", "Labor", "Monarchy", "Monarchist", "Nationalist", "Reform", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty"},
-				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum", "Bureau", "Association"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Democratic", "Republican", "Economic", "Moral", "Ethical", "Unionist", "Revivalist", "Monarchist", "Nationalist", "Reformist", "Public", "Patriotic", "Loyalist"},
+				{"Liberal", "Moderate", "Conservative", "Centralist", "Centrist", "Centrism", "Democracy", "Democratic", "Republican", "Economical", "Economic", "Moral", "Morality", "Ethical", "Union", "Unionist", "Revival", "Revivalist", "Labor", "Monarchy", "Monarchist", "Nationalist", "Reform", "Reformist", "Public", "Freedom", "Security", "Patriotic", "Loyalist", "Liberty", "Loyalty", "Military", "Ethics", "Central", "Center", "Common"},
+				{"Party", "Group", "Front", "Coalition", "Force", "Alliance", "Caucus", "Fellowship", "Conference", "Forum", "Bureau", "Association", "Society", "Committee"},
 			},
 			places = {},
 			popCount = 0,
@@ -1796,8 +1794,8 @@ return
 				},
 				{
 					name="Empire",
-					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Viceroy", "Prince", "Emperor"},
-					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Vicereine", "Princess", "Empress"},
+					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Duke", "Viceroy", "Prince", "Emperor"},
+					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Duchess", "Vicereine", "Princess", "Empress"},
 					formalities={"Empire", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
 					dynastic=true
 				},
@@ -1832,7 +1830,6 @@ return
 			world = {},
 			writeMap = false,
 			years = 1,
-			yearstorun = 0,
 
 			bmpOut = function(self, label, data, w, h)
 				local bf = io.open(label..".bmp", "w+b")
@@ -2308,6 +2305,43 @@ return
 				return strOut
 			end,
 
+			factionReview = function(self)
+				local REVIEWING = true
+				local screens = {{}}
+				local thisScreen = 1
+
+				for i, j in pairs(self.world.countries) do
+					table.insert(screens[thisScreen], j.name)
+					for k, l in pairs(j.parties) do
+						nextLine = "\t%s"
+						if j.rulerParty.name == l.name then nextLine = nextLine.." (ruling)" elseif l.lastRuled == -1 then nextLine = nextLine.." (last ruled never)" else nextLine = nextLine.." (last ruled "..tostring(l.lastRuled)..")" end
+						nextLine = nextLine.." - popularity %.2f%% - Pers. %.2f, Econ. %.2f, Cult. %.2f"
+						table.insert(screens[thisScreen], string.format(nextLine, l.name, l.popularity, l.pfreedom, l.efreedom, l.cfreedom))
+						if #screens[thisScreen] >= UI.y - 5 then
+							thisScreen = thisScreen + 1
+							screens[thisScreen] = {}
+						end
+					end
+				end
+
+				thisScreen = 1
+
+				while REVIEWING do
+					UI:clear()
+					for i=1,#screens[thisScreen] do UI:printf(screens[thisScreen][i]) end
+					UI:printf("\nEnter B to return to the previous menu.")
+					UI:printf("Enter N to move to the next screen.")
+					UI:printf("Enter P to move to the previous screen.")
+					UI:printc(" > ")
+
+					strIn = UI:readl()
+					strIn = strIn:lower()
+					if strIn == "b" then REVIEWING = false
+					elseif strIn == "n" then thisScreen = math.min(thisScreen+1, #screens)
+					elseif strIn == "p" then thisScreen = math.max(thisScreen-1, 1) end
+				end
+			end,
+
 			finish = function(self, destroy)
 				if destroy then UI:clear() end
 
@@ -2775,6 +2809,7 @@ return
 						end
 						UI:printf("\nEnter a number of years to continue, or:")
 						UI:printf("E to execute a line of Lua code.")
+						UI:printf("F to review the factions of this world.")
 						UI:printf("G to review family links and genealogical data.")
 						UI:printf("L to compare the languages of this world.")
 						UI:printf("R to record the event data at this point.")
@@ -2785,6 +2820,7 @@ return
 							remainingYears = tonumber(datin)
 							self.gedFile = io.open(self:directory{self.stamp, "ged.dat"}, "a+")
 						elseif datin:lower() == "e" then debugLine()
+						elseif datin:lower() == "f" then self:factionReview()
 						elseif datin:lower() == "g" then
 							local gf = io.open(self:directory{self.stamp, "ged.dat"}, "r")
 							gedReview(gf)
@@ -2815,7 +2851,7 @@ return
 				x, y, z, w = x or 0, y or 0, z or 0, w or 0
 				return math.sqrt(x*x+y*y+z*z+w*w)
 			end,
-			
+
 			mspRange = function(self, n, min1, max1, min2, max2)
 				return ((n-min1)/(max1-min1))*(max2-min2)+min2
 			end,
@@ -3367,18 +3403,18 @@ return
 						if mt ~= self.languages[i].name then family = mt end
 					end
 					if family ~= self.languages[i].name then
-						-- When a language sustains 25% deviation or greater from its parent, it is considered sufficiently removed as to no longer be of the same family.
+						-- When a language sustains 20% deviation or greater from its parent, it is considered sufficiently removed as to no longer be of the same family.
 						local removal = 0
 						local nearest = -1
 						for j=1,#self.languages do if self.languages[j].name == family then
 							removal = self.languages[j]:diff(self.languages[i])
 							nearest = j
 						end end
-						if removal >= 0.25 and self.langFamilies[family] then self.langFamilies[family][self.languages[i].name] = nil end
+						if removal >= 0.20 and self.langFamilies[family] then self.langFamilies[family][self.languages[i].name] = nil end
 						if nearest ~= -1 then
 							for j=1,#self.languages do if i ~= j then
 								local nR = self.languages[j]:diff(self.languages[i])
-								if nR < math.min(0.25, removal) then
+								if nR < math.min(0.20, removal) then
 									removal = nR
 									nearest = j
 								end

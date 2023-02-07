@@ -135,6 +135,10 @@ return
 					for i, j in pairs(self.spouse.children) do if j.name == nn.name then nFound = true end end
 				end
 
+				nn.pbelief = (self.pbelief + self.spouse.pbelief) / 2
+				nn.ebelief = (self.ebelief + self.spouse.ebelief) / 2
+				nn.cbelief = (self.cbelief + self.spouse.cbelief) / 2
+
 				if self.gender == "M" then
 					nn.surname = self.surname
 					nn.ancName = self.ancName
@@ -543,14 +547,18 @@ return
 
 				self.recentbirth = false
 
+				self.pbelief = math.min(math.max(self.pbelief + math.random(-5, 5)/10, 1), 100)
+				self.ebelief = math.min(math.max(self.ebelief + math.random(-5, 5)/10, 1), 100)
+				self.cbelief = math.min(math.max(self.cbelief + math.random(-5, 5)/10, 1), 100)
+
 				if not self.party or self.party == "" then
 					local pmatch = nil
 
 					for i, j in pairs(nl.parties) do if j and not pmatch then
 						pmatch = j
-						if math.abs(j.pfreedom-self.pbelief) > 35 then pmatch = nil end
-						if math.abs(j.efreedom-self.ebelief) > 35 then pmatch = nil end
-						if math.abs(j.cfreedom-self.cbelief) > 35 then pmatch = nil end
+						if math.abs(j.pfreedom-self.pbelief) > 50 then pmatch = nil end
+						if math.abs(j.efreedom-self.ebelief) > 50 then pmatch = nil end
+						if math.abs(j.cfreedom-self.cbelief) > 50 then pmatch = nil end
 					end end
 
 					if not pmatch then
@@ -572,6 +580,14 @@ return
 				if self.isRuler then
 					nl.rulers[#nl.rulers].party = self.party
 					nl.rulerParty = nl.parties[self.party]
+					if nl.rulerParty then nl.rulerParty.lastRuled = parent.years end
+				end
+
+				for i, j in pairs(nl.parties) do
+					local pTotal = math.abs(j.pfreedom-self.pbelief)
+					local eTotal = math.abs(j.efreedom-self.ebelief)
+					local cTotal = math.abs(j.cfreedom-self.cbelief)
+					j.popularity = j.popularity + (pTotal+eTotal+cTotal)/(3*nl.population)
 				end
 
 				if nl.rulerParty then

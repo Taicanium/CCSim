@@ -668,6 +668,8 @@ return
 				self.income = {}
 				self.incomeLevels = {}
 
+				for i, j in pairs(self.parties) do j.popularity = 0 end
+
 				for i=#self.people,1,-1 do
 					local chn = false
 					if self.people[i] and self.people[i].def then self.people[i]:update(parent, self) else chn = true end

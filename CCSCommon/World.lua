@@ -813,7 +813,7 @@ return
 					if defCount > 3 then
 						local lastDef = ""
 						for j=#cp.events,1,-1 do if lastDef == "" and cp.events[j].Event:match("Defeat in war") then lastDef = cp.events[j].Event:gsub("Defeat in war with ", "") end end
-						for j, k in pairs(self.countries) do if k.name == lastDef then for l, m in pairs(parent.c_events) do if m.name == "Conquer" then cp:triggerEvent(parent, l, true, k) end end end end
+						for j, k in pairs(self.countries) do if k.name == lastDef then for l, m in pairs(parent.c_events) do if m.name:match("Conquer") then cp:triggerEvent(parent, l, true, k) end end end end
 					end
 				end end
 

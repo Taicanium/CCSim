@@ -7,8 +7,10 @@ return
 
 				o.cfreedom = 0
 				o.efreedom = 0
+				o.lastRuled = -1
 				o.name = ""
 				o.pfreedom = 0
+				o.popularity = 0
 				o.radical = false
 
 				return o
