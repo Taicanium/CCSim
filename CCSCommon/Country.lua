@@ -676,7 +676,7 @@ return
 
 					if not chn then
 						local age = self.people[i].age
-						if 70000-math.pow(age, 2) < 1 or math.random(1, 70000-math.pow(age, 2)) < math.pow(age, 2) then chn = true end
+						if 70000-math.pow(age, 2) < 1 or math.random(1, 70000-age*age) < age*age then chn = true end
 					end
 
 					if not chn and not self.people[i].isRuler and math.random(1, self.people[i].age < 35 and 6500 or 9500) == 3799 then

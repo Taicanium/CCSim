@@ -526,9 +526,10 @@ return
 
 				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
 
-				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 8) == 4 then
+				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 4) == 2 then
 					local m = parent:randomChoice(nl.people)
-					if m.def and m.age > 15 and not m.spouse and self.gender ~= m.gender then
+					local levelAdj = math.abs(self.level-m.level)+1
+					if m.def and m.age > 15 and not m.spouse and self.gender ~= m.gender and math.random(1, 2*levelAdj) == 1 then
 						local found = false
 						if self.surname == m.surname then found = true end
 						if not found then for i, j in pairs(self.children) do if j.gString == m.gString or j.surname == m.surname then found = true end end end

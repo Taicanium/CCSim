@@ -189,7 +189,7 @@ return
 				if self.l1Speakers > 0 then
 					local fct, doOp, repCount, mod, modRand1, modRand2, eng, thisWord = 0, {}, 0, nil, tostring(math.random(0, 6)), tostring(math.random(0, 6))
 					local mod1, mod2, mod3 = {modRand1, "7"}, {modRand1, modRand2}, {"7", modRand2}
-					local totalFct = math.random(parent.langDriftConstant*0.85, parent.langDriftConstant*1.15)*self.letterCount
+					local totalFct = math.random(parent.langDriftConstant*0.95, parent.langDriftConstant*1.35)*self.letterCount
 					local op = parent:randomChoice(ops)
 					if op == "OMIT" then mod = mod1
 					elseif op == "REPLACE" then mod = mod2

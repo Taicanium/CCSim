@@ -345,7 +345,7 @@ return
 
 			getNodeFromCoords = function(self, x, y, z)
 				local xm, ym, zm = self:normalize(x, y, z)
-				return xm*math.pow(self.planetD, 2)+ym*self.planetD+zm
+				return xm*self.planetD*self.planetD+ym*self.planetD+zm
 			end,
 
 			mapOutput = function(self, parent, label)
@@ -698,7 +698,7 @@ return
 			end,
 
 			normalize = function(self, x, y, z)
-				local mag = self.planetR/math.sqrt(math.pow(x, 2)+math.pow(y, 2)+math.pow(z, 2))
+				local mag = self.planetR/math.sqrt(x*x+y*y+z*z)
 				return x*mag+self.planetR, y*mag+self.planetR, z*mag+self.planetR
 			end,
 
