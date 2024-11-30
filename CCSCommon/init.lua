@@ -1761,7 +1761,7 @@ return
 			initialgroups = {"Ab", "Ac", "Ad", "Af", "Ag", "Al", "Am", "An", "Ar", "As", "At", "Au", "Av", "Az", "Ba", "Be", "Bh", "Bi", "Bo", "Bu", "Ca", "Ce", "Ch", "Ci", "Cl", "Co", "Cr", "Cu", "Da", "De", "Di", "Do", "Du", "Dr", "Ec", "El", "Er", "Fa", "Fr", "Ga", "Ge", "Go", "Gr", "Gh", "Ha", "He", "Hi", "Ho", "Hu", "Ic", "Id", "In", "Io", "Ir", "Is", "It", "Ja", "Ji", "Jo", "Ka", "Ke", "Ki", "Ko", "Ku", "Kr", "Kh", "La", "Le", "Li", "Lo", "Lu", "Lh", "Ma", "Me", "Mi", "Mo", "Mu", "Na", "Ne", "Ni", "No", "Nu", "Pa", "Pe", "Pi", "Po", "Pr", "Ph", "Ra", "Re", "Ri", "Ro", "Ru", "Rh", "Sa", "Se", "Si", "So", "Su", "\xed", "Ta", "Te", "Ti", "To", "Tu", "Tr", "\xef", "Va", "Vi", "Vo", "Wa", "Wi", "Wo", "Wh", "Ya", "Ye", "Yi", "Yo", "Yu", "Za", "Ze", "Zi", "Zo", "Zu", "\xee", "\xefa", "\xefu", "\xefe", "\xefi", "\xefo"},
 			iSCount = 0,
 			iSIndex = 0,
-			langDriftConstant = 0.14,
+			langDriftConstant = 0.46,
 			langEML = 1, -- 1 for Early, 2 for Middle, 3 for Late.
 			langFamilies = {},
 			langPeriod = 1,
@@ -1788,33 +1788,33 @@ return
 			systems = {
 				{
 					name="Democracy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Speaker", "Prime Minister"},
+					ranks={"Homeless", "Citizen", "Councillor", "Mayor", "Representative", "Governor", "Minister", "Speaker", "Prime Minister"},
 					formalities={"Union", "Democratic Republic", "Free State", "Realm", "Electorate", "State"},
 					dynastic=false
 				},
 				{
 					name="Empire",
-					ranks={"Homeless", "Citizen", "Mayor", "Lord", "Governor", "Duke", "Viceroy", "Prince", "Emperor"},
-					franks={"Homeless", "Citizen", "Mayor", "Lady", "Governor", "Duchess", "Vicereine", "Princess", "Empress"},
+					ranks={"Homeless", "Citizen", "Councillor", "Mayor", "Lord", "Governor", "Duke", "Viceroy", "Prince", "Emperor"},
+					franks={"Homeless", "Citizen", "Councillor", "Mayor", "Lady", "Governor", "Duchess", "Vicereine", "Princess", "Empress"},
 					formalities={"Empire", "Magistracy", "Imperium", "Supreme Crown", "Imperial Crown"},
 					dynastic=true
 				},
 				{
 					name="Monarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
-					franks={"Homeless", "Citizen", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marchioness", "Duchess", "Princess", "Queen"},
+					ranks={"Homeless", "Citizen", "Councillor", "Mayor", "Knight", "Lord", "Baron", "Viscount", "Earl", "Marquis", "Duke", "Prince", "King"},
+					franks={"Homeless", "Citizen", "Councillor", "Mayor", "Dame", "Lady", "Baroness", "Viscountess", "Countess", "Marchioness", "Duchess", "Princess", "Queen"},
 					formalities={"Kingdom", "Crown", "Lordship", "Dominion", "High Kingship", "Domain"},
 					dynastic=true
 				},
 				{
 					name="Oligarchy",
-					ranks={"Homeless", "Citizen", "Mayor", "Councillor", "Governor", "Minister", "Oligarch", "Premier"},
+					ranks={"Homeless", "Citizen", "Councillor", "Mayor", "Governor", "Minister", "Oligarch", "Premier"},
 					formalities={"People's Republic", "Premiership", "Patriciate", "Autocracy", "Collective"},
 					dynastic=false
 				},
 				{
 					name="Republic",
-					ranks={"Homeless", "Citizen", "Commissioner", "Mayor", "Councillor", "Governor", "Judge", "Senator", "Minister", "President"},
+					ranks={"Homeless", "Citizen", "Commissioner", "Councillor", "Mayor", "Representative", "Governor", "Judge", "Senator", "Minister", "President"},
 					formalities={"Republic", "United Republic", "Nation", "Commonwealth", "Federation", "Federal Republic"},
 					dynastic=false
 				}

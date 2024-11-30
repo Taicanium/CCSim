@@ -129,7 +129,7 @@ return
 
 				for i=1,#ENGLISH do if not self.wordTable[ENGLISH[i]] then
 					local ln = ENGLISH[i]:len()
-					local word = self:makeWord(ln > 1 and ln-1 or 1, ln+1)
+					local word = self:makeWord(parent, ln > 1 and ln-1 or 1, ln+1)
 					self.wordTable[ENGLISH[i]] = word:lower()
 					self.letterCount = self.letterCount+word:len()
 				end end
@@ -143,15 +143,15 @@ return
 				-- This is *remarkably* unintuitive... even as far as other sections of this program go.
 				-- Essentially, the vast majority of natural Languages don't have 405 unique pronouns -- and, yes, I counted -- so, work here to combine a few.
 				-- Somehow. Through some process.
-				for i=1,#parent.pronouns do self.specials[parent.pronouns[i]] = string.lower(self:makeWord(2, 4)) end
+				for i=1,#parent.pronouns do self.specials[parent.pronouns[i]] = string.lower(self:makeWord(parent, 2, 4)) end
 				local i1 = math.random(1, 5)
 				local i2 = math.random(1, 5) while i2 == i1 do i2 = math.random(1, 5) end
 				local i3 = math.random(1, 5) while i3 == i2 or i3 == i1 do i3 = math.random(1, 5) end
 				for i, j in pairs(self.specials) do for k, l in pairs(self.specials) do if i:sub(i1, i1) == k:sub(i1, i1) and i:sub(i2, i2) == k:sub(i2, i2) and i:sub(i3, i3) == k:sub(i3, i3) then self.specials[k] = self.specials[i] end end end
-				self.specials["$rss"] = string.lower(self:makeWord(2, 4)) -- Reflexive singular suffix. (Eng: 'self')
-				self.specials["$rsp"] = string.lower(self:makeWord(2, 4)) -- Reflexive plural suffix. (Eng: 'selves')
-				self.specials["$es"] = string.lower(self:makeWord(1, 2)) -- Determinant suffix. (Eng: 's', as in 'theirs' or 'hers')
-				self.specials["$da"] = string.lower(self:makeWord(2, 3)) -- Definite article. (Eng: 'the')
+				self.specials["$rss"] = string.lower(self:makeWord(parent, 2, 4)) -- Reflexive singular suffix. (Eng: 'self')
+				self.specials["$rsp"] = string.lower(self:makeWord(parent, 2, 4)) -- Reflexive plural suffix. (Eng: 'selves')
+				self.specials["$es"] = string.lower(self:makeWord(parent, 1, 2)) -- Determinant suffix. (Eng: 's', as in 'theirs' or 'hers')
+				self.specials["$da"] = string.lower(self:makeWord(parent, 2, 3)) -- Definite article. (Eng: 'the')
 				for i, j in pairs(self.specials) do
 					self.wordTable[i] = self.wordTable[i] or j
 					self.letterCount = self.letterCount+j:len()
@@ -174,11 +174,11 @@ return
 				for i=1,#self.initialClusters do table.insert(newList.initialClusters, self.initialClusters[i]) end
 				for i=1,#self.finalClusters do table.insert(newList.finalClusters, self.finalClusters[i]) end
 				for i=1,#self.descentTree do table.insert(newList.descentTree, self.descentTree[i]) end
-				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(self:makeWord(2, 4)) end
-				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(self:makeWord(2, 4))
-				newList.wordTable["$rsp"] = self.wordTable["$rsp"] or string.lower(self:makeWord(2, 4))
-				newList.wordTable["$es"] = self.wordTable["$es"] or string.lower(self:makeWord(2, 4))
-				newList.wordTable["$da"] = self.wordTable["$da"] or string.lower(self:makeWord(2, 4))
+				for i=1,#parent.pronouns do newList.wordTable[parent.pronouns[i]] = self.wordTable[parent.pronouns[i]] or string.lower(self:makeWord(parent, 2, 4)) end
+				newList.wordTable["$rss"] = self.wordTable["$rss"] or string.lower(self:makeWord(parent, 2, 4))
+				newList.wordTable["$rsp"] = self.wordTable["$rsp"] or string.lower(self:makeWord(parent, 2, 4))
+				newList.wordTable["$es"] = self.wordTable["$es"] or string.lower(self:makeWord(parent, 2, 4))
+				newList.wordTable["$da"] = self.wordTable["$da"] or string.lower(self:makeWord(parent, 2, 4))
 				newList.period = parent.langPeriod
 				newList.eml = parent.langEML
 				local periodString = " ("..(self.eml == 1 and "Early" or (self.eml == 2 and "Middle" or "Late")).." period "..tostring(self.period)..")"
@@ -215,7 +215,7 @@ return
 				end
 
 				newList.letterCount = 0
-				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or self:makeWord(ENGLISH[i]:len() > 1 and ENGLISH[i]:len()-1 or 1, ENGLISH[i]:len()+1) end end
+				for i=1,#ENGLISH do if not newList.wordTable[ENGLISH[i]] then newList.wordTable[ENGLISH[i]] = self.wordTable[ENGLISH[i]] or self:makeWord(parent, ENGLISH[i]:len() > 1 and ENGLISH[i]:len()-1 or 1, ENGLISH[i]:len()+1) end end
 				for i, j in pairs(newList.wordTable) do newList.letterCount = newList.letterCount+j:len() end
 
 				if _DEBUG then
@@ -241,7 +241,7 @@ return
 				return factor
 			end,
 
-			makeWord = function(self, min, max)
+			makeWord = function(self, parent, min, max)
 				local nom = ""
 				local length = math.random(min or 1, max or 5)
 				local consFinal, grp = false
@@ -261,8 +261,8 @@ return
 					nom = nom..grp
 				end
 
-				nom = nom:gsub("^%S", string.upper):gsub("%*", ""):gsub("%^", "")
-				return nom
+				nom = nom:gsub("%*", ""):gsub("%^", "")
+				return parent:namecheck(nom)
 			end,
 
 			modWord = function(self, parent, n, mod)
@@ -278,7 +278,8 @@ return
 							for s=4,1,-1 do newWord = newWord:gsub(l..string.rep(" ", s)..l, l..string.rep(" ", s+1)) end
 							newWord = newWord:gsub(l..l, l.." ")
 						end
-						return newWord
+						newWord = parent:namecheck(newWord)
+						return newWord:lower()
 					end
 				end end
 				return n
@@ -301,7 +302,7 @@ return
 				local thisText = s
 				for x in s:gmatch("%S+") do thisText = thisText:gsub(x:gsub("%$", "%%$"):gsub("%^", "%%^"), function(n)
 					if not self.wordTable[n:lower()] then
-						local word = self:makeWord(n:len() > 1 and n:len()-1 or 1, n:len()+1)
+						local word = self:makeWord(parent, n:len() > 1 and n:len()-1 or 1, n:len()+1)
 						self.wordTable[n:lower()] = word:lower()
 						self.letterCount = self.letterCount+word:len()
 						if not table.contains(ENGLISH, n:lower()) then table.insert(ENGLISH, n:lower()) end

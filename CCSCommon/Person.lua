@@ -433,9 +433,41 @@ return
 					self.city = nil
 				end
 
-				if self.region and not self.city then self.city = parent:randomChoice(self.region.cities) end
-
 				if self.region then
+					if not self.region.language then self.region.language = parent:getLanguage(self.region, nl) end
+					
+					if not self.nativeLang or #self.nativeLang == 0 then
+						self.nativeLang = {self.region.language}
+						local flString = self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")"
+						if not parent.fileLangs[flString] then
+							local lCount = 0
+							for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+							parent.fileLangs[flString] = lCount+1
+							parent.gedFile:write("j "..tostring(parent.fileLangs[flString]).." "..flString.."\n")
+						end
+						parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[flString]).."\n")
+					end
+					
+					local langFound = false
+					for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
+					if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
+					if not langFound then
+						local langChance = math.random(1, 10)
+						if langChance == 5 then
+							table.insert(self.spokenLang, self.region.language)
+							local flString = self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")"
+							if not parent.fileLangs[flString] then
+								local lCount = 0
+								for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
+								parent.fileLangs[flString] = lCount+1
+								parent.gedFile:write("j "..tostring(parent.fileLangs[flString]).." "..flString.."\n")
+							end
+							parent.gedFile:write(tostring(self.gIndex).." h "..tostring(parent.fileLangs[flString]).."\n")
+						end
+					end
+					
+					if not self.city then self.city = parent:randomChoice(self.region.cities) end
+					
 					self.region.population = self.region.population+1
 					self.deathplace = self.region.name..", "..self.deathplace
 				end
@@ -455,39 +487,6 @@ return
 					if self.spouse then
 						self.spouse.region = self.region
 						self.spouse.city = self.city
-					end
-				end
-
-				if self.region and not self.region.language then self.region.language = parent:getLanguage(self.region, nl) end
-				if self.region and self.region.language then if not self.nativeLang or #self.nativeLang == 0 then
-					self.nativeLang = {self.region.language}
-					local flString = self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")"
-					if not parent.fileLangs[flString] then
-						local lCount = 0
-						for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
-						parent.fileLangs[flString] = lCount+1
-						parent.gedFile:write("j "..tostring(parent.fileLangs[flString]).." "..flString.."\n")
-					end
-					parent.gedFile:write(tostring(self.gIndex).." i "..tostring(parent.fileLangs[flString]).."\n")
-				end end
-
-				if self.region and self.nativeLang and #self.nativeLang > 0 then
-					local langFound = false
-					for i=1,#self.nativeLang do if self.nativeLang[i].name == self.region.language.name then langFound = true end end
-					if not langFound then for i=1,#self.spokenLang do if self.spokenLang[i].name == self.region.language.name then langFound = true end end end
-					if not langFound then
-						local langChance = math.random(1, 10)
-						if langChance == 5 then
-							table.insert(self.spokenLang, self.region.language)
-							local flString = self.region.language.name.." ("..(self.region.language.eml == 1 and "E." or (self.region.language.eml == 2 and "M." or "L.")).."P. "..tostring(self.region.language.period)..")"
-							if not parent.fileLangs[flString] then
-								local lCount = 0
-								for i, j in pairs(parent.fileLangs) do lCount = lCount+1 end
-								parent.fileLangs[flString] = lCount+1
-								parent.gedFile:write("j "..tostring(parent.fileLangs[flString]).." "..flString.."\n")
-							end
-							parent.gedFile:write(tostring(self.gIndex).." h "..tostring(parent.fileLangs[flString]).."\n")
-						end
 					end
 				end
 
@@ -524,9 +523,7 @@ return
 				nl.income[self.level] = (nl.income[self.level] or 0)+self.income*nl.taxRate
 				nl.incomeLevels[self.level] = (nl.incomeLevels[self.level] or 0)+1
 
-				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then self.spouse = nil end
-
-				if not self.spouse or not self.spouse.def then if self.age > 15 and math.random(1, 4) == 2 then
+				if not self.spouse or not self.spouse.def or not self.spouse.spouse or not self.spouse.spouse.def or self.spouse.spouse.gString ~= self.gString then if self.age > 15 and math.random(1, 4) == 2 then
 					local m = parent:randomChoice(nl.people)
 					local levelAdj = math.abs(self.level-m.level)+1
 					if m.def and m.age > 15 and not m.spouse and self.gender ~= m.gender and math.random(1, 2*levelAdj) == 1 then
